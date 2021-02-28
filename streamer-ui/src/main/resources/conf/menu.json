@@ -1,0 +1,23 @@
+{
+    "menu-element": {
+        "menu-element-open": "control O"
+    },
+    "menu-view": {
+        "menu-view-refresh": "control R",
+        "separator1": "",
+        "menu-view-elements-icon": "",
+        "menu-view-elements-list": "",
+        "menu-view-elements-tree": "",
+        "menu-view-elements-full": "",
+        "separator3": "",
+        "menu-view-sort-name": "",
+        "menu-view-sort-type": "",
+        "menu-view-sort-size": "",
+        "separator4": "",
+        "menu-view-sidebar": "",
+        "menu-view-hidden": ""
+    },
+    "menu-help": {
+        "menu-help-index": "F1"
+    }
+}

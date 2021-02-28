@@ -1,0 +1,7 @@
+{
+    "rebex": {
+        "host": "test.rebex.net",
+        "username": "demo",
+        "password": "password"
+    }
+}

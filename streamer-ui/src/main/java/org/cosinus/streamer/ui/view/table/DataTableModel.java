@@ -1,0 +1,208 @@
+/*
+ * Copyright 2020 Cosinus Software
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.cosinus.streamer.ui.view.table;
+
+import org.cosinus.streamer.api.DirectoryStreamer;
+import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.ui.action.execute.load.StreamedContent;
+import org.cosinus.swing.context.SwingAutowired;
+import org.cosinus.swing.form.TableModel;
+import org.cosinus.swing.preference.Preferences;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static org.cosinus.streamer.ui.preference.StreamerPreferences.OPTION_HIDDEN;
+import static org.cosinus.streamer.ui.preference.StreamerPreferences.OPTION_TOP_VISIBLE;
+
+public abstract class DataTableModel extends TableModel {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DataTableModel.class);
+
+    protected final List<ViewItem> items = new ArrayList<>();
+
+    private final ViewItemComparator comparator;
+
+    protected final Map<Integer, Boolean> selectionMap;
+
+    protected Streamer folder;
+
+    private int currentIndex = -1;
+
+    @SwingAutowired
+    public Preferences preferences;
+
+    public DataTableModel() {
+        this.selectionMap = new ConcurrentHashMap<>();
+        this.comparator = new ViewItemComparator();
+    }
+
+    public int getCurrentIndex() {
+        return currentIndex;
+    }
+
+    public void setCurrentIndex(int currentIndex) {
+        this.currentIndex = currentIndex;
+    }
+
+    public Streamer getElementAt(int index) {
+        return ((ViewItem) getValueAt(getRowForIndex(index),
+                                      getColumnForIndex(index)))
+            .getStreamer();
+    }
+
+    public int getElementCount() {
+        return items.size();
+    }
+
+    public List<ViewItem> getAllElements() {
+        return items;
+    }
+
+    public boolean isIndexSelected(int index) {
+        if (index < 0 || index >= items.size()) {
+            return false;
+        }
+        return Optional.ofNullable(selectionMap.get(index))
+            .orElse(false);
+    }
+
+    @Override
+    public int getColumnCount() {
+        return 0;
+    }
+
+    @Override
+    public int getRowCount() {
+        return 0;
+    }
+
+    public int getCurrentSortColumn() {
+        return comparator.getCurrentSortColumn();
+    }
+
+    public boolean isSortAscending() {
+        return comparator.isSortAscending();
+    }
+
+    public void sort(int col) {
+        if (col < 0 || col >= getColumnCount()) {
+            return;
+        }
+        comparator.setSortType(col);
+        sort();
+    }
+
+    public void sort() {
+        try {
+            items.sort(comparator);
+            fireTableDataChanged();
+        } catch (Exception ex) {
+            LOG.error("Error while sorting elements", ex);
+        }
+    }
+
+    public Streamer getCurrentFolder() {
+        return folder;
+    }
+
+    public void addToSelection(int index) {
+        if (index < getMinimumToSelect() || index >= items.size()) {
+            return;
+        }
+        selectionMap.put(index, Optional.ofNullable(selectionMap.get(index))
+            .map(selected -> !selected)
+            .orElse(true));
+
+        //panel.updateStatus();
+    }
+
+    public void addToSelection(int start,
+                               int end,
+                               boolean only,
+                               boolean deselect) {
+        if (only) {
+            clearSelection();
+        }
+        IntStream.range(max(start, getMinimumToSelect()),
+                        min(items.size(), end + 1))
+            .forEach(i -> selectionMap.put(i, !deselect));
+
+        //panel.updateStatus();
+    }
+
+    public void clearSelection() {
+        selectionMap.clear();
+
+        //panel.updateStatus();
+    }
+
+    public boolean isTopVisible() {
+        return preferences.getBooleanPreference(OPTION_TOP_VISIBLE)
+            .orElse(true);
+    }
+
+    private int getMinimumToSelect() {
+        return isTopVisible() ? 1 : 0;
+    }
+
+    public void updateContent(StreamedContent<Streamer> content) {
+        items.clear();
+        selectionMap.clear();
+
+        if (isTopVisible()) {
+            DirectoryStreamer parent = content.getStreamer().getParent();
+            if (parent != null) {
+                items.add(new ViewItem(parent, true));
+                //addElement(items.size());
+            }
+        }
+
+        content.getContent()
+            .stream()
+            .filter(Objects::nonNull)
+            .filter(element -> !preferences.booleanPreference(OPTION_HIDDEN) || element.isHidden())
+            .map(ViewItem::new)
+            .forEach(items::add);
+        sort();
+
+        folder = content.getStreamer();
+    }
+
+    public List<Streamer> getSelectedElements() {
+        return selectionMap.keySet()
+            .stream()
+            .map(items::get)
+            .map(ViewItem::getStreamer)
+            .collect(Collectors.toList());
+    }
+
+//    public abstract void addElement(int index);
+
+    public abstract int getRowForIndex(int index);
+
+    public abstract int getColumnForIndex(int index);
+
+    public abstract int getIndex(int row,
+                                 int column);
+}

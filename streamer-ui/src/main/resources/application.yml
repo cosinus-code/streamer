@@ -1,0 +1,9 @@
+swing:
+  application:
+    name: Streamer
+    icon: streamer.png
+
+spring:
+  cache:
+    jcache:
+      config: classpath:ehcache.xml
