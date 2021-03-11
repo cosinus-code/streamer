@@ -18,7 +18,6 @@ package org.cosinus.streamer.ui.app;
 
 import org.cosinus.streamer.ui.view.*;
 import org.cosinus.swing.boot.SwingApplicationFrame;
-import org.cosinus.swing.context.SwingInjector;
 import org.springframework.stereotype.Component;
 
 import java.awt.*;
@@ -30,15 +29,11 @@ import static java.util.Arrays.stream;
 @Component
 public class StreamerFrame extends SwingApplicationFrame {
 
-    private final SwingInjector swingInjector;
-
     private MainSplit split;
 
     private final StreamerViewHandler streamerViewHandler;
 
-    public StreamerFrame(SwingInjector swingInjector,
-                         StreamerViewHandler streamerViewHandler) {
-        this.swingInjector = swingInjector;
+    public StreamerFrame(StreamerViewHandler streamerViewHandler) {
         this.streamerViewHandler = streamerViewHandler;
     }
 
@@ -46,7 +41,7 @@ public class StreamerFrame extends SwingApplicationFrame {
     public void initComponents() {
         super.initComponents();
 
-        split = swingInjector.inject(MainSplit.class);
+        split = new MainSplit();
         split.initComponent();
 
         stream(PanelLocation.values())
@@ -83,6 +78,8 @@ public class StreamerFrame extends SwingApplicationFrame {
 
     @Override
     public void translate() {
+        super.translate();
+
         split.translate();
         streamerViewHandler.getPanels().forEach(StreamerPanel::translate);
     }

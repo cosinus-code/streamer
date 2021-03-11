@@ -19,7 +19,6 @@ package org.cosinus.streamer.ui.dialog;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.execute.copy.TransferType;
 import org.cosinus.swing.context.ApplicationProperties;
-import org.cosinus.swing.context.SwingApplicationContext;
 import org.cosinus.swing.context.SwingAutowired;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.form.Dialog;
@@ -53,12 +52,11 @@ public class CopyConfirmationDialog extends Dialog<CopyActionModel> {
 
     private final String actionName;
 
-    public CopyConfirmationDialog(SwingApplicationContext swingContext,
-                                  Frame parent,
+    public CopyConfirmationDialog(Frame parent,
                                   String title,
                                   CopyActionModel copyAction,
                                   Object[] transferTypes) {
-        super(swingContext, parent, title, true);
+        super(parent, title, true);
         this.copyAction = copyAction;
         this.actionName = translator.translate(copyAction.getActionName());
         this.cmbTransferType = new JComboBox<>(transferTypes);
@@ -151,14 +149,14 @@ public class CopyConfirmationDialog extends Dialog<CopyActionModel> {
     protected CopyActionModel getDialogResponse() {
         if (copyAction.isSensitiveToTransferType()) {
             Optional.ofNullable(cmbTransferType.getSelectedItem())
-                    .filter(type -> TransferType.class.isAssignableFrom(type.getClass()))
-                    .map(TransferType.class::cast)
-                    .ifPresent(copyAction::withTransferType);
+                .filter(type -> TransferType.class.isAssignableFrom(type.getClass()))
+                .map(TransferType.class::cast)
+                .ifPresent(copyAction::withTransferType);
         }
         if (copyAction.shouldPackElements()) {
             Optional.ofNullable(cmbTransferType.getSelectedItem())
-                    .map(Object::toString)
-                    .ifPresent(copyAction::withPackType);
+                .map(Object::toString)
+                .ifPresent(copyAction::withPackType);
         }
 
         return copyAction.toTargetPath(txtCopyTo.getText());

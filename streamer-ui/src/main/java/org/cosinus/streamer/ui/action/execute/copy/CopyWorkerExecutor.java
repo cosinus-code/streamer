@@ -24,7 +24,6 @@ import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
 import org.cosinus.streamer.ui.dialog.ProgressDialog;
 import org.cosinus.swing.action.execute.ActionExecutor;
-import org.cosinus.swing.context.SwingInjector;
 import org.springframework.stereotype.Component;
 
 /**
@@ -34,13 +33,10 @@ import org.springframework.stereotype.Component;
 public class CopyWorkerExecutor<S extends DirectoryStreamer, T extends DirectoryStreamer>
     extends SwingProgressWorkerActionExecutor<CopyActionModel<S, T>, CopyProgressModel> {
 
-    private final SwingInjector swingInjector;
-
     public CopyWorkerExecutor(ProgressFormHandler progressFormHandler,
-                              ProgressListenerHandler<CopyProgressModel> progressListenerHandler, SwingInjector swingInjector) {
+                              ProgressListenerHandler<CopyProgressModel> progressListenerHandler) {
         super(progressFormHandler,
               progressListenerHandler);
-        this.swingInjector = swingInjector;
     }
 
     @Override
@@ -52,9 +48,7 @@ public class CopyWorkerExecutor<S extends DirectoryStreamer, T extends Directory
     protected SwingProgressWorker<CopyProgressModel>
     createSwingWorker(CopyActionModel<S, T> actionModel,
                       ProgressDialog<CopyProgressModel> progressDialog) {
-        return swingInjector.inject(CopyWorker.class,
-                                    actionModel,
-                                    progressDialog);
+        return new CopyWorker(actionModel, progressDialog);
     }
 
     @Override

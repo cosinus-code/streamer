@@ -21,7 +21,6 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.progress.ElementsProgressModel;
 import org.cosinus.streamer.ui.util.Formatter;
 import org.cosinus.swing.action.execute.ActionModel;
-import org.cosinus.swing.context.SwingApplicationContext;
 import org.cosinus.swing.form.Frame;
 
 import javax.swing.*;
@@ -41,10 +40,9 @@ public class ElementsProgressDialog<E extends Element> extends ProgressDialog<El
 
     private final JLabel lblElement = new JLabel();
 
-    public ElementsProgressDialog(SwingApplicationContext swingContext,
-                                  Frame frame,
+    public ElementsProgressDialog(Frame frame,
                                   ActionModel actionModel) {
-        super(swingContext, frame, actionModel);
+        super(frame, actionModel);
         initComponents();
     }
 
@@ -83,9 +81,9 @@ public class ElementsProgressDialog<E extends Element> extends ProgressDialog<El
     public void setProgress(ElementsProgressModel progressModel) {
         lblAction.setText(actionName);
         Optional.ofNullable(progressModel.getCurrentStreamer())
-                .map(Streamer::getPath)
-                .map(path -> Formatter.formatTextForLabel(lblElement, path.toString()))
-                .ifPresent(lblElement::setText);
+            .map(Streamer::getPath)
+            .map(path -> Formatter.formatTextForLabel(lblElement, path.toString()))
+            .ifPresent(lblElement::setText);
         progressBar.setValue(progressModel.getProgress());
     }
 }

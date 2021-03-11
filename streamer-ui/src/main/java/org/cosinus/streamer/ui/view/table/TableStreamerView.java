@@ -165,6 +165,7 @@ public abstract class TableStreamerView extends RenamingStreamerView {
 
     @Override
     public void translate() {
+        super.translate();
         table.translate();
     }
 }

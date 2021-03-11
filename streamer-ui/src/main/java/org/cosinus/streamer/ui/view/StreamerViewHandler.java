@@ -19,7 +19,6 @@ package org.cosinus.streamer.ui.view;
 import org.cosinus.streamer.api.meta.StreamerHandler;
 import org.cosinus.streamer.ui.view.table.details.DetailView;
 import org.cosinus.swing.context.SpringSwingComponent;
-import org.cosinus.swing.context.SwingInjector;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,12 +39,8 @@ public class StreamerViewHandler {
 
     private final StreamerHandler streamerHandler;
 
-    private final SwingInjector swingInjector;
-
-    public StreamerViewHandler(StreamerHandler streamerHandler,
-                               SwingInjector swingInjector) {
+    public StreamerViewHandler(StreamerHandler streamerHandler) {
         this.streamerHandler = streamerHandler;
-        this.swingInjector = swingInjector;
     }
 
     public PanelLocation getCurrentLocation() {
@@ -68,15 +63,13 @@ public class StreamerViewHandler {
     }
 
     public StreamerView createDataView(PanelLocation location) {
-        return swingInjector.inject(DetailView.class,
-                                    location);
+        return new DetailView(location);
     }
 
     public StreamerPanel createStreamerPanel(PanelLocation location) {
         StreamerView dataView = createDataView(location);
         dataView.initComponents();
-        StreamerPanel panel = swingInjector.inject(StreamerPanel.class,
-                                                   dataView);
+        StreamerPanel panel = new StreamerPanel(dataView);
         panel.initComponents();
         panelsMap.put(location, panel);
         return panel;

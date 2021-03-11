@@ -27,7 +27,6 @@ import org.cosinus.streamer.ui.dialog.CopyConfirmationDialog;
 import org.cosinus.streamer.ui.preference.StreamerPreferences;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.boot.SwingApplicationFrame;
-import org.cosinus.swing.context.SwingApplicationContext;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.translate.Translator;
@@ -84,9 +83,9 @@ public abstract class AbstractCopyAction<A> extends StreamerAction<A> {
             return;
         }
 
-        dialogHandler.showDialog(swingContext -> copyConfirmationDialog(swingContext, copyAction))
-                .response()
-                .ifPresent(action -> execute(action, actionContext));
+        dialogHandler.showDialog(() -> copyConfirmationDialog(copyAction))
+            .response()
+            .ifPresent(action -> execute(action, actionContext));
     }
 
     protected <S extends Streamer, T extends Streamer> void execute(CopyActionModel<S, T> copyAction,
@@ -100,10 +99,8 @@ public abstract class AbstractCopyAction<A> extends StreamerAction<A> {
         actionExecutors.execute(copyAction);
     }
 
-    protected CopyConfirmationDialog copyConfirmationDialog(SwingApplicationContext swingContext,
-                                                            CopyActionModel copyAction) {
-        return new CopyConfirmationDialog(swingContext,
-                                          applicationFrame,
+    protected CopyConfirmationDialog copyConfirmationDialog(CopyActionModel copyAction) {
+        return new CopyConfirmationDialog(applicationFrame,
                                           applicationFrame.getTitle(),
                                           copyAction,
                                           transferType());

@@ -23,7 +23,6 @@ import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
 import org.cosinus.streamer.ui.dialog.ProgressDialog;
 import org.cosinus.swing.action.execute.ActionExecutor;
-import org.cosinus.swing.context.SwingInjector;
 import org.springframework.stereotype.Component;
 
 /**
@@ -33,14 +32,10 @@ import org.springframework.stereotype.Component;
 public class DeleteWorkerExecutor
     extends SwingProgressWorkerActionExecutor<DeleteActionModel, ElementsProgressModel> {
 
-    private final SwingInjector swingInjector;
-
     public DeleteWorkerExecutor(ProgressFormHandler progressFormHandler,
-                                ProgressListenerHandler<ElementsProgressModel> progressListenerHandler,
-                                SwingInjector swingInjector) {
+                                ProgressListenerHandler<ElementsProgressModel> progressListenerHandler) {
         super(progressFormHandler,
               progressListenerHandler);
-        this.swingInjector = swingInjector;
     }
 
     @Override
@@ -52,9 +47,7 @@ public class DeleteWorkerExecutor
     protected SwingProgressWorker<ElementsProgressModel>
     createSwingWorker(DeleteActionModel actionModel,
                       ProgressDialog<ElementsProgressModel> progressDialog) {
-        return swingInjector.inject(DeleteWorker.class,
-                                    progressDialog,
-                                    actionModel);
+        return new DeleteWorker(progressDialog, actionModel);
     }
 
     @Override

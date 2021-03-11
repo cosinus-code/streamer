@@ -24,11 +24,11 @@ import org.cosinus.swing.context.SwingAutowired;
 import org.cosinus.swing.translate.Translator;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.Arrays.stream;
 import static org.cosinus.streamer.ui.util.Formatter.formatMemorySize;
 
 public class DetailTableModel extends DataTableModel {
@@ -133,7 +133,7 @@ public class DetailTableModel extends DataTableModel {
 
     @Override
     public void translate() {
-        Arrays.stream(DetailColumn.values())
+        stream(DetailColumn.values())
             .forEach(column -> columnNames[column.ordinal()] = translator.translate(column.key()));
     }
 

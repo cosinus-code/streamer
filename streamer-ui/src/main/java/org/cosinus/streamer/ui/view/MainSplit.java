@@ -16,7 +16,6 @@
 
 package org.cosinus.streamer.ui.view;
 
-import org.cosinus.swing.context.SwingApplicationContext;
 import org.cosinus.swing.form.Split;
 import org.cosinus.swing.form.menu.MenuItem;
 import org.cosinus.swing.form.menu.PopupMenu;
@@ -45,24 +44,6 @@ public class MainSplit extends Split implements ActionListener {
     public MainSplit() {
         super(MAIN_SPLITTER_NAME,
               DEFAULT_DIVIDER_LOCATION);
-    }
-
-    private void initPopupMenu() {
-        popupSplitter = new PopupMenu();
-        IntStream.range(2, 9)
-            .map(i -> i * 10)
-            .forEach(value -> popupSplitter.add(new MenuItem(this,
-                                                             "popup-splitter-" + value)));
-        divider.addMouseListener(new SimpleMouseListener() {
-            public void mouseClicked(MouseEvent e) {
-                if (e.getButton() == BUTTON3) {
-                    popupSplitter.show(divider,
-                                       e.getX(),
-                                       e.getY());
-                }
-            }
-        });
-        setFocusable(false);
     }
 
     @Override
@@ -95,13 +76,27 @@ public class MainSplit extends Split implements ActionListener {
 
     @Override
     public void initContent() {
-        initPopupMenu();
+        popupSplitter = new PopupMenu();
+        IntStream.range(2, 9)
+            .map(i -> i * 10)
+            .forEach(value -> popupSplitter.add(new MenuItem(this,
+                                                             "popup-splitter-" + value)));
+        divider.addMouseListener(new SimpleMouseListener() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getButton() == BUTTON3) {
+                    popupSplitter.show(divider,
+                                       e.getX(),
+                                       e.getY());
+                }
+            }
+        });
+        setFocusable(false);
     }
 
     @Override
     public void translate() {
         if (popupSplitter != null) {
-            popupSplitter.translate(translator);
+            popupSplitter.translate();
         }
     }
 }

@@ -23,8 +23,8 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-import java.util.Optional;
 
+import static java.util.Optional.ofNullable;
 import static org.cosinus.swing.border.Borders.borderEmpty;
 
 public class DetailHeaderCell extends JButton implements TableCellRenderer {
@@ -78,10 +78,10 @@ public class DetailHeaderCell extends JButton implements TableCellRenderer {
         Graphics2D g2d = (Graphics2D) g;
         Object oldRendering = g2d.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
+                             RenderingHints.VALUE_ANTIALIAS_ON);
         g.drawPolygon(xxx, yyy, 3);
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                oldRendering);
+                             oldRendering);
         g.fillPolygon(xxx, yyy, 3);
     }
 
@@ -100,10 +100,10 @@ public class DetailHeaderCell extends JButton implements TableCellRenderer {
             }
             customizeCellRenderer();
 
-            Optional.ofNullable(value)
-                    .map(Object::toString)
-                    .map("  "::concat)
-                    .ifPresent(this::setText);
+            ofNullable(value)
+                .map(Object::toString)
+                .map("  "::concat)
+                .ifPresent(this::setText);
         } catch (Exception ex) {
             LOG.error("Cannot render table header cell", ex);
         }

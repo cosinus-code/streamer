@@ -24,7 +24,6 @@ import org.cosinus.streamer.api.pack.PackerHandler;
 import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
 import org.cosinus.streamer.ui.action.progress.ProgressModel;
 import org.cosinus.swing.action.execute.ActionExecutor;
-import org.cosinus.swing.context.SwingInjector;
 import org.cosinus.swing.worker.SwingWorker;
 import org.springframework.stereotype.Component;
 
@@ -40,18 +39,14 @@ public class LoadElementWorkerExecutor<P extends ProgressModel> implements Actio
 
     private static final Logger LOG = LogManager.getLogger(LoadElementWorkerExecutor.class);
 
-    private final SwingInjector swingInjector;
-
     private final PackerHandler packerHandler;
 
     protected final ProgressListenerHandler<P> progressListenerHandler;
 
     private final Map<String, LoadStreamerWorker> workersMap;
 
-    public LoadElementWorkerExecutor(SwingInjector swingInjector,
-                                     PackerHandler packerHandler,
+    public LoadElementWorkerExecutor(PackerHandler packerHandler,
                                      ProgressListenerHandler<P> progressListenerHandler) {
-        this.swingInjector = swingInjector;
         this.packerHandler = packerHandler;
         this.progressListenerHandler = progressListenerHandler;
         this.workersMap = new ConcurrentHashMap<>();
@@ -78,9 +73,8 @@ public class LoadElementWorkerExecutor<P extends ProgressModel> implements Actio
 
         if (streamerToLoad.isDirectory()) {
             progressListenerHandler.register(loadActionModel.getView());
-            LoadStreamerWorker worker = swingInjector.inject(LoadStreamerWorker.class,
-                                                             streamerToLoad,
-                                                             loadActionModel);
+            LoadStreamerWorker worker = new LoadStreamerWorker(streamerToLoad,
+                                                               loadActionModel);
             workersMap.put(loadActionModel.getActionId(), worker);
             worker.execute();
             progressListenerHandler.startProgress();

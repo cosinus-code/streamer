@@ -21,7 +21,6 @@ import org.cosinus.streamer.ui.dialog.CopyProgressDialog;
 import org.cosinus.streamer.ui.dialog.ElementsProgressDialog;
 import org.cosinus.swing.action.execute.ActionModel;
 import org.cosinus.swing.boot.SwingApplicationFrame;
-import org.cosinus.swing.context.SwingApplicationContext;
 import org.springframework.stereotype.Component;
 
 /**
@@ -30,26 +29,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProgressFormHandler {
 
-    private final SwingApplicationContext swingContext;
-
     private final SwingApplicationFrame applicationFrame;
 
-    public ProgressFormHandler(SwingApplicationContext swingContext,
-                               SwingApplicationFrame applicationFrame) {
-        this.swingContext = swingContext;
+    public ProgressFormHandler(SwingApplicationFrame applicationFrame) {
         this.applicationFrame = applicationFrame;
     }
 
     public <S extends Streamer, T extends Streamer>
     CopyProgressDialog createCopyProgressDialog(ActionModel action) {
-        return new CopyProgressDialog(swingContext,
-                                      applicationFrame,
+        return new CopyProgressDialog(applicationFrame,
                                       action);
     }
 
     public ElementsProgressDialog createElementsProgressDialog(ActionModel action) {
-        return new ElementsProgressDialog(swingContext,
-                                          applicationFrame,
+        return new ElementsProgressDialog(applicationFrame,
                                           action);
     }
 }

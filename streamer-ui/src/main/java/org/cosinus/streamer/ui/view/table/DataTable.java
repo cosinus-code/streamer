@@ -71,6 +71,7 @@ public abstract class DataTable extends Table implements FocusListener {
     @Override
     public void initComponents() {
         this.model = createDataTableModel();
+        this.model.translate();
 
         setModel(model);
 

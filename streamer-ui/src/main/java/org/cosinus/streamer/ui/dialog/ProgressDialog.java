@@ -21,7 +21,6 @@ import org.cosinus.streamer.ui.action.progress.ProgressListener;
 import org.cosinus.streamer.ui.action.progress.ProgressModel;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.action.execute.ActionModel;
-import org.cosinus.swing.context.SwingApplicationContext;
 import org.cosinus.swing.context.SwingAutowired;
 import org.cosinus.swing.form.Dialog;
 import org.cosinus.swing.form.Frame;
@@ -38,7 +37,7 @@ import java.awt.event.WindowEvent;
  * Generic dialog for showing progress
  */
 public abstract class ProgressDialog<P extends ProgressModel>
-        extends Dialog<Void> implements ProgressListener<P> {
+    extends Dialog<Void> implements ProgressListener<P> {
 
     protected final ActionModel actionModel;
 
@@ -60,8 +59,8 @@ public abstract class ProgressDialog<P extends ProgressModel>
 
     protected final String actionName;
 
-    public ProgressDialog(SwingApplicationContext swingContext, Frame frame, ActionModel actionModel) {
-        super(swingContext, frame, frame.getTitle() + " " + actionModel.getActionName(), true);
+    public ProgressDialog(Frame frame, ActionModel actionModel) {
+        super(frame, frame.getTitle() + " " + actionModel.getActionName(), true);
         this.actionModel = actionModel;
         this.actionName = translator.translate(actionModel.getActionName());
     }
@@ -126,7 +125,7 @@ public abstract class ProgressDialog<P extends ProgressModel>
     @Override
     public void cancel() {
         actionExecutors.getActionExecutor(CopyActionModel.class)
-                .ifPresent(executor -> executor.cancel(actionModel.getActionId()));
+            .ifPresent(executor -> executor.cancel(actionModel.getActionId()));
         super.cancel();
     }
 

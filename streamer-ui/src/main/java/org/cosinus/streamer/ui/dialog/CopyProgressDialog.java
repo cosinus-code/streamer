@@ -19,7 +19,6 @@ package org.cosinus.streamer.ui.dialog;
 import org.cosinus.streamer.ui.action.progress.CopyProgressModel;
 import org.cosinus.streamer.ui.util.Formatter;
 import org.cosinus.swing.action.execute.ActionModel;
-import org.cosinus.swing.context.SwingApplicationContext;
 import org.cosinus.swing.form.Frame;
 
 import javax.swing.*;
@@ -40,10 +39,9 @@ public class CopyProgressDialog extends ProgressDialog<CopyProgressModel> {
     private final JLabel lblFrom = new JLabel();
     private final JLabel lblTo = new JLabel();
 
-    public CopyProgressDialog(SwingApplicationContext swingContext,
-                              Frame frame,
+    public CopyProgressDialog(Frame frame,
                               ActionModel actionModel) {
-        super(swingContext, frame, actionModel);
+        super(frame, actionModel);
         initComponents();
     }
 
@@ -93,12 +91,12 @@ public class CopyProgressDialog extends ProgressDialog<CopyProgressModel> {
 
     protected void updateActionStatus(final CopyProgressModel progress) {
         String actionStatus = progress.getTotalProgress() == 0 ?
-                translator.translate("action_preparing") :
-                progress.getSpeed() == 0 ?
-                        "" :
-                        translator.translate("form_copy_speed",
-                                             Formatter.formatMemorySize(progress.getSpeed()),
-                                             Formatter.formatTime(progress.getRemainingTime()));
+            translator.translate("action_preparing") :
+            progress.getSpeed() == 0 ?
+                "" :
+                translator.translate("form_copy_speed",
+                                     Formatter.formatMemorySize(progress.getSpeed()),
+                                     Formatter.formatTime(progress.getRemainingTime()));
         lblAction.setText(actionName + ":" + actionStatus);
     }
 

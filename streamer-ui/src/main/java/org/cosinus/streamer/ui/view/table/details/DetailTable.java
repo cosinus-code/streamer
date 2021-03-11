@@ -20,7 +20,6 @@ import org.cosinus.streamer.ui.preference.StreamerPreferences;
 import org.cosinus.streamer.ui.view.table.DataTable;
 import org.cosinus.streamer.ui.view.table.DataTableModel;
 import org.cosinus.swing.context.SwingAutowired;
-import org.cosinus.swing.context.SwingInjector;
 import org.cosinus.swing.form.menu.CheckBoxMenuItem;
 import org.cosinus.swing.form.menu.PopupMenu;
 import org.cosinus.swing.gtk.GTKColors;
@@ -60,9 +59,6 @@ public class DetailTable extends DataTable implements ActionListener {
 
     @SwingAutowired
     public Preferences preferences;
-
-    @SwingAutowired
-    public SwingInjector swingInjector;
 
     @SwingAutowired
     public Translator translator;
@@ -220,7 +216,7 @@ public class DetailTable extends DataTable implements ActionListener {
 
     @Override
     protected DataTableModel createDataTableModel() {
-        return swingInjector.inject(DetailTableModel.class);
+        return new DetailTableModel();
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -250,7 +246,7 @@ public class DetailTable extends DataTable implements ActionListener {
     public void translate() {
         super.translate();
         if (popupHeader != null) {
-            popupHeader.translate(translator);
+            popupHeader.translate();
         }
     }
 }

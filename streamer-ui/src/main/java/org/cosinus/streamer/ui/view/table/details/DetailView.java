@@ -19,19 +19,14 @@ package org.cosinus.streamer.ui.view.table.details;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.table.DataTable;
 import org.cosinus.streamer.ui.view.table.TableStreamerView;
-import org.cosinus.swing.context.SwingAutowired;
-import org.cosinus.swing.context.SwingInjector;
 
 public class DetailView extends TableStreamerView {
-
-    @SwingAutowired
-    public SwingInjector swingInjector;
 
     public DetailView(PanelLocation location) {
         super(location);
     }
 
     protected DataTable createDataTable() {
-        return swingInjector.inject(DetailTable.class);
+        return new DetailTable();
     }
 }
