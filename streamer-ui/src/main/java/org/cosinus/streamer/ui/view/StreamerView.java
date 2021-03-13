@@ -25,9 +25,9 @@ import org.cosinus.streamer.ui.action.execute.load.StreamedContent;
 import org.cosinus.streamer.ui.action.progress.ProgressListener;
 import org.cosinus.streamer.ui.action.progress.SimpleProgressModel;
 import org.cosinus.swing.action.ActionController;
-import org.cosinus.swing.context.SwingAutowired;
 import org.cosinus.swing.form.Panel;
 import org.cosinus.swing.store.ApplicationStorage;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import java.awt.*;
@@ -50,16 +50,16 @@ public abstract class StreamerView<T> extends Panel implements ProgressListener<
 
     protected Component loadingIndicator;
 
-    @SwingAutowired
+    @Autowired
     protected StreamerViewHandler streamerViewHandler;
 
-    @SwingAutowired
+    @Autowired
     protected StreamerHandler streamerHandler;
 
-    @SwingAutowired
+    @Autowired
     public ApplicationStorage applicationStorage;
 
-    @SwingAutowired
+    @Autowired
     public ActionController actionController;
 
     public StreamerView(PanelLocation location) {

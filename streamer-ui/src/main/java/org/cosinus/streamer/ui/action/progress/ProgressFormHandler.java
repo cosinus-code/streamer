@@ -20,20 +20,15 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.dialog.CopyProgressDialog;
 import org.cosinus.streamer.ui.dialog.ElementsProgressDialog;
 import org.cosinus.swing.action.execute.ActionModel;
-import org.cosinus.swing.boot.SwingApplicationFrame;
 import org.springframework.stereotype.Component;
+
+import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 
 /**
  * Handler for progress forms
  */
 @Component
 public class ProgressFormHandler {
-
-    private final SwingApplicationFrame applicationFrame;
-
-    public ProgressFormHandler(SwingApplicationFrame applicationFrame) {
-        this.applicationFrame = applicationFrame;
-    }
 
     public <S extends Streamer, T extends Streamer>
     CopyProgressDialog createCopyProgressDialog(ActionModel action) {

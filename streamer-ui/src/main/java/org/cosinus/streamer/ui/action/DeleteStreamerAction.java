@@ -23,7 +23,6 @@ import org.cosinus.streamer.ui.action.execute.delete.DeleteActionModel;
 import org.cosinus.streamer.ui.action.progress.DefaultProgressListener;
 import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
 import org.cosinus.swing.action.execute.ActionExecutors;
-import org.cosinus.swing.boot.SwingApplicationFrame;
 import org.cosinus.swing.context.SwingApplicationContext;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.translate.Translator;
@@ -34,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_F8;
+import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 import static org.cosinus.swing.dialog.OptionsDialog.YES_NO_CANCEL_OPTION;
 
 /**
@@ -50,8 +50,6 @@ public class DeleteStreamerAction extends StreamerAction<Streamer<?>> {
 
     private final Translator translator;
 
-    private final SwingApplicationFrame applicationFrame;
-
     private final ActionExecutors actionExecutors;
 
     private final ProgressListenerHandler progressListenerHandler;
@@ -61,14 +59,12 @@ public class DeleteStreamerAction extends StreamerAction<Streamer<?>> {
     public DeleteStreamerAction(SwingApplicationContext swingContext,
                                 DialogHandler dialogHandler,
                                 Translator translator,
-                                SwingApplicationFrame applicationFrame,
                                 ActionExecutors actionExecutors,
                                 ProgressListenerHandler progressListenerHandler,
                                 LoadStreamerAction loadStreamerAction) {
         this.swingContext = swingContext;
         this.dialogHandler = dialogHandler;
         this.translator = translator;
-        this.applicationFrame = applicationFrame;
         this.actionExecutors = actionExecutors;
         this.progressListenerHandler = progressListenerHandler;
         this.loadStreamerAction = loadStreamerAction;
@@ -120,9 +116,9 @@ public class DeleteStreamerAction extends StreamerAction<Streamer<?>> {
 
     private DeleteActionModel createDeleteActionModel(StreamerActionContext actionContext) {
         return new DeleteActionModel(getActionName())
-                .deleteElements(new ArrayList<>(actionContext.getCurrentView().getSelectedContent()))
-                //to avoid cast
-                .from((DirectoryStreamer) actionContext.getCurrentView().getLoadedStreamer());
+            .deleteElements(new ArrayList<>(actionContext.getCurrentView().getSelectedContent()))
+            //to avoid cast
+            .from((DirectoryStreamer) actionContext.getCurrentView().getLoadedStreamer());
     }
 
     public String getActionName() {

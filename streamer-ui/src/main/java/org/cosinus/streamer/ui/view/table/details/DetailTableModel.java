@@ -20,8 +20,8 @@ import org.cosinus.streamer.api.Element;
 import org.cosinus.streamer.ui.preference.StreamerPreferences;
 import org.cosinus.streamer.ui.view.table.DataTableModel;
 import org.cosinus.streamer.ui.view.table.ViewItem;
-import org.cosinus.swing.context.SwingAutowired;
 import org.cosinus.swing.translate.Translator;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -41,7 +41,7 @@ public class DetailTableModel extends DataTableModel {
     //TODO: to see if this is still needed
     private final Map<String, Long> mapComputedSize;
 
-    @SwingAutowired
+    @Autowired
     public Translator translator;
 
     public DetailTableModel() {

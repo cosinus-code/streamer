@@ -23,11 +23,11 @@ import org.cosinus.streamer.ui.action.progress.ProgressModel;
 import org.cosinus.streamer.ui.error.ActionCancelledException;
 import org.cosinus.streamer.ui.error.ActionException;
 import org.cosinus.streamer.ui.error.SkipActionException;
-import org.cosinus.swing.context.SwingAutowired;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.dialog.DialogOption;
 import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.worker.SwingWorker;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
 import java.util.List;
@@ -41,13 +41,13 @@ public abstract class SwingProgressWorker<P extends ProgressModel> extends Swing
 
     private static final Logger LOG = LogManager.getLogger(SwingProgressWorker.class);
 
-    @SwingAutowired
+    @Autowired
     protected ProgressListenerHandler<P> progressListenerHandler;
 
-    @SwingAutowired
+    @Autowired
     protected DialogHandler dialogHandler;
 
-    @SwingAutowired
+    @Autowired
     protected ErrorHandler errorHandler;
 
     protected final Window parentWindow;

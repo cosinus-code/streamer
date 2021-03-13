@@ -26,10 +26,11 @@ import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
 import org.cosinus.streamer.ui.dialog.CopyConfirmationDialog;
 import org.cosinus.streamer.ui.preference.StreamerPreferences;
 import org.cosinus.swing.action.execute.ActionExecutors;
-import org.cosinus.swing.boot.SwingApplicationFrame;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.translate.Translator;
+
+import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 
 /**
  * Abstract stub of an copy action
@@ -39,8 +40,6 @@ public abstract class AbstractCopyAction<A> extends StreamerAction<A> {
     protected final Preferences preferences;
 
     protected final Translator translator;
-
-    protected final SwingApplicationFrame applicationFrame;
 
     protected final DialogHandler dialogHandler;
 
@@ -52,14 +51,12 @@ public abstract class AbstractCopyAction<A> extends StreamerAction<A> {
 
     protected AbstractCopyAction(Preferences preferences,
                                  Translator translator,
-                                 SwingApplicationFrame applicationFrame,
                                  DialogHandler dialogHandler,
                                  ActionExecutors actionExecutors,
                                  ProgressListenerHandler progressListenerHandler,
                                  LoadStreamerAction loadStreamerAction) {
         this.preferences = preferences;
         this.translator = translator;
-        this.applicationFrame = applicationFrame;
         this.dialogHandler = dialogHandler;
         this.actionExecutors = actionExecutors;
         this.progressListenerHandler = progressListenerHandler;

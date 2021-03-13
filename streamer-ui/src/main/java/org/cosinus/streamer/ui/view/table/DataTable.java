@@ -22,9 +22,9 @@ import org.cosinus.streamer.ui.action.LoadStreamerAction;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.ActionController;
-import org.cosinus.swing.context.SwingAutowired;
 import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.form.Table;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
 import java.awt.event.FocusEvent;
@@ -48,13 +48,13 @@ public abstract class DataTable extends Table implements FocusListener {
 
     public static final int FIND_ELEMENT_SPEED = 500;
 
-    @SwingAutowired
+    @Autowired
     private StreamerViewHandler streamerViewHandler;
 
-    @SwingAutowired
+    @Autowired
     public ErrorHandler errorHandler;
 
-    @SwingAutowired
+    @Autowired
     public ActionController actionController;
 
     protected StreamerView<Streamer> view;

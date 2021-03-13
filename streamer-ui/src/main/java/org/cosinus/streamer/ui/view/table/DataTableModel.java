@@ -19,11 +19,11 @@ package org.cosinus.streamer.ui.view.table;
 import org.cosinus.streamer.api.DirectoryStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.load.StreamedContent;
-import org.cosinus.swing.context.SwingAutowired;
 import org.cosinus.swing.form.TableModel;
 import org.cosinus.swing.preference.Preferences;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,7 +49,7 @@ public abstract class DataTableModel extends TableModel {
 
     private int currentIndex = -1;
 
-    @SwingAutowired
+    @Autowired
     public Preferences preferences;
 
     public DataTableModel() {

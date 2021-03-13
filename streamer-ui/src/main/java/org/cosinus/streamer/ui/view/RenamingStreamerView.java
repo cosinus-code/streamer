@@ -18,10 +18,10 @@ package org.cosinus.streamer.ui.view;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.error.LoadElementException;
-import org.cosinus.swing.context.SwingAutowired;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.translate.Translator;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
@@ -39,13 +39,13 @@ public abstract class RenamingStreamerView extends StreamerView<Streamer> {
 
     private Streamer streamerToBeRenamed;
 
-    @SwingAutowired
+    @Autowired
     public Translator translator;
 
-    @SwingAutowired
+    @Autowired
     public DialogHandler dialogHandler;
 
-    @SwingAutowired
+    @Autowired
     public ErrorHandler errorHandler;
 
     public RenamingStreamerView(PanelLocation location) {

@@ -19,7 +19,6 @@ package org.cosinus.streamer.ui.view.table.details;
 import org.cosinus.streamer.ui.preference.StreamerPreferences;
 import org.cosinus.streamer.ui.view.table.DataTable;
 import org.cosinus.streamer.ui.view.table.DataTableModel;
-import org.cosinus.swing.context.SwingAutowired;
 import org.cosinus.swing.form.menu.CheckBoxMenuItem;
 import org.cosinus.swing.form.menu.PopupMenu;
 import org.cosinus.swing.gtk.GTKColors;
@@ -27,6 +26,7 @@ import org.cosinus.swing.image.icon.IconHandler;
 import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.translate.Translator;
 import org.cosinus.swing.ui.ApplicationUIHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import javax.swing.table.JTableHeader;
@@ -51,16 +51,16 @@ public class DetailTable extends DataTable implements ActionListener {
         OPTION_COLUMN_TIME
     };
 
-    @SwingAutowired
+    @Autowired
     public ApplicationUIHandler uiHandler;
 
-    @SwingAutowired
+    @Autowired
     public IconHandler iconHandler;
 
-    @SwingAutowired
+    @Autowired
     public Preferences preferences;
 
-    @SwingAutowired
+    @Autowired
     public Translator translator;
 
     protected int indexOfElementAtMousePosition = -1;

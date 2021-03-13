@@ -52,7 +52,6 @@ public class PackStreamerAction<A> extends AbstractCopyAction<A> {
 
     public PackStreamerAction(Preferences preferences,
                               Translator translator,
-                              SwingApplicationFrame applicationFrame,
                               DialogHandler dialogHandler,
                               ActionExecutors actionExecutors,
                               ProgressListenerHandler progressListenerHandler,
@@ -61,7 +60,6 @@ public class PackStreamerAction<A> extends AbstractCopyAction<A> {
                               PackerHandler packerHandler) {
         super(preferences,
               translator,
-              applicationFrame,
               dialogHandler,
               actionExecutors,
               progressListenerHandler,

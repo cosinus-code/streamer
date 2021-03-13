@@ -21,10 +21,10 @@ import org.cosinus.streamer.ui.action.progress.ProgressListener;
 import org.cosinus.streamer.ui.action.progress.ProgressModel;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.action.execute.ActionModel;
-import org.cosinus.swing.context.SwingAutowired;
 import org.cosinus.swing.form.Dialog;
 import org.cosinus.swing.form.Frame;
 import org.cosinus.swing.translate.Translator;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,10 +51,10 @@ public abstract class ProgressDialog<P extends ProgressModel>
 
     protected boolean background;
 
-    @SwingAutowired
+    @Autowired
     protected ActionExecutors actionExecutors;
 
-    @SwingAutowired
+    @Autowired
     protected Translator translator;
 
     protected final String actionName;

@@ -19,11 +19,11 @@ package org.cosinus.streamer.ui.dialog;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.execute.copy.TransferType;
 import org.cosinus.swing.context.ApplicationProperties;
-import org.cosinus.swing.context.SwingAutowired;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.form.Dialog;
 import org.cosinus.swing.form.Frame;
 import org.cosinus.swing.translate.Translator;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,13 +35,13 @@ import java.util.Optional;
  */
 public class CopyConfirmationDialog extends Dialog<CopyActionModel> {
 
-    @SwingAutowired
+    @Autowired
     private Translator translator;
 
-    @SwingAutowired
+    @Autowired
     private DialogHandler dialogHandler;
 
-    @SwingAutowired
+    @Autowired
     private ApplicationProperties applicationProperties;
 
     private JTextField txtCopyTo;

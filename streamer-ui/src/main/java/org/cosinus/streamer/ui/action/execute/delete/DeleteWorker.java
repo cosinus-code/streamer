@@ -20,8 +20,8 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.SwingProgressWorker;
 import org.cosinus.streamer.ui.action.progress.ElementsProgressModel;
 import org.cosinus.streamer.ui.error.ActionCancelledException;
-import org.cosinus.swing.context.SwingAutowired;
 import org.cosinus.swing.translate.Translator;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
 import java.util.stream.Stream;
@@ -31,7 +31,7 @@ import java.util.stream.Stream;
  */
 public class DeleteWorker extends SwingProgressWorker<ElementsProgressModel> {
 
-    @SwingAutowired
+    @Autowired
     private Translator translator;
 
     private final DeleteActionModel deleteModel;

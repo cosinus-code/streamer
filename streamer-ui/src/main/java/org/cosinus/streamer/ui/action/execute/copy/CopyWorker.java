@@ -30,8 +30,8 @@ import org.cosinus.streamer.ui.error.ActionCancelledException;
 import org.cosinus.streamer.ui.error.ActionException;
 import org.cosinus.streamer.ui.error.SkipActionException;
 import org.cosinus.streamer.ui.util.Formatter;
-import org.cosinus.swing.context.SwingAutowired;
 import org.cosinus.swing.translate.Translator;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
 import java.io.IOException;
@@ -52,7 +52,7 @@ public class CopyWorker<S extends DirectoryStreamer, T extends DirectoryStreamer
 
     private static final Logger LOG = LogManager.getLogger(CopyWorker.class);
 
-    @SwingAutowired
+    @Autowired
     private Translator translator;
 
     private final CopyActionModel<S, T> copyModel;

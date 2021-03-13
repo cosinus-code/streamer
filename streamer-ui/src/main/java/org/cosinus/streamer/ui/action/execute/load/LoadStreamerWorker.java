@@ -23,9 +23,9 @@ import org.cosinus.streamer.api.pack.PackStreamer;
 import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
 import org.cosinus.streamer.ui.action.progress.SimpleProgressModel;
 import org.cosinus.streamer.ui.view.StreamerView;
-import org.cosinus.swing.context.SwingAutowired;
 import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.worker.SwingWorker;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,10 +40,10 @@ public class LoadStreamerWorker<T> extends SwingWorker<StreamedContent<T>, T> {
 
     private static final Logger LOG = LogManager.getLogger(LoadStreamerWorker.class);
 
-    @SwingAutowired
+    @Autowired
     private ErrorHandler errorHandler;
 
-    @SwingAutowired
+    @Autowired
     private ProgressListenerHandler<SimpleProgressModel> progressListenerHandler;
 
     private final Streamer<T> streamerToLoad;

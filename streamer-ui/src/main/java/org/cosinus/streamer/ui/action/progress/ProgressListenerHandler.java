@@ -36,17 +36,17 @@ public class ProgressListenerHandler<P extends ProgressModel> {
 
     public void startProgress() {
         progressListeners
-                .forEach(ProgressListener::startProgress);
+            .forEach(ProgressListener::startProgress);
     }
 
     public void setProgress(P progress) {
         progressListeners
-                .forEach(listener -> listener.setProgress(progress));
+            .forEach(listener -> listener.setProgress(progress));
     }
 
     public void finishProgress() {
         progressListeners
-                .forEach(ProgressListener::finishProgress);
+            .forEach(ProgressListener::finishProgress);
         progressListeners.clear();
     }
 }

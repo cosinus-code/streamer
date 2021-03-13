@@ -22,7 +22,6 @@ import org.cosinus.streamer.ui.action.context.StreamerActionContext;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
 import org.cosinus.swing.action.execute.ActionExecutors;
-import org.cosinus.swing.boot.SwingApplicationFrame;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.translate.Translator;
@@ -44,14 +43,12 @@ public class CopyStreamerAction<A> extends AbstractCopyAction<A> {
 
     public CopyStreamerAction(Preferences preferences,
                               Translator translator,
-                              SwingApplicationFrame applicationFrame,
                               DialogHandler dialogHandler,
                               ActionExecutors actionExecutors,
                               ProgressListenerHandler progressListenerHandler,
                               LoadStreamerAction loadStreamerAction) {
         super(preferences,
               translator,
-              applicationFrame,
               dialogHandler,
               actionExecutors,
               progressListenerHandler,
@@ -74,8 +71,8 @@ public class CopyStreamerAction<A> extends AbstractCopyAction<A> {
     protected <S extends DirectoryStreamer, T extends DirectoryStreamer>
     CopyActionModel<S, T> copySpecifications(StreamerActionContext actionContext) {
         return copy(actionContext.getCurrentView().getSelectedContent())
-                .from(actionContext.getCurrentView().getLoadedStreamer())
-                .to(actionContext.getOppositeView().getLoadedStreamer());
+            .from(actionContext.getCurrentView().getLoadedStreamer())
+            .to(actionContext.getOppositeView().getLoadedStreamer());
     }
 
     @Override

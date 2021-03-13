@@ -18,7 +18,6 @@ package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.context.StreamerActionContext;
-import org.cosinus.swing.boot.SwingApplicationFrame;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.stereotype.Component;
@@ -27,6 +26,7 @@ import javax.swing.*;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_F7;
+import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 import static org.cosinus.swing.dialog.OptionsDialog.PLAIN_MESSAGE;
 
 /**
@@ -41,14 +41,10 @@ public class NewStreamerAction extends StreamerAction<Streamer<?>> {
 
     private final Translator translator;
 
-    private final SwingApplicationFrame applicationFrame;
-
     public NewStreamerAction(DialogHandler dialogHandler,
-                             Translator translator,
-                             SwingApplicationFrame applicationFrame) {
+                             Translator translator) {
         this.dialogHandler = dialogHandler;
         this.translator = translator;
-        this.applicationFrame = applicationFrame;
     }
 
     @Override
@@ -62,10 +58,10 @@ public class NewStreamerAction extends StreamerAction<Streamer<?>> {
                                       translator.translate("act-new-enter-name"),
                                       translator.translate("act-new-new-element"),
                                       PLAIN_MESSAGE)
-                .map(newName -> currentFolder.getPath().resolve(newName))
-                .map(newPath -> currentFolder.getParent().createDirectoryStreamer(newPath))
-                .map(Streamer::save)
-                .ifPresent(createdElement -> context.getCurrentView().reload());
+            .map(newName -> currentFolder.getPath().resolve(newName))
+            .map(newPath -> currentFolder.getParent().createDirectoryStreamer(newPath))
+            .map(Streamer::save)
+            .ifPresent(createdElement -> context.getCurrentView().reload());
     }
 
     @Override
