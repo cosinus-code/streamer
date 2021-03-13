@@ -18,7 +18,6 @@ package org.cosinus.streamer.api.meta;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.pack.PackerHandler;
-import org.cosinus.swing.context.SpringSwingComponent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +25,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-@SpringSwingComponent
+@Component
 public class StreamerHandler {
 
     public static final String PACKER_SEPARATOR = "#";
@@ -45,18 +44,18 @@ public class StreamerHandler {
         this.packerHandler = packerHandler;
 
         this.defaultStreamer = mainStreamers
-                .stream()
-                .filter(streamer -> streamer.getName().equals(defaultStreamerName))
-                .findFirst()
-                .map(Streamer.class::cast)
-                .orElse(metaStreamer);
+            .stream()
+            .filter(streamer -> streamer.getName().equals(defaultStreamerName))
+            .findFirst()
+            .map(Streamer.class::cast)
+            .orElse(metaStreamer);
     }
 
     private void setStreamerName(MainStreamer streamer) {
         RootStreamer rootStreamer = streamer.getClass().getAnnotation(RootStreamer.class);
         streamer.setName(Optional.of(rootStreamer.name())
-                .filter(name -> !name.isEmpty())
-                .orElseGet(rootStreamer::value));
+                             .filter(name -> !name.isEmpty())
+                             .orElseGet(rootStreamer::value));
     }
 
     public Streamer getDefaultStreamer() {
@@ -68,30 +67,30 @@ public class StreamerHandler {
 
         if (paths.length < 2) {
             return metaStreamer.findByUrlPath(urlPath)
-                    .or(() -> findStreamer(urlPath));
+                .or(() -> findStreamer(urlPath));
         }
 
         String packerUrl = paths[0];
         String packPath = paths[1];
         return metaStreamer.findByUrlPath(packerUrl)
-                .or(() -> findStreamer(packerUrl))
-                .flatMap(packerStreamer -> findPackedStreamer(packerStreamer, packPath));
+            .or(() -> findStreamer(packerUrl))
+            .flatMap(packerStreamer -> findPackedStreamer(packerStreamer, packPath));
     }
 
     private Optional<Streamer> findStreamer(String urlPath) {
         return metaStreamer.stream()
-                .filter(streamer -> streamer.isCompatible(urlPath))
-                .findFirst()
-                .flatMap(streamer -> streamer.findByUrlPath(urlPath));
+            .filter(streamer -> streamer.isCompatible(urlPath))
+            .findFirst()
+            .flatMap(streamer -> streamer.findByUrlPath(urlPath));
     }
 
     private Optional<Streamer> findPackedStreamer(Streamer packerStreamer, String packPath) {
         return packerHandler.getPackers()
-                .values()
-                .stream()
-                //TODO: to avoid cast
-                .map(packer -> (Streamer) packer.findPackedStreamer(packerStreamer, packPath).orElse(null))
-                .filter(Objects::nonNull)
-                .findFirst();
+            .values()
+            .stream()
+            //TODO: to avoid cast
+            .map(packer -> (Streamer) packer.findPackedStreamer(packerStreamer, packPath).orElse(null))
+            .filter(Objects::nonNull)
+            .findFirst();
     }
 }

@@ -23,7 +23,6 @@ import org.cosinus.streamer.ui.action.execute.delete.DeleteActionModel;
 import org.cosinus.streamer.ui.action.progress.DefaultProgressListener;
 import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
 import org.cosinus.swing.action.execute.ActionExecutors;
-import org.cosinus.swing.context.SwingApplicationContext;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.stereotype.Component;
@@ -44,8 +43,6 @@ public class DeleteStreamerAction extends StreamerAction<Streamer<?>> {
 
     public static final String DELETE_ELEMENT_ACTION_ID = "delete-element";
 
-    public final SwingApplicationContext swingContext;
-
     private final DialogHandler dialogHandler;
 
     private final Translator translator;
@@ -56,13 +53,11 @@ public class DeleteStreamerAction extends StreamerAction<Streamer<?>> {
 
     private final LoadStreamerAction loadStreamerAction;
 
-    public DeleteStreamerAction(SwingApplicationContext swingContext,
-                                DialogHandler dialogHandler,
+    public DeleteStreamerAction(DialogHandler dialogHandler,
                                 Translator translator,
                                 ActionExecutors actionExecutors,
                                 ProgressListenerHandler progressListenerHandler,
                                 LoadStreamerAction loadStreamerAction) {
-        this.swingContext = swingContext;
         this.dialogHandler = dialogHandler;
         this.translator = translator;
         this.actionExecutors = actionExecutors;

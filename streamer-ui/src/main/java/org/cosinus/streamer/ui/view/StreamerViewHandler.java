@@ -18,7 +18,7 @@ package org.cosinus.streamer.ui.view;
 
 import org.cosinus.streamer.api.meta.StreamerHandler;
 import org.cosinus.streamer.ui.view.table.details.DetailView;
-import org.cosinus.swing.context.SpringSwingComponent;
+import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,7 +30,7 @@ import static org.cosinus.streamer.ui.view.PanelLocation.LEFT;
 /**
  * Handler for data views
  */
-@SpringSwingComponent
+@Component
 public class StreamerViewHandler {
 
     private PanelLocation currentLocation = LEFT;

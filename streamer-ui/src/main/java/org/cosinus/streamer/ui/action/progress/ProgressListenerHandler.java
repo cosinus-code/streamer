@@ -16,7 +16,7 @@
 
 package org.cosinus.streamer.ui.action.progress;
 
-import org.cosinus.swing.context.SpringSwingComponent;
+import org.springframework.stereotype.Component;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * Handler for progress listeners
  */
-@SpringSwingComponent
+@Component
 public class ProgressListenerHandler<P extends ProgressModel> {
 
     //TODO: to groups listeners by action id
