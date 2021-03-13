@@ -95,9 +95,8 @@ public abstract class TableStreamerView extends RenamingStreamerView {
     }
 
     @Override
-    public void initContent() {
-        super.initContent();
-        table.initContent();
+    public void loadContent() {
+        super.loadContent();
         validateInContainer(table);
     }
 

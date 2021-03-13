@@ -85,8 +85,7 @@ public abstract class StreamerView<T> extends Panel implements ProgressListener<
         return loading;
     }
 
-    @Override
-    public void initContent() {
+    public void loadContent() {
         this.loadingIndicator = createLoadingIndicator();
         add(panContent, CENTER);
         add(loadingIndicator, SOUTH);

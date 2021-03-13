@@ -59,23 +59,17 @@ public class MainSplit extends Split implements ActionListener {
         }
     }
 
-    public void updateForm() {
+    @Override
+    public void initComponent() {
+        super.initComponent();
+
         setBorder(null);
         if (divider != null) {
             divider.setBorder(BorderFactory.createMatteBorder(10, 2, 10, 1,
                                                               divider.getBackground()));
         }
         setDividerSize(3);
-    }
 
-    @Override
-    public void initComponent() {
-        super.initComponent();
-        updateForm();
-    }
-
-    @Override
-    public void initContent() {
         popupSplitter = new PopupMenu();
         IntStream.range(2, 9)
             .map(i -> i * 10)

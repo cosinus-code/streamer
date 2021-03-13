@@ -87,6 +87,7 @@ public class DetailTable extends DataTable implements ActionListener {
                 }
             }
         });
+        setHeaderPopup();
     }
 
     private void setHeader() {
@@ -235,11 +236,6 @@ public class DetailTable extends DataTable implements ActionListener {
 
     public PopupMenu getPopupHeader() {
         return popupHeader;
-    }
-
-    @Override
-    public void initContent() {
-        setHeaderPopup();
     }
 
     @Override

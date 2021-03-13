@@ -37,7 +37,7 @@ public class StreamerPanel extends Panel {
     }
 
     public void initContent() {
-        view.initContent();
+        view.loadContent();
         view.initDataContent();
     }
 

@@ -128,17 +128,11 @@ public class DetailTableModel extends DataTableModel {
 
     @Override
     public void initComponents() {
-
     }
 
     @Override
     public void translate() {
         stream(DetailColumn.values())
             .forEach(column -> columnNames[column.ordinal()] = translator.translate(column.key()));
-    }
-
-    @Override
-    public void initContent() {
-
     }
 }
