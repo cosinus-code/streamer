@@ -17,8 +17,8 @@
 package org.cosinus.streamer.ui.view;
 
 import org.cosinus.swing.form.Split;
-import org.cosinus.swing.form.menu.MenuItem;
-import org.cosinus.swing.form.menu.PopupMenu;
+import org.cosinus.swing.menu.MenuItem;
+import org.cosinus.swing.menu.PopupMenu;
 import org.cosinus.swing.listener.SimpleMouseListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
