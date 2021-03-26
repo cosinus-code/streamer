@@ -43,7 +43,6 @@ public class ElementsProgressDialog<E extends Element> extends ProgressDialog<El
     public ElementsProgressDialog(Frame frame,
                                   ActionModel actionModel) {
         super(frame, actionModel);
-        initComponents();
     }
 
     @Override

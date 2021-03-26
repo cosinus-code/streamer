@@ -186,7 +186,7 @@ public class DetailTable extends DataTable implements ActionListener {
     public void updateForm() {
         super.updateForm();
 
-        setRowHeight(preferences.getIntPreference(StreamerPreferences.OPTION_ROW_HEIGHT)
+        setRowHeight(preferences.findIntPreference(StreamerPreferences.OPTION_ROW_HEIGHT)
                          .orElse(20));
 
         if (uiHandler.isLookAndFeelGTK()) {

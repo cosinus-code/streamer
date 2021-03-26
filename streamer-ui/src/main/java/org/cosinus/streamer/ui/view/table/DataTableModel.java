@@ -158,7 +158,7 @@ public abstract class DataTableModel extends TableModel {
     }
 
     public boolean isTopVisible() {
-        return preferences.getBooleanPreference(OPTION_TOP_VISIBLE)
+        return preferences.findBooleanPreference(OPTION_TOP_VISIBLE)
             .orElse(true);
     }
 

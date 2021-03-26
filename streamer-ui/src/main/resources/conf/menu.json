@@ -2,6 +2,9 @@
     "menu-element": {
         "menu-element-open": "control O"
     },
+    "menu-edit": {
+        "menu-edit-preferences": "control P"
+    },
     "menu-view": {
         "menu-view-refresh": "control R",
         "separator1": "",

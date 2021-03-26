@@ -72,7 +72,7 @@ public class DetailCell extends DefaultTableCellRenderer {
 
         DetailTable detailTable = (DetailTable) table;
         if (detailTable.isIndexSelected(row)) {
-            preferences.getColorPreference(StreamerPreferences.OPTION_SELECT_FOREGROUND)
+            preferences.findColorPreference(StreamerPreferences.OPTION_SELECT_FOREGROUND)
                     .ifPresent(this::setForeground);
         }
 

@@ -31,7 +31,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-import static org.cosinus.swing.border.Borders.insetsEmpty;
+import static org.cosinus.swing.border.Borders.emptyInsets;
 
 public abstract class RenamingStreamerView extends StreamerView<Streamer> {
 
@@ -56,7 +56,7 @@ public abstract class RenamingStreamerView extends StreamerView<Streamer> {
     public void updateForm() {
         super.updateForm();
         if (txtRename != null) {
-            txtRename.setMargin(insetsEmpty());
+            txtRename.setMargin(emptyInsets());
         }
     }
 

@@ -25,7 +25,7 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
 import static java.util.Optional.ofNullable;
-import static org.cosinus.swing.border.Borders.borderEmpty;
+import static org.cosinus.swing.border.Borders.emptyBorder;
 
 public class DetailHeaderCell extends JButton implements TableCellRenderer {
 
@@ -112,6 +112,6 @@ public class DetailHeaderCell extends JButton implements TableCellRenderer {
     }
 
     protected void customizeCellRenderer() {
-        setBorder(borderEmpty(3));
+        setBorder(emptyBorder(3));
     }
 }

@@ -16,12 +16,12 @@
 
 package org.cosinus.streamer.ui.view;
 
+import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.form.Split;
+import org.cosinus.swing.listener.SimpleMouseListener;
 import org.cosinus.swing.menu.MenuItem;
 import org.cosinus.swing.menu.PopupMenu;
-import org.cosinus.swing.listener.SimpleMouseListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -33,13 +33,14 @@ import static java.awt.event.MouseEvent.BUTTON3;
 
 public class MainSplit extends Split implements ActionListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MainSplit.class);
-
     private static final String MAIN_SPLITTER_NAME = "main-splitter";
 
     private static final int DEFAULT_DIVIDER_LOCATION = 391;
 
-    private PopupMenu popupSplitter;
+    @Autowired
+    private ErrorHandler errorHandler;
+
+    private PopupMenu splitterPositionMenu;
 
     public MainSplit() {
         super(MAIN_SPLITTER_NAME,
@@ -55,7 +56,7 @@ public class MainSplit extends Split implements ActionListener {
                 moveSplitter(Integer.parseInt(pieces[pieces.length - 1]));
             }
         } catch (Exception ex) {
-            LOG.error("Cannot move splitter", ex);
+            errorHandler.handleError(ex);
         }
     }
 
@@ -67,30 +68,30 @@ public class MainSplit extends Split implements ActionListener {
         if (divider != null) {
             divider.setBorder(BorderFactory.createMatteBorder(10, 2, 10, 1,
                                                               divider.getBackground()));
+            divider.addMouseListener(new SimpleMouseListener() {
+                public void mouseClicked(MouseEvent e) {
+                    if (e.getButton() == BUTTON3) {
+                        splitterPositionMenu.show(divider,
+                                                  e.getX(),
+                                                  e.getY());
+                    }
+                }
+            });
         }
         setDividerSize(3);
 
-        popupSplitter = new PopupMenu();
+        splitterPositionMenu = new PopupMenu();
         IntStream.range(2, 9)
             .map(i -> i * 10)
-            .forEach(value -> popupSplitter.add(new MenuItem(this,
-                                                             "popup-splitter-" + value)));
-        divider.addMouseListener(new SimpleMouseListener() {
-            public void mouseClicked(MouseEvent e) {
-                if (e.getButton() == BUTTON3) {
-                    popupSplitter.show(divider,
-                                       e.getX(),
-                                       e.getY());
-                }
-            }
-        });
+            .forEach(value -> splitterPositionMenu.add(new MenuItem(this,
+                                                                    "popup-splitter-" + value)));
         setFocusable(false);
     }
 
     @Override
     public void translate() {
-        if (popupSplitter != null) {
-            popupSplitter.translate();
+        if (splitterPositionMenu != null) {
+            splitterPositionMenu.translate();
         }
     }
 }

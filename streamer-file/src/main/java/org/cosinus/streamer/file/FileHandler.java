@@ -16,6 +16,8 @@
 
 package org.cosinus.streamer.file;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
@@ -30,6 +32,8 @@ import java.util.stream.Stream;
  */
 @Component
 public class FileHandler {
+
+    private static final Logger LOG = LogManager.getLogger(FileHandler.class);
 
     public Stream<Path> walk(Path path) {
         try {
@@ -51,7 +55,8 @@ public class FileHandler {
         try {
             return Files.isSameFile(path1, path2);
         } catch (IOException ex) {
-            throw new UncheckedIOException(ex);
+            LOG.error("Failed to compare files: " + path1 + " and " + path2, ex);
+            return false;
         }
     }
 

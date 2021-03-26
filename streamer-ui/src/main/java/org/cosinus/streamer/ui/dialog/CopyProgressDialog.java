@@ -42,7 +42,6 @@ public class CopyProgressDialog extends ProgressDialog<CopyProgressModel> {
     public CopyProgressDialog(Frame frame,
                               ActionModel actionModel) {
         super(frame, actionModel);
-        initComponents();
     }
 
     @Override

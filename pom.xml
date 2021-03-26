@@ -26,6 +26,7 @@
         <java.version>11</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
+
         <spring-swing.version>1.0-SNAPSHOT</spring-swing.version>
         <commons-net.version>3.6</commons-net.version>
         <commons-pool.version>2.5.0</commons-pool.version>

@@ -1,71 +1,173 @@
 {
-  "downloaddir": "",
-  "editapp": "",
-  "preview": true,
-  "tabsize": 4,
-  "check_update": true,
-  "fstab": false,
-  "verifyzip": true,
-  "opt_language": "lang_en_US",
-  "opt_lookandfeel": "",
-  "opt_background_color": "255,51,51",
-  "opt_icon_size": "",
-  "lastcontent": true,
-  "toolbarfile": true,
-  "keep_devider_width": false,
-  "rightviewtype": "full",
-  "column-time": true,
-  "foreground": "0,0,0",
-  "run_background": false,
-  "topvisible": true,
-  "double_click_tree": false,
-  "status": false,
-  "icon_size": "icon_size_large",
-  "windowdecoration": false,
-  "allow_internal_open": true,
-  "leftviewtype": "full",
-  "toolbarsystems": false,
-  "text_toolbar_icons": false,
-  "iconpath": "",
-  "console": true,
-  "addressbar": false,
-  "big_toolbar_icons": false,
-  "currentforeground": "255,255,255",
-  "language": "lang_english",
-  "selbackground": "255,255,255",
-  "packetsize": "1024",
-  "icontab": false,
-  "currentbackground": "208,54,21",
-  "double_click": true,
-  "lookandfeel": "",
-  "open_new_tab": false,
-  "fitimage": true,
-  "foreground_odd": "0,0,0",
-  "preview_limit": "1024",
-  "column-value": false,
-  "full_type_descr": false,
-  "addresstop": true,
-  "command": false,
-  "column-size": true,
-  "systemcolors": false,
-  "profile": "default",
-  "rootcombo": true,
-  "show-line-numbers": true,
-  "systemicons": false,
-  "show-tree-files": true,
-  "buttons": false,
-  "checktype": 2,
-  "always_show_tab": false,
-  "view_font": "DialogInput,1,11",
-  "show_svg_icons": false,
-  "ask_delete_folders": true,
-  "show_sidebar": true,
-  "shortsize": true,
-  "edit_font": "DialogInput,0,11",
-  "hidden": false,
-  "background": "255,255,255",
-  "selforeground": "255,0,0",
-  "background_odd": "255,255,255",
-  "column-type": false,
-  "bound": false
+  "appearance": {
+    "look-and-feel": {
+      "type": "laf",
+      "value": ""
+    },
+    "language": {
+      "type": "language",
+      "value": "en"
+    },
+    "background": {
+      "type": "color",
+      "value": "255,255,255"
+    },
+    "foreground": {
+      "type": "color",
+      "value": "0,0,0"
+    },
+    "background-selection": {
+      "type": "color",
+      "value": "255,255,255"
+    },
+    "foreground-selection": {
+      "type": "color",
+      "value": "255,0,0"
+    },
+    "foreground-odd": {
+      "type": "color",
+      "value": "0,0,0"
+    },
+    "background-odd": {
+      "type": "color",
+      "value": "255,255,255"
+    },
+    "system-colors": {
+      "type": "boolean",
+      "value": false
+    }
+  },
+  "view": {
+    "icon-size": {
+      "type": "text",
+      "value": "large",
+      "values": [
+        "small",
+        "normal",
+        "large"
+      ]
+    },
+    "left-view": {
+      "type": "text",
+      "value": "details",
+      "values": [
+        "icon",
+        "list",
+        "details",
+        "tree"
+      ]
+    },
+    "right-view": {
+      "type": "text",
+      "value": "details",
+      "values": [
+        "icon",
+        "list",
+        "details",
+        "tree"
+      ]
+    },
+    "view-font": {
+      "type": "font",
+      "value": "DialogInput,Bold,11"
+    },
+    "preview": {
+      "type": "boolean",
+      "value": true
+    },
+    "keep-divider": {
+      "type": "boolean",
+      "value": false
+    },
+    "top-visible": {
+      "type": "boolean",
+      "value": true
+    },
+    "show-status": {
+      "type": "boolean",
+      "value": false
+    },
+    "address-bar": {
+      "type": "boolean",
+      "value": false
+    },
+    "fit-image": {
+      "type": "boolean",
+      "value": true
+    },
+    "show-full-type": {
+      "type": "boolean",
+      "value": false
+    },
+    "address-top": {
+      "type": "boolean",
+      "value": true
+    },
+    "show-value-column": {
+      "type": "boolean",
+      "value": false
+    },
+    "show-type-column": {
+      "type": "boolean",
+      "value": false
+    },
+    "show-size-column": {
+      "type": "boolean",
+      "value": true
+    },
+    "show-date-column": {
+      "type": "boolean",
+      "value": true
+    },
+    "root-combo": {
+      "type": "boolean",
+      "value": true
+    },
+    "show-svg-icons": {
+      "type": "boolean",
+      "value": false
+    },
+    "show-hidden": {
+      "type": "boolean",
+      "value": false
+    },
+    "bound": {
+      "type": "boolean",
+      "value": false
+    }
+  },
+  "functional": {
+    "download-folder": {
+      "type": "folder",
+      "value": ""
+    },
+    "edit-app": {
+      "type": "file",
+      "value": ""
+    },
+    "buffer-size": {
+      "type": "int",
+      "value": 1024
+    },
+    "preview-limit": {
+      "type": "int",
+      "value": 1024
+    },
+    "last-content": {
+      "type": "boolean",
+      "value": true
+    },
+    "run-background": {
+      "type": "boolean",
+      "value": false
+    },
+    "verify-copy": {
+      "type": "boolean",
+      "value": true
+    },
+    "ask-delete": {
+      "type": "boolean",
+      "value": true
+    }
+  }
 }

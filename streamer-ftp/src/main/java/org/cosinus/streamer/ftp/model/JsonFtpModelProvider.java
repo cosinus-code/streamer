@@ -22,6 +22,8 @@ import org.cosinus.swing.resource.ResourceResolver;
 import org.cosinus.swing.resource.ResourceType;
 import org.springframework.stereotype.Component;
 
+import java.util.Set;
+
 import static org.cosinus.swing.resource.ResourceType.CONF;
 
 /**
@@ -33,13 +35,13 @@ public class JsonFtpModelProvider extends JsonFileConverter<FtpModel> implements
     private static final String FTP_CONNECTIONS_FILE_NAME = "ftp.json";
 
     protected JsonFtpModelProvider(ObjectMapper objectMapper,
-                                   ResourceResolver resourceResolver) {
-        super(objectMapper, FtpModel.class, resourceResolver);
+                                   Set<ResourceResolver> resourceResolvers) {
+        super(objectMapper, FtpModel.class, resourceResolvers);
     }
 
     public FtpModel getFtpModel() {
         return convert(FTP_CONNECTIONS_FILE_NAME)
-                .orElse(null);
+            .orElse(null);
     }
 
     @Override

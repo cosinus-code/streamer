@@ -60,9 +60,6 @@ public class CopyConfirmationDialog extends Dialog<CopyActionModel> {
         this.copyAction = copyAction;
         this.actionName = translator.translate(copyAction.getActionName());
         this.cmbTransferType = new JComboBox<>(transferTypes);
-
-        initComponents();
-        setLocationRelativeTo(parent);
     }
 
     public void initComponents() {
@@ -139,6 +136,8 @@ public class CopyConfirmationDialog extends Dialog<CopyActionModel> {
         panMain.getRootPane().setDefaultButton(btnOK);
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+        setLocationRelativeTo(getParent());
     }
 
     public void browse() {
