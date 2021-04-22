@@ -19,11 +19,14 @@ package org.cosinus.streamer.file;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
+import oshi.SystemInfo;
+import oshi.software.os.OSFileStore;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -78,7 +81,11 @@ public class FileHandler {
 
     public Stream<Path> roots() {
         return Arrays.stream(File.listRoots())
-                .map(File::toPath);
+            .map(File::toPath);
+    }
+
+    public List<OSFileStore> getFileStores() {
+        return new SystemInfo().getOperatingSystem().getFileSystem().getFileStores();
     }
 
     public String mimeType(Path path) {

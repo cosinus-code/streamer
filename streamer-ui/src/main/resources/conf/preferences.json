@@ -146,11 +146,11 @@
       "value": ""
     },
     "buffer-size": {
-      "type": "int",
+      "type": "integer",
       "value": 1024
     },
     "preview-limit": {
-      "type": "int",
+      "type": "integer",
       "value": 1024
     },
     "last-content": {

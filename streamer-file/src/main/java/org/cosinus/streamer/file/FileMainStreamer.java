@@ -16,6 +16,8 @@
 
 package org.cosinus.streamer.file;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.DirectoryStreamer;
 import org.cosinus.streamer.api.Streamer;
@@ -27,6 +29,7 @@ import org.cosinus.streamer.api.meta.RootStreamer;
 import org.cosinus.swing.exec.ProcessExecutor;
 import org.cosinus.swing.util.AutoRemovableTemporaryFile;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import oshi.software.os.OSFileStore;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,6 +45,8 @@ import static org.cosinus.swing.image.icon.IconProvider.ICON_COMPUTER;
 @RootStreamer("Filesystem")
 @ConditionalOnProperty(name = "streamer.file.enabled", matchIfMissing = true)
 public class FileMainStreamer extends MainStreamer<FileStreamer> {
+
+    private static final Logger LOG = LogManager.getLogger(FileMainStreamer.class);
 
     public static final String FILE_PROTOCOL = "file://";
 
@@ -80,17 +85,17 @@ public class FileMainStreamer extends MainStreamer<FileStreamer> {
     @Override
     public Stream<FileStreamer> flatStream(StreamerFilter streamerFilter) {
         return stream()
-                .filter(streamerFilter)
-                .map(Streamer::getPath)
-                .flatMap(fileHandler::walk)
-                .map(this::create);
+            .filter(streamerFilter)
+            .map(Streamer::getPath)
+            .flatMap(fileHandler::walk)
+            .map(this::create);
     }
 
     public Optional<FileStreamer> findRoot(Path path) {
         return getRoots()
-                .stream()
-                .filter(root -> fileHandler.isSameFile(path, root.getPath()))
-                .findFirst();
+            .stream()
+            .filter(root -> fileHandler.isSameFile(path, root.getPath()))
+            .findFirst();
     }
 
     protected List<FileStreamer> getRoots() {
@@ -101,23 +106,24 @@ public class FileMainStreamer extends MainStreamer<FileStreamer> {
     }
 
     protected void updateRoots() {
-        roots = fileHandler.roots()
-                .map(this::createFileRootElement)
-                .collect(Collectors.toList());
+        roots = fileHandler.getFileStores()
+            .stream()
+            .map(this::createFileRootElement)
+            .collect(Collectors.toList());
     }
 
-    protected FileRootStreamer createFileRootElement(Path path) {
-        return new FileRootStreamer(this, fileHandler, path);
+    protected FileRootStreamer createFileRootElement(OSFileStore fileStore) {
+        return new FileRootStreamer(this, fileHandler, fileStore);
     }
 
 
     public Optional<Streamer> find(Path path) {
         return findRoot(path)
-                .map(Streamer.class::cast)
-                .or(() -> Optional.of(path)
-                        .map(Path::toFile)
-                        .filter(File::exists)
-                        .map(file -> create(path, file.isDirectory())));
+            .map(Streamer.class::cast)
+            .or(() -> Optional.of(path)
+                .map(Path::toFile)
+                .filter(File::exists)
+                .map(file -> create(path, file.isDirectory())));
     }
 
     @Override
@@ -130,8 +136,8 @@ public class FileMainStreamer extends MainStreamer<FileStreamer> {
     //@Override
     public FileStreamer create(Path path, boolean directory) {
         return directory ?
-                new FileDirectoryStreamer(this, fileHandler, path) :
-                new FileBinaryStreamer(this, fileHandler, path);
+            new FileDirectoryStreamer(this, fileHandler, path) :
+            new FileBinaryStreamer(this, fileHandler, path);
 //                fileHandler.mimeType(path).startsWith("text") ?
 //                        new TextFileStreamer(this, fileHandler, path) :
 //                        new BinaryFileStreamer(this, fileHandler, path);
@@ -176,10 +182,10 @@ public class FileMainStreamer extends MainStreamer<FileStreamer> {
     @Override
     public Optional<Streamer> findByUrlPath(String urlPath) {
         return Optional.ofNullable(urlPath)
-                .filter(path -> path.startsWith(FILE_PROTOCOL))
-                .map(path -> path.substring(FILE_PROTOCOL.length()))
-                .map(Paths::get)
-                .flatMap(this::find);
+            .filter(path -> path.startsWith(FILE_PROTOCOL))
+            .map(path -> path.substring(FILE_PROTOCOL.length()))
+            .map(Paths::get)
+            .flatMap(this::find);
     }
 
     @Override
@@ -204,7 +210,7 @@ public class FileMainStreamer extends MainStreamer<FileStreamer> {
 
         try (AutoRemovableTemporaryFile tmpFile = new AutoRemovableTemporaryFile(fileToRename)) {
             return fileToRename.renameTo(tmpFile.getFile()) &&
-                    tmpFile.getFile().renameTo(newFile);
+                tmpFile.getFile().renameTo(newFile);
         } catch (IOException ex) {
             throw new StreamerException("rename.error.cannot.create.temporary.file", fileToRename, ex);
         }

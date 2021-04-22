@@ -66,7 +66,6 @@ public interface StreamerPreferences {
     String OPTION_TOOLBAR_SYSTEMS = "toolbarsystems";
     String OPTION_STATUS = "status";
     String OPTION_WINDOW_DECORATION = "windowdecoration";
-    String OPTION_FSTAB = "fstab";
     String OPTION_ICON_TAB = "icontab";
     String OPTION_PACKET_SIZE = "packetsize";
     String OPTION_GENERAL_FONT = "general_font";

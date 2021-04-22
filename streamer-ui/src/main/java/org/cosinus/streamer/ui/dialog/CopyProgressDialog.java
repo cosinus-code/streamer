@@ -17,7 +17,7 @@
 package org.cosinus.streamer.ui.dialog;
 
 import org.cosinus.streamer.ui.action.progress.CopyProgressModel;
-import org.cosinus.streamer.ui.util.Formatter;
+import org.cosinus.swing.util.Formatter;
 import org.cosinus.swing.action.execute.ActionModel;
 import org.cosinus.swing.form.Frame;
 

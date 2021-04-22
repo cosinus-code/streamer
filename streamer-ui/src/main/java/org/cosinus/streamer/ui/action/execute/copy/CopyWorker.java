@@ -29,7 +29,7 @@ import org.cosinus.streamer.ui.action.progress.CopyProgressModel;
 import org.cosinus.streamer.ui.error.ActionCancelledException;
 import org.cosinus.streamer.ui.error.ActionException;
 import org.cosinus.streamer.ui.error.SkipActionException;
-import org.cosinus.streamer.ui.util.Formatter;
+import org.cosinus.swing.util.Formatter;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 

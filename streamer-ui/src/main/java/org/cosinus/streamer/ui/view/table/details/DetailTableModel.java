@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Arrays.stream;
-import static org.cosinus.streamer.ui.util.Formatter.formatMemorySize;
+import static org.cosinus.swing.util.Formatter.formatMemorySize;
 
 public class DetailTableModel extends DataTableModel {
 

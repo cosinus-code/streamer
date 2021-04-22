@@ -20,6 +20,8 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.load.StreamedContent;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.RenamingStreamerView;
+import org.cosinus.swing.ui.ApplicationUIHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,10 +31,15 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.awt.BorderLayout.CENTER;
+import static java.util.Optional.ofNullable;
+import static java.awt.Color.white;
 
 public abstract class TableStreamerView extends RenamingStreamerView {
 
     protected DataTable table;
+
+    @Autowired
+    private ApplicationUIHandler uiHandler;
 
     protected TableStreamerView(PanelLocation location) {
         super(location);
@@ -47,7 +54,7 @@ public abstract class TableStreamerView extends RenamingStreamerView {
         scroll.setEnabled(false);
         scroll.setViewportView(table);
         scroll.setFocusable(false);
-        scroll.getViewport().setBackground(table.getBackground());
+        scroll.getViewport().setBackground(new Color(table.getBackground().getRGB()));
         scroll.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 table.requestFocus();
