@@ -36,49 +36,45 @@ import static javax.swing.JLabel.CENTER;
  */
 public class ElementsProgressDialog<E extends Element> extends ProgressDialog<ElementsProgressModel> {
 
-    private final JProgressBar progressBar = new JProgressBar();
+    private JProgressBar progressBar;
 
-    private final JLabel lblElement = new JLabel();
+    private JLabel lblElement;
 
-    public ElementsProgressDialog(Frame frame,
-                                  ActionModel actionModel) {
+    public ElementsProgressDialog(Frame frame, ActionModel actionModel) {
         super(frame, actionModel);
+        init();
     }
 
     @Override
     public void initComponents() {
         super.initComponents();
 
-        lblAction.setText(actionName + ": " + translator.translate("form_copy_from"));
+        lblElement = new JLabel(actionName + ": " + translator.translate("form_copy_from"));
+        actionLabel.setHorizontalAlignment(CENTER);
 
+        progressBar = new JProgressBar();
         progressBar.setStringPainted(true);
 
-        JPanel panNorth = new JPanel(new BorderLayout(5, 5));
-        JPanel panPath = new JPanel(new GridLayout(2, 1, 5, 5));
-        JPanel panProgress = new JPanel(new BorderLayout(5, 5));
+        JPanel pathsPanel = new JPanel(new GridLayout(2, 1, 5, 5));
+        pathsPanel.add(actionLabel);
+        pathsPanel.add(lblElement);
 
-        panPath.add(lblAction);
-        panPath.add(lblElement);
+        JPanel progressPanel = new JPanel(new BorderLayout(5, 5));
+        progressPanel.add(progressBar);
 
-        panProgress.add(progressBar);
+        JPanel northPanel = new JPanel(new BorderLayout(5, 5));
+        northPanel.add(pathsPanel, NORTH);
+        northPanel.add(progressPanel, SOUTH);
 
-        panNorth.add(panPath, NORTH);
-        panNorth.add(panProgress, SOUTH);
-
-        panMain.add(panNorth, NORTH);
-
-        Dimension dim = new Dimension(10, 26);
-        progressBar.setPreferredSize(dim);
-
-        lblAction.setHorizontalAlignment(CENTER);
-        lblElement.setSize(400, 16);
+        mainPanel.add(northPanel, NORTH);
 
         setSize(new Dimension(463, 193));
+        centerWindow();
     }
 
     @Override
     public void setProgress(ElementsProgressModel progressModel) {
-        lblAction.setText(actionName);
+        actionLabel.setText(actionName);
         Optional.ofNullable(progressModel.getCurrentStreamer())
             .map(Streamer::getPath)
             .map(path -> Formatter.formatTextForLabel(lblElement, path.toString()))

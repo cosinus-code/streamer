@@ -33,52 +33,52 @@ import static javax.swing.JLabel.CENTER;
  */
 public class CopyProgressDialog extends ProgressDialog<CopyProgressModel> {
 
-    private final JProgressBar elementProgressBar = new JProgressBar();
-    private final JProgressBar totalProgressBar = new JProgressBar();
+    private JProgressBar elementProgressBar;
+    private JProgressBar totalProgressBar;
 
-    private final JLabel lblFrom = new JLabel();
-    private final JLabel lblTo = new JLabel();
+    private JLabel copyFromLabel;
+    private JLabel copyToLabel;
 
-    public CopyProgressDialog(Frame frame,
-                              ActionModel actionModel) {
+    public CopyProgressDialog(Frame frame, ActionModel actionModel) {
         super(frame, actionModel);
+        init();
     }
 
     @Override
     public void initComponents() {
         super.initComponents();
 
-        lblFrom.setText(translator.translate("form_copy_from"));
-        lblTo.setText(translator.translate("form_copy_to"));
+        copyFromLabel = new JLabel(translator.translate("form_copy_from"));
+        copyToLabel = new JLabel(translator.translate("form_copy_to"));
+
+        elementProgressBar = new JProgressBar();
+        totalProgressBar = new JProgressBar();
 
         totalProgressBar.setStringPainted(true);
         elementProgressBar.setStringPainted(true);
 
         JPanel panNorth = new JPanel(new BorderLayout(5, 5));
-        JPanel panPath = new JPanel(new GridLayout(3, 1, 5, 5));
-        JPanel panProgress = new JPanel(new GridLayout(2, 1, 5, 5));
+        JPanel pathsPanel = new JPanel(new GridLayout(3, 1, 5, 5));
+        JPanel progressPanel = new JPanel(new GridLayout(2, 1, 5, 5));
 
-        panPath.add(lblAction);
-        panPath.add(lblFrom);
-        panPath.add(lblTo);
+        pathsPanel.add(actionLabel);
+        pathsPanel.add(copyFromLabel);
+        pathsPanel.add(copyToLabel);
 
-        panProgress.add(elementProgressBar);
-        panProgress.add(totalProgressBar);
+        progressPanel.add(elementProgressBar);
+        progressPanel.add(totalProgressBar);
 
-        panNorth.add(panPath, NORTH);
-        panNorth.add(panProgress, SOUTH);
+        panNorth.add(pathsPanel, NORTH);
+        panNorth.add(progressPanel, SOUTH);
 
-        panMain.add(panNorth, NORTH);
+        mainPanel.add(panNorth, NORTH);
 
-        Dimension progressPreferredSize = new Dimension(10, 26);
-        elementProgressBar.setPreferredSize(progressPreferredSize);
-        totalProgressBar.setPreferredSize(progressPreferredSize);
-
-        lblAction.setHorizontalAlignment(CENTER);
-        lblFrom.setSize(400, 16);
-        lblTo.setSize(400, 16);
+        actionLabel.setHorizontalAlignment(CENTER);
+        copyFromLabel.setSize(400, 16);
+        copyToLabel.setSize(400, 16);
 
         setSize(new Dimension(463, 193));
+        centerWindow();
     }
 
     @Override
@@ -96,25 +96,25 @@ public class CopyProgressDialog extends ProgressDialog<CopyProgressModel> {
                 translator.translate("form_copy_speed",
                                      Formatter.formatMemorySize(progress.getSpeed()),
                                      Formatter.formatTime(progress.getRemainingTime()));
-        lblAction.setText(actionName + ":" + actionStatus);
+        actionLabel.setText(actionName + ":" + actionStatus);
     }
 
     protected void updateActionFromTo(final CopyProgressModel progress) {
         if (progress.getSource() != null && progress.getTarget() != null) {
-            lblFrom.setText(Formatter.formatTextForLabel(lblFrom,
-                                                         translator.translate("form_copy_from",
+            copyFromLabel.setText(Formatter.formatTextForLabel(copyFromLabel,
+                                                               translator.translate("form_copy_from",
                                                                               progress.getSource().getPath())));
-            lblTo.setText(Formatter.formatTextForLabel(lblTo,
-                                                       translator.translate("form_copy_to",
+            copyToLabel.setText(Formatter.formatTextForLabel(copyToLabel,
+                                                             translator.translate("form_copy_to",
                                                                             progress.getTarget().getPath())));
 
-            lblFrom.setToolTipText(progress.getSource().getPath().toString());
-            lblTo.setToolTipText(progress.getTarget().getPath().toString());
+            copyFromLabel.setToolTipText(progress.getSource().getPath().toString());
+            copyToLabel.setToolTipText(progress.getTarget().getPath().toString());
         } else {
-            lblFrom.setText("");
-            lblTo.setText("");
-            lblFrom.setToolTipText("");
-            lblTo.setToolTipText("");
+            copyFromLabel.setText("");
+            copyToLabel.setText("");
+            copyFromLabel.setToolTipText("");
+            copyToLabel.setToolTipText("");
         }
     }
 

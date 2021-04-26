@@ -32,12 +32,10 @@ public class ProgressFormHandler {
 
     public <S extends Streamer, T extends Streamer>
     CopyProgressDialog createCopyProgressDialog(ActionModel action) {
-        return new CopyProgressDialog(applicationFrame,
-                                      action);
+        return new CopyProgressDialog(applicationFrame, action);
     }
 
     public ElementsProgressDialog createElementsProgressDialog(ActionModel action) {
-        return new ElementsProgressDialog(applicationFrame,
-                                          action);
+        return new ElementsProgressDialog(applicationFrame, action);
     }
 }

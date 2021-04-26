@@ -97,10 +97,7 @@ public abstract class AbstractCopyAction<A> extends StreamerAction<A> {
     }
 
     protected CopyConfirmationDialog copyConfirmationDialog(CopyActionModel copyAction) {
-        return new CopyConfirmationDialog(applicationFrame,
-                                          applicationFrame.getTitle(),
-                                          copyAction,
-                                          transferType());
+        return new CopyConfirmationDialog(copyAction, transferType());
     }
 
     protected abstract <S extends DirectoryStreamer, T extends DirectoryStreamer>

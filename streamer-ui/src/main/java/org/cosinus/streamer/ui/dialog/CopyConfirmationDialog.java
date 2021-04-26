@@ -18,7 +18,6 @@ package org.cosinus.streamer.ui.dialog;
 
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.execute.copy.TransferType;
-import org.cosinus.swing.context.ApplicationProperties;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.form.Dialog;
 import org.cosinus.swing.form.Frame;
@@ -29,6 +28,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.Optional;
+
+import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
+import static org.cosinus.swing.border.Borders.emptyBorder;
 
 /**
  * Dialog used for confirmation of copy action
@@ -41,9 +43,6 @@ public class CopyConfirmationDialog extends Dialog<CopyActionModel> {
     @Autowired
     private DialogHandler dialogHandler;
 
-    @Autowired
-    private ApplicationProperties applicationProperties;
-
     private JTextField txtCopyTo;
 
     private final JComboBox<?> cmbTransferType;
@@ -52,30 +51,25 @@ public class CopyConfirmationDialog extends Dialog<CopyActionModel> {
 
     private final String actionName;
 
-    public CopyConfirmationDialog(Frame parent,
-                                  String title,
-                                  CopyActionModel copyAction,
-                                  Object[] transferTypes) {
-        super(parent, title, true);
+    public CopyConfirmationDialog(CopyActionModel copyAction, Object[] transferTypes) {
+        super(applicationFrame, applicationFrame.getTitle(), true, false);
         this.copyAction = copyAction;
         this.actionName = translator.translate(copyAction.getActionName());
         this.cmbTransferType = new JComboBox<>(transferTypes);
     }
 
+    @Override
     public void initComponents() {
-        JPanel panMain = new JPanel();
-        JPanel panSouth = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-        JPanel panButtons = new JPanel(new GridLayout(1, 3, 4, 2));
-        JPanel panInfo = new JPanel(new GridLayout(4, 1, 3, 3));
+        super.initComponents();
 
-        JLabel lblCopyTo = new JLabel(translator.translate("form_copy_files", getActionName()));
-        JLabel lblFilter = new JLabel(translator.translate("form_copy_only"));
-        JComboBox cmbFilter = new JComboBox();
+        JLabel copyToLabel = new JLabel(translator.translate("form_copy_files", getActionName()));
+        JLabel filterLabel = new JLabel(translator.translate("form_copy_only"));
+        JComboBox<Object> cmbFilter = new JComboBox<>();
         JLabel lblTransferType = new JLabel(translator.translate("form_copy_trasfer_type") + "  ");
 
-        JButton btnOK = new JButton(translator.translate("form_copy_ok"));
-        JButton btnCancel = new JButton(translator.translate("form_copy_cancel"));
-        JButton btnBrowse = new JButton(translator.translate("form_copy_tree"));
+        JButton okButton = new JButton(translator.translate("form_copy_ok"));
+        JButton cancelButton = new JButton(translator.translate("form_copy_cancel"));
+        JButton browseButton = new JButton(translator.translate("form_copy_tree"));
 
         txtCopyTo = new JTextField(copyAction.getTargetPath().toString());
 
@@ -84,58 +78,59 @@ public class CopyConfirmationDialog extends Dialog<CopyActionModel> {
         cmbTransferType.setVisible(showTransferType);
         cmbTransferType.setSelectedIndex(0);
 
-        setSize(new Dimension(363, showTransferType ? 220 : 193));
-
         ActionListener actionListener = av -> {
-            if (av.getSource() == btnOK) dispose();
-            else if (av.getSource() == btnCancel) cancel();
-            else if (av.getSource() == btnBrowse) browse();
+            if (av.getSource() == okButton) dispose();
+            else if (av.getSource() == cancelButton) cancel();
+            else if (av.getSource() == browseButton) browse();
         };
 
-        panMain.setLayout(new BorderLayout());
-
-        btnOK.addActionListener(actionListener);
-        btnCancel.addActionListener(actionListener);
-        btnBrowse.addActionListener(actionListener);
+        okButton.addActionListener(actionListener);
+        cancelButton.addActionListener(actionListener);
+        browseButton.addActionListener(actionListener);
 
         cmbFilter.setEditable(true);
 
-        lblCopyTo.setVerticalAlignment(SwingConstants.BOTTOM);
-        lblFilter.setVerticalAlignment(SwingConstants.BOTTOM);
+        copyToLabel.setVerticalAlignment(SwingConstants.BOTTOM);
+        filterLabel.setVerticalAlignment(SwingConstants.BOTTOM);
 
-        panButtons.add(btnOK);
-        panButtons.add(btnBrowse);
-        panButtons.add(btnCancel);
-        panSouth.add(panButtons);
+        JPanel buttonsPanel = new JPanel(new GridLayout(1, 3, 4, 2));
+        buttonsPanel.add(okButton);
+        buttonsPanel.add(browseButton);
+        buttonsPanel.add(cancelButton);
+
+        JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        southPanel.add(buttonsPanel);
 
         JPanel panTransferType = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         panTransferType.setBorder(null);
         panTransferType.add(lblTransferType);
         panTransferType.add(cmbTransferType);
 
-        panInfo.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
-        panInfo.add(lblCopyTo);
-        panInfo.add(txtCopyTo);
-        panInfo.add(lblFilter);
-        panInfo.add(cmbFilter);
-
-        cmbTransferType.setPreferredSize(new Dimension(70, 20));
+        JPanel copyPanel = new JPanel(new GridLayout(4, 1, 3, 3));
+        copyPanel.setBorder(emptyBorder(0, 0, 10, 0));
+        copyPanel.add(copyToLabel);
+        copyPanel.add(txtCopyTo);
+        copyPanel.add(filterLabel);
+        copyPanel.add(cmbFilter);
 
         JPanel panCenter = new JPanel(new BorderLayout());
         panCenter.add(panTransferType, BorderLayout.CENTER);
 
-        panMain.setBorder(BorderFactory.createEmptyBorder(2, 10, 5, 10));
-        panMain.add(panSouth, BorderLayout.SOUTH);
-        panMain.add(panCenter, BorderLayout.CENTER);
-        panMain.add(panInfo, BorderLayout.NORTH);
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBorder(emptyBorder(2, 10, 5, 10));
+        mainPanel.add(copyPanel, BorderLayout.NORTH);
+        mainPanel.add(panCenter, BorderLayout.CENTER);
+        mainPanel.add(southPanel, BorderLayout.SOUTH);
 
-        lblFilter.setEnabled(false);
+        filterLabel.setEnabled(false);
         cmbFilter.setEnabled(false);
 
-        getContentPane().add(panMain);
-        panMain.getRootPane().setDefaultButton(btnOK);
+        getContentPane().add(mainPanel);
+        mainPanel.getRootPane().setDefaultButton(okButton);
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+        setSize(new Dimension(363, showTransferType ? 240 : 213));
 
         setLocationRelativeTo(getParent());
     }

@@ -21,6 +21,7 @@ import org.cosinus.streamer.ui.action.progress.ProgressListener;
 import org.cosinus.streamer.ui.action.progress.ProgressModel;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.action.execute.ActionModel;
+import org.cosinus.swing.border.Borders;
 import org.cosinus.swing.form.Dialog;
 import org.cosinus.swing.form.Frame;
 import org.cosinus.swing.translate.Translator;
@@ -33,23 +34,13 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import static org.cosinus.swing.border.Borders.emptyBorder;
+import static java.awt.BorderLayout.SOUTH;
+
 /**
  * Generic dialog for showing progress
  */
-public abstract class ProgressDialog<P extends ProgressModel>
-    extends Dialog<Void> implements ProgressListener<P> {
-
-    protected final ActionModel actionModel;
-
-    protected final JLabel lblAction = new JLabel();
-
-    protected final JButton btnCancel = new JButton();
-
-    protected final JButton btnBackground = new JButton();
-
-    protected JPanel panMain;
-
-    protected boolean background;
+public abstract class ProgressDialog<P extends ProgressModel> extends Dialog<Void> implements ProgressListener<P> {
 
     @Autowired
     protected ActionExecutors actionExecutors;
@@ -57,43 +48,57 @@ public abstract class ProgressDialog<P extends ProgressModel>
     @Autowired
     protected Translator translator;
 
+    protected final ActionModel actionModel;
+
+    protected JLabel actionLabel;
+
+    protected JButton cancelButton;
+
+    protected JButton runInBackgroundButton;
+
+    protected JPanel mainPanel;
+
+    protected boolean runInBackground;
+
     protected final String actionName;
 
     public ProgressDialog(Frame frame, ActionModel actionModel) {
-        super(frame, frame.getTitle() + " " + actionModel.getActionName(), true);
+        super(frame, frame.getTitle() + " " + actionModel.getActionName(), true, false);
         this.actionModel = actionModel;
         this.actionName = translator.translate(actionModel.getActionName());
     }
 
     @Override
     public void initComponents() {
-        lblAction.setText(translator.translate("action_preparing"));
-        btnCancel.setText(translator.translate("form_copy_cancel"));
-        btnBackground.setText(translator.translate("form_copy_background"));
+        super.initComponents();
 
-        btnCancel.addActionListener(e -> cancel());
-        btnBackground.addActionListener(e -> runProgressInBackground());
+        actionLabel = new JLabel(translator.translate("action_preparing"));
+        cancelButton = new JButton(translator.translate("form_copy_cancel"));
+        runInBackgroundButton = new JButton(translator.translate("form_copy_background"));
 
-        JPanel panButtons = new JPanel(new GridLayout(1, 2, 5, 5));
-        panButtons.add(btnCancel);
-        panButtons.add(btnBackground);
+        cancelButton.addActionListener(e -> cancel());
+        runInBackgroundButton.addActionListener(e -> runProgressInBackground());
 
-        JPanel panSouth = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-        panSouth.add(panButtons);
+        JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 5, 5));
+        buttonsPanel.add(cancelButton);
+        buttonsPanel.add(runInBackgroundButton);
 
-        panMain = new JPanel(new BorderLayout(5, 5));
-        panMain.setBorder(BorderFactory.createEmptyBorder(5, 25, 5, 25));
-        panMain.add(panSouth, BorderLayout.SOUTH);
+        JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        southPanel.add(buttonsPanel);
 
-        getContentPane().add(panMain);
+        mainPanel = new JPanel(new BorderLayout(5, 5));
+        mainPanel.setBorder(emptyBorder(5, 25, 5, 25));
+        mainPanel.add(southPanel, SOUTH);
+
+        getContentPane().add(mainPanel);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setResizable(true);
 
-        btnCancel.addKeyListener(new KeyAdapter() {
+        cancelButton.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent evt) {
                 switch (evt.getKeyCode()) {
                     case KeyEvent.VK_RIGHT:
-                        btnBackground.requestFocusInWindow();
+                        runInBackgroundButton.requestFocusInWindow();
                         break;
                     case KeyEvent.VK_ENTER:
                         cancel();
@@ -102,11 +107,11 @@ public abstract class ProgressDialog<P extends ProgressModel>
             }
         });
 
-        btnBackground.addKeyListener(new KeyAdapter() {
+        runInBackgroundButton.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent evt) {
                 switch (evt.getKeyCode()) {
                     case KeyEvent.VK_LEFT:
-                        btnCancel.requestFocusInWindow();
+                        cancelButton.requestFocusInWindow();
                         break;
                     case KeyEvent.VK_ENTER:
                         runProgressInBackground();
@@ -117,7 +122,7 @@ public abstract class ProgressDialog<P extends ProgressModel>
 
         addWindowListener(new WindowAdapter() {
             public void windowClosed(WindowEvent evt) {
-                if (!background) cancel();
+                if (!runInBackground) cancel();
             }
         });
     }
@@ -130,7 +135,7 @@ public abstract class ProgressDialog<P extends ProgressModel>
     }
 
     void runProgressInBackground() {
-        background = true;
+        runInBackground = true;
         dispose();
         //TODO:
         //action.setPriority(Thread.MIN_PRIORITY);
