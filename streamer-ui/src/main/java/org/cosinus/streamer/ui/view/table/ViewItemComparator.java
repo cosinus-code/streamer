@@ -16,6 +16,8 @@
 
 package org.cosinus.streamer.ui.view.table;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 import java.util.Comparator;
 
 public class ViewItemComparator implements Comparator<ViewItem> {
@@ -63,10 +65,12 @@ public class ViewItemComparator implements Comparator<ViewItem> {
         int compare;
         switch (column) {
             case 1:
-                compare = item1.getStreamer().getValue().compareTo(item2.getStreamer().getValue());
+                compare = ObjectUtils.compare(item1.getStreamer().getValue(),
+                                              item2.getStreamer().getValue());
                 break;
             case 2:
-                compare = item1.getStreamer().getDescription().compareTo(item2.getStreamer().getDescription());
+                compare = ObjectUtils.compare(item1.getStreamer().getType(),
+                                              item2.getStreamer().getType());
                 break;
             case 3:
                 compare = Long.compare(item1.getStreamer().getSize(),
@@ -77,7 +81,8 @@ public class ViewItemComparator implements Comparator<ViewItem> {
                                        item2.getStreamer().lastModified());
                 break;
             default:
-                compare = item1.getName().compareTo(item2.getName());
+                compare = ObjectUtils.compare(item1.getName(),
+                                              item2.getName());
                 break;
         }
 

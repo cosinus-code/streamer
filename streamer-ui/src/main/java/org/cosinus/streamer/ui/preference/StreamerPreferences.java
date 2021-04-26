@@ -51,10 +51,10 @@ public interface StreamerPreferences {
     String OPTION_ICON_PATH = "iconpath";
     String OPTION_DOWNLOAD_DIR = "downloaddir";
     String OPTION_EDIT_APP = "editapp";
-    String OPTION_COLUMN_VALUE = "column-value";
-    String OPTION_COLUMN_TYPE = "column-type";
-    String OPTION_COLUMN_SIZE = "column-size";
-    String OPTION_COLUMN_TIME = "column-time";
+    String OPTION_COLUMN_VALUE = "show-value-column";
+    String OPTION_COLUMN_TYPE = "show-type-column";
+    String OPTION_COLUMN_SIZE = "show-size-column";
+    String OPTION_COLUMN_TIME = "show-date-column";
     String OPTION_ASK_DELETE = "ask_delete_folders";
     String OPTION_DOUBLE_CLICK_SPEED = "doubleclickspeed";
     String OPTION_TAB_SIZE = "tabsize";

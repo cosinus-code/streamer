@@ -83,4 +83,9 @@ public class FileDirectoryStreamer extends FileStreamer<FileStreamer> implements
         }
         return this;
     }
+
+    @Override
+    public String getType() {
+        return null;
+    }
 }
