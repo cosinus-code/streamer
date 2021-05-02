@@ -21,9 +21,8 @@ import org.cosinus.streamer.ui.action.progress.ProgressListener;
 import org.cosinus.streamer.ui.action.progress.ProgressModel;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.action.execute.ActionModel;
-import org.cosinus.swing.border.Borders;
-import org.cosinus.swing.form.Dialog;
-import org.cosinus.swing.form.Frame;
+import org.cosinus.swing.window.Dialog;
+import org.cosinus.swing.window.Frame;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 

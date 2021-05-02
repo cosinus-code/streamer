@@ -1,0 +1,42 @@
+Configuration:
+  status: info
+  properties:
+    property:
+      - name: log-patttern
+        value: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+      - name: log-file
+        value: "${sys:user.home}/.streamer/logs/app.log"
+      - name: log-file-name-pattern
+        value: "logs/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz"
+
+  appenders:
+    Console:
+      name: LogToConsole
+      PatternLayout:
+        Pattern: ${log-patttern}
+
+    RollingFile:
+      - name: LogToRollingFile
+        fileName: ${log-file}
+        filePattern: ${log-file-name-pattern}
+        PatternLayout:
+          pattern: ${log-patttern}
+        Policies:
+          SizeBasedTriggeringPolicy:
+            size: 10MB
+        DefaultRollOverStrategy:
+          max: 10
+
+  Loggers:
+    logger:
+      - name: org.cosinus
+        level: info
+        additivity: false
+        AppenderRef:
+          - ref: LogToConsole
+          - ref: LogToRollingFile
+
+    Root:
+      level: info
+      AppenderRef:
+        ref: LogToConsole

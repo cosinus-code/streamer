@@ -16,13 +16,13 @@
 
 package org.cosinus.streamer.ui.view.table;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.api.DirectoryStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.load.StreamedContent;
 import org.cosinus.swing.form.TableModel;
 import org.cosinus.swing.preference.Preferences;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
@@ -37,7 +37,7 @@ import static org.cosinus.streamer.ui.preference.StreamerPreferences.OPTION_TOP_
 
 public abstract class DataTableModel extends TableModel {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DataTableModel.class);
+    private static final Logger LOG = LogManager.getLogger(DataTableModel.class);
 
     protected final List<ViewItem> items = new ArrayList<>();
 

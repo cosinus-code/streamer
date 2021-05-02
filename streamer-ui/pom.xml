@@ -21,6 +21,20 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.cosinus.swing</groupId>
+            <artifactId>spring-swing-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.cosinus.streamer</groupId>
             <artifactId>streamer-api</artifactId>
             <version>${project.version}</version>
@@ -39,10 +53,6 @@
             <groupId>org.cosinus.streamer</groupId>
             <artifactId>streamer-ftp</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-log4j2</artifactId>
         </dependency>
     </dependencies>
 

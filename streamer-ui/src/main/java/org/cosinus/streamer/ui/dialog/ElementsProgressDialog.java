@@ -21,7 +21,7 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.progress.ElementsProgressModel;
 import org.cosinus.swing.util.Formatter;
 import org.cosinus.swing.action.execute.ActionModel;
-import org.cosinus.swing.form.Frame;
+import org.cosinus.swing.window.Frame;
 
 import javax.swing.*;
 import java.awt.*;

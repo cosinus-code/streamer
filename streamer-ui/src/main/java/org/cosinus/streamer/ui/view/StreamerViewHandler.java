@@ -23,8 +23,8 @@ import org.springframework.stereotype.Component;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
+import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.view.PanelLocation.LEFT;
 
 /**
@@ -53,7 +53,7 @@ public class StreamerViewHandler {
     }
 
     public StreamerView getCurrentView() {
-        return Optional.ofNullable(panelsMap.get(currentLocation))
+        return ofNullable(panelsMap.get(currentLocation))
             .map(StreamerPanel::getView)
             .orElse(null);
     }

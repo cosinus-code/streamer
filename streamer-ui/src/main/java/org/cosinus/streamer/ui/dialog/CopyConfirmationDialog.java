@@ -19,8 +19,7 @@ package org.cosinus.streamer.ui.dialog;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.execute.copy.TransferType;
 import org.cosinus.swing.dialog.DialogHandler;
-import org.cosinus.swing.form.Dialog;
-import org.cosinus.swing.form.Frame;
+import org.cosinus.swing.window.Dialog;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 

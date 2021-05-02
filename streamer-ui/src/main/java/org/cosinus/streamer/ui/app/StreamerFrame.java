@@ -59,7 +59,7 @@ public class StreamerFrame extends SwingApplicationFrame {
     }
 
     @Override
-    public void initContent() {
+    public void loadContent() {
         streamerViewHandler.getPanels().forEach(StreamerPanel::initContent);
     }
 

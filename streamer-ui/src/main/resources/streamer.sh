@@ -13,7 +13,6 @@ fi
 
 "$JAVA_PATH" \
 -jar -Dswing.aatext=true $APPLICATION_DIR/streamer.jar \
--log-startup-progress \
 -splash-progress \
 -splash-progress-color=127,206,0 \
 -splash-progress-y=250 \

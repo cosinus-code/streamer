@@ -19,10 +19,9 @@ package org.cosinus.streamer.ui.view.table.details;
 import org.cosinus.streamer.ui.preference.StreamerPreferences;
 import org.cosinus.streamer.ui.view.table.DataTable;
 import org.cosinus.streamer.ui.view.table.DataTableModel;
+import org.cosinus.swing.image.icon.IconHandler;
 import org.cosinus.swing.menu.CheckBoxMenuItem;
 import org.cosinus.swing.menu.PopupMenu;
-import org.cosinus.swing.gtk.GTKColors;
-import org.cosinus.swing.image.icon.IconHandler;
 import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.translate.Translator;
 import org.cosinus.swing.ui.ApplicationUIHandler;
@@ -188,16 +187,6 @@ public class DetailTable extends DataTable implements ActionListener {
 
         setRowHeight(preferences.findIntPreference(StreamerPreferences.OPTION_ROW_HEIGHT)
                          .orElse(20));
-
-        if (uiHandler.isLookAndFeelGTK()) {
-            getTableHeader().setBackground(GTKColors.getBackgroundColor());
-            getTableHeader().setBorder(BorderFactory.createMatteBorder(1,
-                                                                       1,
-                                                                       0,
-                                                                       1,
-                                                                       GTKColors.getDarkColor()));
-        }
-        //popupHeader.updateForm();
     }
 
     @Override

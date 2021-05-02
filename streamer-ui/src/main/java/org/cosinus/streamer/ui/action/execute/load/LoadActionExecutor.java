@@ -35,9 +35,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * Implementation of {@link ActionExecutor} based on {@link LoadStreamerWorker}
  */
 @Component
-public class LoadElementWorkerExecutor<P extends ProgressModel> implements ActionExecutor<LoadActionModel> {
+public class LoadActionExecutor<P extends ProgressModel> implements ActionExecutor<LoadActionModel> {
 
-    private static final Logger LOG = LogManager.getLogger(LoadElementWorkerExecutor.class);
+    private static final Logger LOG = LogManager.getLogger(LoadActionExecutor.class);
 
     private final PackerHandler packerHandler;
 
@@ -45,8 +45,8 @@ public class LoadElementWorkerExecutor<P extends ProgressModel> implements Actio
 
     private final Map<String, LoadStreamerWorker> workersMap;
 
-    public LoadElementWorkerExecutor(PackerHandler packerHandler,
-                                     ProgressListenerHandler<P> progressListenerHandler) {
+    public LoadActionExecutor(PackerHandler packerHandler,
+                              ProgressListenerHandler<P> progressListenerHandler) {
         this.packerHandler = packerHandler;
         this.progressListenerHandler = progressListenerHandler;
         this.workersMap = new ConcurrentHashMap<>();

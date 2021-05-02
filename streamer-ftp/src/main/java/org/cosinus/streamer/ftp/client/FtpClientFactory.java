@@ -22,12 +22,12 @@ import org.apache.commons.net.ftp.FTPReply;
 import org.apache.commons.pool2.BaseKeyedPooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.api.error.StreamerException;
 import org.cosinus.streamer.ftp.model.FtpClientModel;
 import org.cosinus.streamer.ftp.model.FtpModel;
 import org.cosinus.streamer.ftp.model.FtpModelProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -39,7 +39,7 @@ import java.util.Optional;
 @Component
 public class FtpClientFactory extends BaseKeyedPooledObjectFactory<String, FtpClient> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(FtpClientFactory.class);
+    private static final Logger LOG = LogManager.getLogger(FtpClientFactory.class);
 
     private final FtpModel ftpModel;
 
@@ -49,7 +49,7 @@ public class FtpClientFactory extends BaseKeyedPooledObjectFactory<String, FtpCl
 
     public FtpClientModel getFtpClientConfig(String name) {
         return ftpModel.findFtpClientConfiguration(name)
-                .orElseThrow(() -> new StreamerException("FTP client configuration not found: " + name));
+            .orElseThrow(() -> new StreamerException("FTP client configuration not found: " + name));
     }
 
     @Override
@@ -58,7 +58,7 @@ public class FtpClientFactory extends BaseKeyedPooledObjectFactory<String, FtpCl
 
         FtpClient ftpClient = new FtpClient(name);
         Optional.ofNullable(ftpConfig.getEncoding())
-                .ifPresent(ftpClient::setControlEncoding);
+            .ifPresent(ftpClient::setControlEncoding);
         ftpClient.setConnectTimeout(ftpConfig.getConnectionTimeout() * 1000);
 
         ftpClient.connect(ftpConfig.getHost(),
@@ -101,10 +101,10 @@ public class FtpClientFactory extends BaseKeyedPooledObjectFactory<String, FtpCl
     @Override
     public boolean validateObject(String name, PooledObject<FtpClient> pooledFtpClient) {
         return Optional.ofNullable(pooledFtpClient)
-                .map(PooledObject::getObject)
-                .map(this::runValidateCommand)
-                .map(FTPReply::isPositiveCompletion)
-                .orElse(false);
+            .map(PooledObject::getObject)
+            .map(this::runValidateCommand)
+            .map(FTPReply::isPositiveCompletion)
+            .orElse(false);
     }
 
     protected int runValidateCommand(FTPClient ftpClient) {
@@ -119,21 +119,21 @@ public class FtpClientFactory extends BaseKeyedPooledObjectFactory<String, FtpCl
     @Override
     public void destroyObject(String name, PooledObject<FtpClient> pooledFtpClient) {
         Optional.ofNullable(pooledFtpClient)
-                .map(PooledObject::getObject)
-                .ifPresent(ftpClient -> {
-                    try {
-                        if (ftpClient.isConnected()) {
-                            ftpClient.logout();
-                        }
-                    } catch (IOException io) {
-                        LOG.error("FTP logout failed", io);
-                    } finally {
-                        try {
-                            ftpClient.disconnect();
-                        } catch (IOException io) {
-                            LOG.error("FTP disconnect failed", io);
-                        }
+            .map(PooledObject::getObject)
+            .ifPresent(ftpClient -> {
+                try {
+                    if (ftpClient.isConnected()) {
+                        ftpClient.logout();
                     }
-                });
+                } catch (IOException io) {
+                    LOG.error("FTP logout failed", io);
+                } finally {
+                    try {
+                        ftpClient.disconnect();
+                    } catch (IOException io) {
+                        LOG.error("FTP disconnect failed", io);
+                    }
+                }
+            });
     }
 }
