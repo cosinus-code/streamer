@@ -18,7 +18,7 @@ package org.cosinus.streamer.ui.action.execute.copy;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cosinus.stream.binary.BinaryStream;
+import org.cosinus.streamer.api.stream.binary.BinaryStream;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.DirectoryStreamer;
 import org.cosinus.streamer.api.Streamer;

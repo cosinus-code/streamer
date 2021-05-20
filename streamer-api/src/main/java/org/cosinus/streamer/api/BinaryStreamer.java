@@ -16,7 +16,7 @@
 
 package org.cosinus.streamer.api;
 
-import org.cosinus.stream.binary.BinaryStream;
+import org.cosinus.streamer.api.stream.binary.BinaryStream;
 import org.cosinus.streamer.api.consumer.BinaryStreamSaver;
 
 public interface BinaryStreamer extends InputStreamer<byte[]> {
