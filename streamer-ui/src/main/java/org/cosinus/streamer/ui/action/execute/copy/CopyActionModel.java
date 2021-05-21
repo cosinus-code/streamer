@@ -24,8 +24,8 @@ import org.cosinus.swing.action.execute.ActionModel;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
 
+import static java.util.UUID.randomUUID;
 import static org.cosinus.streamer.ui.action.execute.copy.TransferType.TRANSFER_AUTO;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -77,26 +77,26 @@ public class CopyActionModel<S extends Streamer, T extends Streamer> extends Act
     private boolean pack;
 
     public CopyActionModel(String actionName) {
-        super(UUID.randomUUID().toString(), actionName);
+        super(randomUUID().toString(), actionName);
     }
 
     public static <S extends DirectoryStreamer, T extends DirectoryStreamer>
     CopyActionModel<S, T> copy(List<Streamer> elementsToCopy) {
         return new CopyActionModel<S, T>(COPY_ACTION_NAME)
-                .setCopyElements(elementsToCopy);
+            .setCopyElements(elementsToCopy);
     }
 
     public static <S extends DirectoryStreamer, T extends DirectoryStreamer>
     CopyActionModel<S, T> move(List<Streamer> elementsToCopy) {
         return new CopyActionModel<S, T>(MOVE_ACTION_NAME)
-                .setCopyElements(elementsToCopy);
+            .setCopyElements(elementsToCopy);
     }
 
     public static <S extends DirectoryStreamer, T extends DirectoryStreamer>
     CopyActionModel<S, T> pack(List<Streamer> elementsToCopy) {
         return new CopyActionModel<S, T>(PACK_ACTION_NAME)
-                .setCopyElements(elementsToCopy)
-                .pack();
+            .setCopyElements(elementsToCopy)
+            .pack();
     }
 
     public Path getTargetPath() {
@@ -291,21 +291,21 @@ public class CopyActionModel<S extends Streamer, T extends Streamer> extends Act
 
     public boolean isSensitiveToTransferType() {
         return source.isSensitiveToTransferType() ||
-                destination.isSensitiveToTransferType();
+            destination.isSensitiveToTransferType();
     }
 
     public boolean shouldSkip(Streamer source, Streamer target) {
         boolean isTargetOlder = target.lastModified() < source.lastModified();
         return shouldSkipCurrentTargets() ||
-                shouldSkipAllExistingTargets() ||
-                (shouldOverwriteAllExistingTargetsIfOlder() && !isTargetOlder);
+            shouldSkipAllExistingTargets() ||
+            (shouldOverwriteAllExistingTargetsIfOlder() && !isTargetOlder);
     }
 
     public boolean shouldOverwrite(Streamer source, Streamer target) {
         boolean isTargetOlder = target.lastModified() < source.lastModified();
         return shouldOverwriteCurrentTarget() ||
-                shouldOverwriteAllExistingTargets() ||
-                (shouldOverwriteAllExistingTargetsIfOlder() && isTargetOlder);
+            shouldOverwriteAllExistingTargets() ||
+            (shouldOverwriteAllExistingTargetsIfOlder() && isTargetOlder);
     }
 
     public CopyActionModel<S, T> withOverwriteOption(CopyOverwriteOption copyOverwriteOption) {

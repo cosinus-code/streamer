@@ -16,7 +16,6 @@
 
 package org.cosinus.streamer.ui.view.table.details;
 
-import org.cosinus.streamer.ui.preference.StreamerPreferences;
 import org.cosinus.streamer.ui.view.table.ViewItem;
 import org.cosinus.swing.image.icon.IconHandler;
 import org.cosinus.swing.image.icon.IconSize;
@@ -27,6 +26,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.util.Optional;
 
+import static org.cosinus.streamer.ui.preference.StreamerPreferences.SELECT_BACKGROUND;
+import static org.cosinus.streamer.ui.preference.StreamerPreferences.SELECT_FOREGROUND;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_FOLDER;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_UP;
 import static org.cosinus.swing.image.icon.IconSize.X16;
@@ -72,7 +73,9 @@ public class DetailCell extends DefaultTableCellRenderer {
 
         DetailTable detailTable = (DetailTable) table;
         if (detailTable.isIndexSelected(row)) {
-            preferences.findColorPreference(StreamerPreferences.OPTION_SELECT_FOREGROUND)
+            preferences.findColorPreference(SELECT_BACKGROUND)
+                .ifPresent(this::setBackground);
+            preferences.findColorPreference(SELECT_FOREGROUND)
                     .ifPresent(this::setForeground);
         }
 

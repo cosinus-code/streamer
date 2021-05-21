@@ -36,13 +36,16 @@ public class FtpDirectoryStreamer extends FtpStreamer<FtpStreamer> implements Di
     @Override
     public Stream<FtpStreamer> stream() {
         return ftpHandler.stream(getFtpFile())
-                .map(this::createFtpStreamer);
+            .map(this::createFtpStreamer);
     }
 
     @Override
     public Stream<FtpStreamer> flatStream(StreamerFilter streamerFilter) {
-        return ftpHandler.flatStream(getFtpFile(), stream().filter(streamerFilter).map(FtpStreamer::getFtpFile))
-                .map(this::createFtpStreamer);
+        return ftpHandler.flatStream(getFtpFile(),
+                                     stream()
+                                         .filter(streamerFilter)
+                                         .map(FtpStreamer::getFtpFile))
+            .map(this::createFtpStreamer);
     }
 
     @Override
@@ -87,7 +90,7 @@ public class FtpDirectoryStreamer extends FtpStreamer<FtpStreamer> implements Di
 
     private FtpStreamer createFtpStreamer(FtpFile ftpFile) {
         return ftpFile.isDirectory() ?
-                new FtpDirectoryStreamer(ftpFile, this, ftpHandler) :
-                new FtpBinaryStreamer(ftpFile, this, ftpHandler);
+            new FtpDirectoryStreamer(ftpFile, this, ftpHandler) :
+            new FtpBinaryStreamer(ftpFile, this, ftpHandler);
     }
 }

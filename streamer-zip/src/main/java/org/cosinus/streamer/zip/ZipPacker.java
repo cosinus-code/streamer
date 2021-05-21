@@ -25,6 +25,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import java.util.Optional;
 
+import static java.util.Optional.ofNullable;
+
 @Packer({"zip", "jar", "war", "ear"})
 @ConditionalOnProperty(name = "streamer.zip.enabled", matchIfMissing = true)
 public class ZipPacker implements MainPacker<ZipStreamer> {
@@ -33,11 +35,11 @@ public class ZipPacker implements MainPacker<ZipStreamer> {
 
     @Override
     public Optional<ZipStreamer> findPackedStreamer(Streamer mainStreamer, String path) {
-        return Optional.ofNullable(mainStreamer)
-                .filter(streamer -> InputStreamer.class.isAssignableFrom(streamer.getClass()))
-                .map(InputStreamer.class::cast)
-                .map(this::pack)
-                .flatMap(packStreamer -> packStreamer.find(path));
+        return ofNullable(mainStreamer)
+            .filter(streamer -> InputStreamer.class.isAssignableFrom(streamer.getClass()))
+            .map(InputStreamer.class::cast)
+            .map(this::pack)
+            .flatMap(packStreamer -> packStreamer.find(path));
     }
 
     @Override

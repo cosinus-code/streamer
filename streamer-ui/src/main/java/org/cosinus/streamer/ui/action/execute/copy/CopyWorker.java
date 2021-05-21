@@ -85,7 +85,8 @@ public class CopyWorker<S extends DirectoryStreamer, T extends DirectoryStreamer
         setProgress(progress);
 
         try (Stream<? extends Streamer> streamers = source.flatStream(copyModel.getSourceFilter())) {
-            streamers.forEach(streamerToCopy -> {
+            streamers
+                .forEach(streamerToCopy -> {
                 checkActionStatus();
                 Path relativePath = getRelativePath(source, streamerToCopy);
                 Path targetPath = destination.getPath().resolve(relativePath);

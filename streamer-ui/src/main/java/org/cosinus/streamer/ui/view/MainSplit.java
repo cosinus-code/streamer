@@ -21,15 +21,17 @@ import org.cosinus.swing.form.Split;
 import org.cosinus.swing.listener.SimpleMouseListener;
 import org.cosinus.swing.menu.MenuItem;
 import org.cosinus.swing.menu.PopupMenu;
+import org.cosinus.swing.preference.Preferences;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.util.stream.IntStream;
 
 import static java.awt.event.MouseEvent.BUTTON3;
+import static java.util.stream.IntStream.range;
+import static org.cosinus.streamer.ui.preference.StreamerPreferences.KEEP_DIVIDER_RELATIVE_LOCATION;
 
 public class MainSplit extends Split implements ActionListener {
 
@@ -40,11 +42,14 @@ public class MainSplit extends Split implements ActionListener {
     @Autowired
     private ErrorHandler errorHandler;
 
+    @Autowired
+    private Preferences preferences;
+
     private PopupMenu splitterPositionMenu;
 
     public MainSplit() {
-        super(MAIN_SPLITTER_NAME,
-              DEFAULT_DIVIDER_LOCATION);
+        super(MAIN_SPLITTER_NAME, DEFAULT_DIVIDER_LOCATION);
+        setKeepRelativeLocationOnResize(preferences.booleanPreference(KEEP_DIVIDER_RELATIVE_LOCATION));
     }
 
     @Override
@@ -81,7 +86,7 @@ public class MainSplit extends Split implements ActionListener {
         setDividerSize(3);
 
         splitterPositionMenu = new PopupMenu();
-        IntStream.range(2, 9)
+        range(2, 9)
             .map(i -> i * 10)
             .forEach(value -> splitterPositionMenu.add(new MenuItem(this,
                                                                     "popup-splitter-" + value)));

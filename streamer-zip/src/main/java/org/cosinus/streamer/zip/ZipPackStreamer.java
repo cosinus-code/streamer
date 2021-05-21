@@ -33,6 +33,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.zip.ZipOutputStream;
 
+import static org.cosinus.streamer.zip.stream.ZipStream.zipStream;
+
 public class ZipPackStreamer implements DirectoryStreamer<ZipStreamer>, PackStreamer<ZipStreamer> {
 
     private ZipHolder zipHolder;
@@ -52,8 +54,8 @@ public class ZipPackStreamer implements DirectoryStreamer<ZipStreamer>, PackStre
     public ZipHolder getZipHolder() {
         if (zipHolder == null || !zipHolder.isLoaded()) {
             zipHolder = new ZipHolder();
-            ZipStream.of(packInputStreamer.inputStream())
-                    .forEach(zipHolder::add);
+            zipStream(packInputStreamer.inputStream())
+                .forEach(zipHolder::add);
             zipHolder.setLoaded(true);
         }
         return zipHolder;
@@ -63,20 +65,21 @@ public class ZipPackStreamer implements DirectoryStreamer<ZipStreamer>, PackStre
     public Stream<? extends ZipStreamer> stream() {
         if (zipHolder == null || !zipHolder.isLoaded()) {
             zipHolder = new ZipHolder();
-            return ZipStream.of(packInputStreamer.inputStream())
-                    .peek(zipHolder::add)
-                    .filter(zipEntry -> zipEntry.getParentPath().isEmpty())
-                    .map(this::createZipStreamer);
+            return zipStream(packInputStreamer.inputStream())
+                .peek(zipHolder::add)
+                .filter(zipEntry -> zipEntry.getParentPath().isEmpty())
+                .map(this::createZipStreamer);
         }
 
         return zipHolder.rootEntries()
-                .map(this::createZipStreamer);
+            .map(this::createZipStreamer);
     }
 
     @Override
     public Stream<ZipStreamer> flatStream(StreamerFilter streamerFilter) {
         return ZipStream.walk(packInputStreamer.inputStream(), "")
-                .map(this::createZipStreamer);
+            .map(this::createZipStreamer)
+            .filter(streamerFilter);
     }
 
     @Override
@@ -89,7 +92,7 @@ public class ZipPackStreamer implements DirectoryStreamer<ZipStreamer>, PackStre
     @Override
     public Optional<ZipStreamer> find(String path) {
         return getZipHolder().get(path)
-                .map(this::createZipStreamer);
+            .map(this::createZipStreamer);
     }
 
     @Override
@@ -100,14 +103,14 @@ public class ZipPackStreamer implements DirectoryStreamer<ZipStreamer>, PackStre
     @Override
     public ZipDirectoryStreamer createDirectoryStreamer(Path path) {
         ZipStreamEntry zipEntry = zipHolder.get(path)
-                .orElse(new ZipStreamEntry(path.toString() + "/"));
+            .orElse(new ZipStreamEntry(path.toString() + "/"));
         return createDirectoryStreamer(zipEntry);
     }
 
     @Override
     public ZipBinaryStreamer createBinaryStreamer(Path path) {
         ZipStreamEntry zipEntry = zipHolder.get(path)
-                .orElse(new ZipStreamEntry(path.toString()));
+            .orElse(new ZipStreamEntry(path.toString()));
         return createBinaryStreamer(zipEntry);
     }
 
@@ -168,8 +171,8 @@ public class ZipPackStreamer implements DirectoryStreamer<ZipStreamer>, PackStre
 
     public ZipStreamer createZipStreamer(ZipStreamEntry zipEntry) {
         return zipEntry.isDirectory() ?
-                createDirectoryStreamer(zipEntry) :
-                createBinaryStreamer(zipEntry);
+            createDirectoryStreamer(zipEntry) :
+            createBinaryStreamer(zipEntry);
     }
 
     public ZipDirectoryStreamer createDirectoryStreamer(ZipStreamEntry zipEntry) {

@@ -45,9 +45,8 @@ public class CopyWorkerExecutor<S extends DirectoryStreamer, T extends Directory
     }
 
     @Override
-    protected SwingProgressWorker<CopyProgressModel>
-    createSwingWorker(CopyActionModel<S, T> actionModel,
-                      ProgressDialog<CopyProgressModel> progressDialog) {
+    protected SwingProgressWorker<CopyProgressModel> createSwingWorker(CopyActionModel<S, T> actionModel,
+                                                                       ProgressDialog<CopyProgressModel> progressDialog) {
         return new CopyWorker(actionModel, progressDialog);
     }
 

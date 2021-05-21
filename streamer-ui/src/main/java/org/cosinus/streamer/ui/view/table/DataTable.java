@@ -31,15 +31,17 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.awt.event.KeyEvent.KEY_PRESSED;
 import static java.awt.event.MouseEvent.*;
 import static java.lang.Math.abs;
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.IntStream.concat;
+import static java.util.stream.IntStream.range;
 import static javax.swing.KeyStroke.getKeyStroke;
 
 public abstract class DataTable extends Table implements FocusListener {
@@ -246,9 +248,10 @@ public abstract class DataTable extends Table implements FocusListener {
         List<Streamer> selectedElements = getTableModel().getSelectedElements();
         return !selectedElements.isEmpty() ?
             selectedElements :
-            Arrays.stream(getSelectedRows())
+            stream(getSelectedRows())
+                .filter(index -> index >= getTableModel().getMinimumToSelect())
                 .mapToObj(this::getElementAt)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     public void movePositionByName(String name) {
@@ -256,8 +259,8 @@ public abstract class DataTable extends Table implements FocusListener {
         int min = model.isTopVisible() ? 1 : 0;
         int start = getSelectedRow() + (name.length() == 1 ? 1 : 0);
 
-        IntStream.concat(IntStream.range(start, items.size()),
-                         IntStream.range(min, start))
+        concat(range(start, items.size()),
+               range(min, start))
             .filter(i -> items.get(i).getName().toLowerCase().startsWith(name.toLowerCase()))
             .findFirst()
             .ifPresent(this::setCurrentIndex);
@@ -319,7 +322,7 @@ public abstract class DataTable extends Table implements FocusListener {
 
     public void findElement(String name) {
         List<ViewItem> items = getAllElements();
-        IntStream.range(0, items.size())
+        range(0, items.size())
             .filter(i -> name.equals(items.get(i).getName()))
             .findFirst()
             .ifPresent(this::setCurrentIndex);

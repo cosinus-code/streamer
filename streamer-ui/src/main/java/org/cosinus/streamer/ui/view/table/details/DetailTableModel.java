@@ -17,7 +17,6 @@
 package org.cosinus.streamer.ui.view.table.details;
 
 import org.cosinus.streamer.api.Element;
-import org.cosinus.streamer.ui.preference.StreamerPreferences;
 import org.cosinus.streamer.ui.view.table.DataTableModel;
 import org.cosinus.streamer.ui.view.table.ViewItem;
 import org.cosinus.swing.translate.Translator;
@@ -29,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Arrays.stream;
+import static org.cosinus.streamer.ui.preference.StreamerPreferences.FULL_TYPE_DESCRIPTION;
 import static org.cosinus.swing.util.Formatter.formatMemorySize;
 
 public class DetailTableModel extends DataTableModel {
@@ -78,7 +78,7 @@ public class DetailTableModel extends DataTableModel {
             case VALUE:
                 return item.getStreamer().getValue();
             case TYPE:
-                return preferences.booleanPreference(StreamerPreferences.OPTION_FULL_TYPE_DESCR) ?
+                return preferences.booleanPreference(FULL_TYPE_DESCRIPTION) ?
                     item.getStreamer().getDescription() :
                     item.getStreamer().getType();
             case SIZE:

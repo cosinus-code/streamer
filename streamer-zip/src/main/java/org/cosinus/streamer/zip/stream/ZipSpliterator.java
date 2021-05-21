@@ -23,6 +23,7 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 
 import static java.lang.Long.MAX_VALUE;
+import static java.util.Optional.ofNullable;
 
 /**
  * Spliterator for zip entries
@@ -44,7 +45,7 @@ public class ZipSpliterator implements Spliterator<ZipStreamEntry> {
 
     protected Optional<ZipStreamEntry> nextEntry() {
         try {
-            return Optional.ofNullable(zipInputStream.getNextEntry());
+            return ofNullable(zipInputStream.getNextEntry());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

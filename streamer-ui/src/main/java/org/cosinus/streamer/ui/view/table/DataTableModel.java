@@ -32,8 +32,8 @@ import java.util.stream.IntStream;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static org.cosinus.streamer.ui.preference.StreamerPreferences.OPTION_HIDDEN;
-import static org.cosinus.streamer.ui.preference.StreamerPreferences.OPTION_TOP_VISIBLE;
+import static org.cosinus.streamer.ui.preference.StreamerPreferences.HIDDEN;
+import static org.cosinus.streamer.ui.preference.StreamerPreferences.TOP_VISIBLE;
 
 public abstract class DataTableModel extends TableModel {
 
@@ -158,11 +158,11 @@ public abstract class DataTableModel extends TableModel {
     }
 
     public boolean isTopVisible() {
-        return preferences.findBooleanPreference(OPTION_TOP_VISIBLE)
+        return preferences.findBooleanPreference(TOP_VISIBLE)
             .orElse(true);
     }
 
-    private int getMinimumToSelect() {
+    public int getMinimumToSelect() {
         return isTopVisible() ? 1 : 0;
     }
 
@@ -181,7 +181,7 @@ public abstract class DataTableModel extends TableModel {
         content.getContent()
             .stream()
             .filter(Objects::nonNull)
-            .filter(element -> !preferences.booleanPreference(OPTION_HIDDEN) || element.isHidden())
+            .filter(element -> !preferences.booleanPreference(HIDDEN) || element.isHidden())
             .map(ViewItem::new)
             .forEach(items::add);
         sort();

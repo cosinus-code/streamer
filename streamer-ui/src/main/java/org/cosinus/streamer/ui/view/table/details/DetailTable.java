@@ -16,7 +16,6 @@
 
 package org.cosinus.streamer.ui.view.table.details;
 
-import org.cosinus.streamer.ui.preference.StreamerPreferences;
 import org.cosinus.streamer.ui.view.table.DataTable;
 import org.cosinus.streamer.ui.view.table.DataTableModel;
 import org.cosinus.swing.image.icon.IconHandler;
@@ -44,10 +43,10 @@ public class DetailTable extends DataTable implements ActionListener {
     private static final int[] SIZE_COL = {200, 40, 50, 62, 110};
 
     private static final String[] COL_PREFERENCES = {
-        OPTION_COLUMN_VALUE,
-        OPTION_COLUMN_TYPE,
-        OPTION_COLUMN_SIZE,
-        OPTION_COLUMN_TIME
+        COLUMN_VALUE,
+        COLUMN_TYPE,
+        COLUMN_SIZE,
+        COLUMN_TIME
     };
 
     @Autowired
@@ -185,7 +184,7 @@ public class DetailTable extends DataTable implements ActionListener {
     public void updateForm() {
         super.updateForm();
 
-        setRowHeight(preferences.findIntPreference(StreamerPreferences.OPTION_ROW_HEIGHT)
+        setRowHeight(preferences.findIntPreference(ROW_HEIGHT)
                          .orElse(20));
     }
 

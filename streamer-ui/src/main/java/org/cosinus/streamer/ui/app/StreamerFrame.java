@@ -21,10 +21,10 @@ import org.cosinus.swing.boot.SwingApplicationFrame;
 import org.springframework.stereotype.Component;
 
 import java.awt.*;
-import java.util.Optional;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.util.Arrays.stream;
+import static java.util.Optional.ofNullable;
 
 @Component
 public class StreamerFrame extends SwingApplicationFrame {
@@ -53,7 +53,7 @@ public class StreamerFrame extends SwingApplicationFrame {
     }
 
     public void setVisibleSidebar(boolean visible) {
-        Optional.ofNullable(streamerViewHandler.getPanel(PanelLocation.LEFT))
+        ofNullable(streamerViewHandler.getPanel(PanelLocation.LEFT))
             .ifPresent(panel -> panel.setVisible(visible));
         split.setVisible(visible);
     }
@@ -61,10 +61,6 @@ public class StreamerFrame extends SwingApplicationFrame {
     @Override
     public void loadContent() {
         streamerViewHandler.getPanels().forEach(StreamerPanel::initContent);
-    }
-
-    public void updateForm() {
-        streamerViewHandler.getPanels().forEach(StreamerPanel::updateForm);
     }
 
     public StreamerView getCurrentView() {

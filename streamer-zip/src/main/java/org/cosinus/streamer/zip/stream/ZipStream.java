@@ -27,13 +27,13 @@ import java.util.stream.StreamSupport;
  */
 public class ZipStream {
 
-    public static Stream<ZipStreamEntry> of(InputStream inputStream) {
+    public static Stream<ZipStreamEntry> zipStream(InputStream inputStream) {
         return stream(new ZipEntryInputStream(inputStream));
     }
 
     public static Stream<ZipStreamEntry> walk(InputStream inputStream,
                                               String topPath) {
-        return of(inputStream)
+        return zipStream(inputStream)
                 .filter(zipEntry -> zipEntry.getName().startsWith(topPath));
     }
 

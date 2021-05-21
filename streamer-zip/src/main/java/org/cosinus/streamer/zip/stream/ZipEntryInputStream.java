@@ -29,7 +29,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class ZipEntryInputStream extends ZipInputStream {
 
     public ZipEntryInputStream(InputStream in) {
-        this(in, UTF_8);
+        super(in);
     }
 
     public ZipEntryInputStream(InputStream in, Charset charset) {
