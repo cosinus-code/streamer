@@ -26,21 +26,17 @@ import org.cosinus.streamer.ui.action.progress.ProgressListener;
 import org.cosinus.streamer.ui.action.progress.SimpleProgressModel;
 import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.form.Panel;
-import org.cosinus.swing.store.ApplicationStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.SOUTH;
 
 public abstract class StreamerView<T> extends Panel implements ProgressListener<SimpleProgressModel> {
-
-    public static final String LAST_ELEMENT = "last.element.";
 
     protected final String id;
 
@@ -57,7 +53,7 @@ public abstract class StreamerView<T> extends Panel implements ProgressListener<
     protected StreamerHandler streamerHandler;
 
     @Autowired
-    public ApplicationStorage applicationStorage;
+    public StreamerViewStorage streamerViewStorage;
 
     @Autowired
     public ActionController actionController;
@@ -85,23 +81,15 @@ public abstract class StreamerView<T> extends Panel implements ProgressListener<
         return loading;
     }
 
-    public void loadContent() {
+    @Override
+    public void initComponents() {
+        super.initComponents();
+
         this.loadingIndicator = createLoadingIndicator();
         add(panContent, CENTER);
         add(loadingIndicator, SOUTH);
 
         updateForm();
-    }
-
-    public void initDataContent() {
-        Optional.ofNullable(getInitialStreamer())
-            .ifPresent(this::loadStreamer);
-    }
-
-    public Streamer getInitialStreamer() {
-        return loadLastLoadedStreamer()
-            .flatMap(streamerHandler::findStreamerForUrlPath)
-            .orElseGet(streamerHandler::getDefaultStreamer);
     }
 
     public void loadStreamer(Streamer<T> streamer) {
@@ -117,19 +105,6 @@ public abstract class StreamerView<T> extends Panel implements ProgressListener<
         return location;
     }
 
-    public void setActive(boolean active) {
-    }
-
-    protected Optional<String> loadLastLoadedStreamer() {
-        return Optional.ofNullable(applicationStorage.getString(LAST_ELEMENT + getCurrentLocation()));
-    }
-
-    protected void saveLastLoadedStreamer() {
-        Optional.ofNullable(getLoadedStreamer())
-            .map(Streamer::getUrlPath)
-            .ifPresent(path -> applicationStorage.saveString(LAST_ELEMENT + getCurrentLocation(), path));
-    }
-
     @Override
     public void startProgress() {
         loadingIndicator.setVisible(true);
@@ -142,12 +117,16 @@ public abstract class StreamerView<T> extends Panel implements ProgressListener<
     @Override
     public void finishProgress() {
         loadingIndicator.setVisible(false);
-        saveLastLoadedStreamer();
+        streamerViewStorage.saveLastLoadedStreamer(getLoadedStreamer(), getCurrentLocation());
+    }
+
+    public boolean isActive() {
+        return location == streamerViewHandler.getCurrentLocation();
     }
 
     public void updateContent(StreamedContent<T> content) {
         internalUpdateContent(content);
-        if (location != streamerViewHandler.getCurrentLocation()) {
+        if (!isActive()) {
             setActive(false);
         } else {
             //TODO: to investigate why this is needed after delete
@@ -157,6 +136,8 @@ public abstract class StreamerView<T> extends Panel implements ProgressListener<
 
     public void showRename() {
     }
+
+    public abstract void setActive(boolean active);
 
     protected abstract void internalUpdateContent(StreamedContent<T> content);
 

@@ -25,11 +25,16 @@ import org.cosinus.swing.preference.Preferences;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicSplitPaneDivider;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 import static java.awt.event.MouseEvent.BUTTON3;
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.KEEP_DIVIDER_RELATIVE_LOCATION;
 

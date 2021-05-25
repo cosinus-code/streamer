@@ -12,13 +12,13 @@ import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
  * Start draw action
  */
 @Component
-public class EditPreferences implements ActionInContext<ActionContext> {
+public class EditPreferencesAction implements ActionInContext<ActionContext> {
 
     private static final String EDIT_PREFERENCES = "menu-edit-preferences";
 
     private final DialogHandler dialogHandler;
 
-    public EditPreferences(DialogHandler dialogHandler) {
+    public EditPreferencesAction(DialogHandler dialogHandler) {
         this.dialogHandler = dialogHandler;
     }
 

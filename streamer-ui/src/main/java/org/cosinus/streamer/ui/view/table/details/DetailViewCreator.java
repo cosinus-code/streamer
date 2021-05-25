@@ -16,18 +16,27 @@
 
 package org.cosinus.streamer.ui.view.table.details;
 
+import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.view.PanelLocation;
-import org.cosinus.streamer.ui.view.table.DataTable;
-import org.cosinus.streamer.ui.view.table.TableStreamerView;
+import org.cosinus.streamer.ui.view.StreamerView;
+import org.cosinus.streamer.ui.view.StreamerViewCreator;
+import org.springframework.stereotype.Component;
 
-public class DetailView extends TableStreamerView {
+@Component
+public class DetailViewCreator implements StreamerViewCreator<Streamer> {
 
-    public DetailView(PanelLocation location) {
-        super(location);
+    @Override
+    public StreamerView<Streamer> createStreamerView(PanelLocation location) {
+        return new DetailView(location);
     }
 
     @Override
-    protected DataTable createDataTable() {
-        return new DetailTable();
+    public String getName() {
+        return "details";
+    }
+
+    @Override
+    public String getHandledType() {
+        return null;
     }
 }

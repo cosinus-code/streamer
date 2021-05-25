@@ -14,27 +14,31 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.action.context;
+package org.cosinus.streamer.ui.action.view;
 
+import org.cosinus.streamer.ui.view.StreamerViewCreator;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.swing.action.ActionContextProvider;
+import org.cosinus.streamer.ui.view.table.icon.IconViewCreator;
 import org.springframework.stereotype.Component;
 
-/**
- * Implementation of {@link ActionContextProvider} for {@link StreamerActionContext}
- */
 @Component
-public class ElementActionContextProvider implements ActionContextProvider<StreamerActionContext> {
+public class ChangeToIconViewAction extends ChangeViewAction {
 
-    private final StreamerViewHandler streamerViewHandler;
+    private final IconViewCreator iconViewCreator;
 
-    public ElementActionContextProvider(StreamerViewHandler streamerViewHandler) {
-        this.streamerViewHandler = streamerViewHandler;
+    public ChangeToIconViewAction(StreamerViewHandler streamerViewHandler,
+                                  IconViewCreator iconViewCreator) {
+        super(streamerViewHandler);
+        this.iconViewCreator = iconViewCreator;
     }
 
     @Override
-    public StreamerActionContext provideActionContext() {
-        return new StreamerActionContext(streamerViewHandler.getCurrentView(),
-                                         streamerViewHandler.getOppositeView());
+    protected StreamerViewCreator getStreamerViewCreator() {
+        return iconViewCreator;
+    }
+
+    @Override
+    public String getId() {
+        return "menu-view-icon";
     }
 }

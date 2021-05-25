@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static java.util.Optional.ofNullable;
+
 @Component
 public class StreamerHandler {
 
@@ -58,6 +60,11 @@ public class StreamerHandler {
                              .orElseGet(rootStreamer::value));
     }
 
+    public Streamer getStreamer(String urlPath) {
+        return ofNullable(urlPath)
+            .flatMap(this::findStreamerForUrlPath)
+            .orElseGet(this::getDefaultStreamer);
+    }
     public Streamer getDefaultStreamer() {
         return defaultStreamer;
     }

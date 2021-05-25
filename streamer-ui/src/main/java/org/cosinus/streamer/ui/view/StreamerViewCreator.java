@@ -16,34 +16,14 @@
 
 package org.cosinus.streamer.ui.view;
 
-import org.cosinus.swing.form.Panel;
+import org.springframework.stereotype.Component;
 
-import java.awt.*;
-import java.awt.event.ComponentEvent;
+@Component
+public interface StreamerViewCreator<T> {
 
-import static java.awt.BorderLayout.CENTER;
+    StreamerView<T> createStreamerView(PanelLocation location);
 
-public class StreamerPanel extends Panel {
+    String getName();
 
-    private StreamerView view;
-
-    public StreamerPanel() {
-        setLayout(new BorderLayout());
-    }
-
-    public void setView(StreamerView view) {
-        this.view = view;
-        view.initComponents();
-        removeAll();
-        add(view, CENTER);
-    }
-
-    public StreamerView getView() {
-        return view;
-    }
-
-    @Override
-    public void translate() {
-        view.translate();
-    }
+    String getHandledType();
 }

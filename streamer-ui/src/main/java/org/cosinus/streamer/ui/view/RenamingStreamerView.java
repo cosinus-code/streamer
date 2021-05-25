@@ -61,7 +61,7 @@ public abstract class RenamingStreamerView extends StreamerView<Streamer> {
     }
 
     @Override
-    public void loadContent() {
+    public void initComponents() {
         txtRename = getRenameComponent();
         txtRename.setVisible(false);
         txtRename.addFocusListener(new FocusAdapter() {
@@ -84,7 +84,7 @@ public abstract class RenamingStreamerView extends StreamerView<Streamer> {
                 }
             }
         });
-        super.loadContent();
+        super.initComponents();
     }
 
     protected void validateInContainer(Container container) {

@@ -25,13 +25,17 @@ import org.cosinus.swing.form.TableModel;
 import org.cosinus.swing.preference.Preferences;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static java.util.Optional.ofNullable;
+import static java.util.stream.IntStream.range;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.HIDDEN;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.TOP_VISIBLE;
 
@@ -47,7 +51,7 @@ public abstract class DataTableModel extends TableModel {
 
     protected Streamer folder;
 
-    private int currentIndex = -1;
+    private int currentIndex;
 
     @Autowired
     public Preferences preferences;
@@ -83,18 +87,8 @@ public abstract class DataTableModel extends TableModel {
         if (index < 0 || index >= items.size()) {
             return false;
         }
-        return Optional.ofNullable(selectionMap.get(index))
+        return ofNullable(selectionMap.get(index))
             .orElse(false);
-    }
-
-    @Override
-    public int getColumnCount() {
-        return 0;
-    }
-
-    @Override
-    public int getRowCount() {
-        return 0;
     }
 
     public int getCurrentSortColumn() {
@@ -130,7 +124,7 @@ public abstract class DataTableModel extends TableModel {
         if (index < getMinimumToSelect() || index >= items.size()) {
             return;
         }
-        selectionMap.put(index, Optional.ofNullable(selectionMap.get(index))
+        selectionMap.put(index, ofNullable(selectionMap.get(index))
             .map(selected -> !selected)
             .orElse(true));
 
@@ -144,8 +138,8 @@ public abstract class DataTableModel extends TableModel {
         if (only) {
             clearSelection();
         }
-        IntStream.range(max(start, getMinimumToSelect()),
-                        min(items.size(), end + 1))
+        range(max(start, getMinimumToSelect()),
+              min(items.size(), end + 1))
             .forEach(i -> selectionMap.put(i, !deselect));
 
         //panel.updateStatus();
@@ -177,6 +171,7 @@ public abstract class DataTableModel extends TableModel {
                 //addElement(items.size());
             }
         }
+        fireTableDataChanged();
 
         content.getContent()
             .stream()
@@ -197,12 +192,16 @@ public abstract class DataTableModel extends TableModel {
             .collect(Collectors.toList());
     }
 
-//    public abstract void addElement(int index);
+//    public void addElement(int index) {
+//        fireTableCellUpdated(getRowForIndex(index),
+//                             getColumnForIndex(index));
+//    }
 
     public abstract int getRowForIndex(int index);
 
     public abstract int getColumnForIndex(int index);
 
-    public abstract int getIndex(int row,
-                                 int column);
+    public abstract int getIndex(int row, int column);
+
+    public abstract void translate();
 }

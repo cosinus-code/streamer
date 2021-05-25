@@ -16,25 +16,42 @@
 
 package org.cosinus.streamer.ui.app;
 
+import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.meta.StreamerHandler;
+import org.cosinus.streamer.ui.preference.StreamerPreferences;
 import org.cosinus.streamer.ui.view.*;
 import org.cosinus.swing.boot.SwingApplicationFrame;
+import org.cosinus.swing.preference.Preferences;
 import org.springframework.stereotype.Component;
 
 import java.awt.*;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.util.Arrays.stream;
-import static java.util.Optional.ofNullable;
+import static org.cosinus.streamer.ui.view.PanelLocation.LEFT;
+import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_LEFT_VIEW;
 
 @Component
 public class StreamerFrame extends SwingApplicationFrame {
 
     private MainSplit split;
 
+    private final StreamerHandler streamerHandler;
+
     private final StreamerViewHandler streamerViewHandler;
 
-    public StreamerFrame(StreamerViewHandler streamerViewHandler) {
+    private final StreamerViewStorage streamerViewStorage;
+
+    private final Preferences preferences;
+
+    public StreamerFrame(StreamerHandler streamerHandler,
+                         StreamerViewHandler streamerViewHandler,
+                         StreamerViewStorage streamerViewStorage,
+                         Preferences preferences) {
+        this.streamerHandler = streamerHandler;
         this.streamerViewHandler = streamerViewHandler;
+        this.streamerViewStorage = streamerViewStorage;
+        this.preferences = preferences;
     }
 
     @Override
@@ -45,22 +62,37 @@ public class StreamerFrame extends SwingApplicationFrame {
         split.initComponent();
 
         stream(PanelLocation.values())
-            .forEach(location -> split.add(streamerViewHandler.createStreamerPanel(location),
-                                           location.toString()));
+            .forEach(this::addStreamerPanel);
+        setVisibleSidebar(preferences.booleanPreference(SHOW_LEFT_VIEW));
 
-        setLayout(new BorderLayout());
-        add(split, CENTER);
+        getContentPane().setLayout(new BorderLayout());
+        getContentPane().removeAll();
+        getContentPane().add(split, CENTER);
+    }
+
+    private void addStreamerPanel(PanelLocation location) {
+        split.add(streamerViewHandler.createStreamerPanel(location),
+                  location.toString());
     }
 
     public void setVisibleSidebar(boolean visible) {
-        ofNullable(streamerViewHandler.getPanel(PanelLocation.LEFT))
+        streamerViewHandler.getPanel(LEFT)
             .ifPresent(panel -> panel.setVisible(visible));
-        split.setVisible(visible);
+        split.setVisibleDivider(visible);
     }
 
     @Override
     public void loadContent() {
-        streamerViewHandler.getPanels().forEach(StreamerPanel::initContent);
+        stream(PanelLocation.values())
+            .forEach(this::createAndLoadStreamerView);
+    }
+
+    protected void createAndLoadStreamerView(PanelLocation location) {
+        String urlPath = streamerViewStorage.loadLastLoadedStreamer(location)
+            .orElse(null);
+        Streamer streamer = streamerHandler.getStreamer(urlPath);
+        StreamerView view = streamerViewHandler.createStreamerView(streamer, location);
+        view.loadStreamer(streamer);
     }
 
     public StreamerView getCurrentView() {

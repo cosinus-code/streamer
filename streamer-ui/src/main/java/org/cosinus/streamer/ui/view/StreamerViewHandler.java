@@ -16,15 +16,19 @@
 
 package org.cosinus.streamer.ui.view;
 
+import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.meta.StreamerHandler;
-import org.cosinus.streamer.ui.view.table.details.DetailView;
+import org.cosinus.streamer.ui.view.table.details.DetailViewCreator;
+import org.cosinus.swing.preference.Preference;
+import org.cosinus.swing.preference.Preferences;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.groupingBy;
+import static org.cosinus.streamer.ui.preference.StreamerPreferences.LEFT_VIEW;
+import static org.cosinus.streamer.ui.preference.StreamerPreferences.RIGHT_VIEW;
 import static org.cosinus.streamer.ui.view.PanelLocation.LEFT;
 
 /**
@@ -37,10 +41,24 @@ public class StreamerViewHandler {
 
     private final Map<PanelLocation, StreamerPanel> panelsMap = new HashMap<>();
 
+    private final Preferences preferences;
+
     private final StreamerHandler streamerHandler;
 
-    public StreamerViewHandler(StreamerHandler streamerHandler) {
+    private final Map<Optional<String>, List<StreamerViewCreator>> streamerViewCreatorsMap;
+
+    private final StreamerViewCreator defaultStreamerViewCreator;
+
+    public StreamerViewHandler(Preferences preferences,
+                               StreamerHandler streamerHandler,
+                               Set<StreamerViewCreator> streamerViewCreators,
+                               DetailViewCreator defaultStreamerViewCreator) {
+        this.preferences = preferences;
         this.streamerHandler = streamerHandler;
+        this.streamerViewCreatorsMap = streamerViewCreators
+            .stream()
+            .collect(groupingBy(streamerViewCreator -> ofNullable(streamerViewCreator.getHandledType())));
+        this.defaultStreamerViewCreator = defaultStreamerViewCreator;
     }
 
     public PanelLocation getCurrentLocation() {
@@ -53,24 +71,45 @@ public class StreamerViewHandler {
     }
 
     public StreamerView getCurrentView() {
-        return ofNullable(panelsMap.get(currentLocation))
+        return getPanel(currentLocation)
             .map(StreamerPanel::getView)
             .orElse(null);
     }
 
     private void setActiveView(PanelLocation currentLocation) {
-        panelsMap.forEach((location, panel) -> panel.getView().setActive(location == currentLocation));
+        panelsMap.forEach((location, panel) -> ofNullable(panel.getView())
+            .ifPresent(view -> view.setActive(location == currentLocation)));
     }
 
-    public StreamerView createDataView(PanelLocation location) {
-        return new DetailView(location);
+    public StreamerView createStreamerView(Streamer streamer, PanelLocation location) {
+        StreamerView view = getStreamerViewCreator(streamer.getType(), location)
+            .createStreamerView(location);
+        view.initComponents();
+        getPanel(location)
+            .ifPresent(panel -> panel.setView(view));
+        return view;
+    }
+
+    public StreamerViewCreator getStreamerViewCreator(String type, PanelLocation location) {
+        return ofNullable(streamerViewCreatorsMap.get(ofNullable(type)))
+            .stream()
+            .flatMap(Collection::stream)
+            .filter(streamerViewCreator -> isPreferredView(streamerViewCreator, location))
+            .findFirst()
+            .orElse(defaultStreamerViewCreator);
+    }
+
+    protected boolean isPreferredView(StreamerViewCreator streamerViewCreator, PanelLocation location) {
+        return streamerViewCreator.getHandledType() == null ?
+            preferences.findPreference(LEFT == location ? LEFT_VIEW : RIGHT_VIEW)
+                .map(Preference::getRealValue)
+                .map(streamerViewCreator.getName()::equals)
+                .orElse(false) :
+            false;
     }
 
     public StreamerPanel createStreamerPanel(PanelLocation location) {
-        StreamerView dataView = createDataView(location);
-        dataView.initComponents();
-        StreamerPanel panel = new StreamerPanel(dataView);
-        panel.initComponents();
+        StreamerPanel panel = new StreamerPanel();
         panelsMap.put(location, panel);
         return panel;
     }
@@ -79,8 +118,8 @@ public class StreamerViewHandler {
         return panelsMap.values();
     }
 
-    public StreamerPanel getPanel(PanelLocation location) {
-        return panelsMap.get(location);
+    public Optional<StreamerPanel> getPanel(PanelLocation location) {
+        return ofNullable(panelsMap.get(location));
     }
 
     public StreamerView getOppositeView() {

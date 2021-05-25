@@ -14,27 +14,31 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.action.context;
+package org.cosinus.streamer.ui.action.view;
 
+import org.cosinus.streamer.ui.view.StreamerViewCreator;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.swing.action.ActionContextProvider;
+import org.cosinus.streamer.ui.view.table.details.DetailViewCreator;
 import org.springframework.stereotype.Component;
 
-/**
- * Implementation of {@link ActionContextProvider} for {@link StreamerActionContext}
- */
 @Component
-public class ElementActionContextProvider implements ActionContextProvider<StreamerActionContext> {
+public class ChangeToDetailViewAction extends ChangeViewAction {
 
-    private final StreamerViewHandler streamerViewHandler;
+    private final DetailViewCreator detailViewCreator;
 
-    public ElementActionContextProvider(StreamerViewHandler streamerViewHandler) {
-        this.streamerViewHandler = streamerViewHandler;
+    public ChangeToDetailViewAction(StreamerViewHandler streamerViewHandler,
+                                    DetailViewCreator detailViewCreator) {
+        super(streamerViewHandler);
+        this.detailViewCreator = detailViewCreator;
     }
 
     @Override
-    public StreamerActionContext provideActionContext() {
-        return new StreamerActionContext(streamerViewHandler.getCurrentView(),
-                                         streamerViewHandler.getOppositeView());
+    protected StreamerViewCreator getStreamerViewCreator() {
+        return detailViewCreator;
+    }
+
+    @Override
+    public String getId() {
+        return "menu-view-detail";
     }
 }

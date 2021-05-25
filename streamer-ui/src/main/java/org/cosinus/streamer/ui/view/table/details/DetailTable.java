@@ -35,7 +35,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static java.util.Arrays.stream;
+import static javax.swing.SwingUtilities.invokeLater;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.*;
 
 public class DetailTable extends DataTable implements ActionListener {
@@ -63,6 +66,7 @@ public class DetailTable extends DataTable implements ActionListener {
 
     protected int indexOfElementAtMousePosition = -1;
 
+    //TODO
     private boolean keyboardArrow;
 
     public PopupMenu popupHeader;
@@ -103,18 +107,18 @@ public class DetailTable extends DataTable implements ActionListener {
     private void setSelectionType() {
         setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         ListSelectionModel selectionModel = getSelectionModel();
-        selectionModel.addListSelectionListener(e -> {
+        selectionModel.addListSelectionListener(event -> {
             try {
-                ListSelectionModel lsm = (ListSelectionModel) e.getSource();
+                ListSelectionModel lsm = (ListSelectionModel) event.getSource();
                 if (lsm.isSelectionEmpty()) {
                     return;
                 }
-                if (e.getValueIsAdjusting()) {
+                if (event.getValueIsAdjusting()) {
                     return;
                 }
 
-                int first = e.getFirstIndex();
-                int last = e.getLastIndex();
+                int first = event.getFirstIndex();
+                int last = event.getLastIndex();
                 if (first == last) {
                     return;
                 }
@@ -123,8 +127,8 @@ public class DetailTable extends DataTable implements ActionListener {
                 int oldRow = selectedRow == first ? last : first;
                 indexOfElementAtMousePosition = selectedRow;
                 if (shiftDown) {
-                    int start = Math.min(oldRow, selectedRow);
-                    int end = Math.max(oldRow, selectedRow);
+                    int start = min(oldRow, selectedRow);
+                    int end = max(oldRow, selectedRow);
                     selectElements(start,
                                    end,
                                    true,
@@ -138,10 +142,11 @@ public class DetailTable extends DataTable implements ActionListener {
         });
     }
 
+    @Override
     protected void processComponentKeyEvent(KeyEvent keyEvent) {
         keyboardArrow = true;
         super.processComponentKeyEvent(keyEvent);
-        SwingUtilities.invokeLater(() -> keyboardArrow = true);
+        invokeLater(() -> keyboardArrow = true);
     }
 
     private void setHeaderPopup() {
@@ -176,8 +181,7 @@ public class DetailTable extends DataTable implements ActionListener {
 
     public TableCellRenderer getCellRenderer(int row,
                                              int column) {
-        return new DetailCell(preferences,
-                              iconHandler);
+        return new DetailCellRenderer();
     }
 
     @Override

@@ -73,7 +73,7 @@
     },
     "preview": {
       "type": "boolean",
-      "value": true
+      "value": false
     },
     "keep-divider": {
       "type": "boolean",
@@ -123,10 +123,6 @@
       "type": "boolean",
       "value": true
     },
-    "show-svg-icons": {
-      "type": "boolean",
-      "value": false
-    },
     "show-hidden": {
       "type": "boolean",
       "value": false
@@ -134,6 +130,10 @@
     "bound": {
       "type": "boolean",
       "value": false
+    },
+    "show-left-view": {
+      "type": "boolean",
+      "value": true
     }
   },
   "functional": {

@@ -18,7 +18,6 @@ package org.cosinus.streamer.ui.view.table;
 
 import org.cosinus.streamer.api.Element;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.action.LoadStreamerAction;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.ActionController;
@@ -33,7 +32,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.IntStream;
 
 import static java.awt.event.KeyEvent.KEY_PRESSED;
 import static java.awt.event.MouseEvent.*;
@@ -43,10 +41,9 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.concat;
 import static java.util.stream.IntStream.range;
 import static javax.swing.KeyStroke.getKeyStroke;
+import static org.cosinus.streamer.ui.action.ExecuteStreamerAction.EXECUTE_ELEMENT_ACTION_ID;
 
 public abstract class DataTable extends Table implements FocusListener {
-
-    public static final int DOUBLE_CLICK_SPEED = 300;
 
     public static final int FIND_ELEMENT_SPEED = 500;
 
@@ -67,6 +64,8 @@ public abstract class DataTable extends Table implements FocusListener {
     private String nameToFind = "";
 
     private long lastActionTime;
+
+    private int lastWidth, lastHeight;
 
     private DataTableModel model;
 
@@ -126,37 +125,30 @@ public abstract class DataTable extends Table implements FocusListener {
 //    }
 
     @Override
-    public void processMouseEvent(MouseEvent e) {
+    public void processMouseEvent(MouseEvent event) {
         try {
-            if (e.getID() == MOUSE_RELEASED) {
+            if (event.getID() == MOUSE_RELEASED) {
 //                Maestro.setDragged(false);
-            } else if (e.getID() == MOUSE_EXITED) {
+            } else if (event.getID() == MOUSE_EXITED) {
 //                Maestro.setDragItself(false);
-            } else if (e.getID() == MOUSE_ENTERED) {
+            } else if (event.getID() == MOUSE_ENTERED) {
 //                Maestro.setDragItself(true);
-            } else if (e.getID() == MOUSE_PRESSED) {
+            } else if (event.getID() == MOUSE_PRESSED) {
+                int index = getIndexForElementAtPoint(event.getPoint());
+                setCurrentIndex(index);
                 requestFocus();
-            } else if (e.getID() == MOUSE_CLICKED) {
-                int index = getIndexForElementAtPoint(e.getPoint());
-                Element element = getElementAt(index);
-                if (element != null) {
-                    if (e.getButton() == BUTTON1) {
-                        if (index == getCurrentIndex()) {
-                            if (isAction(e.getWhen(), DOUBLE_CLICK_SPEED)) {
-                                actionController.runAction(LoadStreamerAction.LOAD_ELEMENT_ACTION_ID);
-                            }
-                            return;
-                        }
+            } else if (event.getID() == MOUSE_CLICKED) {
+                if (event.getButton() == BUTTON1) {
+                    if (event.getClickCount() == 2) {
+                        actionController.runAction(EXECUTE_ELEMENT_ACTION_ID);
                     }
-//                    else if(e.getButton() == MouseEvent.BUTTON3){
-//                        requestFocus();
-//                        setCurrentIndex(index);
+                } else if (event.getButton() == MouseEvent.BUTTON3) {
+//                        Element element = getElementAt(index);
 //                        JPopupMenu popup = Maestro.getMainFrame().getPopupMenuElement(element);
 //                        if(popup != null) popup.show(jcTable.this, e.getX(), e.getY());
-//                    }
                 }
             }
-            super.processMouseEvent(e);
+            super.processMouseEvent(event);
         } catch (Exception ex) {
             errorHandler.handleError(this, ex);
         }
@@ -200,8 +192,7 @@ public abstract class DataTable extends Table implements FocusListener {
         super.processComponentKeyEvent(keyEvent);
     }
 
-    private boolean isAction(long actionTime,
-                             int speed) {
+    private boolean isAction(long actionTime, int speed) {
         boolean action = abs(this.lastActionTime - actionTime) < speed;
         lastActionTime = actionTime;
         return action;
@@ -219,29 +210,9 @@ public abstract class DataTable extends Table implements FocusListener {
         repaint();
     }
 
-    public void selectElements(int start,
-                               int end,
-                               boolean only,
-                               boolean deselect) {
-        selectElements(start,
-                       end,
-                       only,
-                       deselect,
-                       true);
-    }
-
-    public void selectElements(int start,
-                               int end,
-                               boolean only,
-                               boolean deselect,
-                               boolean repaint) {
-        getTableModel().addToSelection(start,
-                                       end,
-                                       only,
-                                       deselect);
-        if (repaint) {
-            repaint();
-        }
+    public void selectElements(int start, int end, boolean only, boolean deselect) {
+        getTableModel().addToSelection(start, end, only, deselect);
+        repaint();
     }
 
     public List<Streamer> getSelectedStreamers() {
@@ -338,6 +309,15 @@ public abstract class DataTable extends Table implements FocusListener {
 
     public Streamer getCurrentFolder() {
         return getTableModel().getCurrentFolder();
+    }
+
+    public void onResize() {
+        onResize(lastWidth, lastHeight);
+    }
+
+    public void onResize(int width, int height) {
+        lastWidth = width;
+        lastHeight = height;
     }
 
     protected DataTableModel getTableModel() {

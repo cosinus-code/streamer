@@ -65,11 +65,13 @@ public interface StreamerPreferences {
     String TEXT_TOOLBAR_ICONS = "text-toolbar-icons";
     String CHECK_UPDATE = "check-update";
     String SHOW_TREE_FILES = "show-tree-files";
-    String SIDEBAR = "show_sidebar";
+    String SHOW_LEFT_VIEW = "show-left-view";
     String CURRENT_BORDER = "current-border";
     String CONSOLE = "console";
     String DOUBLE_CLICK = "double-click";
     String DOUBLE_CLICK_TREE = "double-click-tree";
     String ALWAYS_SHOW_TAB = "always-show-tab";
     String KEEP_DIVIDER_RELATIVE_LOCATION = "keep-divider-relative-location";
+    String LEFT_VIEW = "left-view";
+    String RIGHT_VIEW = "right-view";
 }

@@ -17,6 +17,7 @@
 package org.cosinus.streamer.ui.action.context;
 
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.swing.action.ActionContext;
 
@@ -49,7 +50,7 @@ public class StreamerActionContext<T> implements ActionContext {
         this.currentStreamer = (Streamer<T>) currentView.getCurrentContent();
     }
 
-    public StreamerView<T> getCurrentView() {
+    public StreamerView<T>  getCurrentView() {
         return currentView;
     }
 
@@ -59,5 +60,9 @@ public class StreamerActionContext<T> implements ActionContext {
 
     public StreamerView<T> getOppositeView() {
         return oppositeView;
+    }
+
+    public PanelLocation getCurrentLocation() {
+        return currentView.getCurrentLocation();
     }
 }

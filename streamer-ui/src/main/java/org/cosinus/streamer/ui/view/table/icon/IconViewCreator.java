@@ -14,36 +14,29 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.view;
+package org.cosinus.streamer.ui.view.table.icon;
 
-import org.cosinus.swing.form.Panel;
+import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.ui.view.PanelLocation;
+import org.cosinus.streamer.ui.view.StreamerView;
+import org.cosinus.streamer.ui.view.StreamerViewCreator;
+import org.springframework.stereotype.Component;
 
-import java.awt.*;
-import java.awt.event.ComponentEvent;
+@Component
+public class IconViewCreator implements StreamerViewCreator<Streamer> {
 
-import static java.awt.BorderLayout.CENTER;
-
-public class StreamerPanel extends Panel {
-
-    private StreamerView view;
-
-    public StreamerPanel() {
-        setLayout(new BorderLayout());
-    }
-
-    public void setView(StreamerView view) {
-        this.view = view;
-        view.initComponents();
-        removeAll();
-        add(view, CENTER);
-    }
-
-    public StreamerView getView() {
-        return view;
+    @Override
+    public StreamerView<Streamer> createStreamerView(PanelLocation location) {
+        return new IconView(location);
     }
 
     @Override
-    public void translate() {
-        view.translate();
+    public String getName() {
+        return "icon";
+    }
+
+    @Override
+    public String getHandledType() {
+        return null;
     }
 }

@@ -25,18 +25,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Optional;
 
 import static java.awt.BorderLayout.CENTER;
-import static java.util.Optional.ofNullable;
-import static java.awt.Color.white;
 
 public abstract class TableStreamerView extends RenamingStreamerView {
 
     protected DataTable table;
+
+    private JScrollPane scroll;
 
     @Autowired
     private ApplicationUIHandler uiHandler;
@@ -50,7 +52,7 @@ public abstract class TableStreamerView extends RenamingStreamerView {
         this.table = createDataTable();
         table.initComponents();
 
-        JScrollPane scroll = new JScrollPane();
+        scroll = new JScrollPane();
         scroll.setEnabled(false);
         scroll.setViewportView(table);
         scroll.setFocusable(false);
@@ -62,13 +64,18 @@ public abstract class TableStreamerView extends RenamingStreamerView {
         });
         panContent.add(scroll, CENTER);
         table.init(this);
+
+        addComponentListener(new ResizeListener());
+
+        super.initComponents();
+
+        validateInContainer(table);
     }
 
     protected abstract DataTable createDataTable();
 
     @Override
     public void setActive(boolean active) {
-        super.setActive(active);
         if (active) {
             table.setCurrentIndex(table.getCurrentIndex());
         } else {
@@ -99,12 +106,6 @@ public abstract class TableStreamerView extends RenamingStreamerView {
     public void requestFocus() {
         super.requestFocus();
         table.requestFocus();
-    }
-
-    @Override
-    public void loadContent() {
-        super.loadContent();
-        validateInContainer(table);
     }
 
     @Override
@@ -174,4 +175,10 @@ public abstract class TableStreamerView extends RenamingStreamerView {
         super.translate();
         table.translate();
     }
-}
+
+    private class ResizeListener extends ComponentAdapter {
+        @Override
+        public void componentResized(ComponentEvent e) {
+            table.onResize(scroll.getWidth() - 30, scroll.getHeight() - 20);
+        }
+    }}

@@ -51,10 +51,10 @@ public class GoUpStreamerAction extends StreamerAction<Streamer<?>> {
     public void run(StreamerActionContext<Streamer<?>> context) {
         context.getCurrentView().goHome();
         Optional.of(context.getCurrentView())
-                .map(StreamerView::getLoadedStreamer)
-                .map(Streamer::getParent)
-                .map(parent -> new LoadActionModel(context.getCurrentView(), parent))
-                .ifPresent(actionExecutors::execute);
+            .map(StreamerView::getLoadedStreamer)
+            .map(Streamer::getParent)
+            .map(parent -> new LoadActionModel(context.getCurrentView(), parent))
+            .ifPresent(actionExecutors::execute);
     }
 
     @Override

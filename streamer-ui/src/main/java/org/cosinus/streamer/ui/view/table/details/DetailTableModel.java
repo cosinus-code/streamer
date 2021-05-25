@@ -121,13 +121,8 @@ public class DetailTableModel extends DataTableModel {
     }
 
     @Override
-    public int getIndex(int row,
-                        int column) {
+    public int getIndex(int row, int column) {
         return row;
-    }
-
-    @Override
-    public void initComponents() {
     }
 
     @Override
