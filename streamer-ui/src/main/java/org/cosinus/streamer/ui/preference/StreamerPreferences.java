@@ -32,7 +32,7 @@ public interface StreamerPreferences {
     String ALLOW_INTERNAL_OPEN = "allow-internal-open";
     String OPEN_IN_NEW_TAB = "open-new-tab";
     String PREVIEW = "preview";
-    String HIDDEN = "hidden";
+    String SHOW_HIDDEN = "hidden";
     String CHECK_TYPE = "check-type";
     String VERIFY_COPY = "verify-zip";
     String ICON_PATH = "icon-path";

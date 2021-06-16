@@ -63,6 +63,7 @@ public class LoadStreamerWorker<T> extends SwingWorker<StreamedContent<T>, T> {
         this.contentToSelect = loadActionModel.getContentToSelect();
         this.content = new ArrayList<>();
         this.progress = new SimpleProgressModel();
+        updateView();
     }
 
     @Override
@@ -80,9 +81,7 @@ public class LoadStreamerWorker<T> extends SwingWorker<StreamedContent<T>, T> {
         try {
             if (!isCancelled()) {
                 content.addAll(chunk);
-                streamerView.updateContent(new StreamedContent<T>(streamerToLoad, content, contentToSelect));
-                progress.updateProgress(content.size());
-                progressListenerHandler.setProgress(progress);
+                updateView();
             }
         } catch (Exception e) {
             LOG.error("Failed to update the view", e);
@@ -109,5 +108,11 @@ public class LoadStreamerWorker<T> extends SwingWorker<StreamedContent<T>, T> {
         } finally {
             progressListenerHandler.finishProgress();
         }
+    }
+
+    private void updateView() {
+        streamerView.updateContent(new StreamedContent<T>(streamerToLoad, content, contentToSelect));
+        progress.updateProgress(content.size());
+        progressListenerHandler.setProgress(progress);
     }
 }

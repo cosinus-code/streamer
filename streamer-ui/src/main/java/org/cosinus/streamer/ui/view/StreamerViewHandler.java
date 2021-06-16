@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.groupingBy;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.LEFT_VIEW;
@@ -82,7 +83,7 @@ public class StreamerViewHandler {
     }
 
     public StreamerView createStreamerView(Streamer streamer, PanelLocation location) {
-        StreamerView view = getStreamerViewCreator(streamer.getType(), location)
+        StreamerView view = getStreamerViewCreator(streamer, location)
             .createStreamerView(location);
         view.initComponents();
         getPanel(location)
@@ -90,8 +91,11 @@ public class StreamerViewHandler {
         return view;
     }
 
-    public StreamerViewCreator getStreamerViewCreator(String type, PanelLocation location) {
-        return ofNullable(streamerViewCreatorsMap.get(ofNullable(type)))
+    public StreamerViewCreator getStreamerViewCreator(Streamer streamer, PanelLocation location) {
+        return ofNullable(streamerViewCreatorsMap.get(ofNullable(streamer.getType())))
+            .or(() -> streamer.isDirectory() ?
+                ofNullable(streamerViewCreatorsMap.get(Optional.<String>empty())) :
+                empty())
             .stream()
             .flatMap(Collection::stream)
             .filter(streamerViewCreator -> isPreferredView(streamerViewCreator, location))

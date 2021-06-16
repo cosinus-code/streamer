@@ -36,7 +36,7 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.IntStream.range;
-import static org.cosinus.streamer.ui.preference.StreamerPreferences.HIDDEN;
+import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_HIDDEN;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.TOP_VISIBLE;
 
 public abstract class DataTableModel extends TableModel {
@@ -176,7 +176,7 @@ public abstract class DataTableModel extends TableModel {
         content.getContent()
             .stream()
             .filter(Objects::nonNull)
-            .filter(element -> !preferences.booleanPreference(HIDDEN) || element.isHidden())
+            .filter(element -> !preferences.booleanPreference(SHOW_HIDDEN) || element.isHidden())
             .map(ViewItem::new)
             .forEach(items::add);
         sort();
