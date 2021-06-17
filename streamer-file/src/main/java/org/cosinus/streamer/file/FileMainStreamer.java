@@ -54,8 +54,6 @@ public class FileMainStreamer extends MainStreamer<FileStreamer> {
 
     private final ProcessExecutor processExecutor;
 
-    private List<FileStreamer> roots;
-
     public FileMainStreamer(FileHandler fileHandler,
                             ProcessExecutor processExecutor) {
         this.fileHandler = fileHandler;
@@ -99,14 +97,7 @@ public class FileMainStreamer extends MainStreamer<FileStreamer> {
     }
 
     protected List<FileStreamer> getRoots() {
-        if (roots == null) {
-            updateRoots();
-        }
-        return roots;
-    }
-
-    protected void updateRoots() {
-        roots = fileHandler.getFileStores()
+        return fileHandler.getFileStores()
             .stream()
             .map(this::createFileRootElement)
             .collect(Collectors.toList());

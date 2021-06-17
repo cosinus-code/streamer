@@ -18,8 +18,14 @@ package org.cosinus.streamer.ui.action.progress;
 
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Stream;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * Handler for progress listeners
@@ -27,26 +33,37 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Component
 public class ProgressListenerHandler<P extends ProgressModel> {
 
-    //TODO: to groups listeners by action id
-    private final Queue<ProgressListener<P>> progressListeners = new ConcurrentLinkedQueue<>();
+    private final Map<String, Queue<ProgressListener<P>>> progressListenersMap = new HashMap<>();
 
-    public void register(ProgressListener<P> listener) {
-        progressListeners.add(listener);
+    public void register(String actionId, ProgressListener<P> listener) {
+        progressListenersMap
+            .computeIfAbsent(actionId, k -> new ConcurrentLinkedQueue<>())
+            .add(listener);
     }
 
-    public void startProgress() {
-        progressListeners
+    public void startProgress(String actionId) {
+        getListeners(actionId)
             .forEach(ProgressListener::startProgress);
     }
 
     public void setProgress(P progress) {
-        progressListeners
+        getListeners(progress.getActionId())
             .forEach(listener -> listener.setProgress(progress));
     }
 
-    public void finishProgress() {
-        progressListeners
-            .forEach(ProgressListener::finishProgress);
-        progressListeners.clear();
+    public void finishProgress(P progress) {
+        ofNullable(progressListenersMap.get(progress.getActionId()))
+            .ifPresent(this::finishProgress);
+    }
+
+    private void finishProgress(Collection<ProgressListener<P>> listeners) {
+        listeners.forEach(ProgressListener::finishProgress);
+        listeners.clear();
+    }
+
+    private Stream<ProgressListener<P>> getListeners(String actionId) {
+        return ofNullable(progressListenersMap.get(actionId))
+            .stream()
+            .flatMap(Collection::stream);
     }
 }

@@ -72,12 +72,12 @@ public class LoadActionExecutor<P extends ProgressModel> implements ActionExecut
 
 
         if (streamerToLoad.isDirectory()) {
-            progressListenerHandler.register(loadActionModel.getView());
+            progressListenerHandler.register(loadActionModel.getActionId(), loadActionModel.getView());
             LoadStreamerWorker worker = new LoadStreamerWorker(streamerToLoad,
                                                                loadActionModel);
             workersMap.put(loadActionModel.getActionId(), worker);
             worker.execute();
-            progressListenerHandler.startProgress();
+            progressListenerHandler.startProgress(loadActionModel.getActionId());
         }
     }
 

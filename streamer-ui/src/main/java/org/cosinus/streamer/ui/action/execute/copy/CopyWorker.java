@@ -18,18 +18,19 @@ package org.cosinus.streamer.ui.action.execute.copy;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cosinus.streamer.api.stream.binary.BinaryStream;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.DirectoryStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.consumer.BinaryStreamSaver;
 import org.cosinus.streamer.api.error.ConsumedStreamNotMatchException;
+import org.cosinus.streamer.api.stream.binary.BinaryStream;
 import org.cosinus.streamer.ui.action.execute.SwingProgressWorker;
 import org.cosinus.streamer.ui.action.progress.CopyProgressModel;
 import org.cosinus.streamer.ui.error.ActionCancelledException;
 import org.cosinus.streamer.ui.error.ActionException;
 import org.cosinus.streamer.ui.error.SkipActionException;
-import org.cosinus.swing.util.Formatter;
+import org.cosinus.swing.image.icon.IconHandler;
+import org.cosinus.swing.image.icon.IconSize;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -43,6 +44,9 @@ import static java.util.Optional.ofNullable;
 import static javax.swing.JOptionPane.*;
 import static org.cosinus.swing.dialog.OptionsDialog.DEFAULT_OPTION;
 import static org.cosinus.swing.dialog.OptionsDialog.INFORMATION_MESSAGE;
+import static org.cosinus.swing.util.Formatter.formatDate;
+import static org.cosinus.swing.util.Formatter.formatMemorySize;
+import static org.cosinus.swing.image.icon.IconSize.X32;
 
 /**
  * {@link SwingProgressWorker} for copying elements from a source system to target system
@@ -55,6 +59,9 @@ public class CopyWorker<S extends DirectoryStreamer, T extends DirectoryStreamer
     @Autowired
     private Translator translator;
 
+    @Autowired
+    private IconHandler iconHandler;
+
     private final CopyActionModel<S, T> copyModel;
 
     private final S source;
@@ -65,7 +72,7 @@ public class CopyWorker<S extends DirectoryStreamer, T extends DirectoryStreamer
                       Window parentWindow) {
         super(parentWindow,
               copyModel.getActionId(),
-              new CopyProgressModel());
+              new CopyProgressModel(copyModel.getActionId()));
         this.copyModel = copyModel;
         this.source = copyModel.getSource();
         this.destination = copyModel.getDestination();
@@ -87,31 +94,31 @@ public class CopyWorker<S extends DirectoryStreamer, T extends DirectoryStreamer
         try (Stream<? extends Streamer> streamers = source.flatStream(copyModel.getSourceFilter())) {
             streamers
                 .forEach(streamerToCopy -> {
-                checkActionStatus();
-                Path relativePath = getRelativePath(source, streamerToCopy);
-                Path targetPath = destination.getPath().resolve(relativePath);
-                if (streamerToCopy.isDirectory()) {
-                    DirectoryStreamer target = destination.createDirectoryStreamer(targetPath);
-                    if (!target.exists()) {
-                        target.save();
+                    checkActionStatus();
+                    Path relativePath = getRelativePath(source, streamerToCopy);
+                    Path targetPath = destination.getPath().resolve(relativePath);
+                    if (streamerToCopy.isDirectory()) {
+                        DirectoryStreamer target = destination.createDirectoryStreamer(targetPath);
+                        if (!target.exists()) {
+                            target.save();
+                        }
+                        return;
                     }
-                    return;
-                }
 
-                BinaryStreamer target = destination.createBinaryStreamer(targetPath);
-                progress.startElementProgress(streamerToCopy, target);
-                setProgress(progress);
-                if (target.exists() && copyModel.shouldSkip(source, target)) {
-                    LOG.trace("Action skipped: copy " + source.getPath() + " to " + target.getPath());
-                    progress.updateElementProgress(source.getSize());
-                    progress.finishElementProgress();
+                    BinaryStreamer target = destination.createBinaryStreamer(targetPath);
+                    progress.startElementProgress(streamerToCopy, target);
                     setProgress(progress);
-                    return;
-                }
+                    if (target.exists() && copyModel.shouldSkip(source, target)) {
+                        LOG.trace("Action skipped: copy " + source.getPath() + " to " + target.getPath());
+                        progress.updateElementProgress(source.getSize());
+                        progress.finishElementProgress();
+                        setProgress(progress);
+                        return;
+                    }
 
-                BinaryStreamer binaryStreamer = (BinaryStreamer) streamerToCopy;
-                saveBinaryStreamer(binaryStreamer, prepareTarget(binaryStreamer, target));
-            });
+                    BinaryStreamer binaryStreamer = (BinaryStreamer) streamerToCopy;
+                    saveBinaryStreamer(binaryStreamer, prepareTarget(binaryStreamer, target));
+                });
         }
     }
 
@@ -218,12 +225,11 @@ public class CopyWorker<S extends DirectoryStreamer, T extends DirectoryStreamer
 
         CopyOverwriteOption overwriteOption = dialogHandler.showCustomOptionDialog(
             parentWindow,
-            getOverwriteMessage(source, target),
             translator.translate("act_copy_file_exists"),
+            getOverwriteMessage(source, target),
             DEFAULT_OPTION,
             INFORMATION_MESSAGE,
-            //TODO: source.getIcon(),
-            null,
+            iconHandler.findIconByFile(source.getPath().toFile(), IconSize.X32).orElse(null),
             3,
             450,
             CopyOverwriteOption.values());
@@ -254,10 +260,10 @@ public class CopyWorker<S extends DirectoryStreamer, T extends DirectoryStreamer
                       translator.translate("act_copy_already_exists",
                                            target.getPath()),
                       translator.translate("act_copy_source_mofified",
-                                           Formatter.formatTime(source.lastModified()),
-                                           Formatter.formatMemorySize(source.getSize())),
+                                           formatDate(source.lastModified()),
+                                           formatMemorySize(source.getSize())),
                       translator.translate("act_copy_target_modified",
-                                           Formatter.formatTime(target.lastModified()),
-                                           Formatter.formatMemorySize(target.getSize())));
+                                           formatDate(target.lastModified()),
+                                           formatMemorySize(target.getSize())));
     }
 }

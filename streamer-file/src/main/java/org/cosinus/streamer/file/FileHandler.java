@@ -56,7 +56,9 @@ public class FileHandler {
 
     public boolean isSameFile(Path path1, Path path2) {
         try {
-            return Files.isSameFile(path1, path2);
+            return path1.toFile().exists() &&
+                path2.toFile().exists() &&
+                Files.isSameFile(path1, path2);
         } catch (IOException ex) {
             LOG.error("Failed to compare files: " + path1 + " and " + path2, ex);
             return false;

@@ -21,6 +21,8 @@ package org.cosinus.streamer.ui.action.progress;
  */
 public class SimpleProgressModel implements ProgressModel {
 
+    private final String actionId;
+
     private long progressSize;
 
     private long progressDone;
@@ -32,6 +34,15 @@ public class SimpleProgressModel implements ProgressModel {
     private long speed;
 
     private long remainingTime;
+
+    public SimpleProgressModel(String actionId) {
+        this.actionId = actionId;
+    }
+
+    @Override
+    public String getActionId() {
+        return actionId;
+    }
 
     public void startProgress(long totalProgressSize) {
         startTime = System.currentTimeMillis();

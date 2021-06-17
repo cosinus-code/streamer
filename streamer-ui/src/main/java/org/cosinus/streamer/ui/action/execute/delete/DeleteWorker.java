@@ -40,7 +40,7 @@ public class DeleteWorker extends SwingProgressWorker<ElementsProgressModel> {
                         DeleteActionModel deleteModel) {
         super(parentWindow,
               deleteModel.getActionId(),
-              new ElementsProgressModel());
+              new ElementsProgressModel(deleteModel.getActionId()));
         this.deleteModel = deleteModel;
     }
 

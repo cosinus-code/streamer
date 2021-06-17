@@ -86,7 +86,7 @@ public abstract class AbstractCopyAction<A> extends StreamerAction<A> {
 
     protected <S extends Streamer, T extends Streamer> void execute(CopyActionModel<S, T> copyAction,
                                                                     StreamerActionContext actionContext) {
-        progressListenerHandler.register(new DefaultProgressListener() {
+        progressListenerHandler.register(copyAction.getActionId(), new DefaultProgressListener() {
             @Override
             public void finishProgress() {
                 loadStreamerAction.run(new StreamerActionContext(actionContext.getOppositeView()));

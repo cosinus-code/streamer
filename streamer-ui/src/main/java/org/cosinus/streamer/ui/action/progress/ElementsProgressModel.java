@@ -25,6 +25,10 @@ public class ElementsProgressModel extends SimpleProgressModel {
 
     private Streamer currentStreamer;
 
+    public ElementsProgressModel(String actionId) {
+        super(actionId);
+    }
+
     public void updateProgress(Streamer streamer) {
         super.updateProgress(1);
         this.currentStreamer = streamer;

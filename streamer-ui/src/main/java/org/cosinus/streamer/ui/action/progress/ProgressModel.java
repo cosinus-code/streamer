@@ -20,4 +20,6 @@ package org.cosinus.streamer.ui.action.progress;
  * Generic interface for a progress model
  */
 public interface ProgressModel {
+
+    String getActionId();
 }

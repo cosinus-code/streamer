@@ -50,13 +50,13 @@ public abstract class SwingProgressWorkerActionExecutor<A extends ActionModel, P
     public void execute(A actionModel) {
 
         ProgressDialog<P> progressDialog = createProgressDialog(actionModel);
-        progressListenerHandler.register(progressDialog);
+        progressListenerHandler.register(actionModel.getActionId(), progressDialog);
 
         SwingProgressWorker<P> worker = createSwingWorker(actionModel, progressDialog);
         workersMap.put(actionModel.getActionId(), worker);
 
         worker.execute();
-        progressListenerHandler.startProgress();
+        progressListenerHandler.startProgress(actionModel.getActionId());
     }
 
     @Override

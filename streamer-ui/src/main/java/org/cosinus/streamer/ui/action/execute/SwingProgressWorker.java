@@ -115,7 +115,7 @@ public abstract class SwingProgressWorker<P extends ProgressModel> extends Swing
 
         Optional.ofNullable(error)
             .ifPresent(error -> errorHandler.handleError(parentWindow, error));
-        progressListenerHandler.finishProgress();
+        progressListenerHandler.finishProgress(progress);
     }
 
     protected void checkActionStatus() {

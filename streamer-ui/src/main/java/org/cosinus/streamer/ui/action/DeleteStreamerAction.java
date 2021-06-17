@@ -94,7 +94,7 @@ public class DeleteStreamerAction extends StreamerAction<Streamer<?>> {
                                   translator.translate("act-delete-are-you-sure-elements"),
                                   getActionName(),
                                   YES_NO_CANCEL_OPTION)) {
-            progressListenerHandler.register(new DefaultProgressListener() {
+            progressListenerHandler.register(deleteAction.getActionId(), new DefaultProgressListener() {
                 @Override
                 public void finishProgress() {
                     loadStreamerAction.run(new StreamerActionContext(actionContext.getCurrentView()));

@@ -27,13 +27,21 @@ public class CopyProgressModel implements ProgressModel {
 
     private final SimpleProgressModel elementProgressModel;
 
+    private final String actionId;
+
     private Streamer source;
 
     private Streamer target;
 
-    public CopyProgressModel() {
-        totalProgressModel = new SimpleProgressModel();
-        elementProgressModel = new SimpleProgressModel();
+    public CopyProgressModel(String actionId) {
+        this.actionId = actionId;
+        totalProgressModel = new SimpleProgressModel(actionId);
+        elementProgressModel = new SimpleProgressModel(actionId);
+    }
+
+    @Override
+    public String getActionId() {
+        return actionId;
     }
 
     public int getTotalProgress() {
