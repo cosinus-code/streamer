@@ -20,10 +20,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.util.Optional;
+
+import static java.awt.Cursor.E_RESIZE_CURSOR;
+import static java.awt.event.MouseEvent.*;
+import static java.util.stream.IntStream.range;
 
 public class DetailHeader extends JTableHeader {
 
@@ -37,46 +41,41 @@ public class DetailHeader extends JTableHeader {
     }
 
     @Override
-    protected void processMouseEvent(MouseEvent evt) {
-        switch (evt.getID()) {
-            case MouseEvent.MOUSE_PRESSED:
-                if (!setMousePressed(evt)) {
-                    return;
-                }
-                break;
-            case MouseEvent.MOUSE_RELEASED:
-                if (!setMouseReleased(evt)) {
-                    return;
-                }
-                break;
-            case MouseEvent.MOUSE_EXITED:
-                setMouseMoved(evt,
-                              false);
-                break;
+    protected void processMouseEvent(MouseEvent event) {
+        if (event.getID() == MOUSE_PRESSED) {
+            if (!processMousePressed(event)) {
+                return;
+            }
+        } else if (event.getID() == MOUSE_RELEASED) {
+            if (!processMouseReleased(event)) {
+                return;
+            }
+        } else if (event.getID() == MOUSE_EXITED) {
+            processMouseOver(event, false);
         }
-        super.processMouseEvent(evt);
+        super.processMouseEvent(event);
     }
 
     @Override
-    protected void processMouseMotionEvent(MouseEvent evt) {
-        if (evt.getID() == MouseEvent.MOUSE_MOVED) {
-            setMouseMoved(evt, true);
+    protected void processMouseMotionEvent(MouseEvent event) {
+        if (event.getID() == MOUSE_MOVED) {
+            processMouseOver(event, true);
         }
-        super.processMouseMotionEvent(evt);
+        super.processMouseMotionEvent(event);
     }
 
-    private boolean setMousePressed(MouseEvent evt) {
-        table.requestFocus();
-        if (evt.getButton() == MouseEvent.BUTTON3) {
-            ((DetailTable) table).getPopupHeader().show(this,
-                                                        evt.getX(),
-                                                        evt.getY());
+    private boolean processMousePressed(MouseEvent event) {
+        getTable().requestFocus();
+        if (event.getButton() == BUTTON3) {
+            getTable().getPopupHeader().show(this,
+                                             event.getX(),
+                                             event.getY());
             return false;
         }
 
-        TableColumnModel colModel = table.getColumnModel();
+        TableColumnModel colModel = getTable().getColumnModel();
 
-        clickedColumn = colModel.getColumnIndexAtX(evt.getX());
+        clickedColumn = colModel.getColumnIndexAtX(event.getX());
         if (clickedColumn == -1) {
             return true;
         }
@@ -85,35 +84,29 @@ public class DetailHeader extends JTableHeader {
         if (clickedColumn == 0) {
             headerRect.width -= 3;
         } else {
-            headerRect.grow(-3,
-                            0);
+            headerRect.grow(-3, 0);
         }
 
-        if (!headerRect.contains(evt.getX(),
-                                 evt.getY())) {
+        if (!headerRect.contains(event.getX(), event.getY())) {
             leftColIndex = clickedColumn;
-            if (evt.getX() < headerRect.x) {
+            if (event.getX() < headerRect.x) {
                 leftColIndex--;
             }
             if (leftColIndex < 0) {
                 leftColIndex = 0;
             }
             clickedColumn = -1;
-        } else {
-            setHeaderCellPressed(true);
-            getTable().getTableHeader().repaint(getTable().getTableHeader().getHeaderRect(clickedColumn));
         }
 
         return true;
     }
 
-    private boolean setMouseReleased(MouseEvent evt) {
+    private boolean processMouseReleased(MouseEvent event) {
         try {
-            if (clickedColumn >= 0 && evt.getButton() != MouseEvent.BUTTON3) {
-                int oldSortedCol = ((DetailTable) table).getCurrentSortColumn();
-                ((DetailTable) table).sort(clickedColumn);
+            if (clickedColumn >= 0 && event.getButton() != BUTTON3) {
+                int oldSortedCol = getTable().getCurrentSortColumn();
+                getTable().sort(clickedColumn);
 
-                setHeaderCellPressed(false);
                 getTable().getTableHeader().repaint(getTable().getTableHeader().getHeaderRect(clickedColumn));
                 if (clickedColumn != oldSortedCol) {
                     getTable().getTableHeader().repaint(getTable().getTableHeader().getHeaderRect(oldSortedCol));
@@ -127,37 +120,41 @@ public class DetailHeader extends JTableHeader {
         }
     }
 
-    public void setMouseMoved(MouseEvent evt,
-                              boolean over) {
-        int colOver = getOverColumn(evt, over);
+    public void processMouseOver(MouseEvent event, boolean over) {
+        Optional<Integer> cellIndex = getColumnIndexForPoint(event.getX(), event.getY());
 
-        if (colOver > -1) {
-            TableColumnModel model = table.getColumnModel();
-            for (int i = 0; i < model.getColumnCount(); i++) {
-                TableCellRenderer renderer = model.getColumn(i).getHeaderRenderer();
-                ((DetailHeaderCell) renderer).setOver(i == colOver);
-            }
-        }
+        Cursor cursor = cellIndex
+            .filter(index -> over && isMouseOverCellRightMargin(index, event))
+            .map(c -> E_RESIZE_CURSOR)
+            .map(Cursor::getPredefinedCursor)
+            .orElse(null);
+
+        getTable().getView().setCursor(cursor);
+
+        TableColumnModel model = getTable().getColumnModel();
+        range(0, model.getColumnCount())
+            .forEach(i -> {
+                DetailHeaderCell c = (DetailHeaderCell) model.getColumn(i).getHeaderRenderer();
+                boolean cellOver = over && cellIndex.map(index -> index == i).orElse(false);
+                c.setOver(cellOver);
+            });
     }
 
-    private int getOverColumn(MouseEvent evt,
-                              boolean over) {
-        if (over) {
-            int colOver = table.getColumnModel().getColumnIndexAtX(evt.getX());
-            if (colOver > -1) {
-                Rectangle headerRectangle = getHeaderRect(colOver);
-                if (headerRectangle.contains(evt.getX(),
-                                             evt.getY())) {
-                    return colOver;
-                }
-            }
-        }
-
-        return -1;
+    private Optional<Integer> getColumnIndexForPoint(int x, int y) {
+        return Optional.of(getTable().getColumnModel().getColumnIndexAtX(x))
+            .filter(columnIndex -> columnIndex >= 0)
+            .filter(columnIndex -> getHeaderRect(columnIndex).contains(x, y));
     }
 
-    private void setHeaderCellPressed(boolean pressed) {
-        TableCellRenderer renderer = table.getColumnModel().getColumn(clickedColumn).getHeaderRenderer();
-        ((DetailHeaderCell) renderer).setPressed(pressed);
+    public boolean isMouseOverCellRightMargin(int index, MouseEvent event) {
+        Rectangle cellRectangle = getHeaderRect(index);
+        int marginSize = 4;
+        return event.getX() > cellRectangle.getX() + cellRectangle.getWidth() - marginSize &&
+            event.getX() < getWidth() - marginSize;
+    }
+
+    @Override
+    public DetailTable getTable() {
+        return (DetailTable) super.getTable();
     }
 }

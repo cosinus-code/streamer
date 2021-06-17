@@ -40,9 +40,6 @@ public abstract class TableStreamerView extends RenamingStreamerView {
 
     private JScrollPane scroll;
 
-    @Autowired
-    private ApplicationUIHandler uiHandler;
-
     protected TableStreamerView(PanelLocation location) {
         super(location);
     }

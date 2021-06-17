@@ -19,19 +19,28 @@ package org.cosinus.streamer.ui.view.table.details;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.ui.view.table.DataTable;
+import org.cosinus.swing.form.control.Label;
+import org.cosinus.swing.ui.ApplicationUIHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
+import javax.swing.border.CompoundBorder;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
 import static java.util.Optional.ofNullable;
 import static org.cosinus.swing.border.Borders.emptyBorder;
+import static org.cosinus.swing.border.Borders.lineBorder;
+import static org.cosinus.swing.color.Colors.getLighterColor;
 
-public class DetailHeaderCell extends JButton implements TableCellRenderer {
+public class DetailHeaderCell extends Label implements TableCellRenderer {
 
     private static final Logger LOG = LogManager.getLogger(DetailHeaderCell.class);
 
-    protected boolean pressed, ascending, sorted, over;
+    protected boolean ascending, sorted, over;
+
+    @Autowired
+    private ApplicationUIHandler uiHandler;
 
     public DetailHeaderCell() {
         init();
@@ -39,7 +48,6 @@ public class DetailHeaderCell extends JButton implements TableCellRenderer {
 
     public void init() {
         setHorizontalAlignment(SwingConstants.LEFT);
-        setContentAreaFilled(false);
         setOpaque(true);
     }
 
@@ -47,21 +55,12 @@ public class DetailHeaderCell extends JButton implements TableCellRenderer {
         this.over = over;
     }
 
-    public void setPressed(boolean pressed) {
-        this.pressed = pressed;
-    }
-
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        paintHeaderCellSeparator(g);
         if (sorted) {
             paintSortedSign(g);
         }
-    }
-
-    protected void paintHeaderCellSeparator(Graphics g) {
-        g.drawLine(getWidth(), 0, getWidth(), getHeight());
     }
 
     protected void paintSortedSign(Graphics g) {
@@ -98,7 +97,10 @@ public class DetailHeaderCell extends JButton implements TableCellRenderer {
                 sorted = table.getCurrentSortColumn() == colIndex;
                 ascending = table.isSortAscending();
             }
-            customizeCellRenderer();
+            Color backgroundColor = uiHandler.getColor("TableHeader.background");
+            setBackground(over ? getLighterColor(backgroundColor) : backgroundColor);
+            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            customizeCellRenderer(colIndex);
 
             ofNullable(value)
                 .map(Object::toString)
@@ -111,7 +113,8 @@ public class DetailHeaderCell extends JButton implements TableCellRenderer {
         return this;
     }
 
-    protected void customizeCellRenderer() {
-        setBorder(emptyBorder(3));
+    protected void customizeCellRenderer(int colIndex) {
+        setBorder(new CompoundBorder(lineBorder(uiHandler.getColor("inactiveCaption"), 0, colIndex > 0 ? 1 : 0, 1, 0),
+                                     emptyBorder(3)));
     }
 }

@@ -28,6 +28,6 @@ public class DetailView extends TableStreamerView {
 
     @Override
     protected DataTable createDataTable() {
-        return new DetailTable();
+        return new DetailTable(this);
     }
 }

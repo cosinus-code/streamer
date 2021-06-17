@@ -71,6 +71,16 @@ public class DetailTable extends DataTable implements ActionListener {
 
     public PopupMenu popupHeader;
 
+    private final DetailView view;
+
+    public DetailTable(DetailView view) {
+        this.view = view;
+    }
+
+    public DetailView getView() {
+        return view;
+    }
+
     @Override
     public void initComponents() {
         super.initComponents();
