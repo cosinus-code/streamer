@@ -61,8 +61,24 @@ public abstract class FileStreamer<T> implements Streamer<T> {
             .orElse(fileMainStreamer);
     }
 
+    @Override
+    public DirectoryStreamer getRootStreamer() {
+        return fileMainStreamer
+            .getRoots()
+            .stream()
+            .filter(streamer -> getPath().startsWith(streamer.getPath()))
+            .findFirst()
+            .orElse(null);
+    }
+
+    @Override
     public long getFreeSpace() {
         return file.getFreeSpace();
+    }
+
+    @Override
+    public long getTotalSpace() {
+        return file.getTotalSpace();
     }
 
     @Override

@@ -16,8 +16,6 @@
 
 package org.cosinus.streamer.file;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.DirectoryStreamer;
 import org.cosinus.streamer.api.Streamer;
@@ -46,8 +44,6 @@ import static org.cosinus.swing.image.icon.IconProvider.ICON_COMPUTER;
 @ConditionalOnProperty(name = "streamer.file.enabled", matchIfMissing = true)
 public class FileMainStreamer extends MainStreamer<FileStreamer> {
 
-    private static final Logger LOG = LogManager.getLogger(FileMainStreamer.class);
-
     public static final String FILE_PROTOCOL = "file://";
 
     private final FileHandler fileHandler;
@@ -62,7 +58,9 @@ public class FileMainStreamer extends MainStreamer<FileStreamer> {
 
     @Override
     public Stream<FileStreamer> stream() {
-        return getRoots().stream();
+        return getRoots()
+            .stream()
+            .map(FileStreamer.class::cast);
     }
 
     @Override
@@ -89,31 +87,29 @@ public class FileMainStreamer extends MainStreamer<FileStreamer> {
             .map(this::create);
     }
 
-    public Optional<FileStreamer> findRoot(Path path) {
+    public Optional<FileRootStreamer> findRoot(Path path) {
         return getRoots()
             .stream()
             .filter(root -> fileHandler.isSameFile(path, root.getPath()))
             .findFirst();
     }
 
-    protected List<FileStreamer> getRoots() {
+    protected List<FileRootStreamer> getRoots() {
         return fileHandler.getFileStores()
             .stream()
-            .map(this::createFileRootElement)
+            .map(this::createFileRootStreamer)
             .collect(Collectors.toList());
     }
 
-    protected FileRootStreamer createFileRootElement(OSFileStore fileStore) {
+    protected FileRootStreamer createFileRootStreamer(OSFileStore fileStore) {
         return new FileRootStreamer(this, fileHandler, fileStore);
     }
-
 
     public Optional<Streamer> find(Path path) {
         return findRoot(path)
             .map(Streamer.class::cast)
             .or(() -> Optional.of(path)
                 .map(Path::toFile)
-                .filter(File::exists)
                 .map(file -> create(path, file.isDirectory())));
     }
 
@@ -136,7 +132,7 @@ public class FileMainStreamer extends MainStreamer<FileStreamer> {
 
     @Override
     public boolean exists() {
-        return false;
+        return true;
     }
 
 

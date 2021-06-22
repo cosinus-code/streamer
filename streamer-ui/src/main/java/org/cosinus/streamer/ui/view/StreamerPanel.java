@@ -17,25 +17,91 @@
 package org.cosinus.streamer.ui.view;
 
 import org.cosinus.swing.form.Panel;
+import org.cosinus.swing.form.control.Label;
+import org.cosinus.swing.preference.Preferences;
+import org.cosinus.swing.translate.Translator;
+import org.cosinus.swing.ui.ApplicationUIHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentEvent;
 
-import static java.awt.BorderLayout.CENTER;
+import static java.awt.BorderLayout.*;
+import static java.util.Optional.ofNullable;
+import static org.cosinus.streamer.ui.preference.StreamerPreferences.ADDRESS_TOP;
+import static org.cosinus.swing.border.Borders.emptyBorder;
+import static org.cosinus.swing.util.Formatter.formatTextForLabel;
 
 public class StreamerPanel extends Panel {
+
+    @Autowired
+    private ApplicationUIHandler uiHandler;
+
+    @Autowired
+    private Preferences preferences;
+
+    @Autowired
+    private Translator translator;
+
+    private final Label addressLabel;
+
+    private final JLabel freeSpaceLabel;
+
+    private final FreeSpace freeSpace;
 
     private StreamerView view;
 
     public StreamerPanel() {
+        this.addressLabel = new Label(" ");
+        addressLabel.setBorder(emptyBorder(2));
+        addressLabel.setOpaque(true);
+        ofNullable(uiHandler.getInactiveCaptionColor())
+            .or(() -> ofNullable(uiHandler.getColor("ScrollBar.background")))
+            .ifPresent(addressLabel::setBackground);
+        ofNullable(uiHandler.getInactiveCaptionTextColor())
+            .or(() -> ofNullable(uiHandler.getColor("TextField.foreground")))
+            .ifPresent(addressLabel::setForeground);
+        addressLabel.setForeground(uiHandler.getInactiveCaptionTextColor());
+
+        this.freeSpace = new FreeSpace();
+
+        this.freeSpaceLabel = new JLabel(translator.translate("free_space"));
+        freeSpaceLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        freeSpaceLabel.setVisible(false);
+
+        JPanel freesSpacePanel = new JPanel(new BorderLayout(5, 5));
+        freesSpacePanel.add(freeSpaceLabel, CENTER);
+        freesSpacePanel.add(freeSpace, EAST);
+        freesSpacePanel.setBorder(emptyBorder(3));
+
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.add(freesSpacePanel, NORTH);
+        if (preferences.booleanPreference(ADDRESS_TOP)) {
+            topPanel.add(addressLabel, SOUTH);
+        }
+
         setLayout(new BorderLayout());
+        add(topPanel, NORTH);
     }
 
     public void setView(StreamerView view) {
-        this.view = view;
         view.initComponents();
-        removeAll();
+
+        ofNullable(this.view)
+            .ifPresent(this::remove);
         add(view, CENTER);
+        revalidate();
+
+        this.view = view;
+    }
+
+    public void setFreeSpace(long freeSpace, long totalSpace) {
+        freeSpaceLabel.setVisible(totalSpace > 0);
+        this.freeSpace.setFreeSpace(freeSpace, totalSpace);
+    }
+
+    public void setAddress(String address) {
+        addressLabel.setText(formatTextForLabel(addressLabel, address));
     }
 
     public StreamerView getView() {

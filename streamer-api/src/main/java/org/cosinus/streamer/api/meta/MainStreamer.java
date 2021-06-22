@@ -72,6 +72,11 @@ public abstract class MainStreamer<S extends Streamer> implements DirectoryStrea
     }
 
     @Override
+    public long getTotalSpace() {
+        return 0;
+    }
+
+    @Override
     public MainStreamer save() {
         return this;
     }
@@ -79,5 +84,10 @@ public abstract class MainStreamer<S extends Streamer> implements DirectoryStrea
     @Override
     public boolean delete() {
         return false;
+    }
+
+    @Override
+    public DirectoryStreamer getRootStreamer() {
+        return null;
     }
 }

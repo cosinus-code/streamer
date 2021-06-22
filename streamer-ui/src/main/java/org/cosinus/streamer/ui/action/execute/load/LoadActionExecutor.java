@@ -23,13 +23,19 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.pack.PackerHandler;
 import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
 import org.cosinus.streamer.ui.action.progress.ProgressModel;
+import org.cosinus.streamer.ui.view.AddressBar;
+import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.execute.ActionExecutor;
 import org.cosinus.swing.worker.SwingWorker;
 import org.springframework.stereotype.Component;
 
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 
 /**
  * Implementation of {@link ActionExecutor} based on {@link LoadStreamerWorker}
@@ -41,37 +47,59 @@ public class LoadActionExecutor<P extends ProgressModel> implements ActionExecut
 
     private final PackerHandler packerHandler;
 
+    private final StreamerViewHandler streamerViewHandler;
+
     protected final ProgressListenerHandler<P> progressListenerHandler;
 
     private final Map<String, LoadStreamerWorker> workersMap;
 
+    private final AddressBar addressBar;
+
     public LoadActionExecutor(PackerHandler packerHandler,
-                              ProgressListenerHandler<P> progressListenerHandler) {
+                              StreamerViewHandler streamerViewHandler,
+                              ProgressListenerHandler<P> progressListenerHandler,
+                              AddressBar addressBar) {
         this.packerHandler = packerHandler;
+        this.streamerViewHandler = streamerViewHandler;
         this.progressListenerHandler = progressListenerHandler;
         this.workersMap = new ConcurrentHashMap<>();
+        this.addressBar = addressBar;
     }
 
     @Override
     public void execute(final LoadActionModel loadActionModel) {
         cancel(loadActionModel.getActionId());
 
-        if (loadActionModel.getStreamer() == null) {
+        Streamer aliveStreamer = ofNullable(loadActionModel.getStreamer())
+            .filter(not(Streamer::exists))
+            .map(this::getFirstAncestorAlive)
+            .orElse(loadActionModel.getStreamer());
+
+        if (aliveStreamer == null) {
             LOG.trace("Cannot load a null element -> ignore the command.");
             return;
         }
 
-
-        Streamer streamerToLoad = Optional.of(loadActionModel.getStreamer())
+        Streamer streamerToLoad = Optional.of(aliveStreamer)
             .filter(streamer -> InputStreamer.class.isAssignableFrom(streamer.getClass()))
             .map(InputStreamer.class::cast)
             .<Streamer>flatMap(inputStream -> packerHandler
-                .findPacker(loadActionModel.getStreamer().getType())
+                .findPacker(aliveStreamer.getType())
                 .map(packer -> packer.pack(inputStream)))
-            .orElseGet(loadActionModel::getStreamer);
-
+            .orElse(aliveStreamer);
 
         if (streamerToLoad.isDirectory()) {
+            streamerViewHandler.getPanel(loadActionModel.getView().getCurrentLocation())
+                .ifPresent(panel -> ofNullable(streamerToLoad.getUrlPath())
+                    .map(address -> address.split("://"))
+                    .map(address -> address[address.length - 1])
+                    .ifPresent(address -> {
+                        addressBar.setAddress(address);
+                        panel.setAddress(address);
+                        panel.setFreeSpace(streamerToLoad.getFreeSpace(),
+                                           streamerToLoad.getTotalSpace());
+                    }));
+
             progressListenerHandler.register(loadActionModel.getActionId(), loadActionModel.getView());
             LoadStreamerWorker worker = new LoadStreamerWorker(streamerToLoad,
                                                                loadActionModel);
@@ -81,9 +109,16 @@ public class LoadActionExecutor<P extends ProgressModel> implements ActionExecut
         }
     }
 
+    private Streamer getFirstAncestorAlive(Streamer streamer) {
+        return ofNullable(streamer.getParent())
+            .filter(not(Streamer::exists))
+            .map(this::getFirstAncestorAlive)
+            .orElse(streamer.getParent());
+    }
+
     @Override
     public void cancel(final String actionId) {
-        Optional.ofNullable(workersMap.get(actionId))
+        ofNullable(workersMap.get(actionId))
             .ifPresent(SwingWorker::cancel);
     }
 

@@ -41,7 +41,17 @@ public class MetaStreamer implements DirectoryStreamer<MainStreamer> {
 
     @Override
     public Path getPath() {
-        return Paths.get("/");
+        return null;
+    }
+
+    @Override
+    public String getUrlPath() {
+        return null;
+    }
+
+    @Override
+    public String getName() {
+        return "";
     }
 
     @Override
@@ -95,6 +105,11 @@ public class MetaStreamer implements DirectoryStreamer<MainStreamer> {
     }
 
     @Override
+    public DirectoryStreamer getRootStreamer() {
+        return null;
+    }
+
+    @Override
     public DirectoryStreamer createDirectoryStreamer(Path path) {
         return null;
     }
@@ -130,6 +145,11 @@ public class MetaStreamer implements DirectoryStreamer<MainStreamer> {
 
     @Override
     public long getFreeSpace() {
+        return 0;
+    }
+
+    @Override
+    public long getTotalSpace() {
         return 0;
     }
 

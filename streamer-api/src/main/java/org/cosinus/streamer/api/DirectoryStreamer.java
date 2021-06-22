@@ -31,13 +31,6 @@ public interface DirectoryStreamer<S extends Streamer> extends Streamer<S> {
      */
     Stream<S> flatStream(StreamerFilter streamerFilter);
 
-    /**
-     * Get free space from this streamer point of view.
-     *
-     * @return the free space amount in bytes
-     */
-    long getFreeSpace();
-
     DirectoryStreamer createDirectoryStreamer(Path path);
 
     BinaryStreamer createBinaryStreamer(Path path);

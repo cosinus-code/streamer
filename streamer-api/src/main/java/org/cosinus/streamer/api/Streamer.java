@@ -30,9 +30,25 @@ public interface Streamer<T> extends Element {
 
     DirectoryStreamer getParent();
 
+    DirectoryStreamer getRootStreamer();
+
     boolean delete();
 
     String getProtocol();
+
+    /**
+     * Get free space from this streamer point of view.
+     *
+     * @return the free space amount in bytes
+     */
+    long getFreeSpace();
+
+    /**
+     * Get total space available from this streamer point of view.
+     *
+     * @return the total space amount in bytes
+     */
+    long getTotalSpace();
 
     default String getUrlPath() {
         return getProtocol() + getPath();
@@ -41,5 +57,4 @@ public interface Streamer<T> extends Element {
     default boolean isDirectory() {
         return false;
     }
-
 }

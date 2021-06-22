@@ -101,6 +101,11 @@ public class ZipPackStreamer implements DirectoryStreamer<ZipStreamer>, PackStre
     }
 
     @Override
+    public long getTotalSpace() {
+        return packInputStreamer.getParent().getTotalSpace();
+    }
+
+    @Override
     public ZipDirectoryStreamer createDirectoryStreamer(Path path) {
         ZipStreamEntry zipEntry = zipHolder.get(path)
             .orElse(new ZipStreamEntry(path.toString() + "/"));
@@ -137,6 +142,11 @@ public class ZipPackStreamer implements DirectoryStreamer<ZipStreamer>, PackStre
     @Override
     public DirectoryStreamer getParent() {
         return packInputStreamer.getParent();
+    }
+
+    @Override
+    public DirectoryStreamer getRootStreamer() {
+        return packInputStreamer.getRootStreamer();
     }
 
     @Override

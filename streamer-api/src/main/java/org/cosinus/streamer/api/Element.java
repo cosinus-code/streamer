@@ -17,9 +17,10 @@
 package org.cosinus.streamer.api;
 
 import java.nio.file.Path;
-import java.util.Optional;
 
+import static java.util.Optional.ofNullable;
 import static org.apache.commons.io.FilenameUtils.getExtension;
+import static org.cosinus.swing.util.Formatter.formatMemorySize;
 
 public interface Element {
 
@@ -51,9 +52,9 @@ public interface Element {
     }
 
     default String getName() {
-        return Optional.ofNullable(getPath().getFileName())
-                .map(Path::toString)
-                .orElseGet(() -> getPath().toString());
+        return ofNullable(getPath().getFileName())
+            .map(Path::toString)
+            .orElseGet(() -> getPath().toString());
     }
 
     default String getType() {
@@ -78,5 +79,9 @@ public interface Element {
 
     default String getDescription() {
         return null;
+    }
+
+    default String getFormattedSize() {
+        return isDirectory() ? "" : formatMemorySize(getSize());
     }
 }

@@ -62,6 +62,11 @@ public abstract class ZipStreamer<T> implements Streamer<T> {
     }
 
     @Override
+    public DirectoryStreamer getRootStreamer() {
+        return zipPackStreamer.getRootStreamer();
+    }
+
+    @Override
     public String getProtocol() {
         return ZipPacker.ZIP_PROTOCOL;
     }
@@ -89,6 +94,16 @@ public abstract class ZipStreamer<T> implements Streamer<T> {
     @Override
     public String getUrlPath() {
         return zipPackStreamer.getUrlPath() + "#" + getPath();
+    }
+
+    @Override
+    public long getFreeSpace() {
+        return zipPackStreamer.getFreeSpace();
+    }
+
+    @Override
+    public long getTotalSpace() {
+        return zipPackStreamer.getTotalSpace();
     }
 
     @Override

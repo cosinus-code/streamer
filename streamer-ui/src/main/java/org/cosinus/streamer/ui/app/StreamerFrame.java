@@ -18,7 +18,6 @@ package org.cosinus.streamer.ui.app;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.meta.StreamerHandler;
-import org.cosinus.streamer.ui.preference.StreamerPreferences;
 import org.cosinus.streamer.ui.view.*;
 import org.cosinus.swing.boot.SwingApplicationFrame;
 import org.cosinus.swing.preference.Preferences;
@@ -27,9 +26,11 @@ import org.springframework.stereotype.Component;
 import java.awt.*;
 
 import static java.awt.BorderLayout.CENTER;
+import static java.awt.BorderLayout.NORTH;
 import static java.util.Arrays.stream;
-import static org.cosinus.streamer.ui.view.PanelLocation.LEFT;
+import static org.cosinus.streamer.ui.preference.StreamerPreferences.ADDRESS_BAR;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_LEFT_VIEW;
+import static org.cosinus.streamer.ui.view.PanelLocation.LEFT;
 
 @Component
 public class StreamerFrame extends SwingApplicationFrame {
@@ -44,14 +45,18 @@ public class StreamerFrame extends SwingApplicationFrame {
 
     private final Preferences preferences;
 
+    private final AddressBar addressBar;
+
     public StreamerFrame(StreamerHandler streamerHandler,
                          StreamerViewHandler streamerViewHandler,
                          StreamerViewStorage streamerViewStorage,
-                         Preferences preferences) {
+                         Preferences preferences,
+                         AddressBar addressBar) {
         this.streamerHandler = streamerHandler;
         this.streamerViewHandler = streamerViewHandler;
         this.streamerViewStorage = streamerViewStorage;
         this.preferences = preferences;
+        this.addressBar = addressBar;
     }
 
     @Override
@@ -61,6 +66,8 @@ public class StreamerFrame extends SwingApplicationFrame {
         split = new MainSplit();
         split.initComponent();
 
+        addressBar.initComponents();
+
         stream(PanelLocation.values())
             .forEach(this::addStreamerPanel);
         setVisibleSidebar(preferences.booleanPreference(SHOW_LEFT_VIEW));
@@ -68,6 +75,10 @@ public class StreamerFrame extends SwingApplicationFrame {
         getContentPane().setLayout(new BorderLayout());
         getContentPane().removeAll();
         getContentPane().add(split, CENTER);
+
+        if (preferences.booleanPreference(ADDRESS_BAR)) {
+            getContentPane().add(addressBar, NORTH);
+        }
     }
 
     private void addStreamerPanel(PanelLocation location) {

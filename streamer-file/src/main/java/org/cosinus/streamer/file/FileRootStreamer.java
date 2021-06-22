@@ -25,6 +25,7 @@ import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_STORAGE_INTERNAL;
+import static org.cosinus.swing.util.Formatter.formatMemorySize;
 import static org.cosinus.swing.util.Formatter.formatShortMemorySize;
 
 public class FileRootStreamer extends FileDirectoryStreamer {
@@ -67,6 +68,21 @@ public class FileRootStreamer extends FileDirectoryStreamer {
     @Override
     public String getType() {
         return fileStore.getType();
+    }
+
+    @Override
+    public long getFreeSpace() {
+        return fileStore.getFreeSpace();
+    }
+
+    @Override
+    public long getTotalSpace() {
+        return fileStore.getTotalSpace();
+    }
+
+    @Override
+    public String getFormattedSize() {
+        return formatMemorySize(getFreeSpace()) + " / " + formatMemorySize(getTotalSpace());
     }
 
     @Override

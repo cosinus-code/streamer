@@ -62,11 +62,6 @@ public class FtpDirectoryStreamer extends FtpStreamer<FtpStreamer> implements Di
     }
 
     @Override
-    public long getFreeSpace() {
-        return 0;
-    }
-
-    @Override
     public DirectoryStreamer createDirectoryStreamer(Path path) {
         FtpFile ftpFile = ftpHandler.createFtpFile(getFtpFile(), path, true);
         return new FtpDirectoryStreamer(ftpFile, this, ftpHandler);

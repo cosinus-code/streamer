@@ -54,15 +54,6 @@ public class ZipDirectoryStreamer extends ZipStreamer<ZipStreamer> implements Di
     }
 
     @Override
-    public long getFreeSpace() {
-        return Optional.of(zipPackStreamer)
-                .map(ZipPackStreamer::getPackInputStreamer)
-                .map(Streamer::getParent)
-                .map(DirectoryStreamer::getFreeSpace)
-                .orElse(0L);
-    }
-
-    @Override
     public ZipDirectoryStreamer createDirectoryStreamer(Path path) {
         return zipPackStreamer.createDirectoryStreamer(path);
     }

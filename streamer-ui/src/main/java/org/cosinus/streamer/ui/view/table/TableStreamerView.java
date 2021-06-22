@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.awt.BorderLayout.CENTER;
+import static java.util.Optional.ofNullable;
 
 public abstract class TableStreamerView extends RenamingStreamerView {
 
@@ -53,7 +54,10 @@ public abstract class TableStreamerView extends RenamingStreamerView {
         scroll.setEnabled(false);
         scroll.setViewportView(table);
         scroll.setFocusable(false);
-        scroll.getViewport().setBackground(new Color(table.getBackground().getRGB()));
+        ofNullable(table.getBackground())
+            .map(Color::getRGB)
+            .map(Color::new)
+            .ifPresent(scroll.getViewport()::setBackground);
         scroll.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 table.requestFocus();

@@ -25,6 +25,8 @@ import java.util.Calendar;
 import java.util.Objects;
 import java.util.Optional;
 
+import static org.cosinus.streamer.ftp.FtpMainStreamer.FTP_PROTOCOL;
+
 public abstract class FtpStreamer<T> implements Streamer<T> {
 
     protected final FtpHandler ftpHandler;
@@ -45,13 +47,19 @@ public abstract class FtpStreamer<T> implements Streamer<T> {
     }
 
     @Override
+    public DirectoryStreamer getRootStreamer() {
+        //TODO
+        return null;
+    }
+
+    @Override
     public boolean delete() {
         return false;
     }
 
     @Override
     public String getProtocol() {
-        return FtpMainStreamer.FTP_PROTOCOL;
+        return FTP_PROTOCOL;
     }
 
     @Override
@@ -72,12 +80,24 @@ public abstract class FtpStreamer<T> implements Streamer<T> {
     @Override
     public long lastModified() {
         return Optional.ofNullable(ftpFile.getTimestamp())
-                .map(Calendar::getTimeInMillis)
-                .orElse(0L);
+            .map(Calendar::getTimeInMillis)
+            .orElse(0L);
     }
 
     public FtpFile getFtpFile() {
         return ftpFile;
+    }
+
+    @Override
+    public long getFreeSpace() {
+        //TODO
+        return 0;
+    }
+
+    @Override
+    public long getTotalSpace() {
+        //TODO
+        return 0;
     }
 
     @Override

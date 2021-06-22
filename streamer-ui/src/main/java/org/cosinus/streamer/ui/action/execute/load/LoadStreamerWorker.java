@@ -29,9 +29,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * {@link javax.swing.SwingWorker} for loading an element
@@ -93,11 +94,11 @@ public class LoadStreamerWorker<T> extends SwingWorker<StreamedContent<T>, T> {
     protected void done() {
         try {
             if (!isCancelled()) {
-                Optional.ofNullable(get())
+                ofNullable(get())
                     .filter(streamedContent -> streamedContent.getContent().size() == 0 ||
                         streamedContent.getContent().size() != content.size())
                     .ifPresent(streamerView::updateContent);
-                Optional.of(streamerToLoad)
+                ofNullable(streamerToLoad)
                     .filter(streamer -> PackStreamer.class.isAssignableFrom(streamer.getClass()))
                     .map(PackStreamer.class::cast)
                     .ifPresent(PackStreamer::finishLoading);
