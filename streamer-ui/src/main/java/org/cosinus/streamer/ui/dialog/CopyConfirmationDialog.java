@@ -72,7 +72,7 @@ public class CopyConfirmationDialog extends Dialog<CopyActionModel> {
 
         txtCopyTo = new JTextField(copyAction.getTargetPath().toString());
 
-        boolean showTransferType = copyAction.isSensitiveToTransferType() || copyAction.shouldPackElements();
+        boolean showTransferType = copyAction.isSensitiveToTransferType() || copyAction.shouldPackStreamers();
         lblTransferType.setVisible(showTransferType);
         cmbTransferType.setVisible(showTransferType);
         cmbTransferType.setSelectedIndex(0);
@@ -146,7 +146,7 @@ public class CopyConfirmationDialog extends Dialog<CopyActionModel> {
                 .map(TransferType.class::cast)
                 .ifPresent(copyAction::withTransferType);
         }
-        if (copyAction.shouldPackElements()) {
+        if (copyAction.shouldPackStreamers()) {
             Optional.ofNullable(cmbTransferType.getSelectedItem())
                 .map(Object::toString)
                 .ifPresent(copyAction::withPackType);

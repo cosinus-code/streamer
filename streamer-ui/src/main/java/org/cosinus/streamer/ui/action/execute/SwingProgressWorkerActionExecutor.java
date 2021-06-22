@@ -29,7 +29,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Implementation of {@link ActionExecutor} for deleting elements based on {@link SwingProgressWorker}
+ * Implementation of {@link ActionExecutor} for deleting streamers based on {@link SwingProgressWorker}
  */
 public abstract class SwingProgressWorkerActionExecutor<A extends ActionModel, P extends ProgressModel>
         implements ActionExecutor<A> {

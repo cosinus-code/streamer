@@ -29,12 +29,12 @@ import java.util.Optional;
 import static java.awt.event.KeyEvent.VK_R;
 
 /**
- * Load element action
+ * Load streamer action
  */
 @Component
 public class ReloadStreamerAction<T> extends StreamerAction<T> {
 
-    public static final String RELOAD_ELEMENT_ACTION_ID = "menu-view-refresh";
+    public static final String RELOAD_STREAMER_ACTION_ID = "menu-view-refresh";
 
     private final ActionExecutors actionExecutors;
 
@@ -61,7 +61,7 @@ public class ReloadStreamerAction<T> extends StreamerAction<T> {
 
     @Override
     public String getId() {
-        return RELOAD_ELEMENT_ACTION_ID;
+        return RELOAD_STREAMER_ACTION_ID;
     }
 
     @Override

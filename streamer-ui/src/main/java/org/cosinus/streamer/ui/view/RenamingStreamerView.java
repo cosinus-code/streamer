@@ -17,7 +17,7 @@
 package org.cosinus.streamer.ui.view;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.error.LoadElementException;
+import org.cosinus.streamer.ui.error.LoadStreamerException;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.translate.Translator;
@@ -75,7 +75,7 @@ public abstract class RenamingStreamerView extends StreamerView<Streamer> {
                 try {
                     switch (e.getKeyCode()) {
                         case KeyEvent.VK_ENTER:
-                            renameElement();
+                            renameStreamer();
                         case KeyEvent.VK_ESCAPE:
                             hideControl();
                     }
@@ -97,7 +97,7 @@ public abstract class RenamingStreamerView extends StreamerView<Streamer> {
         SwingUtilities.invokeLater(RenamingStreamerView.this::requestFocus);
     }
 
-    private void renameElement() throws LoadElementException {
+    private void renameStreamer() throws LoadStreamerException {
         String newName = getRenameText();
         streamerToBeRenamed.getParent().rename(streamerToBeRenamed.getPath(), newName);
         reload();

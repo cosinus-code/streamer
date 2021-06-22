@@ -26,12 +26,12 @@ import java.util.Optional;
 import static java.awt.event.KeyEvent.VK_F2;
 
 /**
- * Rename element action
+ * Rename streamer action
  */
 @Component
 public class RenameStreamerAction extends StreamerAction<Streamer<?>> {
 
-    public static final String RENAME_ELEMENT_ACTION_ID = "rename-element";
+    public static final String RENAME_STREAMER_ACTION_ID = "rename-streamer";
 
     @Override
     public void run(StreamerActionContext<Streamer<?>> context) {
@@ -40,7 +40,7 @@ public class RenameStreamerAction extends StreamerAction<Streamer<?>> {
 
     @Override
     public String getId() {
-        return RENAME_ELEMENT_ACTION_ID;
+        return RENAME_STREAMER_ACTION_ID;
     }
 
     @Override

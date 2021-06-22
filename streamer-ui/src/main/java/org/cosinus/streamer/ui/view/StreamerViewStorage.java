@@ -30,7 +30,7 @@ import static java.util.Optional.ofNullable;
 @Component
 public class StreamerViewStorage {
 
-    public static final String LAST_ELEMENT = "last.element.";
+    public static final String LAST_STREAMER = "last.streamer.";
 
     private final ApplicationStorage applicationStorage;
 
@@ -39,13 +39,13 @@ public class StreamerViewStorage {
     }
 
     public Optional<String> loadLastLoadedStreamer(PanelLocation location) {
-        return ofNullable(applicationStorage.getString(LAST_ELEMENT + location));
+        return ofNullable(applicationStorage.getString(LAST_STREAMER + location));
     }
 
     public <T> void saveLastLoadedStreamer(Streamer<T> streamer, PanelLocation location) {
         ofNullable(streamer)
             .map(Streamer::getUrlPath)
-            .ifPresent(path -> applicationStorage.saveString(LAST_ELEMENT + location, path));
+            .ifPresent(path -> applicationStorage.saveString(LAST_STREAMER + location, path));
     }
 
 }

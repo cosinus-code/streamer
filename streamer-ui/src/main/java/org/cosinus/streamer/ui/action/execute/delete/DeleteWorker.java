@@ -18,7 +18,7 @@ package org.cosinus.streamer.ui.action.execute.delete;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.SwingProgressWorker;
-import org.cosinus.streamer.ui.action.progress.ElementsProgressModel;
+import org.cosinus.streamer.ui.action.progress.StreamersProgressModel;
 import org.cosinus.streamer.ui.error.ActionCancelledException;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +27,9 @@ import java.awt.*;
 import java.util.stream.Stream;
 
 /**
- * {@link SwingProgressWorker} for deleting elements
+ * {@link SwingProgressWorker} for deleting streamers
  */
-public class DeleteWorker extends SwingProgressWorker<ElementsProgressModel> {
+public class DeleteWorker extends SwingProgressWorker<StreamersProgressModel> {
 
     @Autowired
     private Translator translator;
@@ -40,19 +40,21 @@ public class DeleteWorker extends SwingProgressWorker<ElementsProgressModel> {
                         DeleteActionModel deleteModel) {
         super(parentWindow,
               deleteModel.getActionId(),
-              new ElementsProgressModel(deleteModel.getActionId()));
+              new StreamersProgressModel(deleteModel.getActionId()));
         this.deleteModel = deleteModel;
     }
 
     @Override
     protected void doWork() {
 
-        long elementsToDeleteCount = deleteModel.getStreamer().count(deleteModel.getStreamerFilter());
+        long streamersToDeleteCount = deleteModel
+            .getStreamer()
+            .count(deleteModel.getStreamerFilter());
 
-        progress.startProgress(elementsToDeleteCount);
+        progress.startProgress(streamersToDeleteCount);
         setProgress(progress);
 
-        deleteModel.getElementsToDelete()
+        deleteModel.getStreamersToDelete()
             .forEach(this::delete);
     }
 

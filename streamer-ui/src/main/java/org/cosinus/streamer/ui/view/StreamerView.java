@@ -93,12 +93,12 @@ public abstract class StreamerView<T> extends Panel implements ProgressListener<
     }
 
     public void loadStreamer(Streamer<T> streamer) {
-        actionController.runAction(LoadStreamerAction.LOAD_ELEMENT_ACTION_ID,
+        actionController.runAction(LoadStreamerAction.LOAD_STREAMER_ACTION_ID,
                                    new StreamerActionContext<>(streamer, this));
     }
 
     public void reload() {
-        actionController.runAction(ReloadStreamerAction.RELOAD_ELEMENT_ACTION_ID);
+        actionController.runAction(ReloadStreamerAction.RELOAD_STREAMER_ACTION_ID);
     }
 
     public PanelLocation getCurrentLocation() {

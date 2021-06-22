@@ -54,17 +54,4 @@ public class IconTableModel extends DataTableModel {
     public void translate() {
     }
 
-    //    //Update the icon of the element with the right one
-//    public void updateIcon(jcElement element) {
-//        if (Maestro.getOptions().getBooleanOption(Options.OPTION_PREVIEW) && element.isImage()) {
-//            if (element.getSize() >= 1024 * Maestro.getOptions().getIntegerOption(Options.OPTION_PREVIEW_LIMIT)) return;
-//            if (element.getPreviewIcon() != null) return;
-//            Icon icon = ImageFactory.getPreviewImage(element, ((IconTable) ((jcTablePanel) panel).getTable()).getIconSize());
-//            if (icon != null) {
-//                element.setPreviewIcon(icon);
-//                return;
-//            }
-//        }
-//        element.updateBigIcon();
-//    }
 }

@@ -30,7 +30,7 @@ import static org.cosinus.streamer.ui.action.execute.copy.TransferType.TRANSFER_
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 /**
- * Encapsulates the model of the copy elements action
+ * Encapsulates the model of the copy streamers action
  */
 public class CopyActionModel<S extends Streamer, T extends Streamer> extends ActionModel {
 
@@ -42,7 +42,7 @@ public class CopyActionModel<S extends Streamer, T extends Streamer> extends Act
 
     private StreamerFilter sourceFilter = streamer -> true;
 
-    private List<Streamer> elementsToCopy;
+    private List<Streamer> streamersToCopy;
 
     private S source;
 
@@ -74,28 +74,28 @@ public class CopyActionModel<S extends Streamer, T extends Streamer> extends Act
 
     private boolean verifyCopy;
 
-    private boolean pack;
+    private boolean shouldPack;
 
     public CopyActionModel(String actionName) {
         super(randomUUID().toString(), actionName);
     }
 
     public static <S extends DirectoryStreamer, T extends DirectoryStreamer>
-    CopyActionModel<S, T> copy(List<Streamer> elementsToCopy) {
+    CopyActionModel<S, T> copy(List<Streamer> streamersToCopy) {
         return new CopyActionModel<S, T>(COPY_ACTION_NAME)
-            .setCopyElements(elementsToCopy);
+            .setStreamersToCopy(streamersToCopy);
     }
 
     public static <S extends DirectoryStreamer, T extends DirectoryStreamer>
-    CopyActionModel<S, T> move(List<Streamer> elementsToCopy) {
+    CopyActionModel<S, T> move(List<Streamer> streamersToCopy) {
         return new CopyActionModel<S, T>(MOVE_ACTION_NAME)
-            .setCopyElements(elementsToCopy);
+            .setStreamersToCopy(streamersToCopy);
     }
 
     public static <S extends DirectoryStreamer, T extends DirectoryStreamer>
-    CopyActionModel<S, T> pack(List<Streamer> elementsToCopy) {
+    CopyActionModel<S, T> pack(List<Streamer> streamersToCopy) {
         return new CopyActionModel<S, T>(PACK_ACTION_NAME)
-            .setCopyElements(elementsToCopy)
+            .setStreamersToCopy(streamersToCopy)
             .pack();
     }
 
@@ -157,9 +157,9 @@ public class CopyActionModel<S extends Streamer, T extends Streamer> extends Act
         return this;
     }
 
-    public CopyActionModel<S, T> setCopyElements(List<Streamer> elementsToCopy) {
-        this.elementsToCopy = elementsToCopy;
-        this.sourceFilter = this.elementsToCopy::contains;
+    public CopyActionModel<S, T> setStreamersToCopy(List<Streamer> streamersToCopy) {
+        this.streamersToCopy = streamersToCopy;
+        this.sourceFilter = this.streamersToCopy::contains;
         return this;
     }
 
@@ -265,12 +265,12 @@ public class CopyActionModel<S extends Streamer, T extends Streamer> extends Act
         return this;
     }
 
-    public boolean shouldPackElements() {
-        return pack;
+    public boolean shouldPackStreamers() {
+        return shouldPack;
     }
 
     public CopyActionModel<S, T> pack() {
-        this.pack = true;
+        this.shouldPack = true;
         return this;
     }
 
@@ -281,8 +281,8 @@ public class CopyActionModel<S extends Streamer, T extends Streamer> extends Act
         this.resumeCopy = false;
     }
 
-    public boolean hasElementsToCopy() {
-        return !isEmpty(elementsToCopy);
+    public boolean hasStreamersToCopy() {
+        return !isEmpty(streamersToCopy);
     }
 
     public boolean isCopyAllowed() {

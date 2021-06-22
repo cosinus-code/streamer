@@ -28,12 +28,12 @@ import java.util.Optional;
 import static java.awt.event.KeyEvent.VK_DOWN;
 
 /**
- * Load element action
+ * Load streamer action
  */
 @Component
 public class LoadStreamerAction<T> extends StreamerAction<T> {
 
-    public static final String LOAD_ELEMENT_ACTION_ID = "load-element";
+    public static final String LOAD_STREAMER_ACTION_ID = "load-streamer";
 
     private final ActionExecutors actionExecutors;
 
@@ -53,7 +53,7 @@ public class LoadStreamerAction<T> extends StreamerAction<T> {
 
     @Override
     public String getId() {
-        return LOAD_ELEMENT_ACTION_ID;
+        return LOAD_STREAMER_ACTION_ID;
     }
 
     @Override

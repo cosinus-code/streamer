@@ -26,12 +26,12 @@ import java.util.Optional;
 import static java.awt.event.KeyEvent.VK_SPACE;
 
 /**
- * Select element action
+ * Select streamer action
  */
 @Component
 public class SelectStreamerAction extends StreamerAction<Streamer<?>> {
 
-    public static final String SELECT_ELEMENT_ACTION_ID = "select-element";
+    public static final String SELECT_STREAMER_ACTION_ID = "select-streamer";
 
     @Override
     public void run(StreamerActionContext<Streamer<?>> context) {
@@ -40,7 +40,7 @@ public class SelectStreamerAction extends StreamerAction<Streamer<?>> {
 
     @Override
     public String getId() {
-        return SELECT_ELEMENT_ACTION_ID;
+        return SELECT_STREAMER_ACTION_ID;
     }
 
     @Override

@@ -76,7 +76,7 @@ public class LoadActionExecutor<P extends ProgressModel> implements ActionExecut
             .orElse(loadActionModel.getStreamer());
 
         if (aliveStreamer == null) {
-            LOG.trace("Cannot load a null element -> ignore the command.");
+            LOG.trace("Cannot load a null streamer -> ignore the command.");
             return;
         }
 

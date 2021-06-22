@@ -22,7 +22,7 @@ import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.swing.action.ActionContext;
 
 /**
- * Element context for an action
+ * Streamer context for an action
  */
 public class StreamerActionContext<T> implements ActionContext {
 

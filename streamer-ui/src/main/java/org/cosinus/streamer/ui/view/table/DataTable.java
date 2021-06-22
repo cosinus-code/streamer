@@ -16,7 +16,6 @@
 
 package org.cosinus.streamer.ui.view.table;
 
-import org.cosinus.streamer.api.Element;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
@@ -41,11 +40,11 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.concat;
 import static java.util.stream.IntStream.range;
 import static javax.swing.KeyStroke.getKeyStroke;
-import static org.cosinus.streamer.ui.action.ExecuteStreamerAction.EXECUTE_ELEMENT_ACTION_ID;
+import static org.cosinus.streamer.ui.action.ExecuteStreamerAction.EXECUTE_STREAMER_ACTION_ID;
 
 public abstract class DataTable extends Table implements FocusListener {
 
-    public static final int FIND_ELEMENT_SPEED = 500;
+    public static final int FIND_STREAMER_SPEED = 500;
 
     @Autowired
     private StreamerViewHandler streamerViewHandler;
@@ -114,7 +113,7 @@ public abstract class DataTable extends Table implements FocusListener {
 //    public boolean requestFocusInWindow(){
 //        boolean ret = super.requestFocusInWindow();
 //        try{
-//            Element dir = getCurrentFolder();
+//            Streamer dir = getCurrentFolder();
 //            if(dir != null) getMainPanel().updateRoot(dir, panel);
 //            updateStatus();
 //        }
@@ -134,17 +133,17 @@ public abstract class DataTable extends Table implements FocusListener {
             } else if (event.getID() == MOUSE_ENTERED) {
 //                Maestro.setDragItself(true);
             } else if (event.getID() == MOUSE_PRESSED) {
-                int index = getIndexForElementAtPoint(event.getPoint());
+                int index = getIndexForItemAtPoint(event.getPoint());
                 setCurrentIndex(index);
                 requestFocus();
             } else if (event.getID() == MOUSE_CLICKED) {
                 if (event.getButton() == BUTTON1) {
                     if (event.getClickCount() == 2) {
-                        actionController.runAction(EXECUTE_ELEMENT_ACTION_ID);
+                        actionController.runAction(EXECUTE_STREAMER_ACTION_ID);
                     }
                 } else if (event.getButton() == MouseEvent.BUTTON3) {
-//                        Element element = getElementAt(index);
-//                        JPopupMenu popup = Maestro.getMainFrame().getPopupMenuElement(element);
+//                        Streamer streamer = getStreamerAt(index);
+//                        JPopupMenu popup = Maestro.getMainFrame().getPopupMenuStreamer(streamer);
 //                        if(popup != null) popup.show(jcTable.this, e.getX(), e.getY());
                 }
             }
@@ -181,7 +180,7 @@ public abstract class DataTable extends Table implements FocusListener {
                 !(keyEvent.getKeyCode() >= 33 && keyEvent.getKeyCode() <= 40) &&
                 !(keyEvent.getKeyCode() >= 112 && keyEvent.getKeyCode() <= 123)) {
 
-                if (!isAction(keyEvent.getWhen(), FIND_ELEMENT_SPEED)) {
+                if (!isAction(keyEvent.getWhen(), FIND_STREAMER_SPEED)) {
                     nameToFind = "";
                 }
                 nameToFind += (char) keyEvent.getKeyCode();
@@ -199,34 +198,34 @@ public abstract class DataTable extends Table implements FocusListener {
     }
 
     public void selectCurrentStreamer() {
-        selectElement(getCurrentIndex());
+        selectStreamerAtIndex(getCurrentIndex());
         if (getCurrentIndex() != getStreamersCount() - 1) {
             setCurrentIndex(getCurrentIndex() + 1);
         }
     }
 
-    public void selectElement(int index) {
+    public void selectStreamerAtIndex(int index) {
         getTableModel().addToSelection(index);
         repaint();
     }
 
-    public void selectElements(int start, int end, boolean only, boolean deselect) {
+    public void selectStreamers(int start, int end, boolean only, boolean deselect) {
         getTableModel().addToSelection(start, end, only, deselect);
         repaint();
     }
 
     public List<Streamer> getSelectedStreamers() {
-        List<Streamer> selectedElements = getTableModel().getSelectedElements();
-        return !selectedElements.isEmpty() ?
-            selectedElements :
+        List<Streamer> selectedStreamers = getTableModel().getSelectedStreamers();
+        return !selectedStreamers.isEmpty() ?
+            selectedStreamers :
             stream(getSelectedRows())
                 .filter(index -> index >= getTableModel().getMinimumToSelect())
-                .mapToObj(this::getElementAt)
+                .mapToObj(this::getStreamerAt)
                 .collect(toList());
     }
 
     public void movePositionByName(String name) {
-        List<ViewItem> items = getAllElements();
+        List<ViewItem> items = getAllItems();
         int min = model.isTopVisible() ? 1 : 0;
         int start = getSelectedRow() + (name.length() == 1 ? 1 : 0);
 
@@ -237,7 +236,7 @@ public abstract class DataTable extends Table implements FocusListener {
             .ifPresent(this::setCurrentIndex);
     }
 
-    private int getIndexForElementAtPoint(Point point) {
+    private int getIndexForItemAtPoint(Point point) {
         int row = rowAtPoint(point);
         int col = columnAtPoint(point);
         return getTableModel().getIndex(row,
@@ -253,46 +252,46 @@ public abstract class DataTable extends Table implements FocusListener {
     }
 
     public void sort(int col) {
-        String name = getCurrentElementName();
+        String name = getCurrentStreamerName();
         getTableModel().sort(col);
-        findElement(name);
+        findViewItem(name);
     }
 
-    public String getCurrentElementName() {
+    public String getCurrentStreamerName() {
         return Optional.ofNullable(getCurrentStreamer())
-            .map(Element::getName)
+            .map(Streamer::getName)
             .orElse(null);
     }
 
     public Streamer getCurrentStreamer() {
-        return getElementAt(getCurrentIndex());
+        return getStreamerAt(getCurrentIndex());
     }
 
     public int getCurrentIndex() {
         return getTableModel().getCurrentIndex();
     }
 
-    public Streamer getElementAt(int index) {
+    public Streamer getStreamerAt(int index) {
         if (index < 0 || index >= getStreamersCount()) {
             return null;
         }
-        return getTableModel().getElementAt(index);
+        return getTableModel().getItemAt(index);
     }
 
     public int getStreamersCount() {
-        return getTableModel().getElementCount();
+        return getTableModel().getItemsCount();
     }
 
-    public List<ViewItem> getAllElements() {
-        return getTableModel().getAllElements();
+    public List<ViewItem> getAllItems() {
+        return getTableModel().getAllItems();
     }
 
     public boolean isIndexSelected(int index) {
         return getTableModel().isIndexSelected(index);
     }
 
-    public void findElement(String name) {
-        List<ViewItem> items = getAllElements();
+    public void findViewItem(String name) {
+        List<ViewItem> items = getAllItems();
         range(0, items.size())
             .filter(i -> name.equals(items.get(i).getName()))
             .findFirst()

@@ -27,7 +27,7 @@ import org.cosinus.swing.action.execute.ActionExecutor;
 import org.springframework.stereotype.Component;
 
 /**
- * Implementation of {@link ActionExecutor} for copying elements based on {@link CopyWorker}
+ * Implementation of {@link ActionExecutor} for copying streamers based on {@link CopyWorker}
  */
 @Component
 public class CopyWorkerExecutor<S extends DirectoryStreamer, T extends DirectoryStreamer>

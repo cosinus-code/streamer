@@ -43,7 +43,7 @@ public class DetailCellRenderer extends TableCellRenderer<DetailTable> {
         boolean isNumeric = column == SIZE.ordinal();
         label.setHorizontalAlignment(isNumeric ? RIGHT : LEFT);
 
-        Optional<Icon> icon = item.isTopElement() ?
+        Optional<Icon> icon = item.isTopItem() ?
             getUpIcon() :
             getIcon(X16, item);
         icon.ifPresent(label::setIcon);

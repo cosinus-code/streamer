@@ -26,12 +26,12 @@ import java.util.Optional;
 import static java.awt.event.KeyEvent.VK_END;
 
 /**
- * Go up element action
+ * Go up streamer action
  */
 @Component
-public class GoEndStreamerAction extends StreamerAction<Streamer<?>> {
+public class GoToLastStreamerAction extends StreamerAction<Streamer<?>> {
 
-    public static final String GO_END_ELEMENT_ACTION = "go-end";
+    public static final String GO_TO_LAST_STREAMER_ACTION = "go-to-last-streamer";
 
     @Override
     public void run(StreamerActionContext<Streamer<?>> context) {
@@ -40,7 +40,7 @@ public class GoEndStreamerAction extends StreamerAction<Streamer<?>> {
 
     @Override
     public String getId() {
-        return GO_END_ELEMENT_ACTION;
+        return GO_TO_LAST_STREAMER_ACTION;
     }
 
     @Override

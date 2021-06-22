@@ -21,7 +21,7 @@ import org.cosinus.streamer.api.Streamer;
 import java.util.Optional;
 
 /**
- * Pack element interface
+ * Pack streamer interface
  */
 public interface PackStreamer<T> extends Streamer<T> {
 

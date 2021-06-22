@@ -33,7 +33,7 @@ import static javax.swing.JLabel.CENTER;
  */
 public class CopyProgressDialog extends ProgressDialog<CopyProgressModel> {
 
-    private JProgressBar elementProgressBar;
+    private JProgressBar itemProgressBar;
     private JProgressBar totalProgressBar;
 
     private JLabel copyFromLabel;
@@ -51,11 +51,11 @@ public class CopyProgressDialog extends ProgressDialog<CopyProgressModel> {
         copyFromLabel = new JLabel(translator.translate("form_copy_from"));
         copyToLabel = new JLabel(translator.translate("form_copy_to"));
 
-        elementProgressBar = new JProgressBar();
+        itemProgressBar = new JProgressBar();
         totalProgressBar = new JProgressBar();
 
         totalProgressBar.setStringPainted(true);
-        elementProgressBar.setStringPainted(true);
+        itemProgressBar.setStringPainted(true);
 
         JPanel panNorth = new JPanel(new BorderLayout(5, 5));
         JPanel pathsPanel = new JPanel(new GridLayout(3, 1, 5, 5));
@@ -65,7 +65,7 @@ public class CopyProgressDialog extends ProgressDialog<CopyProgressModel> {
         pathsPanel.add(copyFromLabel);
         pathsPanel.add(copyToLabel);
 
-        progressPanel.add(elementProgressBar);
+        progressPanel.add(itemProgressBar);
         progressPanel.add(totalProgressBar);
 
         panNorth.add(pathsPanel, NORTH);
@@ -119,7 +119,7 @@ public class CopyProgressDialog extends ProgressDialog<CopyProgressModel> {
     }
 
     protected void updateProgressBar(final CopyProgressModel progress) {
-        elementProgressBar.setValue(progress.getElementProgress());
+        itemProgressBar.setValue(progress.getStreamerProgress());
         totalProgressBar.setValue(progress.getTotalProgress());
     }
 }

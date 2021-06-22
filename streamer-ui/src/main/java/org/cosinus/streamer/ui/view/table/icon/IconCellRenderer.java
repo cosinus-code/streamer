@@ -51,7 +51,7 @@ public class IconCellRenderer extends TableCellRenderer<IconTable> {
         label.setHorizontalAlignment(JLabel.CENTER);
 
         boolean showPreview = preferences.booleanPreference(PREVIEW);
-        Optional<Icon> icon = item.isTopElement() ?
+        Optional<Icon> icon = item.isTopItem() ?
             getUpIcon() :
             getIcon(table.getIconSize(), item, showPreview);
 

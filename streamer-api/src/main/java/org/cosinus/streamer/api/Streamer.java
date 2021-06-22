@@ -18,9 +18,14 @@ package org.cosinus.streamer.api;
 
 import org.cosinus.streamer.api.consumer.StreamConsumer;
 
+import java.nio.file.Path;
 import java.util.stream.Stream;
 
-public interface Streamer<T> extends Element {
+import static java.util.Optional.ofNullable;
+import static org.apache.commons.io.FilenameUtils.getExtension;
+import static org.cosinus.swing.util.Formatter.formatMemorySize;
+
+public interface Streamer<T> {
 
     Stream<? extends T> stream();
 
@@ -49,6 +54,65 @@ public interface Streamer<T> extends Element {
      * @return the total space amount in bytes
      */
     long getTotalSpace();
+
+    Path getPath();
+
+    boolean exists();
+
+    long getSize();
+
+    long lastModified();
+
+    default boolean isPack() {
+        return false;
+    }
+
+    default boolean canRead() {
+        return true;
+    }
+
+    default boolean canWrite() {
+        return true;
+    }
+
+    //TODO: to find a better name
+    default boolean isSensitiveToTransferType() {
+        return false;
+    }
+
+    default String getName() {
+        return ofNullable(getPath().getFileName())
+            .map(Path::toString)
+            .orElseGet(() -> getPath().toString());
+    }
+
+    default String getType() {
+        return getExtension(getName());
+    }
+
+    default boolean isLink() {
+        return false;
+    }
+
+    default boolean isHidden() {
+        return false;
+    }
+
+    default String getIconName() {
+        return null;
+    }
+
+    default String getValue() {
+        return null;
+    }
+
+    default String getDescription() {
+        return null;
+    }
+
+    default String getFormattedSize() {
+        return isDirectory() ? "" : formatMemorySize(getSize());
+    }
 
     default String getUrlPath() {
         return getProtocol() + getPath();

@@ -22,7 +22,7 @@ import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.swing.action.execute.ActionModel;
 
 /**
- * Encapsulates the model of the load element action
+ * Encapsulates the model of the load streamer action
  */
 public class LoadActionModel<T, S extends Streamer<T>> extends ActionModel {
 
@@ -40,7 +40,7 @@ public class LoadActionModel<T, S extends Streamer<T>> extends ActionModel {
     public LoadActionModel(StreamerView<T> view,
                            S streamer,
                            Streamer contentToSelect) {
-        super(view.getId(), LoadStreamerAction.LOAD_ELEMENT_ACTION_ID);
+        super(view.getId(), LoadStreamerAction.LOAD_STREAMER_ACTION_ID);
         this.view = view;
         this.streamer = streamer;
         this.contentToSelect = contentToSelect;

@@ -124,7 +124,7 @@ public class IconTable extends DataTable {
             row = 0;
             column = 0;
         } else {
-            int count = getTableModel().getElementCount();
+            int count = getTableModel().getItemsCount();
             if (index >= count) {
                 row = getTableModel().getRowForIndex(count - 1);
                 column = getTableModel().getColumnForIndex(count - 1);

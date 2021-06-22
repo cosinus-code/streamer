@@ -24,11 +24,11 @@ import org.springframework.stereotype.Component;
  * Implementation of {@link ActionContextProvider} for {@link StreamerActionContext}
  */
 @Component
-public class ElementActionContextProvider implements ActionContextProvider<StreamerActionContext> {
+public class StreamerActionContextProvider implements ActionContextProvider<StreamerActionContext> {
 
     private final StreamerViewHandler streamerViewHandler;
 
-    public ElementActionContextProvider(StreamerViewHandler streamerViewHandler) {
+    public StreamerActionContextProvider(StreamerViewHandler streamerViewHandler) {
         this.streamerViewHandler = streamerViewHandler;
     }
 

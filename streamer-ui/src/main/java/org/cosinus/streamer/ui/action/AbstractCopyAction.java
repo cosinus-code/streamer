@@ -70,7 +70,7 @@ public abstract class AbstractCopyAction<A> extends StreamerAction<A> {
         }
 
         CopyActionModel copyAction = copySpecifications(actionContext);
-        if (!copyAction.hasElementsToCopy()) {
+        if (!copyAction.hasStreamersToCopy()) {
             return;
         }
 

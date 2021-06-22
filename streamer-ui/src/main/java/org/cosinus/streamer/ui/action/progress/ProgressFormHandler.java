@@ -18,7 +18,7 @@ package org.cosinus.streamer.ui.action.progress;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.dialog.CopyProgressDialog;
-import org.cosinus.streamer.ui.dialog.ElementsProgressDialog;
+import org.cosinus.streamer.ui.dialog.StreamersProgressDialog;
 import org.cosinus.swing.action.execute.ActionModel;
 import org.springframework.stereotype.Component;
 
@@ -35,7 +35,7 @@ public class ProgressFormHandler {
         return new CopyProgressDialog(applicationFrame, action);
     }
 
-    public ElementsProgressDialog createElementsProgressDialog(ActionModel action) {
-        return new ElementsProgressDialog(applicationFrame, action);
+    public StreamersProgressDialog createStreamersProgressDialog(ActionModel action) {
+        return new StreamersProgressDialog(applicationFrame, action);
     }
 }

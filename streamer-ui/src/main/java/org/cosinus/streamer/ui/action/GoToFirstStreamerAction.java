@@ -18,52 +18,33 @@ package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.context.StreamerActionContext;
-import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
-import org.cosinus.streamer.ui.view.StreamerView;
-import org.cosinus.swing.action.execute.ActionExecutors;
-import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.util.Optional;
 
-import static java.awt.event.KeyEvent.VK_UP;
+import static java.awt.event.KeyEvent.VK_HOME;
 
 /**
- * Go up element action
+ * Go to first streamer action
  */
 @Component
-public class GoUpStreamerAction extends StreamerAction<Streamer<?>> {
+public class GoToFirstStreamerAction extends StreamerAction<Streamer<?>> {
 
-    public static final String GO_UP_ELEMENT_ACTION = "go-up";
-
-    private final ApplicationUIHandler uiHandler;
-
-    private final ActionExecutors actionExecutors;
-
-    public GoUpStreamerAction(ApplicationUIHandler uiHandler,
-                              ActionExecutors actionExecutors) {
-        this.uiHandler = uiHandler;
-        this.actionExecutors = actionExecutors;
-    }
+    public static final String GO_TO_FIRST_STREAMER_ACTION = "go-to-first-streamer";
 
     @Override
     public void run(StreamerActionContext<Streamer<?>> context) {
         context.getCurrentView().goHome();
-        Optional.of(context.getCurrentView())
-            .map(StreamerView::getLoadedStreamer)
-            .map(Streamer::getParent)
-            .map(parent -> new LoadActionModel(context.getCurrentView(), parent))
-            .ifPresent(actionExecutors::execute);
     }
 
     @Override
     public String getId() {
-        return GO_UP_ELEMENT_ACTION;
+        return GO_TO_FIRST_STREAMER_ACTION;
     }
 
     @Override
     public Optional<KeyStroke> getKeyStroke() {
-        return Optional.of(uiHandler.getControlDownKeyStroke(VK_UP));
+        return Optional.of(KeyStroke.getKeyStroke(VK_HOME, 0));
     }
 }

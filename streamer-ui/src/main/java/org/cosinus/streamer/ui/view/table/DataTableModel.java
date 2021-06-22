@@ -69,17 +69,17 @@ public abstract class DataTableModel extends TableModel {
         this.currentIndex = currentIndex;
     }
 
-    public Streamer getElementAt(int index) {
+    public Streamer getItemAt(int index) {
         return ((ViewItem) getValueAt(getRowForIndex(index),
                                       getColumnForIndex(index)))
             .getStreamer();
     }
 
-    public int getElementCount() {
+    public int getItemsCount() {
         return items.size();
     }
 
-    public List<ViewItem> getAllElements() {
+    public List<ViewItem> getAllItems() {
         return items;
     }
 
@@ -112,7 +112,7 @@ public abstract class DataTableModel extends TableModel {
             items.sort(comparator);
             fireTableDataChanged();
         } catch (Exception ex) {
-            LOG.error("Error while sorting elements", ex);
+            LOG.error("Error while sorting streamers", ex);
         }
     }
 
@@ -168,7 +168,6 @@ public abstract class DataTableModel extends TableModel {
             DirectoryStreamer parent = content.getStreamer().getParent();
             if (parent != null) {
                 items.add(new ViewItem(parent, true));
-                //addElement(items.size());
             }
         }
         fireTableDataChanged();
@@ -176,7 +175,7 @@ public abstract class DataTableModel extends TableModel {
         content.getContent()
             .stream()
             .filter(Objects::nonNull)
-            .filter(element -> !preferences.booleanPreference(SHOW_HIDDEN) || element.isHidden())
+            .filter(streamer -> !preferences.booleanPreference(SHOW_HIDDEN) || streamer.isHidden())
             .map(ViewItem::new)
             .forEach(items::add);
         sort();
@@ -184,7 +183,7 @@ public abstract class DataTableModel extends TableModel {
         folder = content.getStreamer();
     }
 
-    public List<Streamer> getSelectedElements() {
+    public List<Streamer> getSelectedStreamers() {
         return selectionMap.keySet()
             .stream()
             .map(items::get)
@@ -192,7 +191,7 @@ public abstract class DataTableModel extends TableModel {
             .collect(Collectors.toList());
     }
 
-//    public void addElement(int index) {
+//    public void addStreamer(int index) {
 //        fireTableCellUpdated(getRowForIndex(index),
 //                             getColumnForIndex(index));
 //    }

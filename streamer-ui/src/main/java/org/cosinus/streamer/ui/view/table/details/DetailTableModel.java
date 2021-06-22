@@ -16,7 +16,6 @@
 
 package org.cosinus.streamer.ui.view.table.details;
 
-import org.cosinus.streamer.api.Element;
 import org.cosinus.streamer.ui.view.table.DataTableModel;
 import org.cosinus.streamer.ui.view.table.ViewItem;
 import org.cosinus.swing.translate.Translator;
@@ -29,7 +28,6 @@ import java.util.Map;
 
 import static java.util.Arrays.stream;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.FULL_TYPE_DESCRIPTION;
-import static org.cosinus.swing.util.Formatter.formatMemorySize;
 
 public class DetailTableModel extends DataTableModel {
 
@@ -70,7 +68,7 @@ public class DetailTableModel extends DataTableModel {
             return null;
         }
         ViewItem item = items.get(row);
-        if (item.isTopElement() && column > 0) {
+        if (item.isTopItem() && column > 0) {
             return "";
         }
         DetailColumn col = DetailColumn.getValueAt(column);
@@ -99,12 +97,6 @@ public class DetailTableModel extends DataTableModel {
     private boolean isComputingSize(String path) {
         return mapComputedSize.containsKey(path);
     }
-
-//    @Override
-//    public void addElement(int index) {
-//        fireTableRowsUpdated(index,
-//                             index);
-//    }
 
     @Override
     public int getRowForIndex(int index) {

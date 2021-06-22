@@ -16,21 +16,21 @@
 
 package org.cosinus.streamer.ui.error;
 
-public class LoadElementException extends StreamerException {
+public class LoadStreamerException extends StreamerException {
 
-    public LoadElementException(String message) {
+    public LoadStreamerException(String message) {
         super(message);
     }
 
-    public LoadElementException(String messageKey, Object... messageArguments) {
+    public LoadStreamerException(String messageKey, Object... messageArguments) {
         super(messageKey, messageArguments);
     }
 
-    public LoadElementException(String message, Throwable cause) {
+    public LoadStreamerException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public LoadElementException(Throwable cause) {
+    public LoadStreamerException(Throwable cause) {
         super(cause);
     }
 }

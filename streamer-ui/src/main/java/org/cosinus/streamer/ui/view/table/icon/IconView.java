@@ -33,7 +33,7 @@ public class IconView extends TableStreamerView {
 //        int insideWidth = renameWidth - insets.left - insets.right - (Maestro.isLafGTK() ? 0 : 1);
 //
 //        StringBuffer new_text = new StringBuffer();
-//        renameHeight = Utils.wrapWordText(getCurrentElement().toString(), new_text, insideWidth, txtRename, false, false);
+//        renameHeight = Utils.wrapWordText(getCurrentStreamer().toString(), new_text, insideWidth, txtRename, false, false);
 //        txtRename.setText(new_text.toString());
 //
 //        return new Rectangle(renameX, renameY, renameWidth + 1, renameHeight + 1);

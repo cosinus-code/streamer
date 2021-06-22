@@ -27,9 +27,9 @@ import org.cosinus.streamer.api.Streamer;
  */
 public class ViewItem {
 
-    private static final String TOP_ELEMENT_NAME = "..";
+    private static final String TOP_ITEM_NAME = "..";
 
-    private boolean topElement;
+    private boolean topItem;
 
     private final Streamer streamer;
 
@@ -37,9 +37,9 @@ public class ViewItem {
         this.streamer = streamer;
     }
 
-    public ViewItem(Streamer streamer, boolean topElement) {
+    public ViewItem(Streamer streamer, boolean topItem) {
         this.streamer = streamer;
-        this.topElement = topElement;
+        this.topItem = topItem;
     }
 
     public Streamer getStreamer() {
@@ -58,8 +58,8 @@ public class ViewItem {
         return streamer.isHidden();
     }
 
-    public boolean isTopElement() {
-        return topElement;
+    public boolean isTopItem() {
+        return topItem;
     }
 
     public File toFile() {
@@ -80,6 +80,6 @@ public class ViewItem {
 
     @Override
     public String toString() {
-        return isTopElement() ? TOP_ELEMENT_NAME : streamer.getName();
+        return isTopItem() ? TOP_ITEM_NAME : streamer.getName();
     }
 }

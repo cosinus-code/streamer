@@ -35,7 +35,7 @@ import java.util.stream.Stream;
 import static java.util.Optional.ofNullable;
 
 /**
- * {@link javax.swing.SwingWorker} for loading an element
+ * {@link javax.swing.SwingWorker} for loading an streamer
  */
 public class LoadStreamerWorker<T> extends SwingWorker<StreamedContent<T>, T> {
 

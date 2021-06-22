@@ -18,7 +18,7 @@ package org.cosinus.streamer.ui.action.execute.delete;
 
 import org.cosinus.streamer.ui.action.execute.SwingProgressWorker;
 import org.cosinus.streamer.ui.action.execute.SwingProgressWorkerActionExecutor;
-import org.cosinus.streamer.ui.action.progress.ElementsProgressModel;
+import org.cosinus.streamer.ui.action.progress.StreamersProgressModel;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
 import org.cosinus.streamer.ui.dialog.ProgressDialog;
@@ -26,27 +26,27 @@ import org.cosinus.swing.action.execute.ActionExecutor;
 import org.springframework.stereotype.Component;
 
 /**
- * Implementation of {@link ActionExecutor} for deleting elements based on {@link DeleteWorker}
+ * Implementation of {@link ActionExecutor} for deleting streamers based on {@link DeleteWorker}
  */
 @Component
 public class DeleteWorkerExecutor
-    extends SwingProgressWorkerActionExecutor<DeleteActionModel, ElementsProgressModel> {
+    extends SwingProgressWorkerActionExecutor<DeleteActionModel, StreamersProgressModel> {
 
     public DeleteWorkerExecutor(ProgressFormHandler progressFormHandler,
-                                ProgressListenerHandler<ElementsProgressModel> progressListenerHandler) {
+                                ProgressListenerHandler<StreamersProgressModel> progressListenerHandler) {
         super(progressFormHandler,
               progressListenerHandler);
     }
 
     @Override
-    protected ProgressDialog<ElementsProgressModel> createProgressDialog(DeleteActionModel deleteModel) {
-        return progressFormHandler.createElementsProgressDialog(deleteModel);
+    protected ProgressDialog<StreamersProgressModel> createProgressDialog(DeleteActionModel deleteModel) {
+        return progressFormHandler.createStreamersProgressDialog(deleteModel);
     }
 
     @Override
-    protected SwingProgressWorker<ElementsProgressModel>
+    protected SwingProgressWorker<StreamersProgressModel>
     createSwingWorker(DeleteActionModel actionModel,
-                      ProgressDialog<ElementsProgressModel> progressDialog) {
+                      ProgressDialog<StreamersProgressModel> progressDialog) {
         return new DeleteWorker(progressDialog, actionModel);
     }
 

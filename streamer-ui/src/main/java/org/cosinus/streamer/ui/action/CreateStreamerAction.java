@@ -30,19 +30,19 @@ import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 import static org.cosinus.swing.dialog.OptionsDialog.PLAIN_MESSAGE;
 
 /**
- * Rename element action
+ * Rename streamer action
  */
 @Component
-public class NewStreamerAction extends StreamerAction<Streamer<?>> {
+public class CreateStreamerAction extends StreamerAction<Streamer<?>> {
 
-    public static final String NEW_ELEMENT_ACTION_ID = "new-element";
+    public static final String CREATE_STREAMER_ACTION_ID = "create-streamer";
 
     private final DialogHandler dialogHandler;
 
     private final Translator translator;
 
-    public NewStreamerAction(DialogHandler dialogHandler,
-                             Translator translator) {
+    public CreateStreamerAction(DialogHandler dialogHandler,
+                                Translator translator) {
         this.dialogHandler = dialogHandler;
         this.translator = translator;
     }
@@ -56,17 +56,17 @@ public class NewStreamerAction extends StreamerAction<Streamer<?>> {
 
         dialogHandler.showInputDialog(applicationFrame,
                                       translator.translate("act-new-enter-name"),
-                                      translator.translate("act-new-new-element"),
+                                      translator.translate("act-new-new-streamer"),
                                       PLAIN_MESSAGE)
             .map(newName -> currentFolder.getPath().resolve(newName))
             .map(newPath -> currentFolder.getParent().createDirectoryStreamer(newPath))
             .map(Streamer::save)
-            .ifPresent(createdElement -> context.getCurrentView().reload());
+            .ifPresent(streamer -> context.getCurrentView().reload());
     }
 
     @Override
     public String getId() {
-        return NEW_ELEMENT_ACTION_ID;
+        return CREATE_STREAMER_ACTION_ID;
     }
 
     @Override

@@ -16,11 +16,10 @@
 
 package org.cosinus.streamer.ui.dialog;
 
-import org.cosinus.streamer.api.Element;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.action.progress.ElementsProgressModel;
-import org.cosinus.swing.util.Formatter;
+import org.cosinus.streamer.ui.action.progress.StreamersProgressModel;
 import org.cosinus.swing.action.execute.ActionModel;
+import org.cosinus.swing.util.Formatter;
 import org.cosinus.swing.window.Frame;
 
 import javax.swing.*;
@@ -32,15 +31,15 @@ import static java.awt.BorderLayout.SOUTH;
 import static javax.swing.JLabel.CENTER;
 
 /**
- * Dialog for showing the action progress over multiple elements
+ * Dialog for showing the action progress over multiple streamers
  */
-public class ElementsProgressDialog<E extends Element> extends ProgressDialog<ElementsProgressModel> {
+public class StreamersProgressDialog extends ProgressDialog<StreamersProgressModel> {
 
     private JProgressBar progressBar;
 
-    private JLabel lblElement;
+    private JLabel lblStreamer;
 
-    public ElementsProgressDialog(Frame frame, ActionModel actionModel) {
+    public StreamersProgressDialog(Frame frame, ActionModel actionModel) {
         super(frame, actionModel);
         init();
     }
@@ -49,7 +48,7 @@ public class ElementsProgressDialog<E extends Element> extends ProgressDialog<El
     public void initComponents() {
         super.initComponents();
 
-        lblElement = new JLabel(actionName + ": " + translator.translate("form_copy_from"));
+        lblStreamer = new JLabel(actionName + ": " + translator.translate("form_copy_from"));
         actionLabel.setHorizontalAlignment(CENTER);
 
         progressBar = new JProgressBar();
@@ -57,7 +56,7 @@ public class ElementsProgressDialog<E extends Element> extends ProgressDialog<El
 
         JPanel pathsPanel = new JPanel(new GridLayout(2, 1, 5, 5));
         pathsPanel.add(actionLabel);
-        pathsPanel.add(lblElement);
+        pathsPanel.add(lblStreamer);
 
         JPanel progressPanel = new JPanel(new BorderLayout(5, 5));
         progressPanel.add(progressBar);
@@ -73,12 +72,12 @@ public class ElementsProgressDialog<E extends Element> extends ProgressDialog<El
     }
 
     @Override
-    public void setProgress(ElementsProgressModel progressModel) {
+    public void setProgress(StreamersProgressModel progressModel) {
         actionLabel.setText(actionName);
         Optional.ofNullable(progressModel.getCurrentStreamer())
             .map(Streamer::getPath)
-            .map(path -> Formatter.formatTextForLabel(lblElement, path.toString()))
-            .ifPresent(lblElement::setText);
+            .map(path -> Formatter.formatTextForLabel(lblStreamer, path.toString()))
+            .ifPresent(lblStreamer::setText);
         progressBar.setValue(progressModel.getProgress());
     }
 }

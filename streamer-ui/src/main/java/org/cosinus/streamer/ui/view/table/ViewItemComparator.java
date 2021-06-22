@@ -46,11 +46,11 @@ public class ViewItemComparator implements Comparator<ViewItem> {
     @Override
     public int compare(ViewItem item1, ViewItem item2) {
 
-        if (item1.isTopElement()) {
+        if (item1.isTopItem()) {
             return -1;
         }
 
-        if (item2.isTopElement()) {
+        if (item2.isTopItem()) {
             return 1;
         }
 

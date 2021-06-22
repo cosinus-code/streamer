@@ -24,7 +24,6 @@ import org.cosinus.streamer.ui.action.context.StreamerActionContext;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
 import org.cosinus.swing.action.execute.ActionExecutors;
-import org.cosinus.swing.boot.SwingApplicationFrame;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.translate.Translator;
@@ -39,12 +38,12 @@ import static java.awt.event.KeyEvent.VK_F5;
 import static org.cosinus.streamer.ui.action.execute.copy.CopyActionModel.pack;
 
 /**
- * Copy elements action
+ * Copy streamers action
  */
 @Component
 public class PackStreamerAction<A> extends AbstractCopyAction<A> {
 
-    public static final String PACK_ELEMENT_ACTION_ID = "pack-element";
+    public static final String PACK_STREAMER_ACTION_ID = "pack-streamer";
 
     private final ApplicationUIHandler uiHandler;
 
@@ -87,16 +86,16 @@ public class PackStreamerAction<A> extends AbstractCopyAction<A> {
 //                .map(packers::get)
 //                .ifPresent(packer -> {
 //                    DataView<S> currentView = actionContext.getCurrentView();
-//                    List<S> elementsToCopy = copyAction.getElementsToCopy();
-//                    String name = elementsToCopy.size() == 1 ?
-//                            elementsToCopy.get(0).getName() :
-//                            currentView.getCurrentElement().getName();
+//                    List<S> streamersToCopy = copyAction.getStreamersToCopy();
+//                    String name = streamersToCopy.size() == 1 ?
+//                            streamersToCopy.get(0).getName() :
+//                            currentView.getCurrentStreamer().getName();
 //                    String packName = setExtension(name, copyAction.getPackType());
 //                    Path packStreamerPath = copyAction.getTargetPath().resolve(packName);
 //
 //                    Streamer destination = copyAction.getDestination().create(packStreamerPath);
 //
-//                    super.execute(copy(elementsToCopy)
+//                    super.execute(copy(streamersToCopy)
 //                                          .from(currentView.getLoadedStreamer())
 //                                          .to(packer.pack(destination))
 //                                            //TODO: to avoid setting target path to null
@@ -119,7 +118,7 @@ public class PackStreamerAction<A> extends AbstractCopyAction<A> {
 
     @Override
     public String getId() {
-        return PACK_ELEMENT_ACTION_ID;
+        return PACK_STREAMER_ACTION_ID;
     }
 
     @Override

@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 import java.lang.annotation.*;
 
 /**
- * This mark a root entry into a system of elements that can be streamed
+ * This mark a root entry into a system of streamers
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

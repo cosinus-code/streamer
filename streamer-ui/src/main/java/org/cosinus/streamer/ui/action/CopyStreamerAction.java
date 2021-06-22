@@ -34,12 +34,12 @@ import static java.awt.event.KeyEvent.VK_F5;
 import static org.cosinus.streamer.ui.action.execute.copy.CopyActionModel.copy;
 
 /**
- * Copy elements action
+ * Copy streamers action
  */
 @Component
 public class CopyStreamerAction<A> extends AbstractCopyAction<A> {
 
-    public static final String COPY_ELEMENT_ACTION_ID = "copy-element";
+    public static final String COPY_STREAMER_ACTION_ID = "copy-streamer";
 
     public CopyStreamerAction(Preferences preferences,
                               Translator translator,
@@ -77,7 +77,7 @@ public class CopyStreamerAction<A> extends AbstractCopyAction<A> {
 
     @Override
     public String getId() {
-        return COPY_ELEMENT_ACTION_ID;
+        return COPY_STREAMER_ACTION_ID;
     }
 
     @Override

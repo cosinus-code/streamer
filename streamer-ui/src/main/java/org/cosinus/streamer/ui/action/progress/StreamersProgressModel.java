@@ -21,11 +21,11 @@ import org.cosinus.streamer.api.Streamer;
 /**
  * Model for a progress over multiple streamers
  */
-public class ElementsProgressModel extends SimpleProgressModel {
+public class StreamersProgressModel extends SimpleProgressModel {
 
     private Streamer currentStreamer;
 
-    public ElementsProgressModel(String actionId) {
+    public StreamersProgressModel(String actionId) {
         super(actionId);
     }
 

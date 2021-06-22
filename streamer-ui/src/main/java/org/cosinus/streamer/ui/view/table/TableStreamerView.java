@@ -20,8 +20,6 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.load.StreamedContent;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.RenamingStreamerView;
-import org.cosinus.swing.ui.ApplicationUIHandler;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import java.awt.*;
@@ -120,7 +118,7 @@ public abstract class TableStreamerView extends RenamingStreamerView {
 
     @Override
     public void findContent(String name) {
-        table.findElement(name);
+        table.findViewItem(name);
     }
 
     @Override

@@ -19,45 +19,51 @@ package org.cosinus.streamer.ui.action;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.context.StreamerActionContext;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
+import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.swing.action.execute.ActionExecutors;
+import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.util.Optional;
 
-import static java.awt.event.KeyEvent.VK_ENTER;
+import static java.awt.event.KeyEvent.VK_UP;
 
 /**
- * Load streamer action
+ * Go to parent streamer action
  */
 @Component
-public class ExecuteStreamerAction extends StreamerAction<Streamer<?>> {
+public class GoToParentStreamerAction extends StreamerAction<Streamer<?>> {
 
-    public static final String EXECUTE_STREAMER_ACTION_ID = "execute-streamer";
+    public static final String GO_TO_UP_STREAMER_ACTION = "go-to-parent-streamer";
+
+    private final ApplicationUIHandler uiHandler;
 
     private final ActionExecutors actionExecutors;
 
-    public ExecuteStreamerAction(ActionExecutors actionExecutors) {
+    public GoToParentStreamerAction(ApplicationUIHandler uiHandler,
+                                    ActionExecutors actionExecutors) {
+        this.uiHandler = uiHandler;
         this.actionExecutors = actionExecutors;
     }
 
     @Override
     public void run(StreamerActionContext<Streamer<?>> context) {
-        Optional.ofNullable(context.getCurrentStreamer())
-                .filter(Streamer::isDirectory)
-                .map(streamer -> new LoadActionModel(context.getCurrentView(), streamer))
-                .ifPresentOrElse(actionExecutors::execute,
-                        () -> Optional.ofNullable(context.getCurrentStreamer())
-                                .ifPresent(streamer -> streamer.getParent().execute(streamer.getPath())));
+        context.getCurrentView().goHome();
+        Optional.of(context.getCurrentView())
+            .map(StreamerView::getLoadedStreamer)
+            .map(Streamer::getParent)
+            .map(parent -> new LoadActionModel(context.getCurrentView(), parent))
+            .ifPresent(actionExecutors::execute);
     }
 
     @Override
     public String getId() {
-        return EXECUTE_STREAMER_ACTION_ID;
+        return GO_TO_UP_STREAMER_ACTION;
     }
 
     @Override
     public Optional<KeyStroke> getKeyStroke() {
-        return Optional.of(KeyStroke.getKeyStroke(VK_ENTER, 0));
+        return Optional.of(uiHandler.getControlDownKeyStroke(VK_UP));
     }
 }

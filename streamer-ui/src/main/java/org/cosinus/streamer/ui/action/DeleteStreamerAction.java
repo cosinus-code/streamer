@@ -36,12 +36,12 @@ import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 import static org.cosinus.swing.dialog.OptionsDialog.YES_NO_CANCEL_OPTION;
 
 /**
- * Rename element action
+ * Rename streamer action
  */
 @Component
 public class DeleteStreamerAction extends StreamerAction<Streamer<?>> {
 
-    public static final String DELETE_ELEMENT_ACTION_ID = "delete-element";
+    public static final String DELETE_STREAMER_ACTION_ID = "delete-streamer";
 
     private final DialogHandler dialogHandler;
 
@@ -68,7 +68,7 @@ public class DeleteStreamerAction extends StreamerAction<Streamer<?>> {
     @Override
     public void run(StreamerActionContext<Streamer<?>> actionContext) {
         DeleteActionModel deleteAction = createDeleteActionModel(actionContext);
-        if (!deleteAction.hasElementsToDelete()) {
+        if (!deleteAction.hasStreamersToDelete()) {
             return;
         }
 
@@ -78,11 +78,11 @@ public class DeleteStreamerAction extends StreamerAction<Streamer<?>> {
 //            return;
 //        }
 //
-//        if (deleteAction.getElementsToDelete().size() == 1) {
-//            Element elementToDelete = (Element) deleteAction.getElementsToDelete().get(0);
-//            if (!elementToDelete.isDirectory() && deleteApproved(elementToDelete)) {
-//                if (!actionContext.getCurrentStreamer().delete(elementToDelete)) {
-//                    dialogHandler.showInfo(translator.translate("act-delete-cannot", elementToDelete));
+//        if (deleteAction.getStreamersToDelete().size() == 1) {
+//            Streamer streamerToDelete = deleteAction.getStreamersToDelete().get(0);
+//            if (!streamerToDelete.isDirectory() && deleteApproved(streamerToDelete)) {
+//                if (!actionContext.getCurrentStreamer().delete(streamerToDelete)) {
+//                    dialogHandler.showInfo(translator.translate("act-delete-cannot", streamerToDelete));
 //                    return;
 //                }
 //                actionContext.getCurrentView().reload();
@@ -91,7 +91,7 @@ public class DeleteStreamerAction extends StreamerAction<Streamer<?>> {
 //        }
 
         if (dialogHandler.confirm(applicationFrame,
-                                  translator.translate("act-delete-are-you-sure-elements"),
+                                  translator.translate("act-delete-are-you-sure-streamers"),
                                   getActionName(),
                                   YES_NO_CANCEL_OPTION)) {
             progressListenerHandler.register(deleteAction.getActionId(), new DefaultProgressListener() {
@@ -104,14 +104,14 @@ public class DeleteStreamerAction extends StreamerAction<Streamer<?>> {
         }
     }
 
-//    private boolean deleteApproved(Element elementToDelete) {
+//    private boolean deleteApproved(Streamer streamerToDelete) {
 //        return dialogHandler.confirm(translator.translate("act-delete-are-you-sure",
-//                                                          elementToDelete));
+//                                                          streamerToDelete));
 //    }
 
     private DeleteActionModel createDeleteActionModel(StreamerActionContext actionContext) {
         return new DeleteActionModel(getActionName())
-            .deleteElements(new ArrayList<>(actionContext.getCurrentView().getSelectedContent()))
+            .deleteStreamers(new ArrayList<>(actionContext.getCurrentView().getSelectedContent()))
             //to avoid cast
             .from((DirectoryStreamer) actionContext.getCurrentView().getLoadedStreamer());
     }
@@ -122,7 +122,7 @@ public class DeleteStreamerAction extends StreamerAction<Streamer<?>> {
 
     @Override
     public String getId() {
-        return DELETE_ELEMENT_ACTION_ID;
+        return DELETE_STREAMER_ACTION_ID;
     }
 
     @Override

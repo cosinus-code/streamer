@@ -28,11 +28,11 @@ import java.util.UUID;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 /**
- * Encapsulates the model of the delete elements action
+ * Encapsulates the model of the delete streamers action
  */
 public class DeleteActionModel extends ActionModel {
 
-    private List<Streamer> elementsToDelete = new ArrayList<>();
+    private List<Streamer> streamersToDelete = new ArrayList<>();
 
     private StreamerFilter streamerFilter;
 
@@ -42,13 +42,13 @@ public class DeleteActionModel extends ActionModel {
         super(UUID.randomUUID().toString(), actionName);
     }
 
-    public List<Streamer> getElementsToDelete() {
-        return elementsToDelete;
+    public List<Streamer> getStreamersToDelete() {
+        return streamersToDelete;
     }
 
-    public DeleteActionModel deleteElements(List<Streamer> elementsToDelete) {
-        this.elementsToDelete = elementsToDelete;
-        this.streamerFilter = elementsToDelete::contains;
+    public DeleteActionModel deleteStreamers(List<Streamer> streamersToDelete) {
+        this.streamersToDelete = streamersToDelete;
+        this.streamerFilter = streamersToDelete::contains;
         return this;
     }
 
@@ -65,7 +65,7 @@ public class DeleteActionModel extends ActionModel {
         return this;
     }
 
-    public boolean hasElementsToDelete() {
-        return !isEmpty(getElementsToDelete());
+    public boolean hasStreamersToDelete() {
+        return !isEmpty(getStreamersToDelete());
     }
 }

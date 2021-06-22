@@ -19,13 +19,13 @@ package org.cosinus.streamer.ui.action.progress;
 import org.cosinus.streamer.api.Streamer;
 
 /**
- * Model for a progress over multiple elements for actions with source and target
+ * Model for a progress over multiple streamers for actions with source and target
  */
 public class CopyProgressModel implements ProgressModel {
 
     private final SimpleProgressModel totalProgressModel;
 
-    private final SimpleProgressModel elementProgressModel;
+    private final SimpleProgressModel streamerProgressModel;
 
     private final String actionId;
 
@@ -36,7 +36,7 @@ public class CopyProgressModel implements ProgressModel {
     public CopyProgressModel(String actionId) {
         this.actionId = actionId;
         totalProgressModel = new SimpleProgressModel(actionId);
-        elementProgressModel = new SimpleProgressModel(actionId);
+        streamerProgressModel = new SimpleProgressModel(actionId);
     }
 
     @Override
@@ -48,8 +48,8 @@ public class CopyProgressModel implements ProgressModel {
         return totalProgressModel.getProgress();
     }
 
-    public int getElementProgress() {
-        return elementProgressModel.getProgress();
+    public int getStreamerProgress() {
+        return streamerProgressModel.getProgress();
     }
 
     public long getSpeed() {
@@ -64,8 +64,8 @@ public class CopyProgressModel implements ProgressModel {
         totalProgressModel.startProgress(totalProgressSize);
     }
 
-    public void startElementProgress(Streamer source, Streamer target) {
-        elementProgressModel.startProgress(source.getSize());
+    public void startStreamerProgress(Streamer source, Streamer target) {
+        streamerProgressModel.startProgress(source.getSize());
         this.source = source;
         this.target = target;
     }
@@ -74,13 +74,13 @@ public class CopyProgressModel implements ProgressModel {
         totalProgressModel.updateProgress(value);
     }
 
-    public void updateElementProgress(long value) {
-        elementProgressModel.updateProgress(value);
+    public void updateStreamerProgress(long value) {
+        streamerProgressModel.updateProgress(value);
         updateTotalProgress(value);
     }
 
-    public void finishElementProgress() {
-        elementProgressModel.finishProgress();
+    public void finishStreamerProgress() {
+        streamerProgressModel.finishProgress();
     }
 
     public void finishTotalProgress() {

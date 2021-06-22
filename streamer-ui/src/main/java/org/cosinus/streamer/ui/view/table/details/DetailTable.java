@@ -64,8 +64,6 @@ public class DetailTable extends DataTable implements ActionListener {
     @Autowired
     public Translator translator;
 
-    protected int indexOfElementAtMousePosition = -1;
-
     //TODO
     private boolean keyboardArrow;
 
@@ -135,16 +133,15 @@ public class DetailTable extends DataTable implements ActionListener {
 
                 int selectedRow = lsm.getMinSelectionIndex();
                 int oldRow = selectedRow == first ? last : first;
-                indexOfElementAtMousePosition = selectedRow;
                 if (shiftDown) {
                     int start = min(oldRow, selectedRow);
                     int end = max(oldRow, selectedRow);
-                    selectElements(start,
-                                   end,
-                                   true,
-                                   false);
+                    selectStreamers(start,
+                                    end,
+                                    true,
+                                    false);
                 } else if (ctrlDown && !keyboardArrow) {
-                    selectElement(selectedRow);
+                    selectStreamerAtIndex(selectedRow);
                 }
             } catch (Exception ex) {
                 errorHandler.handleError(DetailTable.this, ex);

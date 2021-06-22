@@ -46,10 +46,9 @@ import static org.cosinus.swing.dialog.OptionsDialog.DEFAULT_OPTION;
 import static org.cosinus.swing.dialog.OptionsDialog.INFORMATION_MESSAGE;
 import static org.cosinus.swing.util.Formatter.formatDate;
 import static org.cosinus.swing.util.Formatter.formatMemorySize;
-import static org.cosinus.swing.image.icon.IconSize.X32;
 
 /**
- * {@link SwingProgressWorker} for copying elements from a source system to target system
+ * {@link SwingProgressWorker} for copying streamers from a source system to target system
  */
 public class CopyWorker<S extends DirectoryStreamer, T extends DirectoryStreamer>
     extends SwingProgressWorker<CopyProgressModel> {
@@ -106,12 +105,12 @@ public class CopyWorker<S extends DirectoryStreamer, T extends DirectoryStreamer
                     }
 
                     BinaryStreamer target = destination.createBinaryStreamer(targetPath);
-                    progress.startElementProgress(streamerToCopy, target);
+                    progress.startStreamerProgress(streamerToCopy, target);
                     setProgress(progress);
                     if (target.exists() && copyModel.shouldSkip(source, target)) {
                         LOG.trace("Action skipped: copy " + source.getPath() + " to " + target.getPath());
-                        progress.updateElementProgress(source.getSize());
-                        progress.finishElementProgress();
+                        progress.updateStreamerProgress(source.getSize());
+                        progress.finishStreamerProgress();
                         setProgress(progress);
                         return;
                     }
@@ -153,7 +152,7 @@ public class CopyWorker<S extends DirectoryStreamer, T extends DirectoryStreamer
 
             binarySaver.consume(binaryStream, bytes -> {
                 checkActionStatus();
-                progress.updateElementProgress(bytes.length);
+                progress.updateStreamerProgress(bytes.length);
                 setProgress(progress);
             });
 
@@ -175,7 +174,7 @@ public class CopyWorker<S extends DirectoryStreamer, T extends DirectoryStreamer
                                       source.getPath(),
                                       target.getPath());
         } finally {
-            progress.finishElementProgress();
+            progress.finishStreamerProgress();
             setProgress(progress);
         }
     }
@@ -198,7 +197,7 @@ public class CopyWorker<S extends DirectoryStreamer, T extends DirectoryStreamer
             }
         }
 
-        progress.updateElementProgress(skippedBytes);
+        progress.updateStreamerProgress(skippedBytes);
         return true;
     }
 
