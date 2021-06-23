@@ -21,6 +21,7 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.pack.MainPacker;
 import org.cosinus.streamer.api.pack.PackerHandler;
 import org.cosinus.streamer.ui.action.context.StreamerActionContext;
+import org.cosinus.streamer.ui.action.copy.AbstractCopyAction;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
 import org.cosinus.swing.action.execute.ActionExecutors;

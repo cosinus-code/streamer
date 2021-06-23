@@ -16,7 +16,6 @@
 
 package org.cosinus.streamer.ui.action;
 
-import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.context.StreamerActionContext;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.swing.action.execute.ActionExecutors;
@@ -49,14 +48,9 @@ public class ReloadStreamerAction<T> extends StreamerAction<T> {
     @Override
     public void run(StreamerActionContext<T> context) {
         actionExecutors.execute(new LoadActionModel<>(
-                context.getCurrentView(),
-                context.getCurrentView().getLoadedStreamer(),
-                context.getCurrentView().getSelectedContent()
-                        .stream()
-                        .filter(content -> Streamer.class.isAssignableFrom(content.getClass()))
-                        .map(Streamer.class::cast)
-                        .findFirst()
-                        .orElse(null)));
+            context.getCurrentView(),
+            context.getCurrentView().getLoadedStreamer(),
+            context.getContentIdentifier()));
     }
 
     @Override

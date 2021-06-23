@@ -32,15 +32,19 @@ public class StreamerActionContext<T> implements ActionContext {
 
     private StreamerView<T> oppositeView;
 
+    private String contentIdentifier;
+
     public StreamerActionContext(StreamerView<T> currentView) {
         this.currentView = currentView;
         this.currentStreamer = currentView.getLoadedStreamer();
     }
 
     public StreamerActionContext(Streamer<T> currentStreamer,
-                                 StreamerView<T> currentView) {
+                                 StreamerView<T> currentView,
+                                 String contentIdentifier) {
         this.currentView = currentView;
         this.currentStreamer = currentStreamer;
+        this.contentIdentifier = contentIdentifier;
     }
 
     public StreamerActionContext(StreamerView<T> currentView,
@@ -64,5 +68,9 @@ public class StreamerActionContext<T> implements ActionContext {
 
     public PanelLocation getCurrentLocation() {
         return currentView.getCurrentLocation();
+    }
+
+    public String getContentIdentifier() {
+        return contentIdentifier;
     }
 }

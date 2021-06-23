@@ -93,6 +93,14 @@ public abstract class TableStreamerView extends RenamingStreamerView {
     }
 
     @Override
+    public Optional<String> getSelectedContentIdentifier() {
+        return getSelectedContent()
+            .stream()
+            .findFirst()
+            .map(Streamer::getName);
+    }
+
+    @Override
     public Rectangle getCurrentRectangle() {
         int index = table.getCurrentIndex();
         int row = table.getTableModel().getRowForIndex(index);
@@ -146,8 +154,7 @@ public abstract class TableStreamerView extends RenamingStreamerView {
         getDataTableModel().updateContent(content);
         table.reset();
 
-        Optional.ofNullable(content.getContentToSelect())
-            .map(Streamer::getName)
+        ofNullable(content.getContentIdentifier())
             .ifPresent(this::findContent);
     }
 
@@ -180,4 +187,5 @@ public abstract class TableStreamerView extends RenamingStreamerView {
         public void componentResized(ComponentEvent e) {
             table.onResize(scroll.getWidth() - 30, scroll.getHeight() - 20);
         }
-    }}
+    }
+}

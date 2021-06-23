@@ -19,7 +19,6 @@ package org.cosinus.streamer.ui.view;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.meta.StreamerHandler;
 import org.cosinus.streamer.ui.action.LoadStreamerAction;
-import org.cosinus.streamer.ui.action.ReloadStreamerAction;
 import org.cosinus.streamer.ui.action.context.StreamerActionContext;
 import org.cosinus.streamer.ui.action.execute.load.StreamedContent;
 import org.cosinus.streamer.ui.action.progress.ProgressListener;
@@ -31,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static java.awt.BorderLayout.CENTER;
@@ -93,12 +93,21 @@ public abstract class StreamerView<T> extends Panel implements ProgressListener<
     }
 
     public void loadStreamer(Streamer<T> streamer) {
+        loadStreamer(streamer, getSelectedContentIdentifier()
+            .orElse(null));
+    }
+
+    public void loadStreamer(Streamer<T> streamer, String contentIdentifier) {
         actionController.runAction(LoadStreamerAction.LOAD_STREAMER_ACTION_ID,
-                                   new StreamerActionContext<>(streamer, this));
+                                   new StreamerActionContext<>(streamer, this, contentIdentifier));
     }
 
     public void reload() {
-        actionController.runAction(ReloadStreamerAction.RELOAD_STREAMER_ACTION_ID);
+        loadStreamer(getLoadedStreamer());
+    }
+
+    public void reload(String contentIdentifier) {
+        loadStreamer(getLoadedStreamer(), contentIdentifier);
     }
 
     public PanelLocation getCurrentLocation() {
@@ -156,4 +165,6 @@ public abstract class StreamerView<T> extends Panel implements ProgressListener<
     public abstract void goEnd();
 
     public abstract List<T> getSelectedContent();
+
+    public abstract Optional<String> getSelectedContentIdentifier();
 }

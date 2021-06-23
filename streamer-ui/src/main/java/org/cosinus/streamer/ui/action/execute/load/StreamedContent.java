@@ -27,24 +27,24 @@ public class StreamedContent<T> {
 
     private final Streamer<T> streamer;
 
-    private final Streamer<T> contentToSelect;
+    private final String contentIdentifier;
 
     private final List<T> content;
 
     public StreamedContent(Streamer<T> streamer,
                            List<T> content,
-                           Streamer<T> contentToSelect) {
+                           String contentIdentifier) {
         this.streamer = streamer;
         this.content = content;
-        this.contentToSelect = contentToSelect;
+        this.contentIdentifier = contentIdentifier;
     }
 
     public Streamer<T> getStreamer() {
         return streamer;
     }
 
-    public Streamer<T> getContentToSelect() {
-        return contentToSelect;
+    public String getContentIdentifier() {
+        return contentIdentifier;
     }
 
     public List<T> getContent() {

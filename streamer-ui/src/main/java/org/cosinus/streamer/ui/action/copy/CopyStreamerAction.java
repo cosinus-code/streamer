@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.action;
+package org.cosinus.streamer.ui.action.copy;
 
 import org.cosinus.streamer.api.DirectoryStreamer;
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.ui.action.LoadStreamerAction;
 import org.cosinus.streamer.ui.action.context.StreamerActionContext;
+import org.cosinus.streamer.ui.action.copy.AbstractCopyAction;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
 import org.cosinus.swing.action.execute.ActionExecutors;

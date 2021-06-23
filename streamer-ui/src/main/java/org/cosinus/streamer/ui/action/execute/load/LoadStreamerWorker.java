@@ -51,7 +51,7 @@ public class LoadStreamerWorker<T> extends SwingWorker<StreamedContent<T>, T> {
 
     private final StreamerView<T> streamerView;
 
-    private final Streamer<T> contentToSelect;
+    private final String contentIdentifier;
 
     private final SimpleProgressModel progress;
 
@@ -61,7 +61,7 @@ public class LoadStreamerWorker<T> extends SwingWorker<StreamedContent<T>, T> {
                               LoadActionModel loadActionModel) {
         this.streamerToLoad = streamerToLoad;
         this.streamerView = loadActionModel.getView();
-        this.contentToSelect = loadActionModel.getContentToSelect();
+        this.contentIdentifier = loadActionModel.getContentIdentifier();
         this.content = new ArrayList<>();
         this.progress = new SimpleProgressModel(loadActionModel.getActionId());
         updateView();
@@ -73,7 +73,7 @@ public class LoadStreamerWorker<T> extends SwingWorker<StreamedContent<T>, T> {
             List<T> content = contentStream
                 .peek(this::publish)
                 .collect(Collectors.toList());
-            return new StreamedContent(streamerToLoad, content, contentToSelect);
+            return new StreamedContent(streamerToLoad, content, contentIdentifier);
         }
     }
 
@@ -112,7 +112,7 @@ public class LoadStreamerWorker<T> extends SwingWorker<StreamedContent<T>, T> {
     }
 
     private void updateView() {
-        streamerView.updateContent(new StreamedContent<T>(streamerToLoad, content, contentToSelect));
+        streamerView.updateContent(new StreamedContent<T>(streamerToLoad, content, contentIdentifier));
         progress.updateProgress(content.size());
         progressListenerHandler.setProgress(progress);
     }

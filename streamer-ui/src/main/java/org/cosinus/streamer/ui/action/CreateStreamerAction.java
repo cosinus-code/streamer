@@ -61,7 +61,7 @@ public class CreateStreamerAction extends StreamerAction<Streamer<?>> {
             .map(newName -> currentFolder.getPath().resolve(newName))
             .map(newPath -> currentFolder.getParent().createDirectoryStreamer(newPath))
             .map(Streamer::save)
-            .ifPresent(streamer -> context.getCurrentView().reload());
+            .ifPresent(streamer -> context.getCurrentView().reload(streamer.getName()));
     }
 
     @Override

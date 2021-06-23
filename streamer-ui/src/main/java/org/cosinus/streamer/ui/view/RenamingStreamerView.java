@@ -97,11 +97,10 @@ public abstract class RenamingStreamerView extends StreamerView<Streamer> {
         SwingUtilities.invokeLater(RenamingStreamerView.this::requestFocus);
     }
 
-    private void renameStreamer() throws LoadStreamerException {
+    private void renameStreamer() {
         String newName = getRenameText();
         streamerToBeRenamed.getParent().rename(streamerToBeRenamed.getPath(), newName);
-        reload();
-        findContent(newName);
+        reload(newName);
     }
 
     @Override

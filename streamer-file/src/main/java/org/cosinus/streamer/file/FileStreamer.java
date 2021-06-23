@@ -87,6 +87,11 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     }
 
     @Override
+    public boolean isHidden() {
+        return file.isHidden();
+    }
+
+    @Override
     public boolean isPack() {
         return false;
     }

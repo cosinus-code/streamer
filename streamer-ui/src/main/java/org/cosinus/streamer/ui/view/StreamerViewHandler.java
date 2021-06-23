@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+import static java.util.Arrays.stream;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.groupingBy;
@@ -122,8 +123,21 @@ public class StreamerViewHandler {
         return panelsMap.values();
     }
 
+    public Optional<StreamerView> getView(PanelLocation location) {
+        return getPanel(location)
+            .map(StreamerPanel::getView);
+    }
+
     public Optional<StreamerPanel> getPanel(PanelLocation location) {
         return ofNullable(panelsMap.get(location));
+    }
+
+    public void reloadViews() {
+        stream(PanelLocation.values())
+            .map(this::getView)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .forEach(StreamerView::reload);
     }
 
     public StreamerView getOppositeView() {

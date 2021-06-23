@@ -21,6 +21,8 @@ import org.cosinus.streamer.ui.action.LoadStreamerAction;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.swing.action.execute.ActionModel;
 
+import static java.util.Optional.ofNullable;
+
 /**
  * Encapsulates the model of the load streamer action
  */
@@ -30,20 +32,22 @@ public class LoadActionModel<T, S extends Streamer<T>> extends ActionModel {
 
     private final S streamer;
 
-    private final Streamer contentToSelect;
+    private final String contentIdentifier;
 
     public LoadActionModel(StreamerView<T> view,
                            S streamer) {
-        this(view, streamer, view.getLoadedStreamer());
+        this(view, streamer, ofNullable(view.getLoadedStreamer())
+            .map(Streamer::getName)
+            .orElse(null));
     }
 
     public LoadActionModel(StreamerView<T> view,
                            S streamer,
-                           Streamer contentToSelect) {
+                           String contentIdentifier) {
         super(view.getId(), LoadStreamerAction.LOAD_STREAMER_ACTION_ID);
         this.view = view;
         this.streamer = streamer;
-        this.contentToSelect = contentToSelect;
+        this.contentIdentifier = contentIdentifier;
     }
 
     public StreamerView<T> getView() {
@@ -54,7 +58,7 @@ public class LoadActionModel<T, S extends Streamer<T>> extends ActionModel {
         return streamer;
     }
 
-    public Streamer getContentToSelect() {
-        return contentToSelect;
+    public String getContentIdentifier() {
+        return contentIdentifier;
     }
 }

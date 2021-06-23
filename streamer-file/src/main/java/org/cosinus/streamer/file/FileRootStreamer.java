@@ -71,6 +71,11 @@ public class FileRootStreamer extends FileDirectoryStreamer {
     }
 
     @Override
+    public boolean isHidden() {
+        return false;
+    }
+
+    @Override
     public long getFreeSpace() {
         return fileStore.getFreeSpace();
     }

@@ -172,10 +172,11 @@ public abstract class DataTableModel extends TableModel {
         }
         fireTableDataChanged();
 
+        boolean showHidden = preferences.booleanPreference(SHOW_HIDDEN);
         content.getContent()
             .stream()
             .filter(Objects::nonNull)
-            .filter(streamer -> !preferences.booleanPreference(SHOW_HIDDEN) || streamer.isHidden())
+            .filter(streamer -> !streamer.isHidden() || showHidden)
             .map(ViewItem::new)
             .forEach(items::add);
         sort();
@@ -190,11 +191,6 @@ public abstract class DataTableModel extends TableModel {
             .map(ViewItem::getStreamer)
             .collect(Collectors.toList());
     }
-
-//    public void addStreamer(int index) {
-//        fireTableCellUpdated(getRowForIndex(index),
-//                             getColumnForIndex(index));
-//    }
 
     public abstract int getRowForIndex(int index);
 
