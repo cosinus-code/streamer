@@ -28,5 +28,5 @@ public interface MainPacker<T extends Streamer> {
 
     PackStreamer<T> pack(InputStreamer<?> streamerToPack);
 
-    Optional<T> findPackedStreamer(Streamer mainStreamer, String path);
+    Optional<T> findPackedStreamer(InputStreamer mainStreamer, String path);
 }

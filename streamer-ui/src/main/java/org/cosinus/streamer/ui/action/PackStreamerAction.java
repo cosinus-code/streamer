@@ -18,7 +18,6 @@ package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.api.DirectoryStreamer;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.pack.MainPacker;
 import org.cosinus.streamer.api.pack.PackerHandler;
 import org.cosinus.streamer.ui.action.context.StreamerActionContext;
 import org.cosinus.streamer.ui.action.copy.AbstractCopyAction;
@@ -32,7 +31,6 @@ import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
-import java.util.Map;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_F5;
@@ -48,7 +46,7 @@ public class PackStreamerAction<A> extends AbstractCopyAction<A> {
 
     private final ApplicationUIHandler uiHandler;
 
-    private final Map<String, MainPacker> packers;
+    private final PackerHandler packerHandler;
 
     public PackStreamerAction(Preferences preferences,
                               Translator translator,
@@ -65,12 +63,12 @@ public class PackStreamerAction<A> extends AbstractCopyAction<A> {
               progressListenerHandler,
               loadStreamerAction);
         this.uiHandler = uiHandler;
-        this.packers = packerHandler.getPackers();
+        this.packerHandler = packerHandler;
     }
 
     @Override
     public void run(StreamerActionContext actionContext) {
-        if (packers.isEmpty()) {
+        if (packerHandler.getPackersMap().isEmpty()) {
             dialogHandler.showInfo(translator.translate("act_pack_no_pack_system"));
             return;
         }
@@ -84,7 +82,7 @@ public class PackStreamerAction<A> extends AbstractCopyAction<A> {
                  StreamerActionContext actionContext) {
 
 //        Optional.ofNullable(copyAction.getPackType())
-//                .map(packers::get)
+//                .map(packerHandler.getPackers()::get)
 //                .ifPresent(packer -> {
 //                    DataView<S> currentView = actionContext.getCurrentView();
 //                    List<S> streamersToCopy = copyAction.getStreamersToCopy();
@@ -109,12 +107,14 @@ public class PackStreamerAction<A> extends AbstractCopyAction<A> {
     protected <S extends DirectoryStreamer, T extends DirectoryStreamer>
     CopyActionModel<S, T> copySpecifications(StreamerActionContext actionContext) {
         return pack(actionContext.getCurrentView().getSelectedContent())
-                .to(actionContext.getOppositeView().getLoadedStreamer());
+            .to(actionContext.getOppositeView().getLoadedStreamer());
     }
 
     @Override
     protected Object[] transferType() {
-        return packers.keySet().toArray();
+        return packerHandler.getPackersMap()
+            .keySet()
+            .toArray();
     }
 
     @Override

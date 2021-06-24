@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.api.meta;
 
+import org.cosinus.streamer.api.InputStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.pack.PackerHandler;
 import org.springframework.beans.factory.annotation.Value;
@@ -81,6 +82,8 @@ public class StreamerHandler {
         String packPath = paths[1];
         return metaStreamer.findByUrlPath(packerUrl)
             .or(() -> findStreamer(packerUrl))
+            .filter(streamer -> InputStreamer.class.isAssignableFrom(streamer.getClass()))
+            .map(InputStreamer.class::cast)
             .flatMap(packerStreamer -> findPackedStreamer(packerStreamer, packPath));
     }
 
@@ -91,13 +94,15 @@ public class StreamerHandler {
             .flatMap(streamer -> streamer.findByUrlPath(urlPath));
     }
 
-    private Optional<Streamer> findPackedStreamer(Streamer packerStreamer, String packPath) {
-        return packerHandler.getPackers()
+    private Optional<Streamer> findPackedStreamer(InputStreamer packerStreamer, String packPath) {
+        return packerHandler.getPackersMap()
             .values()
             .stream()
+            .map(packer -> packer.findPackedStreamer(packerStreamer, packPath))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
             //TODO: to avoid cast
-            .map(packer -> (Streamer) packer.findPackedStreamer(packerStreamer, packPath).orElse(null))
-            .filter(Objects::nonNull)
+            .map(Streamer.class::cast)
             .findFirst();
     }
 }

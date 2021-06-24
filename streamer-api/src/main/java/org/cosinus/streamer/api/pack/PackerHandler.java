@@ -29,12 +29,12 @@ import java.util.stream.Stream;
 @Component
 public class PackerHandler {
 
-    private final Map<String, MainPacker> packers;
+    private final Map<String, MainPacker> packersMap;
 
     public PackerHandler(List<MainPacker> streamers) {
-        packers = new HashMap<>();
+        packersMap = new HashMap<>();
         streamers.forEach(
-                packer -> getPackTypes(packer).forEach(type -> packers.put(type, packer)));
+                packer -> getPackTypes(packer).forEach(type -> packersMap.put(type, packer)));
 
     }
 
@@ -50,10 +50,10 @@ public class PackerHandler {
     }
 
     public Optional<MainPacker> findPacker(String type) {
-        return Optional.ofNullable(packers.get(type));
+        return Optional.ofNullable(packersMap.get(type));
     }
 
-    public Map<String, MainPacker> getPackers() {
-        return packers;
+    public Map<String, MainPacker> getPackersMap() {
+        return packersMap;
     }
 }

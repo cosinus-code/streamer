@@ -31,7 +31,7 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import static java.awt.event.KeyEvent.VK_F8;
+import static java.awt.event.KeyEvent.VK_DELETE;
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 import static org.cosinus.swing.dialog.OptionsDialog.YES_NO_CANCEL_OPTION;
 
@@ -127,6 +127,6 @@ public class DeleteStreamerAction extends StreamerAction<Streamer<?>> {
 
     @Override
     public Optional<KeyStroke> getKeyStroke() {
-        return Optional.of(KeyStroke.getKeyStroke(VK_F8, 0));
+        return Optional.of(KeyStroke.getKeyStroke(VK_DELETE, 0));
     }
 }

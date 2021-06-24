@@ -17,7 +17,6 @@
 package org.cosinus.streamer.zip;
 
 import org.cosinus.streamer.api.InputStreamer;
-import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.pack.MainPacker;
 import org.cosinus.streamer.api.pack.PackStreamer;
 import org.cosinus.streamer.api.pack.Packer;
@@ -34,10 +33,8 @@ public class ZipPacker implements MainPacker<ZipStreamer> {
     public static final String ZIP_PROTOCOL = "zip://";
 
     @Override
-    public Optional<ZipStreamer> findPackedStreamer(Streamer mainStreamer, String path) {
+    public Optional<ZipStreamer> findPackedStreamer(InputStreamer mainStreamer, String path) {
         return ofNullable(mainStreamer)
-            .filter(streamer -> InputStreamer.class.isAssignableFrom(streamer.getClass()))
-            .map(InputStreamer.class::cast)
             .map(this::pack)
             .flatMap(packStreamer -> packStreamer.find(path));
     }
