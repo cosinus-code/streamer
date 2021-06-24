@@ -1,6 +1,6 @@
 {
   "menu-streamer": {
-    "menu-streamer-open": "control O"
+    "menu-streamer-quit": "alt F4"
   },
   "menu-edit": {
     "menu-edit-preferences": "control P"
@@ -13,11 +13,7 @@
     "menu-view-tree": "",
     "menu-view-detail": "",
     "separator3": "",
-    "menu-view-sort-name": "",
-    "menu-view-sort-type": "",
-    "menu-view-sort-size": "",
-    "separator4": "",
-    "menu-view-sidebar": "",
+    "menu-view-left-view": "",
     "menu-view-hidden": ""
   },
   "menu-help": {

@@ -52,6 +52,8 @@ public class StreamerActionContext<T> implements ActionContext {
         this.currentView = currentView;
         this.oppositeView = oppositeView;
         this.currentStreamer = (Streamer<T>) currentView.getCurrentContent();
+        this.contentIdentifier = currentView.getSelectedContentIdentifier()
+            .orElse(null);
     }
 
     public StreamerView<T>  getCurrentView() {
