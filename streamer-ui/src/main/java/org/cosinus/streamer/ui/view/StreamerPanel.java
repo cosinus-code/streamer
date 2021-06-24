@@ -53,19 +53,24 @@ public class StreamerPanel extends Panel {
 
     public StreamerPanel() {
         this.addressLabel = new Label(" ");
+        this.freeSpace = new FreeSpace();
+        this.freeSpaceLabel = new JLabel();
+
+        setLayout(new BorderLayout());
+    }
+
+    @Override
+    public void initComponents() {
+        super.initComponents();
+
         addressLabel.setBorder(emptyBorder(2));
         addressLabel.setOpaque(true);
-        ofNullable(uiHandler.getInactiveCaptionColor())
-            .or(() -> ofNullable(uiHandler.getColor("ScrollBar.background")))
+        uiHandler.getInactiveBackgroundColor()
             .ifPresent(addressLabel::setBackground);
-        ofNullable(uiHandler.getInactiveCaptionTextColor())
-            .or(() -> ofNullable(uiHandler.getColor("TextField.foreground")))
+        uiHandler.getInactiveForegroundColor()
             .ifPresent(addressLabel::setForeground);
-        addressLabel.setForeground(uiHandler.getInactiveCaptionTextColor());
 
-        this.freeSpace = new FreeSpace();
-
-        this.freeSpaceLabel = new JLabel(translator.translate("free_space"));
+        freeSpaceLabel.setText(translator.translate("free_space"));
         freeSpaceLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         freeSpaceLabel.setVisible(false);
 
@@ -80,7 +85,6 @@ public class StreamerPanel extends Panel {
             topPanel.add(addressLabel, SOUTH);
         }
 
-        setLayout(new BorderLayout());
         add(topPanel, NORTH);
     }
 

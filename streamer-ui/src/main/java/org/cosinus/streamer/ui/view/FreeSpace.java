@@ -47,12 +47,15 @@ public class FreeSpace extends Label {
     @Override
     public void paint(Graphics g) {
         if (totalSpace > 0) {
-            int width = (int) (getWidth() * (totalSpace - freeSpace) / totalSpace);
-            Color initialColor = g.getColor();
-            g.setColor(uiHandler.getColor("ScrollBar.background"));
-            g.fillRect(0, 0, width, getHeight());
-            g.drawRect(0, 0, getWidth(), getHeight() - 1);
-            g.setColor(initialColor);
+            uiHandler.getInactiveBackgroundColor()
+                .ifPresent(color -> {
+                    int width = (int) (getWidth() * (totalSpace - freeSpace) / totalSpace);
+                    Color initialColor = g.getColor();
+                    g.setColor(color);
+                    g.fillRect(0, 0, width, getHeight());
+                    g.drawRect(0, 0, getWidth(), getHeight() - 1);
+                    g.setColor(initialColor);
+                });
         }
 
         super.paint(g);

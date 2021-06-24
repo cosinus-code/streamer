@@ -114,7 +114,7 @@ public class DetailHeaderCell extends Label implements TableCellRenderer {
     }
 
     protected void customizeCellRenderer(int colIndex) {
-        setBorder(new CompoundBorder(lineBorder(uiHandler.getControlDarkShadowColor(), 0, colIndex > 0 ? 1 : 0, 1, 0),
+        setBorder(new CompoundBorder(lineBorder(uiHandler.getInactiveCaptionColor(), 0, colIndex > 0 ? 1 : 0, 1, 0),
                                      emptyBorder(3)));
     }
 }

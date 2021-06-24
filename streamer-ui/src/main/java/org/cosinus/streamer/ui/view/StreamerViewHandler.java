@@ -115,6 +115,7 @@ public class StreamerViewHandler {
 
     public StreamerPanel createStreamerPanel(PanelLocation location) {
         StreamerPanel panel = new StreamerPanel();
+        panel.initComponents();
         panelsMap.put(location, panel);
         return panel;
     }
