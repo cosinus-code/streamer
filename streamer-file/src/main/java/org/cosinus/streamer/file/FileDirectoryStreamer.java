@@ -78,7 +78,7 @@ public class FileDirectoryStreamer extends FileStreamer<FileStreamer> implements
 
     @Override
     public FileDirectoryStreamer save() {
-        if (!file.mkdir()) {
+        if (!file.exists() && !file.mkdirs()) {
             throw new SaveStreamerException("Failed to create directory:" + file.getPath());
         }
         return this;

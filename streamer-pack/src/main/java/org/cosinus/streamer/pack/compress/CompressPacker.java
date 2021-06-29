@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.error;
+package org.cosinus.streamer.pack.compress;
 
-/**
- * Thrown when an action is cancelled
- */
-public class ActionCancelledException extends StreamerException {
+import org.cosinus.streamer.api.InputStreamer;
+import org.cosinus.streamer.api.pack.MainPacker;
+import org.cosinus.streamer.api.pack.PackStreamer;
+import org.cosinus.streamer.api.pack.Packer;
 
-    public ActionCancelledException() {
-        super("act_canceled");
+@Packer({"gz", "gzip", "bz2", "bzip2"})
+public class CompressPacker implements MainPacker<CompressStreamer> {
+
+    @Override
+    public PackStreamer pack(InputStreamer<?> streamerToPack) {
+        return new CompressPackStreamer(streamerToPack);
     }
+
 }

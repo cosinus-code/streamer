@@ -34,7 +34,7 @@ public interface StreamerPreferences {
     String PREVIEW = "preview";
     String SHOW_HIDDEN = "show-hidden";
     String CHECK_TYPE = "check-type";
-    String VERIFY_COPY = "verify-zip";
+    String VERIFY_COPY = "verify-copy";
     String ICON_PATH = "icon-path";
     String DOWNLOAD_DIR = "download-dir";
     String EDIT_APP = "edit-app";

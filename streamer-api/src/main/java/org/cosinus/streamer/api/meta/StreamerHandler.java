@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
@@ -66,6 +65,7 @@ public class StreamerHandler {
             .flatMap(this::findStreamerForUrlPath)
             .orElseGet(this::getDefaultStreamer);
     }
+
     public Streamer getDefaultStreamer() {
         return defaultStreamer;
     }
@@ -94,15 +94,9 @@ public class StreamerHandler {
             .flatMap(streamer -> streamer.findByUrlPath(urlPath));
     }
 
-    private Optional<Streamer> findPackedStreamer(InputStreamer packerStreamer, String packPath) {
-        return packerHandler.getPackersMap()
-            .values()
-            .stream()
-            .map(packer -> packer.findPackedStreamer(packerStreamer, packPath))
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            //TODO: to avoid cast
-            .map(Streamer.class::cast)
-            .findFirst();
+    private Optional<Streamer> findPackedStreamer(InputStreamer streamerToPack, String packPath) {
+        return packerHandler.findPacker(streamerToPack.getType())
+            .map(packer -> packer.pack(streamerToPack))
+            .flatMap(packStreamer -> packStreamer.find(packPath));
     }
 }

@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
@@ -168,7 +169,7 @@ public class CopyWorker<S extends DirectoryStreamer, T extends DirectoryStreamer
                                                             target.getPath()))) {
                 throw new ActionCancelledException();
             }
-        } catch (IOException copyException) {
+        } catch (IOException | UncheckedIOException copyException) {
             throw new ActionException(copyException,
                                       "act_copy_error",
                                       source.getPath(),

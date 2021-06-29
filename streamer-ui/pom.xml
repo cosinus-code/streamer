@@ -46,12 +46,12 @@
         </dependency>
         <dependency>
             <groupId>org.cosinuscode.streamer</groupId>
-            <artifactId>streamer-zip</artifactId>
+            <artifactId>streamer-ftp</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.cosinuscode.streamer</groupId>
-            <artifactId>streamer-ftp</artifactId>
+            <artifactId>streamer-pack</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

@@ -16,45 +16,26 @@
 
 package org.cosinus.streamer.ui.error;
 
+import org.cosinus.swing.error.TranslatableRuntimeException;
+
 /**
  * Generic exception
  */
-public class StreamerException extends RuntimeException {
+public class StreamerException extends TranslatableRuntimeException {
 
-    private Object[] messageArguments;
-
-    public StreamerException() {
-        super();
+    public StreamerException(String messageKey, Object[] messageArguments) {
+        super(messageKey, messageArguments);
     }
 
-    public StreamerException(String message) {
-        super(message);
-    }
-
-    public StreamerException(String messageKey,
-                             Object... messageArguments) {
+    public StreamerException(String messageKey) {
         super(messageKey);
-        this.messageArguments = messageArguments;
     }
 
-    public StreamerException(Throwable cause,
-                             String messageKey,
-                             Object... messageArguments) {
-        super(messageKey, cause);
-        this.messageArguments = messageArguments;
+    public StreamerException(Throwable cause, String messageKey) {
+        super(cause, messageKey);
     }
 
-    public StreamerException(String message,
-                             Throwable cause) {
-        super(message,
-              cause);
-    }
-
-    public StreamerException(Throwable cause) {
-        super(cause);
-    }
-
-    public Object[] getMessageArguments() {
-        return messageArguments;
+    public StreamerException(Throwable cause, String messageKey, Object[] messageArguments) {
+        super(cause, messageKey, messageArguments);
     }
 }

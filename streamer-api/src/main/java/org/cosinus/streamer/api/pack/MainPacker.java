@@ -21,6 +21,8 @@ import org.cosinus.streamer.api.Streamer;
 
 import java.util.Optional;
 
+import static java.util.Optional.ofNullable;
+
 /**
  * Streamer packer interface
  */
@@ -28,5 +30,9 @@ public interface MainPacker<T extends Streamer> {
 
     PackStreamer<T> pack(InputStreamer<?> streamerToPack);
 
-    Optional<T> findPackedStreamer(InputStreamer mainStreamer, String path);
+    default Optional<T> findPackedStreamer(InputStreamer mainStreamer, String path) {
+        return ofNullable(mainStreamer)
+            .map(this::pack)
+            .flatMap(packStreamer -> packStreamer.find(path));
+    }
 }

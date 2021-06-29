@@ -22,6 +22,6 @@ package org.cosinus.streamer.ui.error;
 public class SkipActionException extends StreamerException {
 
     public SkipActionException() {
-        super();
+        super("act_skipped");
     }
 }

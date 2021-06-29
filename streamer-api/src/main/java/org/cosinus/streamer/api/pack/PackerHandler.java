@@ -23,6 +23,8 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 import java.util.stream.Stream;
 
+import static java.util.Optional.ofNullable;
+
 /**
  * Handler for {@link MainPacker} components
  */
@@ -50,7 +52,7 @@ public class PackerHandler {
     }
 
     public Optional<MainPacker> findPacker(String type) {
-        return Optional.ofNullable(packersMap.get(type));
+        return ofNullable(packersMap.get(type));
     }
 
     public Map<String, MainPacker> getPackersMap() {

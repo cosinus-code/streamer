@@ -14,31 +14,27 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.zip;
+package org.cosinus.streamer.pack.archive.stream;
 
-import org.cosinus.streamer.api.BinaryStreamer;
-import org.cosinus.streamer.zip.stream.ZipStreamEntry;
+import org.cosinus.streamer.pack.archive.ArchiveStreamEntry;
+import org.cosinus.streamer.pack.archive.EntryInputStream;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UncheckedIOException;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
-public class ZipBinaryStreamer extends ZipStreamer<byte[]> implements BinaryStreamer {
+public class ArchiveStream {
 
-    protected ZipBinaryStreamer(ZipPackStreamer zipPackStreamer, ZipStreamEntry zipEntry) {
-        super(zipPackStreamer, zipEntry);
+    public static Stream<ArchiveStreamEntry> stream(EntryInputStream archiveInputStream) {
+        return StreamSupport
+            .stream(new ArchiveSpliterator(archiveInputStream), false)
+            .onClose(() -> close(archiveInputStream));
     }
 
-    @Override
-    public InputStream inputStream() {
-        return zipEntry.getZipInputStream();
-    }
-
-    @Override
-    public OutputStream outputStream(boolean append) {
+    protected static void close(EntryInputStream archiveInputStream) {
         try {
-            return zipPackStreamer.getEntryOutputStream(zipEntry);
+            archiveInputStream.closeStream();
         } catch (IOException ex) {
             throw new UncheckedIOException(ex);
         }

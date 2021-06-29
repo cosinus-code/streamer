@@ -17,7 +17,6 @@
 package org.cosinus.streamer.ui.view;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.error.LoadStreamerException;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.translate.Translator;

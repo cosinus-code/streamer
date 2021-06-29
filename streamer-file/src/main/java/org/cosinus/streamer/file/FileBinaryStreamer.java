@@ -22,6 +22,8 @@ import org.cosinus.streamer.api.error.SaveStreamerException;
 import java.io.*;
 import java.nio.file.Path;
 
+import static java.util.Optional.ofNullable;
+
 public class FileBinaryStreamer extends FileStreamer<byte[]> implements BinaryStreamer {
 
     public FileBinaryStreamer(FileMainStreamer fileMainStreamer, FileHandler fileHandler, Path path) {
@@ -40,6 +42,8 @@ public class FileBinaryStreamer extends FileStreamer<byte[]> implements BinarySt
     @Override
     public OutputStream outputStream(boolean append) {
         try {
+            ofNullable(file.getParentFile())
+                .ifPresent(File::mkdirs);
             return new FileOutputStream(file, append);
         } catch (FileNotFoundException ex) {
             throw new UncheckedIOException(ex);

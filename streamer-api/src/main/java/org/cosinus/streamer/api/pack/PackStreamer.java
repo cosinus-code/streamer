@@ -16,16 +16,91 @@
 
 package org.cosinus.streamer.api.pack;
 
+import org.cosinus.streamer.api.DirectoryStreamer;
+import org.cosinus.streamer.api.InputStreamer;
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.consumer.StreamConsumer;
 
+import java.nio.file.Path;
 import java.util.Optional;
 
 /**
  * Pack streamer interface
  */
-public interface PackStreamer<T> extends Streamer<T> {
+public abstract class PackStreamer<T> implements Streamer<T> {
 
-    Optional<T> find(String path);
+    protected final InputStreamer packInputStreamer;
 
-    void finishLoading();
+    public PackStreamer(InputStreamer packInputStreamer) {
+        this.packInputStreamer = packInputStreamer;
+    }
+
+    @Override
+    public StreamConsumer<? extends T> saver(boolean append) {
+        return packInputStreamer.saver(append);
+    }
+
+    @Override
+    public Streamer save() {
+        return packInputStreamer.save();
+    }
+
+    @Override
+    public DirectoryStreamer getParent() {
+        return packInputStreamer.getParent();
+    }
+
+    @Override
+    public DirectoryStreamer getRootStreamer() {
+        return packInputStreamer.getRootStreamer();
+    }
+
+    @Override
+    public boolean delete() {
+        return packInputStreamer.delete();
+    }
+
+    @Override
+    public String getProtocol() {
+        return packInputStreamer.getProtocol();
+    }
+
+    @Override
+    public Path getPath() {
+        return packInputStreamer.getPath();
+    }
+
+    @Override
+    public boolean exists() {
+        return packInputStreamer.exists();
+    }
+
+    @Override
+    public long getSize() {
+        return packInputStreamer.getSize();
+    }
+
+    @Override
+    public long lastModified() {
+        return packInputStreamer.lastModified();
+    }
+
+    @Override
+    public long getFreeSpace() {
+        return packInputStreamer.getParent().getFreeSpace();
+    }
+
+    @Override
+    public long getTotalSpace() {
+        return packInputStreamer.getParent().getTotalSpace();
+    }
+
+    @Override
+    public String getUrlPath() {
+        return packInputStreamer.getUrlPath();
+    }
+
+    public abstract Optional<T> find(String path);
+
+    public abstract void finishLoading();
 }

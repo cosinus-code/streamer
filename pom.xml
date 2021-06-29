@@ -16,8 +16,8 @@
         <module>streamer-ui</module>
         <module>streamer-api</module>
         <module>streamer-file</module>
-        <module>streamer-zip</module>
         <module>streamer-ftp</module>
+        <module>streamer-pack</module>
     </modules>
     <packaging>pom</packaging>
     <name>Streamer Parent</name>

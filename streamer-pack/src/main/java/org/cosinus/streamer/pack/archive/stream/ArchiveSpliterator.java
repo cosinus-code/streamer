@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.zip.stream;
+package org.cosinus.streamer.pack.archive.stream;
+
+import org.cosinus.streamer.pack.archive.ArchiveStreamEntry;
+import org.cosinus.streamer.pack.archive.EntryInputStream;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -25,34 +28,33 @@ import java.util.function.Consumer;
 import static java.lang.Long.MAX_VALUE;
 import static java.util.Optional.ofNullable;
 
-/**
- * Spliterator for zip entries
- */
-public class ZipSpliterator implements Spliterator<ZipStreamEntry> {
+public class ArchiveSpliterator implements Spliterator<ArchiveStreamEntry> {
 
-    private final ZipEntryInputStream zipInputStream;
+    private final EntryInputStream archiveInputStream;
 
-    public ZipSpliterator(ZipEntryInputStream zipInputStream) {
-        this.zipInputStream = zipInputStream;
+    public ArchiveSpliterator(EntryInputStream archiveInputStream) {
+        this.archiveInputStream = archiveInputStream;
     }
 
     @Override
-    public boolean tryAdvance(Consumer<? super ZipStreamEntry> action) {
-        Optional<ZipStreamEntry> entry = nextEntry();
+    public boolean tryAdvance(Consumer<? super ArchiveStreamEntry> action) {
+        Optional<ArchiveStreamEntry> entry = nextEntry();
         entry.ifPresent(action);
         return entry.isPresent();
     }
 
-    protected Optional<ZipStreamEntry> nextEntry() {
+    protected Optional<ArchiveStreamEntry> nextEntry() {
         try {
-            return ofNullable(zipInputStream.getNextEntry());
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
+            return ofNullable(archiveInputStream.getNextEntry())
+                .map(entry -> new ArchiveStreamEntry(entry, archiveInputStream));
+
+        } catch (IOException ex) {
+            throw new UncheckedIOException(ex);
         }
     }
 
     @Override
-    public Spliterator<ZipStreamEntry> trySplit() {
+    public Spliterator<ArchiveStreamEntry> trySplit() {
         return null;
     }
 

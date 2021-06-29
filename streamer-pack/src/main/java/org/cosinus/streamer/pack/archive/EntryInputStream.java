@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.error;
+package org.cosinus.streamer.pack.archive;
 
-public class LoadStreamerException extends StreamerException {
+import org.apache.commons.compress.archivers.ArchiveEntry;
 
-    public LoadStreamerException(String message) {
-        super(message);
-    }
+import java.io.IOException;
+import java.io.InputStream;
 
-    public LoadStreamerException(String messageKey, Object... messageArguments) {
-        super(messageKey, messageArguments);
-    }
+public interface EntryInputStream {
 
-    public LoadStreamerException(String message, Throwable cause) {
-        super(message, cause);
-    }
+    ArchiveEntry getNextEntry() throws IOException;
 
-    public LoadStreamerException(Throwable cause) {
-        super(cause);
-    }
+    InputStream getInputStream(ArchiveEntry archiveEntry);
+
+    void closeStream() throws IOException;
 }

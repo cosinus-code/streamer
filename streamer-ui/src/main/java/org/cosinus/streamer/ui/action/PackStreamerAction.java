@@ -107,6 +107,7 @@ public class PackStreamerAction<A> extends AbstractCopyAction<A> {
     protected <S extends DirectoryStreamer, T extends DirectoryStreamer>
     CopyActionModel<S, T> copySpecifications(StreamerActionContext actionContext) {
         return pack(actionContext.getCurrentView().getSelectedContent())
+            .from(actionContext.getCurrentView().getLoadedStreamer())
             .to(actionContext.getOppositeView().getLoadedStreamer());
     }
 

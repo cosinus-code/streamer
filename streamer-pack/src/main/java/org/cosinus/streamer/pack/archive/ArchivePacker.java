@@ -14,33 +14,19 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.zip;
+package org.cosinus.streamer.pack.archive;
 
 import org.cosinus.streamer.api.InputStreamer;
 import org.cosinus.streamer.api.pack.MainPacker;
 import org.cosinus.streamer.api.pack.PackStreamer;
 import org.cosinus.streamer.api.pack.Packer;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
-import java.util.Optional;
-
-import static java.util.Optional.ofNullable;
-
-@Packer({"zip", "jar", "war", "ear"})
-@ConditionalOnProperty(name = "streamer.zip.enabled", matchIfMissing = true)
-public class ZipPacker implements MainPacker<ZipStreamer> {
-
-    public static final String ZIP_PROTOCOL = "zip://";
+@Packer({"tar", "zip", "jar", "war", "ear", "7z"})
+public class ArchivePacker implements MainPacker<ArchiveStreamer> {
 
     @Override
-    public Optional<ZipStreamer> findPackedStreamer(InputStreamer mainStreamer, String path) {
-        return ofNullable(mainStreamer)
-            .map(this::pack)
-            .flatMap(packStreamer -> packStreamer.find(path));
+    public PackStreamer<ArchiveStreamer> pack(InputStreamer<?> streamerToPack) {
+        return new ArchivePackStreamer<>(streamerToPack);
     }
 
-    @Override
-    public PackStreamer<ZipStreamer> pack(InputStreamer<?> streamerToPack) {
-        return new ZipPackStreamer(streamerToPack);
-    }
 }
