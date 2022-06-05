@@ -10,13 +10,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>streamer-api</artifactId>
-    <version>1.0-SNAPSHOT</version>
     <name>Streamer API</name>
 
     <dependencies>
         <dependency>
             <groupId>org.cosinuscode.swing</groupId>
-            <artifactId>spring-swing-starter</artifactId>
+            <artifactId>spring-swing-boot-starter</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
