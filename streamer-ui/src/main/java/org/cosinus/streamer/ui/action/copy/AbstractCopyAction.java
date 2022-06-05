@@ -22,7 +22,6 @@ import org.cosinus.streamer.ui.action.LoadStreamerAction;
 import org.cosinus.streamer.ui.action.StreamerAction;
 import org.cosinus.streamer.ui.action.context.StreamerActionContext;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
-import org.cosinus.streamer.ui.action.execute.copy.TransferType;
 import org.cosinus.streamer.ui.action.progress.DefaultProgressListener;
 import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
 import org.cosinus.streamer.ui.dialog.CopyConfirmationDialog;
@@ -98,13 +97,9 @@ public abstract class AbstractCopyAction<A> extends StreamerAction<A> {
     }
 
     protected CopyConfirmationDialog copyConfirmationDialog(CopyActionModel copyAction) {
-        return new CopyConfirmationDialog(copyAction, transferType());
+        return new CopyConfirmationDialog(copyAction);
     }
 
     protected abstract <S extends DirectoryStreamer, T extends DirectoryStreamer>
     CopyActionModel<S, T> copySpecifications(StreamerActionContext actionContext);
-
-    protected Object[] transferType() {
-        return TransferType.values();
-    }
 }

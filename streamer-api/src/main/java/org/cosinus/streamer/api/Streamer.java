@@ -63,21 +63,12 @@ public interface Streamer<T> {
 
     long lastModified();
 
-    default boolean isPack() {
-        return false;
-    }
-
     default boolean canRead() {
         return true;
     }
 
     default boolean canWrite() {
         return true;
-    }
-
-    //TODO: to find a better name
-    default boolean isSensitiveToTransferType() {
-        return false;
     }
 
     default String getName() {

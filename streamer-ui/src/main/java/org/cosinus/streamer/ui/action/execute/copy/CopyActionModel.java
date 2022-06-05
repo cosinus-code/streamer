@@ -26,7 +26,6 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import static java.util.UUID.randomUUID;
-import static org.cosinus.streamer.ui.action.execute.copy.TransferType.TRANSFER_AUTO;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 /**
@@ -53,8 +52,6 @@ public class CopyActionModel<S extends Streamer, T extends Streamer> extends Act
     private Path targetPath;
 
     private boolean forceNewInsteadOverwrite;
-
-    private TransferType transferType = TRANSFER_AUTO;
 
     private String packType;
 
@@ -110,15 +107,6 @@ public class CopyActionModel<S extends Streamer, T extends Streamer> extends Act
 
     public CopyActionModel<S, T> toTargetPath(String targetPath) {
         return toTargetPath(Paths.get(targetPath));
-    }
-
-    public TransferType getTransferType() {
-        return transferType;
-    }
-
-    public CopyActionModel<S, T> withTransferType(TransferType transferType) {
-        this.transferType = transferType;
-        return this;
     }
 
     public String getPackType() {
@@ -287,11 +275,6 @@ public class CopyActionModel<S extends Streamer, T extends Streamer> extends Act
 
     public boolean isCopyAllowed() {
         return source.canRead() && destination.canWrite();
-    }
-
-    public boolean isSensitiveToTransferType() {
-        return source.isSensitiveToTransferType() ||
-            destination.isSensitiveToTransferType();
     }
 
     public boolean shouldSkip(Streamer source, Streamer target) {

@@ -17,16 +17,14 @@
 package org.cosinus.streamer.ui.dialog;
 
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
-import org.cosinus.streamer.ui.action.execute.copy.TransferType;
 import org.cosinus.swing.dialog.DialogHandler;
-import org.cosinus.swing.window.Dialog;
 import org.cosinus.swing.translate.Translator;
+import org.cosinus.swing.window.Dialog;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.util.Optional;
 
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 import static org.cosinus.swing.border.Borders.emptyBorder;
@@ -44,17 +42,14 @@ public class CopyConfirmationDialog extends Dialog<CopyActionModel> {
 
     private JTextField txtCopyTo;
 
-    private final JComboBox<?> cmbTransferType;
-
     private final CopyActionModel copyAction;
 
     private final String actionName;
 
-    public CopyConfirmationDialog(CopyActionModel copyAction, Object[] transferTypes) {
+    public CopyConfirmationDialog(CopyActionModel copyAction) {
         super(applicationFrame, applicationFrame.getTitle(), true, false);
         this.copyAction = copyAction;
         this.actionName = translator.translate(copyAction.getActionName());
-        this.cmbTransferType = new JComboBox<>(transferTypes);
     }
 
     @Override
@@ -64,18 +59,12 @@ public class CopyConfirmationDialog extends Dialog<CopyActionModel> {
         JLabel copyToLabel = new JLabel(translator.translate("form_copy_files", getActionName()));
         JLabel filterLabel = new JLabel(translator.translate("form_copy_only"));
         JComboBox<Object> cmbFilter = new JComboBox<>();
-        JLabel lblTransferType = new JLabel(translator.translate("form_copy_trasfer_type") + "  ");
 
         JButton okButton = new JButton(translator.translate("form_copy_ok"));
         JButton cancelButton = new JButton(translator.translate("form_copy_cancel"));
         JButton browseButton = new JButton(translator.translate("form_copy_tree"));
 
         txtCopyTo = new JTextField(copyAction.getTargetPath().toString());
-
-        boolean showTransferType = copyAction.isSensitiveToTransferType() || copyAction.shouldPackStreamers();
-        lblTransferType.setVisible(showTransferType);
-        cmbTransferType.setVisible(showTransferType);
-        cmbTransferType.setSelectedIndex(0);
 
         ActionListener actionListener = av -> {
             if (av.getSource() == okButton) dispose();
@@ -100,11 +89,6 @@ public class CopyConfirmationDialog extends Dialog<CopyActionModel> {
         JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         southPanel.add(buttonsPanel);
 
-        JPanel panTransferType = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-        panTransferType.setBorder(null);
-        panTransferType.add(lblTransferType);
-        panTransferType.add(cmbTransferType);
-
         JPanel copyPanel = new JPanel(new GridLayout(4, 1, 3, 3));
         copyPanel.setBorder(emptyBorder(0, 0, 10, 0));
         copyPanel.add(copyToLabel);
@@ -112,13 +96,9 @@ public class CopyConfirmationDialog extends Dialog<CopyActionModel> {
         copyPanel.add(filterLabel);
         copyPanel.add(cmbFilter);
 
-        JPanel panCenter = new JPanel(new BorderLayout());
-        panCenter.add(panTransferType, BorderLayout.CENTER);
-
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBorder(emptyBorder(2, 10, 5, 10));
         mainPanel.add(copyPanel, BorderLayout.NORTH);
-        mainPanel.add(panCenter, BorderLayout.CENTER);
         mainPanel.add(southPanel, BorderLayout.SOUTH);
 
         filterLabel.setEnabled(false);
@@ -129,7 +109,7 @@ public class CopyConfirmationDialog extends Dialog<CopyActionModel> {
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        setSize(new Dimension(363, showTransferType ? 240 : 213));
+        setSize(new Dimension(363, 213));
 
         setLocationRelativeTo(getParent());
     }
@@ -140,16 +120,11 @@ public class CopyConfirmationDialog extends Dialog<CopyActionModel> {
 
     @Override
     protected CopyActionModel getDialogResponse() {
-        if (copyAction.isSensitiveToTransferType()) {
-            Optional.ofNullable(cmbTransferType.getSelectedItem())
-                .filter(type -> TransferType.class.isAssignableFrom(type.getClass()))
-                .map(TransferType.class::cast)
-                .ifPresent(copyAction::withTransferType);
-        }
         if (copyAction.shouldPackStreamers()) {
-            Optional.ofNullable(cmbTransferType.getSelectedItem())
-                .map(Object::toString)
-                .ifPresent(copyAction::withPackType);
+            //TODO: to find the packType is needed
+//            Optional.ofNullable(cmbTransferType.getSelectedItem())
+//                .map(Object::toString)
+//                .ifPresent(copyAction::withPackType);
         }
 
         return copyAction.toTargetPath(txtCopyTo.getText());

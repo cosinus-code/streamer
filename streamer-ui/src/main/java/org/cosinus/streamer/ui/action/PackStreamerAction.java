@@ -57,11 +57,11 @@ public class PackStreamerAction<A> extends AbstractCopyAction<A> {
                               ApplicationUIHandler uiHandler,
                               PackerHandler packerHandler) {
         super(preferences,
-              translator,
-              dialogHandler,
-              actionExecutors,
-              progressListenerHandler,
-              loadStreamerAction);
+            translator,
+            dialogHandler,
+            actionExecutors,
+            progressListenerHandler,
+            loadStreamerAction);
         this.uiHandler = uiHandler;
         this.packerHandler = packerHandler;
     }
@@ -109,13 +109,6 @@ public class PackStreamerAction<A> extends AbstractCopyAction<A> {
         return pack(actionContext.getCurrentView().getSelectedContent())
             .from(actionContext.getCurrentView().getLoadedStreamer())
             .to(actionContext.getOppositeView().getLoadedStreamer());
-    }
-
-    @Override
-    protected Object[] transferType() {
-        return packerHandler.getPackersMap()
-            .keySet()
-            .toArray();
     }
 
     @Override

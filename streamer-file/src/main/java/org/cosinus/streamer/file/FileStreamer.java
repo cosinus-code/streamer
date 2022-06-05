@@ -92,11 +92,6 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     }
 
     @Override
-    public boolean isPack() {
-        return false;
-    }
-
-    @Override
     public boolean canRead() {
         return file.canRead();
     }
@@ -104,11 +99,6 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     @Override
     public boolean canWrite() {
         return file.canWrite();
-    }
-
-    @Override
-    public boolean isSensitiveToTransferType() {
-        return false;
     }
 
     @Override

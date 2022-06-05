@@ -70,22 +70,12 @@ public class MetaStreamer implements DirectoryStreamer<MainStreamer> {
     }
 
     @Override
-    public boolean isPack() {
-        return false;
-    }
-
-    @Override
     public boolean canRead() {
         return false;
     }
 
     @Override
     public boolean canWrite() {
-        return false;
-    }
-
-    @Override
-    public boolean isSensitiveToTransferType() {
         return false;
     }
 

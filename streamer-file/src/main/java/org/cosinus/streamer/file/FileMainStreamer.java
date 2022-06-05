@@ -142,22 +142,12 @@ public class FileMainStreamer extends MainStreamer<FileStreamer> {
     }
 
     @Override
-    public boolean isPack() {
-        return false;
-    }
-
-    @Override
     public boolean canRead() {
         return false;
     }
 
     @Override
     public boolean canWrite() {
-        return false;
-    }
-
-    @Override
-    public boolean isSensitiveToTransferType() {
         return false;
     }
 
