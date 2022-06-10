@@ -22,6 +22,8 @@ import java.util.Optional;
 
 import org.cosinus.streamer.api.Streamer;
 
+import static org.cosinus.swing.util.Formatter.formatMemorySize;
+
 /**
  * View item used in the view model
  */
@@ -60,6 +62,10 @@ public class ViewItem {
 
     public boolean isTopItem() {
         return topItem;
+    }
+
+    public String getFormattedSize() {
+        return streamer.isDirectory() ? "" : formatMemorySize(streamer.getSize());
     }
 
     public File toFile() {

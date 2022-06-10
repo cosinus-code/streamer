@@ -16,20 +16,15 @@
 
 package org.cosinus.streamer.api;
 
-import org.cosinus.streamer.api.consumer.StreamConsumer;
-
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.io.FilenameUtils.getExtension;
-import static org.cosinus.swing.util.Formatter.formatMemorySize;
 
 public interface Streamer<T> {
 
     Stream<? extends T> stream();
-
-    StreamConsumer<? extends T> saver(boolean append);
 
     Streamer save();
 
@@ -99,10 +94,6 @@ public interface Streamer<T> {
 
     default String getDescription() {
         return null;
-    }
-
-    default String getFormattedSize() {
-        return isDirectory() ? "" : formatMemorySize(getSize());
     }
 
     default String getUrlPath() {

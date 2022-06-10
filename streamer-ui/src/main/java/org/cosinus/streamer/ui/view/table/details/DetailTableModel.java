@@ -82,7 +82,7 @@ public class DetailTableModel extends DataTableModel {
             case SIZE:
                 return isComputingSize(item.getStreamer().getPath().toString()) ?
                     "..." :
-                    item.getStreamer().getFormattedSize();
+                    item.getFormattedSize();
             case TIME:
                 return getFormattedDate(item.getStreamer().lastModified());
             default:

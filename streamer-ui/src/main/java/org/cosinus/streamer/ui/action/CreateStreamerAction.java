@@ -26,6 +26,7 @@ import javax.swing.*;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_F7;
+import static java.util.Optional.ofNullable;
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 import static org.cosinus.swing.dialog.OptionsDialog.PLAIN_MESSAGE;
 
@@ -54,13 +55,14 @@ public class CreateStreamerAction extends StreamerAction<Streamer<?>> {
             return;
         }
 
-        dialogHandler.showInputDialog(applicationFrame,
-                                      translator.translate("act-new-enter-name"),
-                                      translator.translate("act-new-new-streamer"),
-                                      PLAIN_MESSAGE)
-            .map(newName -> currentFolder.getPath().resolve(newName))
-            .map(newPath -> currentFolder.getParent().createDirectoryStreamer(newPath))
-            .map(Streamer::save)
+        ofNullable(currentFolder.getParent())
+            .flatMap(parent -> dialogHandler.showInputDialog(applicationFrame,
+                    translator.translate("act-new-enter-name"),
+                    translator.translate("act-new-new-streamer"),
+                    PLAIN_MESSAGE)
+                .map(currentFolder.getPath()::resolve)
+                .map(parent::createDirectoryStreamer)
+                .map(Streamer::save))
             .ifPresent(streamer -> context.getCurrentView().reload(streamer.getName()));
     }
 

@@ -85,11 +85,6 @@ public class MetaStreamer implements DirectoryStreamer<MainStreamer> {
     }
 
     @Override
-    public StreamConsumer<MainStreamer> saver(boolean append) {
-        return null;
-    }
-
-    @Override
     public DirectoryStreamer getParent() {
         return null;
     }

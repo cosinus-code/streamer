@@ -18,9 +18,7 @@ package org.cosinus.streamer.pack.archive;
 
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.DirectoryStreamer;
-import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
-import org.cosinus.streamer.api.consumer.StreamConsumer;
 
 import java.nio.file.Path;
 import java.util.stream.Stream;
@@ -61,10 +59,5 @@ public class ArchiveDirectoryStreamer extends ArchiveStreamer<ArchiveStreamer> i
     @Override
     public void execute(Path path) {
 
-    }
-
-    @Override
-    public StreamConsumer<? extends ArchiveStreamer> saver(boolean append) {
-        return null;
     }
 }

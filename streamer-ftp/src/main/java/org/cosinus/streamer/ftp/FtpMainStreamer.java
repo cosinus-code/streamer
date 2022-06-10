@@ -62,11 +62,6 @@ public class FtpMainStreamer extends MainStreamer<FtpStreamer> {
     }
 
     @Override
-    public StreamConsumer<? extends FtpStreamer> saver(boolean append) {
-        return null;
-    }
-
-    @Override
     public boolean isCompatible(String urlPath) {
         return false;
     }

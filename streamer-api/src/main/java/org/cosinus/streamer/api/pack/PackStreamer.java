@@ -36,11 +36,6 @@ public abstract class PackStreamer<T> implements Streamer<T> {
     }
 
     @Override
-    public StreamConsumer<? extends T> saver(boolean append) {
-        return packInputStreamer.saver(append);
-    }
-
-    @Override
     public Streamer save() {
         return packInputStreamer.save();
     }

@@ -47,11 +47,6 @@ public class FileDirectoryStreamer extends FileStreamer<FileStreamer> implements
     }
 
     @Override
-    public FileDirectorySaver saver(boolean append) {
-        return new FileDirectorySaver();
-    }
-
-    @Override
     public DirectoryStreamer createDirectoryStreamer(Path path) {
         return new FileDirectoryStreamer(fileMainStreamer, fileHandler, path);
     }

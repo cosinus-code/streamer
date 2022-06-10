@@ -26,7 +26,6 @@ public interface BinaryStreamer extends InputStreamer<byte[]> {
         return BinaryStream.of(inputStream(), getBufferSize());
     }
 
-    @Override
     default BinaryStreamSaver saver(boolean append) {
         return new BinaryStreamSaver(outputStream(append));
     }

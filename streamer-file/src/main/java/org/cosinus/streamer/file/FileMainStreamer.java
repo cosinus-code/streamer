@@ -64,11 +64,6 @@ public class FileMainStreamer extends MainStreamer<FileStreamer> {
     }
 
     @Override
-    public StreamConsumer<FileStreamer> saver(boolean append) {
-        return null;
-    }
-
-    @Override
     public DirectoryStreamer createDirectoryStreamer(Path path) {
         return null;
     }
