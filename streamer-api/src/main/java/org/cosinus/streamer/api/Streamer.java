@@ -26,28 +26,16 @@ public interface Streamer<T> {
 
     Stream<? extends T> stream();
 
-    Streamer save();
+    Streamer<T> save();
 
     DirectoryStreamer getParent();
-
-    DirectoryStreamer getRootStreamer();
 
     boolean delete();
 
     String getProtocol();
 
-    /**
-     * Get free space from this streamer point of view.
-     *
-     * @return the free space amount in bytes
-     */
     long getFreeSpace();
 
-    /**
-     * Get total space available from this streamer point of view.
-     *
-     * @return the total space amount in bytes
-     */
     long getTotalSpace();
 
     Path getPath();

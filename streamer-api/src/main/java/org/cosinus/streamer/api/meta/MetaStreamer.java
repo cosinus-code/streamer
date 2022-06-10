@@ -17,7 +17,6 @@
 package org.cosinus.streamer.api.meta;
 
 import org.cosinus.streamer.api.BinaryStreamer;
-import org.cosinus.streamer.api.consumer.StreamConsumer;
 import org.cosinus.streamer.api.DirectoryStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
@@ -90,11 +89,6 @@ public class MetaStreamer implements DirectoryStreamer<MainStreamer> {
     }
 
     @Override
-    public DirectoryStreamer getRootStreamer() {
-        return null;
-    }
-
-    @Override
     public DirectoryStreamer createDirectoryStreamer(Path path) {
         return null;
     }
@@ -150,16 +144,16 @@ public class MetaStreamer implements DirectoryStreamer<MainStreamer> {
 
     public Optional<MainStreamer> find(Path path) {
         return stream()
-                .filter(mainStreamer -> mainStreamer.getPath().equals(path))
-                .findFirst();
+            .filter(mainStreamer -> mainStreamer.getPath().equals(path))
+            .findFirst();
     }
 
     public Optional<Streamer> findByUrlPath(String urlPath) {
         return Optional.ofNullable(urlPath)
-                .filter(path -> path.startsWith(META_PROTOCOL))
-                .map(path -> path.substring(META_PROTOCOL.length()))
-                .map(Paths::get)
-                .flatMap(this::find);
+            .filter(path -> path.startsWith(META_PROTOCOL))
+            .map(path -> path.substring(META_PROTOCOL.length()))
+            .map(Paths::get)
+            .flatMap(this::find);
     }
 
 }

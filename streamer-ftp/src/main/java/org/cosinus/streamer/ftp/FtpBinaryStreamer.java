@@ -42,7 +42,7 @@ public class FtpBinaryStreamer extends FtpStreamer<byte[]> implements BinaryStre
     }
 
     @Override
-    public Streamer save() {
+    public Streamer<byte[]> save() {
         if (!ftpHandler.makeFile(getFtpFile())) {
             throw new SaveStreamerException("Failed to create file:" + getFtpFile());
         }

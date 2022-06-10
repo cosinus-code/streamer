@@ -49,7 +49,7 @@ public class FtpDirectoryStreamer extends FtpStreamer<FtpStreamer> implements Di
     }
 
     @Override
-    public Streamer save() {
+    public Streamer<FtpStreamer> save() {
         if (!ftpHandler.makeDirectory(getFtpFile())) {
             throw new SaveStreamerException("Failed to create directory:" + getFtpFile());
         }

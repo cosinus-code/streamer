@@ -85,9 +85,4 @@ public abstract class MainStreamer<S extends Streamer> implements DirectoryStrea
     public boolean delete() {
         return false;
     }
-
-    @Override
-    public DirectoryStreamer getRootStreamer() {
-        return null;
-    }
 }

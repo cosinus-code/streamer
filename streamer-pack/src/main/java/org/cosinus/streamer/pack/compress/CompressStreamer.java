@@ -53,18 +53,13 @@ public class CompressStreamer implements BinaryStreamer {
     }
 
     @Override
-    public Streamer save() {
+    public Streamer<byte[]> save() {
         return null;
     }
 
     @Override
     public DirectoryStreamer getParent() {
         return compressPackStreamer;
-    }
-
-    @Override
-    public DirectoryStreamer getRootStreamer() {
-        return null;
     }
 
     @Override

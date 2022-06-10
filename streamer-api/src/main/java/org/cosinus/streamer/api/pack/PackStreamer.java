@@ -36,18 +36,13 @@ public abstract class PackStreamer<T> implements Streamer<T> {
     }
 
     @Override
-    public Streamer save() {
+    public Streamer<T> save() {
         return packInputStreamer.save();
     }
 
     @Override
     public DirectoryStreamer getParent() {
         return packInputStreamer.getParent();
-    }
-
-    @Override
-    public DirectoryStreamer getRootStreamer() {
-        return packInputStreamer.getRootStreamer();
     }
 
     @Override

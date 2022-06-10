@@ -47,12 +47,6 @@ public abstract class FtpStreamer<T> implements Streamer<T> {
     }
 
     @Override
-    public DirectoryStreamer getRootStreamer() {
-        //TODO
-        return null;
-    }
-
-    @Override
     public boolean delete() {
         return false;
     }
