@@ -17,15 +17,15 @@
 package org.cosinus.streamer.pack.archive;
 
 import org.cosinus.streamer.api.BinaryStreamer;
-import org.cosinus.streamer.api.DirectoryStreamer;
+import org.cosinus.streamer.api.ContainerStreamer;
 import org.cosinus.streamer.api.StreamerFilter;
 
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-public class ArchiveDirectoryStreamer extends ArchiveStreamer<ArchiveStreamer> implements DirectoryStreamer<ArchiveStreamer> {
+public class ArchiveContainerStreamer extends ArchiveStreamer<ArchiveStreamer> implements ContainerStreamer<ArchiveStreamer> {
 
-    public ArchiveDirectoryStreamer(ArchivePackStreamer archivePackStreamer,
+    public ArchiveContainerStreamer(ArchivePackStreamer archivePackStreamer,
                                     ArchiveStreamEntry archiveEntry) {
         super(archivePackStreamer, archiveEntry);
     }
@@ -42,13 +42,13 @@ public class ArchiveDirectoryStreamer extends ArchiveStreamer<ArchiveStreamer> i
     }
 
     @Override
-    public DirectoryStreamer createDirectoryStreamer(Path path) {
-        return archivePackStreamer.createDirectoryStreamer(path);
+    public ContainerStreamer<ArchiveStreamer> container(Path path) {
+        return archivePackStreamer.container(path);
     }
 
     @Override
-    public BinaryStreamer createBinaryStreamer(Path path) {
-        return archivePackStreamer.createBinaryStreamer(path);
+    public BinaryStreamer binary(Path path) {
+        return archivePackStreamer.binary(path);
     }
 
     @Override

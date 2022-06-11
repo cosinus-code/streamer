@@ -51,7 +51,7 @@ public class FileBinaryStreamer extends FileStreamer<byte[]> implements BinarySt
     }
 
     @Override
-    public FileBinaryStreamer save() {
+    public FileBinaryStreamer create() {
         try {
             if (!file.createNewFile()) {
                 throw new SaveStreamerException("Failed to create file:" + file.getPath());

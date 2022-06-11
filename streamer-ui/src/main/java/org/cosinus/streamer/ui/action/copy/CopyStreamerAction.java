@@ -16,11 +16,10 @@
 
 package org.cosinus.streamer.ui.action.copy;
 
-import org.cosinus.streamer.api.DirectoryStreamer;
+import org.cosinus.streamer.api.ContainerStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.LoadStreamerAction;
 import org.cosinus.streamer.ui.action.context.StreamerActionContext;
-import org.cosinus.streamer.ui.action.copy.AbstractCopyAction;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
 import org.cosinus.swing.action.execute.ActionExecutors;
@@ -61,7 +60,7 @@ public class CopyStreamerAction<A> extends AbstractCopyAction<A> {
     protected <S extends Streamer, T extends Streamer>
     void execute(CopyActionModel<S, T> copyAction, StreamerActionContext actionContext) {
         //TODO: to avoid cast
-        T destination = (T) copyAction.getDestination().getParent().createDirectoryStreamer(copyAction.getTargetPath());
+        T destination = (T) copyAction.getDestination().getParent().container(copyAction.getTargetPath());
         if (destination == null) {
             dialogHandler.showInfo(translator.translate("act_copy_destination_not_found"));
             return;
@@ -70,7 +69,7 @@ public class CopyStreamerAction<A> extends AbstractCopyAction<A> {
     }
 
     @Override
-    protected <S extends DirectoryStreamer, T extends DirectoryStreamer>
+    protected <S extends ContainerStreamer, T extends ContainerStreamer>
     CopyActionModel<S, T> copySpecifications(StreamerActionContext actionContext) {
         return copy(actionContext.getCurrentView().getSelectedContent())
             .from(actionContext.getCurrentView().getLoadedStreamer())

@@ -44,7 +44,7 @@ public class ExecuteStreamerAction extends StreamerAction<Streamer<?>> {
     @Override
     public void run(StreamerActionContext<Streamer<?>> context) {
         Optional.ofNullable(context.getCurrentStreamer())
-                .filter(Streamer::isDirectory)
+                .filter(Streamer::isContainer)
                 .map(streamer -> new LoadActionModel(context.getCurrentView(), streamer))
                 .ifPresentOrElse(actionExecutors::execute,
                         () -> Optional.ofNullable(context.getCurrentStreamer())

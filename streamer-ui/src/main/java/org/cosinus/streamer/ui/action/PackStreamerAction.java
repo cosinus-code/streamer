@@ -16,7 +16,7 @@
 
 package org.cosinus.streamer.ui.action;
 
-import org.cosinus.streamer.api.DirectoryStreamer;
+import org.cosinus.streamer.api.ContainerStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.pack.PackerHandler;
 import org.cosinus.streamer.ui.action.context.StreamerActionContext;
@@ -104,7 +104,7 @@ public class PackStreamerAction<A> extends AbstractCopyAction<A> {
     }
 
     @Override
-    protected <S extends DirectoryStreamer, T extends DirectoryStreamer>
+    protected <S extends ContainerStreamer, T extends ContainerStreamer>
     CopyActionModel<S, T> copySpecifications(StreamerActionContext actionContext) {
         return pack(actionContext.getCurrentView().getSelectedContent())
             .from(actionContext.getCurrentView().getLoadedStreamer())

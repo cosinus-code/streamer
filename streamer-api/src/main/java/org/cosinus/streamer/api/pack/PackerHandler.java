@@ -17,13 +17,13 @@
 package org.cosinus.streamer.api.pack;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.cosinus.streamer.api.Streamer;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
+import static java.util.Arrays.stream;
 
 /**
  * Handler for {@link MainPacker} components
@@ -35,20 +35,16 @@ public class PackerHandler {
 
     public PackerHandler(List<MainPacker> streamers) {
         packersMap = new HashMap<>();
-        streamers.forEach(
-                packer -> getPackTypes(packer).forEach(type -> packersMap.put(type, packer)));
+        streamers.forEach(packer -> getPackTypes(packer)
+            .forEach(type -> packersMap.put(type, packer)));
 
-    }
-
-    public boolean isPacker(Streamer streamer) {
-        return streamer.getClass().getAnnotation(Packer.class) != null;
     }
 
     protected Stream<String> getPackTypes(MainPacker packer) {
         Packer packSystem = packer.getClass().getAnnotation(Packer.class);
-        return Arrays.stream(Optional.of(packSystem.type())
-                .filter(type -> !ArrayUtils.isEmpty(type))
-                .orElseGet(packSystem::value));
+        return stream(Optional.of(packSystem.type())
+            .filter(type -> !ArrayUtils.isEmpty(type))
+            .orElseGet(packSystem::value));
     }
 
     public Optional<MainPacker> findPacker(String type) {

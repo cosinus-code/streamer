@@ -54,11 +54,11 @@ public class ViewItemComparator implements Comparator<ViewItem> {
             return 1;
         }
 
-        if (item1.getStreamer().isDirectory() && !item2.getStreamer().isDirectory()) {
+        if (item1.getStreamer().isContainer() && !item2.getStreamer().isContainer()) {
             return -1;
         }
 
-        if (!item1.getStreamer().isDirectory() && item2.getStreamer().isDirectory()) {
+        if (!item1.getStreamer().isContainer() && item2.getStreamer().isContainer()) {
             return 1;
         }
 

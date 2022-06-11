@@ -16,15 +16,15 @@
 
 package org.cosinus.streamer.api.meta;
 
-import org.cosinus.streamer.api.DirectoryStreamer;
+import org.cosinus.streamer.api.ContainerStreamer;
 import org.cosinus.streamer.api.Streamer;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public abstract class MainStreamer<S extends Streamer> implements DirectoryStreamer<S>, StreamerFinder {
+public abstract class MainStreamer<S extends Streamer> implements ContainerStreamer<S>, StreamerFinder {
 
-    private DirectoryStreamer parent;
+    private ContainerStreamer parent;
 
     private Path path;
 
@@ -32,12 +32,12 @@ public abstract class MainStreamer<S extends Streamer> implements DirectoryStrea
         this.path = Paths.get(name);
     }
 
-    public void setParent(DirectoryStreamer parent) {
+    public void setParent(ContainerStreamer parent) {
         this.parent = parent;
     }
 
     @Override
-    public DirectoryStreamer getParent() {
+    public ContainerStreamer getParent() {
         return parent;
     }
 
@@ -77,7 +77,7 @@ public abstract class MainStreamer<S extends Streamer> implements DirectoryStrea
     }
 
     @Override
-    public MainStreamer save() {
+    public MainStreamer create() {
         return this;
     }
 

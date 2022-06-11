@@ -16,7 +16,7 @@
 
 package org.cosinus.streamer.file;
 
-import org.cosinus.streamer.api.DirectoryStreamer;
+import org.cosinus.streamer.api.ContainerStreamer;
 import oshi.software.os.OSFileStore;
 
 import java.nio.file.Paths;
@@ -27,7 +27,7 @@ import static java.util.function.Predicate.not;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_STORAGE_INTERNAL;
 import static org.cosinus.swing.util.Formatter.formatShortMemorySize;
 
-public class FileRootStreamer extends FileDirectoryStreamer {
+public class FileRootStreamer extends FileContainerStreamer {
 
     private final OSFileStore fileStore;
 
@@ -85,7 +85,7 @@ public class FileRootStreamer extends FileDirectoryStreamer {
     }
 
     @Override
-    public DirectoryStreamer getParent() {
+    public ContainerStreamer getParent() {
         return fileMainStreamer;
     }
 

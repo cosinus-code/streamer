@@ -18,7 +18,7 @@ package org.cosinus.streamer.ui.action.execute.load;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cosinus.streamer.api.InputStreamer;
+import org.cosinus.streamer.api.TransferStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.pack.PackerHandler;
 import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
@@ -29,7 +29,6 @@ import org.cosinus.swing.action.execute.ActionExecutor;
 import org.cosinus.swing.worker.SwingWorker;
 import org.springframework.stereotype.Component;
 
-import java.nio.file.Path;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -81,14 +80,14 @@ public class LoadActionExecutor<P extends ProgressModel> implements ActionExecut
         }
 
         Streamer streamerToLoad = Optional.of(aliveStreamer)
-            .filter(streamer -> InputStreamer.class.isAssignableFrom(streamer.getClass()))
-            .map(InputStreamer.class::cast)
-            .<Streamer>flatMap(inputStream -> packerHandler
+            .filter(streamer -> TransferStreamer.class.isAssignableFrom(streamer.getClass()))
+            .map(TransferStreamer.class::cast)
+            .<Streamer>flatMap(transferStream -> packerHandler
                 .findPacker(aliveStreamer.getType())
-                .map(packer -> packer.pack(inputStream)))
+                .map(packer -> packer.pack(transferStream)))
             .orElse(aliveStreamer);
 
-        if (streamerToLoad.isDirectory()) {
+        if (streamerToLoad.isContainer()) {
             streamerViewHandler.getPanel(loadActionModel.getView().getCurrentLocation())
                 .ifPresent(panel -> ofNullable(streamerToLoad.getUrlPath())
                     .map(address -> address.split("://"))

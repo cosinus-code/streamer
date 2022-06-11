@@ -19,16 +19,16 @@ package org.cosinus.streamer.api;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public interface InputStreamer<T> extends Streamer<T> {
+public interface TransferStreamer<T> extends Streamer<T> {
 
-    int DEFAULT_BUFFER_SIZE = 8192;
+    int DEFAULT_TRANSFER_RATE = 8192;
 
     InputStream inputStream();
 
     OutputStream outputStream(boolean append);
 
-    default int getBufferSize() {
-        return DEFAULT_BUFFER_SIZE;
+    default int getTransferRate() {
+        return DEFAULT_TRANSFER_RATE;
     }
 
 }

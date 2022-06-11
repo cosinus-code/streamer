@@ -18,7 +18,7 @@ package org.cosinus.streamer.api;
 
 import java.util.stream.Stream;
 
-public interface TextStreamer extends InputStreamer<String> {
+public interface TextStreamer extends TransferStreamer<String> {
 
 
     @Override

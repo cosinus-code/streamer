@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 
 import static java.util.function.Predicate.not;
 
-public interface DirectoryStreamer<S extends Streamer> extends Streamer<S> {
+public interface ContainerStreamer<S extends Streamer> extends Streamer<S> {
 
     /**
      * Get the flat stream for the stream of sub-trees given by a stream of tree roots
@@ -31,9 +31,9 @@ public interface DirectoryStreamer<S extends Streamer> extends Streamer<S> {
      */
     Stream<S> flatStream(StreamerFilter streamerFilter);
 
-    DirectoryStreamer createDirectoryStreamer(Path path);
+    ContainerStreamer<S> container(Path path);
 
-    BinaryStreamer createBinaryStreamer(Path path);
+    BinaryStreamer binary(Path path);
 
     boolean rename(Path path, String newName);
 
@@ -48,7 +48,7 @@ public interface DirectoryStreamer<S extends Streamer> extends Streamer<S> {
     default long getTotalSize(StreamerFilter streamerFilter) {
         try (Stream<? extends Streamer> flatStreamers = flatStream(streamerFilter)) {
             return flatStreamers
-                    .filter(not(Streamer::isDirectory))
+                    .filter(not(Streamer::isContainer))
                     .mapToLong(Streamer::getSize)
                     .sum();
         }
@@ -63,17 +63,17 @@ public interface DirectoryStreamer<S extends Streamer> extends Streamer<S> {
     default long count(StreamerFilter streamerFilter) {
         try (Stream<? extends Streamer> flatStreamers = flatStream(streamerFilter)) {
             return flatStreamers
-                    .filter(not(Streamer::isDirectory))
+                    .filter(not(Streamer::isContainer))
                     .count();
         }
     }
 
     @Override
-    default boolean isDirectory() {
+    default boolean isContainer() {
         return true;
     }
 
-    default Streamer create(Path path) {
+    default S create(Path path) {
         return null;
     }
 }

@@ -16,7 +16,7 @@
 
 package org.cosinus.streamer.ui.action.execute.copy;
 
-import org.cosinus.streamer.api.DirectoryStreamer;
+import org.cosinus.streamer.api.ContainerStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.swing.action.execute.ActionModel;
@@ -77,19 +77,19 @@ public class CopyActionModel<S extends Streamer, T extends Streamer> extends Act
         super(randomUUID().toString(), actionName);
     }
 
-    public static <S extends DirectoryStreamer, T extends DirectoryStreamer>
+    public static <S extends ContainerStreamer, T extends ContainerStreamer>
     CopyActionModel<S, T> copy(List<Streamer> streamersToCopy) {
         return new CopyActionModel<S, T>(COPY_ACTION_NAME)
             .setStreamersToCopy(streamersToCopy);
     }
 
-    public static <S extends DirectoryStreamer, T extends DirectoryStreamer>
+    public static <S extends ContainerStreamer, T extends ContainerStreamer>
     CopyActionModel<S, T> move(List<Streamer> streamersToCopy) {
         return new CopyActionModel<S, T>(MOVE_ACTION_NAME)
             .setStreamersToCopy(streamersToCopy);
     }
 
-    public static <S extends DirectoryStreamer, T extends DirectoryStreamer>
+    public static <S extends ContainerStreamer, T extends ContainerStreamer>
     CopyActionModel<S, T> pack(List<Streamer> streamersToCopy) {
         return new CopyActionModel<S, T>(PACK_ACTION_NAME)
             .setStreamersToCopy(streamersToCopy)

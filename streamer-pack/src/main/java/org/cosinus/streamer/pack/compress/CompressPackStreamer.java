@@ -19,8 +19,8 @@ package org.cosinus.streamer.pack.compress;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cosinus.streamer.api.DirectoryStreamer;
-import org.cosinus.streamer.api.InputStreamer;
+import org.cosinus.streamer.api.ContainerStreamer;
+import org.cosinus.streamer.api.TransferStreamer;
 import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.api.error.StreamerException;
 import org.cosinus.streamer.api.pack.PackStreamer;
@@ -34,15 +34,15 @@ import java.util.stream.Stream;
 import static org.apache.commons.io.FilenameUtils.removeExtension;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
-public class CompressPackStreamer extends PackStreamer<CompressStreamer> implements DirectoryStreamer<CompressStreamer> {
+public class CompressPackStreamer extends PackStreamer<CompressStreamer> implements ContainerStreamer<CompressStreamer> {
 
     private static final Logger LOG = LogManager.getLogger(CompressPackStreamer.class);
 
     @Autowired
     private CompressorInputStreamFactory compressorInputStreamFactory;
 
-    public CompressPackStreamer(InputStreamer packInputStreamer) {
-        super(packInputStreamer);
+    public CompressPackStreamer(TransferStreamer packTransferStreamer) {
+        super(packTransferStreamer);
         injectContext(this);
     }
 
@@ -57,12 +57,12 @@ public class CompressPackStreamer extends PackStreamer<CompressStreamer> impleme
     }
 
     @Override
-    public DirectoryStreamer createDirectoryStreamer(Path path) {
+    public ContainerStreamer<CompressStreamer> container(Path path) {
         return null;
     }
 
     @Override
-    public CompressStreamer createBinaryStreamer(Path path) {
+    public CompressStreamer binary(Path path) {
         return null;
     }
 
@@ -108,11 +108,11 @@ public class CompressPackStreamer extends PackStreamer<CompressStreamer> impleme
     }
 
     protected CompressorInputStream createCompressorInputStream() {
-        return compressorInputStreamFactory.detectCompressorName(packInputStreamer.getType(),
-                                                                 packInputStreamer.inputStream())
+        return compressorInputStreamFactory.detectCompressorName(transferStreamer.getType(),
+                                                                 transferStreamer.inputStream())
             .map(compressorName -> compressorInputStreamFactory.createCompressorInputStream(compressorName,
-                                                                                            packInputStreamer.inputStream()))
-            .orElseThrow(() -> new StreamerException("Cannot find compressor for streamer of type: " + packInputStreamer.getType()));
+                                                                                            transferStreamer.inputStream()))
+            .orElseThrow(() -> new StreamerException("Cannot find compressor for streamer of type: " + transferStreamer.getType()));
     }
 
     protected Optional<Long> findCompressedFileSize() {

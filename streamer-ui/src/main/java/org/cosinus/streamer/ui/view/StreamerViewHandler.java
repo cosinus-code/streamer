@@ -94,7 +94,7 @@ public class StreamerViewHandler {
 
     public StreamerViewCreator getStreamerViewCreator(Streamer streamer, PanelLocation location) {
         return ofNullable(streamerViewCreatorsMap.get(ofNullable(streamer.getType())))
-            .or(() -> streamer.isDirectory() ?
+            .or(() -> streamer.isContainer() ?
                 ofNullable(streamerViewCreatorsMap.get(Optional.<String>empty())) :
                 empty())
             .stream()

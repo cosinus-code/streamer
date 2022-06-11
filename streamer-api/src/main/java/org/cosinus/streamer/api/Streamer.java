@@ -26,9 +26,9 @@ public interface Streamer<T> {
 
     Stream<? extends T> stream();
 
-    Streamer<T> save();
+    Streamer<T> create();
 
-    DirectoryStreamer getParent();
+    ContainerStreamer getParent();
 
     boolean delete();
 
@@ -88,7 +88,7 @@ public interface Streamer<T> {
         return getProtocol() + getPath();
     }
 
-    default boolean isDirectory() {
+    default boolean isContainer() {
         return false;
     }
 }

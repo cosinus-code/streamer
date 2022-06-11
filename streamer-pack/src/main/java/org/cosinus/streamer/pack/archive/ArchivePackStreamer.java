@@ -31,17 +31,16 @@ import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
-import static java.util.Optional.ofNullable;
 
-public class ArchivePackStreamer<A extends ArchiveStreamer> extends PackStreamer<A> implements DirectoryStreamer<A> {
+public class ArchivePackStreamer<A extends ArchiveStreamer> extends PackStreamer<A> implements ContainerStreamer<A> {
 
     @Autowired
     private ArchiveInputStreamFactory archiveInputStreamFactory;
 
     private ArchiveHolder archiveHolder;
 
-    protected ArchivePackStreamer(InputStreamer packInputStreamer) {
-        super(packInputStreamer);
+    protected ArchivePackStreamer(TransferStreamer transferStreamer) {
+        super(transferStreamer);
         injectContext(this);
     }
 
@@ -92,14 +91,14 @@ public class ArchivePackStreamer<A extends ArchiveStreamer> extends PackStreamer
     }
 
     @Override
-    public DirectoryStreamer createDirectoryStreamer(Path path) {
+    public ContainerStreamer container(Path path) {
         ArchiveStreamEntry archiveEntry = archiveHolder.get(path)
             .orElse(createArchiveStreamEntry(path.toString() + "/"));
         return createDirectoryStreamer(archiveEntry);
     }
 
     @Override
-    public BinaryStreamer createBinaryStreamer(Path path) {
+    public BinaryStreamer binary(Path path) {
         ArchiveStreamEntry archiveEntry = archiveHolder.get(path)
             .orElse(createArchiveStreamEntry(path.toString()));
         return createBinaryStreamer(archiveEntry);
@@ -115,12 +114,12 @@ public class ArchivePackStreamer<A extends ArchiveStreamer> extends PackStreamer
             .map(this::createArchiveStreamer);
     }
 
-    public Optional<DirectoryStreamer> findDirectoryStreamer(Path path) {
+    public Optional<ContainerStreamer> findDirectoryStreamer(Path path) {
         return ofNullable(path)
             .map(Path::toString)
             .flatMap(this::find)
-            .filter(streamer -> DirectoryStreamer.class.isAssignableFrom(streamer.getClass()))
-            .map(DirectoryStreamer.class::cast);
+            .filter(streamer -> ContainerStreamer.class.isAssignableFrom(streamer.getClass()))
+            .map(ContainerStreamer.class::cast);
     }
 
     @Override
@@ -145,7 +144,7 @@ public class ArchivePackStreamer<A extends ArchiveStreamer> extends PackStreamer
     }
 
     protected Stream<ArchiveStreamEntry> createStream() {
-        return ArchiveStream.stream(createArchiveInputStream(packInputStreamer));
+        return ArchiveStream.stream(createArchiveInputStream(transferStreamer));
     }
 
     public A createArchiveStreamer(ArchiveStreamEntry archiveEntry) {
@@ -158,8 +157,8 @@ public class ArchivePackStreamer<A extends ArchiveStreamer> extends PackStreamer
         return archiveHolder.listEntries(path);
     }
 
-    public ArchiveDirectoryStreamer createDirectoryStreamer(ArchiveStreamEntry archiveEntry) {
-        return new ArchiveDirectoryStreamer(this, archiveEntry);
+    public ArchiveContainerStreamer createDirectoryStreamer(ArchiveStreamEntry archiveEntry) {
+        return new ArchiveContainerStreamer(this, archiveEntry);
     }
 
     public ArchiveBinaryStreamer createBinaryStreamer(ArchiveStreamEntry archiveEntry) {
@@ -171,7 +170,7 @@ public class ArchivePackStreamer<A extends ArchiveStreamer> extends PackStreamer
         return null;
     }
 
-    private EntryInputStream createArchiveInputStream(InputStreamer<?> streamerToPack) {
+    private EntryInputStream createArchiveInputStream(TransferStreamer<?> streamerToPack) {
         return archiveInputStreamFactory.detectArchiverName(streamerToPack.getName(),
                                                             streamerToPack.inputStream())
             .map(archiverName -> archiveInputStreamFactory.createArchiveInputStream(archiverName,

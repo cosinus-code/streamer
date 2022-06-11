@@ -17,7 +17,7 @@
 package org.cosinus.streamer.api.meta;
 
 import org.cosinus.streamer.api.BinaryStreamer;
-import org.cosinus.streamer.api.DirectoryStreamer;
+import org.cosinus.streamer.api.ContainerStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
 
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class MetaStreamer implements DirectoryStreamer<MainStreamer> {
+public class MetaStreamer implements ContainerStreamer<MainStreamer> {
 
     public static final String META_PROTOCOL = "meta://";
 
@@ -84,17 +84,17 @@ public class MetaStreamer implements DirectoryStreamer<MainStreamer> {
     }
 
     @Override
-    public DirectoryStreamer getParent() {
+    public ContainerStreamer getParent() {
         return null;
     }
 
     @Override
-    public DirectoryStreamer createDirectoryStreamer(Path path) {
+    public ContainerStreamer<MainStreamer> container(Path path) {
         return null;
     }
 
     @Override
-    public BinaryStreamer createBinaryStreamer(Path path) {
+    public BinaryStreamer binary(Path path) {
         return null;
     }
 
@@ -133,12 +133,12 @@ public class MetaStreamer implements DirectoryStreamer<MainStreamer> {
     }
 
     @Override
-    public Streamer create(Path path) {
+    public MainStreamer create(Path path) {
         return null;
     }
 
     @Override
-    public MetaStreamer save() {
+    public MetaStreamer create() {
         return this;
     }
 

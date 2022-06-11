@@ -16,10 +16,9 @@
 
 package org.cosinus.streamer.api.pack;
 
-import org.cosinus.streamer.api.DirectoryStreamer;
-import org.cosinus.streamer.api.InputStreamer;
+import org.cosinus.streamer.api.ContainerStreamer;
+import org.cosinus.streamer.api.TransferStreamer;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.consumer.StreamConsumer;
 
 import java.nio.file.Path;
 import java.util.Optional;
@@ -29,65 +28,65 @@ import java.util.Optional;
  */
 public abstract class PackStreamer<T> implements Streamer<T> {
 
-    protected final InputStreamer packInputStreamer;
+    protected final TransferStreamer transferStreamer;
 
-    public PackStreamer(InputStreamer packInputStreamer) {
-        this.packInputStreamer = packInputStreamer;
+    public PackStreamer(TransferStreamer transferStreamer) {
+        this.transferStreamer = transferStreamer;
     }
 
     @Override
-    public Streamer<T> save() {
-        return packInputStreamer.save();
+    public Streamer<T> create() {
+        return transferStreamer.create();
     }
 
     @Override
-    public DirectoryStreamer getParent() {
-        return packInputStreamer.getParent();
+    public ContainerStreamer getParent() {
+        return transferStreamer.getParent();
     }
 
     @Override
     public boolean delete() {
-        return packInputStreamer.delete();
+        return transferStreamer.delete();
     }
 
     @Override
     public String getProtocol() {
-        return packInputStreamer.getProtocol();
+        return transferStreamer.getProtocol();
     }
 
     @Override
     public Path getPath() {
-        return packInputStreamer.getPath();
+        return transferStreamer.getPath();
     }
 
     @Override
     public boolean exists() {
-        return packInputStreamer.exists();
+        return transferStreamer.exists();
     }
 
     @Override
     public long getSize() {
-        return packInputStreamer.getSize();
+        return transferStreamer.getSize();
     }
 
     @Override
     public long lastModified() {
-        return packInputStreamer.lastModified();
+        return transferStreamer.lastModified();
     }
 
     @Override
     public long getFreeSpace() {
-        return packInputStreamer.getParent().getFreeSpace();
+        return transferStreamer.getParent().getFreeSpace();
     }
 
     @Override
     public long getTotalSpace() {
-        return packInputStreamer.getParent().getTotalSpace();
+        return transferStreamer.getParent().getTotalSpace();
     }
 
     @Override
     public String getUrlPath() {
-        return packInputStreamer.getUrlPath();
+        return transferStreamer.getUrlPath();
     }
 
     public abstract Optional<T> find(String path);

@@ -16,7 +16,7 @@
 
 package org.cosinus.streamer.ui.action.copy;
 
-import org.cosinus.streamer.api.DirectoryStreamer;
+import org.cosinus.streamer.api.ContainerStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.LoadStreamerAction;
 import org.cosinus.streamer.ui.action.StreamerAction;
@@ -100,6 +100,6 @@ public abstract class AbstractCopyAction<A> extends StreamerAction<A> {
         return new CopyConfirmationDialog(copyAction);
     }
 
-    protected abstract <S extends DirectoryStreamer, T extends DirectoryStreamer>
+    protected abstract <S extends ContainerStreamer, T extends ContainerStreamer>
     CopyActionModel<S, T> copySpecifications(StreamerActionContext actionContext);
 }

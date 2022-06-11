@@ -16,7 +16,7 @@
 
 package org.cosinus.streamer.pack.archive;
 
-import org.cosinus.streamer.api.InputStreamer;
+import org.cosinus.streamer.api.TransferStreamer;
 import org.cosinus.streamer.api.pack.MainPacker;
 import org.cosinus.streamer.api.pack.PackStreamer;
 import org.cosinus.streamer.api.pack.Packer;
@@ -25,7 +25,7 @@ import org.cosinus.streamer.api.pack.Packer;
 public class ArchivePacker implements MainPacker<ArchiveStreamer> {
 
     @Override
-    public PackStreamer<ArchiveStreamer> pack(InputStreamer<?> streamerToPack) {
+    public PackStreamer<ArchiveStreamer> pack(TransferStreamer<?> streamerToPack) {
         return new ArchivePackStreamer<>(streamerToPack);
     }
 

@@ -18,7 +18,7 @@ package org.cosinus.streamer.pack.compress;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.cosinus.streamer.api.BinaryStreamer;
-import org.cosinus.streamer.api.DirectoryStreamer;
+import org.cosinus.streamer.api.ContainerStreamer;
 import org.cosinus.streamer.api.Streamer;
 
 import java.io.InputStream;
@@ -53,12 +53,12 @@ public class CompressStreamer implements BinaryStreamer {
     }
 
     @Override
-    public Streamer<byte[]> save() {
+    public Streamer<byte[]> create() {
         return null;
     }
 
     @Override
-    public DirectoryStreamer getParent() {
+    public ContainerStreamer getParent() {
         return compressPackStreamer;
     }
 

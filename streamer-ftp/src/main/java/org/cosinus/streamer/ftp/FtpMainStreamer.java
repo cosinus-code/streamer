@@ -17,10 +17,9 @@
 package org.cosinus.streamer.ftp;
 
 import org.cosinus.streamer.api.BinaryStreamer;
-import org.cosinus.streamer.api.DirectoryStreamer;
+import org.cosinus.streamer.api.ContainerStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
-import org.cosinus.streamer.api.consumer.StreamConsumer;
 import org.cosinus.streamer.api.meta.MainStreamer;
 import org.cosinus.streamer.api.meta.RootStreamer;
 import org.cosinus.streamer.ftp.client.FtpFile;
@@ -72,12 +71,12 @@ public class FtpMainStreamer extends MainStreamer<FtpStreamer> {
     }
 
     @Override
-    public DirectoryStreamer createDirectoryStreamer(Path path) {
+    public ContainerStreamer<FtpStreamer> container(Path path) {
         return null;
     }
 
     @Override
-    public BinaryStreamer createBinaryStreamer(Path path) {
+    public BinaryStreamer binary(Path path) {
         return null;
     }
 
@@ -100,9 +99,9 @@ public class FtpMainStreamer extends MainStreamer<FtpStreamer> {
         return createFtpStreamer(this, ftpFile);
     }
 
-    private FtpStreamer createFtpStreamer(DirectoryStreamer parent, FtpFile ftpFile) {
+    private FtpStreamer createFtpStreamer(ContainerStreamer parent, FtpFile ftpFile) {
         return ftpFile.isDirectory() ?
-                new FtpDirectoryStreamer(ftpFile, parent, ftpHandler) :
+                new FtpContainerStreamer(ftpFile, parent, ftpHandler) :
                 new FtpBinaryStreamer(ftpFile, parent, ftpHandler);
     }
 

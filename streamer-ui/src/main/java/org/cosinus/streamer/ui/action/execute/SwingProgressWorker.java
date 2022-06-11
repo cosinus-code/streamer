@@ -76,7 +76,7 @@ public abstract class SwingProgressWorker<P extends ProgressModel> extends Swing
         this.paused = paused;
     }
 
-    protected void setProgress(P progress) {
+    protected void publishProgress(P progress) {
         publish(progress);
     }
 

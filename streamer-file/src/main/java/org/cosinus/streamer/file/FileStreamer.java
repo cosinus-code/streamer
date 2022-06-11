@@ -16,13 +16,12 @@
 
 package org.cosinus.streamer.file;
 
-import org.cosinus.streamer.api.DirectoryStreamer;
+import org.cosinus.streamer.api.ContainerStreamer;
 import org.cosinus.streamer.api.Streamer;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Objects;
-import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 
@@ -50,14 +49,14 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     }
 
     @Override
-    public DirectoryStreamer getParent() {
+    public ContainerStreamer getParent() {
         return ofNullable(file.toPath().getParent())
             .map(parentPath -> fileMainStreamer
                 .stream()
                 .filter(fileStreamer -> fileStreamer.getPath().equals(parentPath))
                 .findFirst()
-                .map(DirectoryStreamer.class::cast)
-                .orElseGet(() -> new FileDirectoryStreamer(fileMainStreamer, fileHandler, parentPath)))
+                .map(ContainerStreamer.class::cast)
+                .orElseGet(() -> new FileContainerStreamer(fileMainStreamer, fileHandler, parentPath)))
             .orElse(fileMainStreamer);
     }
 

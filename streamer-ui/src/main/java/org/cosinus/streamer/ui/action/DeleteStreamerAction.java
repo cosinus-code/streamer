@@ -16,7 +16,7 @@
 
 package org.cosinus.streamer.ui.action;
 
-import org.cosinus.streamer.api.DirectoryStreamer;
+import org.cosinus.streamer.api.ContainerStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.context.StreamerActionContext;
 import org.cosinus.streamer.ui.action.execute.delete.DeleteActionModel;
@@ -80,7 +80,7 @@ public class DeleteStreamerAction extends StreamerAction<Streamer<?>> {
 //
 //        if (deleteAction.getStreamersToDelete().size() == 1) {
 //            Streamer streamerToDelete = deleteAction.getStreamersToDelete().get(0);
-//            if (!streamerToDelete.isDirectory() && deleteApproved(streamerToDelete)) {
+//            if (!streamerToDelete.isContainer() && deleteApproved(streamerToDelete)) {
 //                if (!actionContext.getCurrentStreamer().delete(streamerToDelete)) {
 //                    dialogHandler.showInfo(translator.translate("act-delete-cannot", streamerToDelete));
 //                    return;
@@ -113,7 +113,7 @@ public class DeleteStreamerAction extends StreamerAction<Streamer<?>> {
         return new DeleteActionModel(getActionName())
             .deleteStreamers(new ArrayList<>(actionContext.getCurrentView().getSelectedContent()))
             //to avoid cast
-            .from((DirectoryStreamer) actionContext.getCurrentView().getLoadedStreamer());
+            .from((ContainerStreamer) actionContext.getCurrentView().getLoadedStreamer());
     }
 
     public String getActionName() {

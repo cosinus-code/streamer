@@ -24,11 +24,11 @@ import java.util.Optional;
 import java.util.zip.CheckedOutputStream;
 import java.util.zip.Checksum;
 
-public class BinaryStreamSaver implements StreamConsumer<byte[]> {
+public class StreamPipeline implements StreamConsumer<byte[]> {
 
     protected final OutputStream outputStream;
 
-    public BinaryStreamSaver(OutputStream outputStream) {
+    public StreamPipeline(OutputStream outputStream) {
         this.outputStream = outputStream;
     }
 
@@ -48,7 +48,7 @@ public class BinaryStreamSaver implements StreamConsumer<byte[]> {
 
     public Optional<String> checksum() {
         return Optional.of(outputStream)
-                .filter(input -> CheckedOutputStream.class.isAssignableFrom(input.getClass()))
+                .filter(output -> CheckedOutputStream.class.isAssignableFrom(output.getClass()))
                 .map(CheckedOutputStream.class::cast)
                 .map(CheckedOutputStream::getChecksum)
                 .map(Checksum::getValue)

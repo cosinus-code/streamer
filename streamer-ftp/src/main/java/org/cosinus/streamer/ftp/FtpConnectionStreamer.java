@@ -20,7 +20,7 @@ import org.cosinus.streamer.ftp.client.FtpRootFile;
 
 import static org.cosinus.swing.image.icon.IconProvider.ICON_FILE_SERVER;
 
-public class FtpConnectionStreamer extends FtpDirectoryStreamer {
+public class FtpConnectionStreamer extends FtpContainerStreamer {
 
     public FtpConnectionStreamer(FtpHandler ftpHandler, FtpMainStreamer ftpMainStreamer, String ftpClientName) {
         super(new FtpRootFile(ftpClientName), ftpMainStreamer, ftpHandler);

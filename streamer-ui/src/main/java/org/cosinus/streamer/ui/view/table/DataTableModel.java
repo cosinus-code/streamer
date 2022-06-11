@@ -18,7 +18,7 @@ package org.cosinus.streamer.ui.view.table;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cosinus.streamer.api.DirectoryStreamer;
+import org.cosinus.streamer.api.ContainerStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.load.StreamedContent;
 import org.cosinus.swing.form.TableModel;
@@ -165,7 +165,7 @@ public abstract class DataTableModel extends TableModel {
         selectionMap.clear();
 
         if (isTopVisible()) {
-            DirectoryStreamer parent = content.getStreamer().getParent();
+            ContainerStreamer parent = content.getStreamer().getParent();
             if (parent != null) {
                 items.add(new ViewItem(parent, true));
             }

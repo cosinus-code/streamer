@@ -52,7 +52,7 @@ public class DeleteWorker extends SwingProgressWorker<StreamersProgressModel> {
             .count(deleteModel.getStreamerFilter());
 
         progress.startProgress(streamersToDeleteCount);
-        setProgress(progress);
+        publishProgress(progress);
 
         deleteModel.getStreamersToDelete()
             .forEach(this::delete);
@@ -63,14 +63,14 @@ public class DeleteWorker extends SwingProgressWorker<StreamersProgressModel> {
             throw new ActionCancelledException();
         }
 
-        if (streamToDelete.isDirectory()) {
+        if (streamToDelete.isContainer()) {
             try (Stream<? extends Streamer> streamers = streamToDelete.stream()) {
                 streamers.forEach(this::delete);
             }
         }
 
         progress.updateProgress(streamToDelete);
-        setProgress(progress);
+        publishProgress(progress);
 
         if (!streamToDelete.delete()) {
             dialogHandler.showInfo(translator.translate("act-delete-cannot", streamToDelete.getPath()));

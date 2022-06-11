@@ -17,7 +17,7 @@
 package org.cosinus.streamer.file;
 
 import org.cosinus.streamer.api.BinaryStreamer;
-import org.cosinus.streamer.api.DirectoryStreamer;
+import org.cosinus.streamer.api.ContainerStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.api.error.SaveStreamerException;
@@ -25,9 +25,9 @@ import org.cosinus.streamer.api.error.SaveStreamerException;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-public class FileDirectoryStreamer extends FileStreamer<FileStreamer> implements DirectoryStreamer<FileStreamer> {
+public class FileContainerStreamer extends FileStreamer<FileStreamer> implements ContainerStreamer<FileStreamer> {
 
-    public FileDirectoryStreamer(FileMainStreamer fileMainStreamer, FileHandler fileHandler, Path path) {
+    public FileContainerStreamer(FileMainStreamer fileMainStreamer, FileHandler fileHandler, Path path) {
         super(fileMainStreamer, fileHandler, path);
     }
 
@@ -47,12 +47,12 @@ public class FileDirectoryStreamer extends FileStreamer<FileStreamer> implements
     }
 
     @Override
-    public DirectoryStreamer createDirectoryStreamer(Path path) {
-        return new FileDirectoryStreamer(fileMainStreamer, fileHandler, path);
+    public FileContainerStreamer container(Path path) {
+        return new FileContainerStreamer(fileMainStreamer, fileHandler, path);
     }
 
     @Override
-    public BinaryStreamer createBinaryStreamer(Path path) {
+    public BinaryStreamer binary(Path path) {
         return new FileBinaryStreamer(fileMainStreamer, fileHandler, path);
     }
 
@@ -67,12 +67,12 @@ public class FileDirectoryStreamer extends FileStreamer<FileStreamer> implements
     }
 
     @Override
-    public Streamer create(Path path) {
+    public FileStreamer create(Path path) {
         return fileMainStreamer.create(path);
     }
 
     @Override
-    public FileDirectoryStreamer save() {
+    public FileContainerStreamer create() {
         if (!file.exists() && !file.mkdirs()) {
             throw new SaveStreamerException("Failed to create directory:" + file.getPath());
         }
