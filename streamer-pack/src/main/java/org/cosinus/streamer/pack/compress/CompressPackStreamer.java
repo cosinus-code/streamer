@@ -77,6 +77,16 @@ public class CompressPackStreamer extends PackStreamer<CompressStreamer> impleme
     }
 
     @Override
+    public long getFreeSpace() {
+        return getParent().getFreeSpace();
+    }
+
+    @Override
+    public long getTotalSpace() {
+        return getParent().getTotalSpace();
+    }
+
+    @Override
     public Optional<CompressStreamer> find(String path) {
         return Optional.of(createCompressStreamer());
     }

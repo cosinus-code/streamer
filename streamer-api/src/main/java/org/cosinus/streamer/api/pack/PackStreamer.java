@@ -75,16 +75,6 @@ public abstract class PackStreamer<T> implements Streamer<T> {
     }
 
     @Override
-    public long getFreeSpace() {
-        return transferStreamer.getParent().getFreeSpace();
-    }
-
-    @Override
-    public long getTotalSpace() {
-        return transferStreamer.getParent().getTotalSpace();
-    }
-
-    @Override
     public String getUrlPath() {
         return transferStreamer.getUrlPath();
     }

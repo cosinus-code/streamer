@@ -61,16 +61,6 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     }
 
     @Override
-    public long getFreeSpace() {
-        return file.getFreeSpace();
-    }
-
-    @Override
-    public long getTotalSpace() {
-        return file.getTotalSpace();
-    }
-
-    @Override
     public boolean exists() {
         return file.exists();
     }

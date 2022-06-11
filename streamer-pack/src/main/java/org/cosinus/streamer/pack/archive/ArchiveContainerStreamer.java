@@ -52,6 +52,16 @@ public class ArchiveContainerStreamer extends ArchiveStreamer<ArchiveStreamer> i
     }
 
     @Override
+    public long getFreeSpace() {
+        return archivePackStreamer.getFreeSpace();
+    }
+
+    @Override
+    public long getTotalSpace() {
+        return archivePackStreamer.getTotalSpace();
+    }
+
+    @Override
     public boolean rename(Path path, String newName) {
         return false;
     }

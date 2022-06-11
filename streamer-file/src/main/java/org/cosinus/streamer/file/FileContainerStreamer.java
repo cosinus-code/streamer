@@ -72,6 +72,16 @@ public class FileContainerStreamer extends FileStreamer<FileStreamer> implements
     }
 
     @Override
+    public long getFreeSpace() {
+        return file.getFreeSpace();
+    }
+
+    @Override
+    public long getTotalSpace() {
+        return file.getTotalSpace();
+    }
+
+    @Override
     public FileContainerStreamer create() {
         if (!file.exists() && !file.mkdirs()) {
             throw new SaveStreamerException("Failed to create directory:" + file.getPath());

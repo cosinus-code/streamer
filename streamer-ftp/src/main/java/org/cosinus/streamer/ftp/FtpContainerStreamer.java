@@ -77,6 +77,18 @@ public class FtpContainerStreamer extends FtpStreamer<FtpStreamer> implements Co
 
     }
 
+    @Override
+    public long getFreeSpace() {
+        //TODO
+        return 0;
+    }
+
+    @Override
+    public long getTotalSpace() {
+        //TODO
+        return 0;
+    }
+
     private FtpStreamer createFtpStreamer(FtpFile ftpFile) {
         return ftpFile.isDirectory() ?
             new FtpContainerStreamer(ftpFile, this, ftpHandler) :

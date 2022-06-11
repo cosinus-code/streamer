@@ -95,8 +95,8 @@ public class LoadActionExecutor<P extends ProgressModel> implements ActionExecut
                     .ifPresent(address -> {
                         addressBar.setAddress(address);
                         panel.setAddress(address);
-                        panel.setFreeSpace(streamerToLoad.getFreeSpace(),
-                                           streamerToLoad.getTotalSpace());
+                        panel.setFreeSpace(streamerToLoad.getParent().getFreeSpace(),
+                                           streamerToLoad.getParent().getTotalSpace());
                     }));
 
             progressListenerHandler.register(loadActionModel.getActionId(), loadActionModel.getView());

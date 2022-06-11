@@ -133,6 +133,16 @@ public class ArchivePackStreamer<A extends ArchiveStreamer> extends PackStreamer
     }
 
     @Override
+    public long getFreeSpace() {
+        return getParent().getFreeSpace();
+    }
+
+    @Override
+    public long getTotalSpace() {
+        return getParent().getTotalSpace();
+    }
+
+    @Override
     public void finishLoading() {
         if (archiveHolder != null) {
             archiveHolder.setLoaded(true);

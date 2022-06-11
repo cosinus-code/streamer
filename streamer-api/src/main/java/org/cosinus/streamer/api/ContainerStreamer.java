@@ -39,6 +39,10 @@ public interface ContainerStreamer<S extends Streamer> extends Streamer<S> {
 
     void execute(Path path);
 
+    long getFreeSpace();
+
+    long getTotalSpace();
+
     /**
      * Get amount of space occupied by a streamer.
      *

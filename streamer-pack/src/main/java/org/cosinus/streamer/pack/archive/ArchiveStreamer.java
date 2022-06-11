@@ -52,16 +52,6 @@ public abstract class ArchiveStreamer<T> implements Streamer<T> {
     }
 
     @Override
-    public long getFreeSpace() {
-        return archivePackStreamer.getFreeSpace();
-    }
-
-    @Override
-    public long getTotalSpace() {
-        return archivePackStreamer.getTotalSpace();
-    }
-
-    @Override
     public Path getPath() {
         return archiveEntry.getPath();
     }

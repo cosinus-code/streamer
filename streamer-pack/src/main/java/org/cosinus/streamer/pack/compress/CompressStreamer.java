@@ -73,16 +73,6 @@ public class CompressStreamer implements BinaryStreamer {
     }
 
     @Override
-    public long getFreeSpace() {
-        return compressPackStreamer.getFreeSpace();
-    }
-
-    @Override
-    public long getTotalSpace() {
-        return compressPackStreamer.getTotalSpace();
-    }
-
-    @Override
     public String getName() {
         return metadata.getName();
     }

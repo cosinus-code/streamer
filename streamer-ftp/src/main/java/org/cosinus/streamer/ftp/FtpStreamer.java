@@ -83,18 +83,6 @@ public abstract class FtpStreamer<T> implements Streamer<T> {
     }
 
     @Override
-    public long getFreeSpace() {
-        //TODO
-        return 0;
-    }
-
-    @Override
-    public long getTotalSpace() {
-        //TODO
-        return 0;
-    }
-
-    @Override
     public boolean equals(Object other) {
         if (this == other) {
             return true;

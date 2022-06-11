@@ -34,10 +34,6 @@ public interface Streamer<T> {
 
     String getProtocol();
 
-    long getFreeSpace();
-
-    long getTotalSpace();
-
     Path getPath();
 
     boolean exists();
