@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.api.consumer;
+package org.cosinus.streamer.api.stream.consumer;
 
 import java.io.IOException;
 import java.util.function.Consumer;

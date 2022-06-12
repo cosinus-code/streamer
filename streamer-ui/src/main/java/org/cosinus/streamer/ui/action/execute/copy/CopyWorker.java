@@ -21,7 +21,7 @@ import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.ContainerStreamer;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.consumer.StreamPipeline;
+import org.cosinus.streamer.api.stream.consumer.StreamPipeline;
 import org.cosinus.streamer.api.error.ConsumedStreamNotMatchException;
 import org.cosinus.streamer.api.stream.binary.BinaryStream;
 import org.cosinus.streamer.ui.action.execute.SwingProgressWorker;

@@ -17,17 +17,12 @@
 package org.cosinus.streamer.api;
 
 import org.cosinus.streamer.api.stream.binary.BinaryStream;
-import org.cosinus.streamer.api.consumer.StreamPipeline;
 
 public interface BinaryStreamer extends TransferStreamer<byte[]> {
 
     @Override
     default BinaryStream stream() {
         return BinaryStream.of(inputStream(), getTransferRate());
-    }
-
-    default StreamPipeline pipeline(boolean append) {
-        return new StreamPipeline(outputStream(append));
     }
 
 }
