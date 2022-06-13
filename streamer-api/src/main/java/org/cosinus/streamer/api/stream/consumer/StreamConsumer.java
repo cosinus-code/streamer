@@ -17,17 +17,33 @@
 package org.cosinus.streamer.api.stream.consumer;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public interface StreamConsumer<T> extends Consumer<T>, AutoCloseable {
 
     default void consume(Stream<T> stream) {
-        stream.forEach(this);
+        consume(stream, null, null);
     }
 
-    default void consume(Stream<T> stream, Consumer<T> after) {
-        stream.forEach(this.andThen(after));
+    default void consume(Stream<T> stream, Function<T, Boolean> retry, Consumer<T> after) {
+        //stream.forEach(after != null ? this.andThen(after) : this);
+        stream.forEach(data -> {
+            try {
+                this.accept(data);
+            } catch (UncheckedIOException ex) {
+                if (retry != null && retry.apply(data)) {
+                    consume(stream, retry, after);
+                }
+            }
+
+            if (after != null) {
+                after.accept(data);
+            }
+        });
+
     }
 
     @Override

@@ -73,6 +73,8 @@ public class CopyActionModel<S extends Streamer, T extends Streamer> extends Act
 
     private boolean shouldPack;
 
+    private boolean shouldCheckTransfer;
+
     public CopyActionModel(String actionName) {
         super(randomUUID().toString(), actionName);
     }
@@ -235,7 +237,7 @@ public class CopyActionModel<S extends Streamer, T extends Streamer> extends Act
         return this;
     }
 
-    public boolean shouldResumeCopy() {
+    public boolean shouldResume() {
         return resumeCopy;
     }
 
@@ -255,6 +257,15 @@ public class CopyActionModel<S extends Streamer, T extends Streamer> extends Act
 
     public boolean shouldPackStreamers() {
         return shouldPack;
+    }
+
+    public boolean shouldCheckTransfer() {
+        return shouldCheckTransfer;
+    }
+
+    public CopyActionModel<S, T> checkTransfer() {
+        this.shouldCheckTransfer = true;
+        return this;
     }
 
     public CopyActionModel<S, T> pack() {

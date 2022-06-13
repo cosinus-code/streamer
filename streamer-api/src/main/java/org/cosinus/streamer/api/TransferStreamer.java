@@ -16,7 +16,7 @@
 
 package org.cosinus.streamer.api;
 
-import org.cosinus.streamer.api.stream.consumer.StreamPipeline;
+import org.cosinus.streamer.api.stream.pipeline.binary.BinaryStreamConsumer;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -29,8 +29,8 @@ public interface TransferStreamer<T> extends Streamer<T> {
 
     OutputStream outputStream(boolean append);
 
-    default StreamPipeline pipeline(boolean append) {
-        return new StreamPipeline(outputStream(append));
+    default BinaryStreamConsumer pipeline(boolean append) {
+        return new BinaryStreamConsumer(outputStream(append));
     }
 
     default int getTransferRate() {

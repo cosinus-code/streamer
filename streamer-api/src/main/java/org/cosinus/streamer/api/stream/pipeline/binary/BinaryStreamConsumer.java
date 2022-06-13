@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.api.stream.consumer;
+package org.cosinus.streamer.api.stream.pipeline.binary;
+
+import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -24,11 +26,11 @@ import java.util.Optional;
 import java.util.zip.CheckedOutputStream;
 import java.util.zip.Checksum;
 
-public class StreamPipeline implements StreamConsumer<byte[]> {
+public class BinaryStreamConsumer implements StreamConsumer<byte[]> {
 
     protected final OutputStream outputStream;
 
-    public StreamPipeline(OutputStream outputStream) {
+    public BinaryStreamConsumer(OutputStream outputStream) {
         this.outputStream = outputStream;
     }
 
@@ -41,19 +43,19 @@ public class StreamPipeline implements StreamConsumer<byte[]> {
         }
     }
 
+    public Optional<String> checksum() {
+        return Optional.of(outputStream)
+            .filter(output -> CheckedOutputStream.class.isAssignableFrom(output.getClass()))
+            .map(CheckedOutputStream.class::cast)
+            .map(CheckedOutputStream::getChecksum)
+            .map(Checksum::getValue)
+            .map(Objects::toString);
+
+    }
+
     @Override
     public void close() throws IOException {
         outputStream.close();
-    }
-
-    public Optional<String> checksum() {
-        return Optional.of(outputStream)
-                .filter(output -> CheckedOutputStream.class.isAssignableFrom(output.getClass()))
-                .map(CheckedOutputStream.class::cast)
-                .map(CheckedOutputStream::getChecksum)
-                .map(Checksum::getValue)
-                .map(Objects::toString);
-
     }
 
 }
