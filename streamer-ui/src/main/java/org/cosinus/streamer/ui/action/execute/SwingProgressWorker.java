@@ -18,21 +18,19 @@ package org.cosinus.streamer.ui.action.execute;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cosinus.streamer.api.stream.pipeline.error.AbortPipelineConsumeException;
 import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
 import org.cosinus.streamer.ui.action.progress.ProgressModel;
-import org.cosinus.streamer.ui.error.ActionCancelledException;
 import org.cosinus.streamer.ui.error.ActionException;
-import org.cosinus.streamer.ui.error.SkipActionException;
-import org.cosinus.swing.dialog.DialogHandler;
-import org.cosinus.swing.dialog.DialogOption;
 import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.worker.SwingWorker;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * Abstract {@link javax.swing.SwingWorker} with custom progress
@@ -43,9 +41,6 @@ public abstract class SwingProgressWorker<P extends ProgressModel> extends Swing
 
     @Autowired
     protected ProgressListenerHandler<P> progressListenerHandler;
-
-    @Autowired
-    protected DialogHandler dialogHandler;
 
     @Autowired
     protected ErrorHandler errorHandler;
@@ -76,7 +71,7 @@ public abstract class SwingProgressWorker<P extends ProgressModel> extends Swing
         this.paused = paused;
     }
 
-    protected void publishProgress(P progress) {
+    public void publishProgress() {
         publish(progress);
     }
 
@@ -90,8 +85,8 @@ public abstract class SwingProgressWorker<P extends ProgressModel> extends Swing
             doWork();
         } catch (ActionException ex) {
             setError(ex);
-        } catch (ActionCancelledException ex) {
-            LOG.trace("Action cancelled: " + actionId);
+        } catch (AbortPipelineConsumeException ex) {
+            LOG.trace("Action aborted: " + actionId);
         }
         return null;
     }
@@ -113,14 +108,14 @@ public abstract class SwingProgressWorker<P extends ProgressModel> extends Swing
             LOG.error("Failed to update progress", e);
         }
 
-        Optional.ofNullable(error)
+        ofNullable(error)
             .ifPresent(error -> errorHandler.handleError(parentWindow, error));
         progressListenerHandler.finishProgress(progress);
     }
 
-    protected void checkActionStatus() {
+    public void checkWorkerStatus() {
         if (isCancelled()) {
-            throw new ActionCancelledException();
+            throw new AbortPipelineConsumeException("Worker cancelled by user");
         }
         if (isPaused()) {
             synchronized (this) {
@@ -133,15 +128,12 @@ public abstract class SwingProgressWorker<P extends ProgressModel> extends Swing
         }
     }
 
-    protected boolean retryOrSkip(String message) {
-        DialogOption optionValue = dialogHandler.retryWithSkipDialog(parentWindow, message);
-        if (optionValue == DialogOption.ABORT) {
-            throw new ActionCancelledException();
-        }
-        if (optionValue == DialogOption.SKIP) {
-            throw new SkipActionException();
-        }
-        return optionValue == DialogOption.RETRY;
+    public P getSwingProgress() {
+        return progress;
+    }
+
+    public Window getParentWindow() {
+        return parentWindow;
     }
 
     protected abstract void doWork();

@@ -16,10 +16,11 @@
 
 package org.cosinus.streamer.ui.action.execute.delete;
 
+import org.cosinus.streamer.api.ContainerStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.SwingProgressWorker;
 import org.cosinus.streamer.ui.action.progress.StreamersProgressModel;
-import org.cosinus.streamer.ui.error.ActionCancelledException;
+import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,13 +35,16 @@ public class DeleteWorker extends SwingProgressWorker<StreamersProgressModel> {
     @Autowired
     private Translator translator;
 
+    @Autowired
+    protected DialogHandler dialogHandler;
+
     private final DeleteActionModel deleteModel;
 
     public DeleteWorker(Window parentWindow,
                         DeleteActionModel deleteModel) {
         super(parentWindow,
-              deleteModel.getActionId(),
-              new StreamersProgressModel(deleteModel.getActionId()));
+            deleteModel.getActionId(),
+            new StreamersProgressModel(deleteModel.getActionId()));
         this.deleteModel = deleteModel;
     }
 
@@ -52,25 +56,23 @@ public class DeleteWorker extends SwingProgressWorker<StreamersProgressModel> {
             .count(deleteModel.getStreamerFilter());
 
         progress.startProgress(streamersToDeleteCount);
-        publishProgress(progress);
+        publishProgress();
 
         deleteModel.getStreamersToDelete()
             .forEach(this::delete);
     }
 
-    private void delete(Streamer streamToDelete) {
-        if (isCancelled()) {
-            throw new ActionCancelledException();
-        }
-
+    private void delete(Streamer<?> streamToDelete) {
+        checkWorkerStatus();
         if (streamToDelete.isContainer()) {
-            try (Stream<? extends Streamer> streamers = streamToDelete.stream()) {
+            ContainerStreamer<? extends Streamer<?>> containerStreamer = (ContainerStreamer<? extends Streamer<?>>) streamToDelete;
+            try (Stream<? extends Streamer<?>> streamers = containerStreamer.stream()) {
                 streamers.forEach(this::delete);
             }
         }
 
         progress.updateProgress(streamToDelete);
-        publishProgress(progress);
+        publishProgress();
 
         if (!streamToDelete.delete()) {
             dialogHandler.showInfo(translator.translate("act-delete-cannot", streamToDelete.getPath()));

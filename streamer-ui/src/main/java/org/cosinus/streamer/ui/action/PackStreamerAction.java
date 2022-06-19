@@ -77,7 +77,7 @@ public class PackStreamerAction<A> extends AbstractCopyAction<A> {
     }
 
     @Override
-    protected <S extends Streamer, T extends Streamer>
+    protected <S extends Streamer<?>, T extends Streamer<?>>
     void execute(CopyActionModel<S, T> copyAction,
                  StreamerActionContext actionContext) {
 
@@ -104,11 +104,11 @@ public class PackStreamerAction<A> extends AbstractCopyAction<A> {
     }
 
     @Override
-    protected <S extends ContainerStreamer, T extends ContainerStreamer>
+    protected <S extends Streamer<?>, T extends Streamer<?>>
     CopyActionModel<S, T> copySpecifications(StreamerActionContext actionContext) {
         return pack(actionContext.getCurrentView().getSelectedContent())
-            .from(actionContext.getCurrentView().getLoadedStreamer())
-            .to(actionContext.getOppositeView().getLoadedStreamer());
+            .from((ContainerStreamer<S>) actionContext.getCurrentView().getLoadedStreamer())
+            .to((ContainerStreamer<T>) actionContext.getOppositeView().getLoadedStreamer());
     }
 
     @Override

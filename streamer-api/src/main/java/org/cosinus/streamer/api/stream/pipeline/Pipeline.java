@@ -1,44 +1,64 @@
 package org.cosinus.streamer.api.stream.pipeline;
 
 import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
+import org.cosinus.streamer.api.stream.pipeline.error.SkipPipelineConsumeException;
 
 import java.io.IOException;
 import java.util.stream.Stream;
 
-public interface Pipeline<D, I extends Stream<D>, O extends StreamConsumer<D>, T extends PipelineStrategy> {
+public interface Pipeline<D, I extends Stream<D>, O extends StreamConsumer<D>, S extends PipelineStrategy> {
 
-    I openPipelineInputStream(T pipelineStrategy);
+    I openPipelineInputStream(S pipelineStrategy);
 
-    O openPipelineOutputStream(T pipelineStrategy);
+    O openPipelineOutputStream(S pipelineStrategy);
 
-    T getPipelineStrategy();
+    S getPipelineStrategy();
+
+    PipelineListener<D> getPipelineListener();
 
     default void consume() throws IOException {
-        T pipelineStrategy = getPipelineStrategy();
+        S pipelineStrategy = getPipelineStrategy();
+        PipelineListener<D> pipelineListener = getPipelineListener();
+
+        try {
+            preparePipelineOpen(pipelineStrategy, pipelineListener);
+        } catch (SkipPipelineConsumeException ex) {
+            pipelineListener.afterPipelineDataSkip(ex.getSkippedSize());
+            return;
+        }
+
+        pipelineListener.beforePipelineOpen();
         try (I pipelineInputStream = openPipelineInputStream(pipelineStrategy);
              O pipelineOutputStream = openPipelineOutputStream(pipelineStrategy)) {
 
-            if (prepare(pipelineInputStream, pipelineOutputStream, pipelineStrategy)) {
-                pipelineOutputStream.consume(
-                    pipelineInputStream,
-                    pipelineStrategy::shouldRetryOnFailed,
-                    pipelineStrategy::finalizeChunkData);
-                check(pipelineInputStream, pipelineOutputStream, pipelineStrategy);
-            }
+            pipelineListener.afterPipelineOpen();
+            preparePipelineConsume(pipelineInputStream, pipelineOutputStream, pipelineStrategy, pipelineListener);
+            pipelineOutputStream.consume(
+                pipelineInputStream,
+                pipelineStrategy::shouldRetryOnFailed,
+                pipelineListener::beforePipelineDataConsume,
+                pipelineListener::afterPipelineDataConsume);
+            checkPipelineConsume(pipelineInputStream, pipelineOutputStream, pipelineStrategy, pipelineListener);
+            pipelineListener.beforePipelineClose();
+        } catch (SkipPipelineConsumeException ex) {
+            pipelineListener.afterPipelineDataSkip(ex.getSkippedSize());
         } finally {
-            finalizeData(pipelineStrategy);
+            pipelineListener.afterPipelineClose();
         }
     }
 
-    default void finalizeData(T pipelineStrategy) {
-        pipelineStrategy.finalizeData();
+    default void preparePipelineOpen(S pipelineStrategy, PipelineListener<D> pipelineListener) {
     }
 
-    boolean prepare(I pipelineInputStream,
-                    O pipelineOutputStream,
-                    T pipelineStrategy) throws IOException;
+    default void preparePipelineConsume(I pipelineInputStream,
+                                        O pipelineOutputStream,
+                                        S pipelineStrategy,
+                                        PipelineListener<D> listener) throws IOException {
+    }
 
-    void check(I pipelineInputStream,
-               O pipelineOutputStream,
-               T pipelineStrategy);
+    default void checkPipelineConsume(I pipelineInputStream,
+                                      O pipelineOutputStream,
+                                      S pipelineStrategy,
+                                      PipelineListener<D> listener) throws IOException {
+    }
 }

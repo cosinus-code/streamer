@@ -26,12 +26,11 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import static java.util.UUID.randomUUID;
-import static org.springframework.util.CollectionUtils.isEmpty;
 
 /**
  * Encapsulates the model of the copy streamers action
  */
-public class CopyActionModel<S extends Streamer, T extends Streamer> extends ActionModel {
+public class CopyActionModel<S extends Streamer<?>, T extends Streamer<?>> extends ActionModel {
 
     private static final String COPY_ACTION_NAME = "act-copy";
 
@@ -41,58 +40,36 @@ public class CopyActionModel<S extends Streamer, T extends Streamer> extends Act
 
     private StreamerFilter sourceFilter = streamer -> true;
 
-    private List<Streamer> streamersToCopy;
+    private List<Streamer<?>> streamersToCopy;
 
-    private S source;
+    private ContainerStreamer<S> source;
 
-    private T destination;
-
-    private Path sourcePath;
+    private ContainerStreamer<T> destination;
 
     private Path targetPath;
 
-    private boolean forceNewInsteadOverwrite;
-
     private String packType;
 
-    private boolean overwriteAllExistingTargets;
-
-    private boolean overwriteAllExistingTargetsIfOlder;
-
-    private boolean skipAllExistingTargets;
-
-    private boolean overwriteCurrentTarget;
-
-    private boolean skipCurrentTargets;
-
-    private boolean appendSourceToCurrentTargets;
-
-    private boolean resumeCopy;
-
-    private boolean verifyCopy;
-
     private boolean shouldPack;
-
-    private boolean shouldCheckTransfer;
 
     public CopyActionModel(String actionName) {
         super(randomUUID().toString(), actionName);
     }
 
-    public static <S extends ContainerStreamer, T extends ContainerStreamer>
-    CopyActionModel<S, T> copy(List<Streamer> streamersToCopy) {
+    public static <S extends Streamer<?>, T extends Streamer<?>>
+    CopyActionModel<S, T> copy(List<Streamer<?>> streamersToCopy) {
         return new CopyActionModel<S, T>(COPY_ACTION_NAME)
             .setStreamersToCopy(streamersToCopy);
     }
 
-    public static <S extends ContainerStreamer, T extends ContainerStreamer>
-    CopyActionModel<S, T> move(List<Streamer> streamersToCopy) {
+    public static <S extends Streamer<?>, T extends Streamer<?>>
+    CopyActionModel<S, T> move(List<Streamer<?>> streamersToCopy) {
         return new CopyActionModel<S, T>(MOVE_ACTION_NAME)
             .setStreamersToCopy(streamersToCopy);
     }
 
-    public static <S extends ContainerStreamer, T extends ContainerStreamer>
-    CopyActionModel<S, T> pack(List<Streamer> streamersToCopy) {
+    public static <S extends Streamer<?>, T extends Streamer<?>>
+    CopyActionModel<S, T> pack(List<Streamer<?>> streamersToCopy) {
         return new CopyActionModel<S, T>(PACK_ACTION_NAME)
             .setStreamersToCopy(streamersToCopy)
             .pack();
@@ -120,22 +97,8 @@ public class CopyActionModel<S extends Streamer, T extends Streamer> extends Act
         return this;
     }
 
-    public S getSource() {
+    public ContainerStreamer<S> getSource() {
         return source;
-    }
-
-    public Path getSourcePath() {
-        return sourcePath;
-    }
-
-    public CopyActionModel<S, T> fromSourcePath(Path sourcePath) {
-        this.sourcePath = sourcePath;
-        return this;
-    }
-
-    public CopyActionModel<S, T> fromSource(S source) {
-        this.source = source;
-        return this;
     }
 
     public StreamerFilter getSourceFilter() {
@@ -147,111 +110,28 @@ public class CopyActionModel<S extends Streamer, T extends Streamer> extends Act
         return this;
     }
 
-    public CopyActionModel<S, T> setStreamersToCopy(List<Streamer> streamersToCopy) {
+    public CopyActionModel<S, T> setStreamersToCopy(List<Streamer<?>> streamersToCopy) {
         this.streamersToCopy = streamersToCopy;
         this.sourceFilter = this.streamersToCopy::contains;
         return this;
     }
 
-    public CopyActionModel<S, T> from(S source) {
+    public List<Streamer<?>> getStreamersToCopy() {
+        return streamersToCopy;
+    }
+
+    public CopyActionModel<S, T> from(ContainerStreamer<S> source) {
         this.source = source;
-        this.sourcePath = source.getPath();
         return this;
     }
 
-    public T getDestination() {
+    public ContainerStreamer<T> getDestination() {
         return destination;
     }
 
-    public CopyActionModel<S, T> toDestination(T destination) {
-        this.destination = destination;
-        return this;
-    }
-
-    public CopyActionModel<S, T> to(T destination) {
+    public CopyActionModel<S, T> to(ContainerStreamer<T> destination) {
         this.destination = destination;
         this.targetPath = destination.getPath();
-        return this;
-    }
-
-    public boolean isForceNewInsteadOverwrite() {
-        return forceNewInsteadOverwrite;
-    }
-
-    public CopyActionModel<S, T> forceNewInsteadOverwrite() {
-        this.forceNewInsteadOverwrite = true;
-        return this;
-    }
-
-    public boolean shouldOverwriteAllExistingTargets() {
-        return overwriteAllExistingTargets;
-    }
-
-    public CopyActionModel<S, T> overwriteAllExistingTargets() {
-        this.overwriteAllExistingTargets = true;
-        return this;
-    }
-
-    public boolean shouldOverwriteAllExistingTargetsIfOlder() {
-        return overwriteAllExistingTargetsIfOlder;
-    }
-
-    public CopyActionModel<S, T> overwriteAllExistingTargetsIfOlder() {
-        this.overwriteAllExistingTargetsIfOlder = true;
-        return this;
-    }
-
-    public boolean shouldSkipAllExistingTargets() {
-        return skipAllExistingTargets;
-    }
-
-    public CopyActionModel<S, T> skipAllExistingTargets() {
-        this.skipAllExistingTargets = true;
-        return this;
-    }
-
-    public boolean shouldOverwriteCurrentTarget() {
-        return overwriteCurrentTarget;
-    }
-
-    public CopyActionModel<S, T> overwriteCurrentTarget() {
-        this.overwriteCurrentTarget = true;
-        return this;
-    }
-
-    public boolean shouldSkipCurrentTargets() {
-        return skipCurrentTargets;
-    }
-
-    public CopyActionModel<S, T> skipCurrentTarget() {
-        this.skipCurrentTargets = true;
-        return this;
-    }
-
-    public boolean shouldAppendSourceToCurrentTarget() {
-        return appendSourceToCurrentTargets;
-    }
-
-    public CopyActionModel<S, T> appendSourceToCurrentTarget() {
-        this.appendSourceToCurrentTargets = true;
-        return this;
-    }
-
-    public boolean shouldResume() {
-        return resumeCopy;
-    }
-
-    public CopyActionModel<S, T> resumeCopy() {
-        this.resumeCopy = true;
-        return this;
-    }
-
-    public boolean shouldVerifyCopy() {
-        return verifyCopy;
-    }
-
-    public CopyActionModel<S, T> verifyCopy() {
-        this.verifyCopy = true;
         return this;
     }
 
@@ -259,51 +139,8 @@ public class CopyActionModel<S extends Streamer, T extends Streamer> extends Act
         return shouldPack;
     }
 
-    public boolean shouldCheckTransfer() {
-        return shouldCheckTransfer;
-    }
-
-    public CopyActionModel<S, T> checkTransfer() {
-        this.shouldCheckTransfer = true;
-        return this;
-    }
-
     public CopyActionModel<S, T> pack() {
         this.shouldPack = true;
-        return this;
-    }
-
-    public void resetCurrentTarget() {
-        this.skipCurrentTargets = false;
-        this.overwriteCurrentTarget = false;
-        this.appendSourceToCurrentTargets = false;
-        this.resumeCopy = false;
-    }
-
-    public boolean hasStreamersToCopy() {
-        return !isEmpty(streamersToCopy);
-    }
-
-    public boolean isCopyAllowed() {
-        return source.canRead() && destination.canWrite();
-    }
-
-    public boolean shouldSkip(Streamer source, Streamer target) {
-        boolean isTargetOlder = target.lastModified() < source.lastModified();
-        return shouldSkipCurrentTargets() ||
-            shouldSkipAllExistingTargets() ||
-            (shouldOverwriteAllExistingTargetsIfOlder() && !isTargetOlder);
-    }
-
-    public boolean shouldOverwrite(Streamer source, Streamer target) {
-        boolean isTargetOlder = target.lastModified() < source.lastModified();
-        return shouldOverwriteCurrentTarget() ||
-            shouldOverwriteAllExistingTargets() ||
-            (shouldOverwriteAllExistingTargetsIfOlder() && isTargetOlder);
-    }
-
-    public CopyActionModel<S, T> withOverwriteOption(CopyOverwriteOption copyOverwriteOption) {
-        copyOverwriteOption.apply(this);
         return this;
     }
 }

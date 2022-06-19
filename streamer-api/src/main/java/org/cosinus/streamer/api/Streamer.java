@@ -87,4 +87,8 @@ public interface Streamer<T> {
     default boolean isContainer() {
         return false;
     }
+
+    default boolean isOlderThan(Streamer<?> streamerToCompareTo) {
+        return lastModified() < streamerToCompareTo.lastModified();
+    }
 }

@@ -16,7 +16,6 @@
 
 package org.cosinus.streamer.ui.action.copy;
 
-import org.cosinus.streamer.api.ContainerStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.LoadStreamerAction;
 import org.cosinus.streamer.ui.action.StreamerAction;
@@ -31,6 +30,7 @@ import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.translate.Translator;
 
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.BOUND;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 /**
  * Abstract stub of an copy action
@@ -71,11 +71,11 @@ public abstract class AbstractCopyAction<A> extends StreamerAction<A> {
         }
 
         CopyActionModel copyAction = copySpecifications(actionContext);
-        if (!copyAction.hasStreamersToCopy()) {
+        if (isEmpty(copyAction.getStreamersToCopy())) {
             return;
         }
 
-        if (!copyAction.isCopyAllowed()) {
+        if (!copyAction.getSource().canRead() || !copyAction.getDestination().canWrite()) {
             dialogHandler.showInfo(translator.translate("act_copy_not_allowed"));
             return;
         }
@@ -85,8 +85,8 @@ public abstract class AbstractCopyAction<A> extends StreamerAction<A> {
             .ifPresent(action -> execute(action, actionContext));
     }
 
-    protected <S extends Streamer, T extends Streamer> void execute(CopyActionModel<S, T> copyAction,
-                                                                    StreamerActionContext actionContext) {
+    protected <S extends Streamer<?>, T extends Streamer<?>> void execute(CopyActionModel<S, T> copyAction,
+                                                                          StreamerActionContext actionContext) {
         progressListenerHandler.register(copyAction.getActionId(), new DefaultProgressListener() {
             @Override
             public void finishProgress() {
@@ -100,6 +100,6 @@ public abstract class AbstractCopyAction<A> extends StreamerAction<A> {
         return new CopyConfirmationDialog(copyAction);
     }
 
-    protected abstract <S extends ContainerStreamer, T extends ContainerStreamer>
+    protected abstract <S extends Streamer<?>, T extends Streamer<?>>
     CopyActionModel<S, T> copySpecifications(StreamerActionContext actionContext);
 }

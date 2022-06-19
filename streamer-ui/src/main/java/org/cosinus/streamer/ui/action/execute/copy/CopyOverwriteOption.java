@@ -24,28 +24,28 @@ import java.util.function.Consumer;
  */
 public enum CopyOverwriteOption {
 
-    OVERWRITE("act_copy_overwrite", CopyActionModel::overwriteCurrentTarget),
-    OVERWRITE_ALL("act_copy_overwrite_all", CopyActionModel::overwriteAllExistingTargets),
-    SKIP("act_copy_skip", CopyActionModel::skipCurrentTarget),
+    OVERWRITE("act_copy_overwrite", CopyBinaryStrategy::overwriteCurrentTarget),
+    OVERWRITE_ALL("act_copy_overwrite_all", CopyBinaryStrategy::overwriteAllExistingTargets),
+    SKIP("act_copy_skip", CopyBinaryStrategy::skipCurrentTarget),
     CANCEL("act_copy_cancel", null),
-    OVERWRITE_OLDER("act_copy_overwrite_older", CopyActionModel::overwriteAllExistingTargetsIfOlder),
-    SKIP_ALL("act_copy_skip_all", CopyActionModel::skipAllExistingTargets),
+    OVERWRITE_OLDER("act_copy_overwrite_older", CopyBinaryStrategy::overwriteAllExistingTargetsIfOlder),
+    SKIP_ALL("act_copy_skip_all", CopyBinaryStrategy::skipAllExistingTargets),
     RENAME("act_copy_rename", null),
-    APPEND("act_copy_append", CopyActionModel::appendSourceToCurrentTarget),
-    RESUME("act_copy_resume", CopyActionModel::resumeCopy);
+    APPEND("act_copy_append", CopyBinaryStrategy::appendSourceToCurrentTarget),
+    RESUME("act_copy_resume", CopyBinaryStrategy::resumeCopy);
 
     private final String key;
 
-    private final Consumer<CopyActionModel> consumer;
+    private final Consumer<CopyBinaryStrategy> consumer;
 
-    CopyOverwriteOption(String key, Consumer<CopyActionModel> consumer) {
+    CopyOverwriteOption(String key, Consumer<CopyBinaryStrategy> consumer) {
         this.key = key;
         this.consumer = consumer;
     }
 
-    public void apply(CopyActionModel copyAction) {
+    public void apply(CopyBinaryStrategy copyAction) {
         Optional.ofNullable(consumer)
-                .ifPresent(c -> c.accept(copyAction));
+            .ifPresent(c -> c.accept(copyAction));
     }
 
     @Override

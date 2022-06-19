@@ -24,6 +24,7 @@ import org.cosinus.swing.action.ActionContext;
 /**
  * Streamer context for an action
  */
+//TODO: should be StreamerActionContext<S extends Streamer<?>, T  extends Streamer<?>>
 public class StreamerActionContext<T> implements ActionContext {
 
     private final Streamer<T> currentStreamer;

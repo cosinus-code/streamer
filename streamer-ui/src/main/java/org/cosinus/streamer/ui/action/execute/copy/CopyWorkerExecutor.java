@@ -16,7 +16,7 @@
 
 package org.cosinus.streamer.ui.action.execute.copy;
 
-import org.cosinus.streamer.api.ContainerStreamer;
+import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.SwingProgressWorker;
 import org.cosinus.streamer.ui.action.execute.SwingProgressWorkerActionExecutor;
 import org.cosinus.streamer.ui.action.progress.CopyProgressModel;
@@ -30,13 +30,13 @@ import org.springframework.stereotype.Component;
  * Implementation of {@link ActionExecutor} for copying streamers based on {@link CopyWorker}
  */
 @Component
-public class CopyWorkerExecutor<S extends ContainerStreamer, T extends ContainerStreamer>
+public class CopyWorkerExecutor<S extends Streamer<?>, T extends Streamer<?>>
     extends SwingProgressWorkerActionExecutor<CopyActionModel<S, T>, CopyProgressModel> {
 
     public CopyWorkerExecutor(ProgressFormHandler progressFormHandler,
                               ProgressListenerHandler<CopyProgressModel> progressListenerHandler) {
         super(progressFormHandler,
-              progressListenerHandler);
+            progressListenerHandler);
     }
 
     @Override

@@ -19,33 +19,49 @@ package org.cosinus.streamer.api.stream.consumer;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
+
+import static java.util.Optional.ofNullable;
 
 public interface StreamConsumer<T> extends Consumer<T>, AutoCloseable {
 
+    int RETRY_MAX_ATTEMPTS = 3;
+
     default void consume(Stream<T> stream) {
-        consume(stream, null, null);
+        consume(stream, null, null, null);
     }
 
-    default void consume(Stream<T> stream, Function<T, Boolean> retry, Consumer<T> after) {
-        //stream.forEach(after != null ? this.andThen(after) : this);
+    default void consume(Stream<T> stream, Supplier<Boolean> retry, Consumer<T> before, Consumer<T> after) {
         stream.forEach(data -> {
-            try {
-                this.accept(data);
-            } catch (UncheckedIOException ex) {
-                if (retry != null && retry.apply(data)) {
-                    consume(stream, retry, after);
-                }
-            }
-
-            if (after != null) {
-                after.accept(data);
-            }
+            apply(data, before);
+            acceptWithRetry(data, retry, 0, getRetryMaxAttempts());
+            apply(data, after);
         });
 
     }
 
+    private void acceptWithRetry(T data, Supplier<Boolean> retry, int retryCount, int retryMaxAttempts) {
+        try {
+            accept(data);
+        } catch (UncheckedIOException ex) {
+            if (retryCount < retryMaxAttempts && retry != null && retry.get()) {
+                acceptWithRetry(data, retry, ++retryCount, retryMaxAttempts);
+            } else {
+                throw ex;
+            }
+        }
+    }
+
+    private void apply(T data, Consumer<T> consumer) {
+        ofNullable(consumer).ifPresent(c -> c.accept(data));
+    }
+
+    default int getRetryMaxAttempts() {
+        return RETRY_MAX_ATTEMPTS;
+    }
+
     @Override
-    void close() throws IOException;
+    default void close() throws IOException {
+    }
 }
