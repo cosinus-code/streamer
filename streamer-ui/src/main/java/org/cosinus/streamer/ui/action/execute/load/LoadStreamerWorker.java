@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
@@ -37,7 +36,7 @@ import static java.util.Optional.ofNullable;
 /**
  * {@link javax.swing.SwingWorker} for loading an streamer
  */
-public class LoadStreamerWorker<T> extends SwingWorker<StreamedContent<T>, T> {
+public class LoadStreamerWorker<T> extends SwingWorker<Void, T> {
 
     private static final Logger LOG = LogManager.getLogger(LoadStreamerWorker.class);
 
@@ -68,13 +67,11 @@ public class LoadStreamerWorker<T> extends SwingWorker<StreamedContent<T>, T> {
     }
 
     @Override
-    protected StreamedContent<T> doInBackground() {
+    protected Void doInBackground() {
         try (Stream<? extends T> contentStream = streamerToLoad.stream()) {
-            List<T> content = contentStream
-                .peek(this::publish)
-                .collect(Collectors.toList());
-            return new StreamedContent(streamerToLoad, content, contentIdentifier);
+            contentStream.forEach(this::publish);
         }
+        return null;
     }
 
     @Override
@@ -94,19 +91,17 @@ public class LoadStreamerWorker<T> extends SwingWorker<StreamedContent<T>, T> {
     protected void done() {
         try {
             if (!isCancelled()) {
-                ofNullable(get())
-                    .filter(streamedContent -> streamedContent.getContent().size() == 0 ||
-                        streamedContent.getContent().size() != content.size())
-                    .ifPresent(streamerView::updateContent);
-                ofNullable(streamerToLoad)
-                    .filter(streamer -> PackStreamer.class.isAssignableFrom(streamer.getClass()))
-                    .map(PackStreamer.class::cast)
-                    .ifPresent(PackStreamer::finishLoading);
+                get();
+                updateView();
             }
         } catch (Exception e) {
             LOG.error("Failed to update the view", e);
             errorHandler.handleError(e);
         } finally {
+            ofNullable(streamerToLoad)
+                .filter(streamer -> PackStreamer.class.isAssignableFrom(streamer.getClass()))
+                .map(PackStreamer.class::cast)
+                .ifPresent(PackStreamer::finishLoading);
             progressListenerHandler.finishProgress(progress);
         }
     }

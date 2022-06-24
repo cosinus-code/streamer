@@ -18,9 +18,9 @@ package org.cosinus.streamer.ui.action.execute;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cosinus.streamer.api.stream.pipeline.error.AbortPipelineConsumeException;
 import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
 import org.cosinus.streamer.ui.action.progress.ProgressModel;
+import org.cosinus.streamer.ui.error.AbortActionException;
 import org.cosinus.streamer.ui.error.ActionException;
 import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.worker.SwingWorker;
@@ -35,9 +35,9 @@ import static java.util.Optional.ofNullable;
 /**
  * Abstract {@link javax.swing.SwingWorker} with custom progress
  */
-public abstract class SwingProgressWorker<P extends ProgressModel> extends SwingWorker<Void, P> {
+public abstract class ProgressWorker<P extends ProgressModel> extends SwingWorker<Void, P> {
 
-    private static final Logger LOG = LogManager.getLogger(SwingProgressWorker.class);
+    private static final Logger LOG = LogManager.getLogger(ProgressWorker.class);
 
     @Autowired
     protected ProgressListenerHandler<P> progressListenerHandler;
@@ -55,9 +55,9 @@ public abstract class SwingProgressWorker<P extends ProgressModel> extends Swing
 
     private boolean paused;
 
-    protected SwingProgressWorker(Window parentWindow,
-                                  String actionId,
-                                  P progress) {
+    protected ProgressWorker(Window parentWindow,
+                             String actionId,
+                             P progress) {
         this.parentWindow = parentWindow;
         this.actionId = actionId;
         this.progress = progress;
@@ -85,7 +85,7 @@ public abstract class SwingProgressWorker<P extends ProgressModel> extends Swing
             doWork();
         } catch (ActionException ex) {
             setError(ex);
-        } catch (AbortPipelineConsumeException ex) {
+        } catch (AbortActionException ex) {
             LOG.trace("Action aborted: " + actionId);
         }
         return null;
@@ -115,7 +115,7 @@ public abstract class SwingProgressWorker<P extends ProgressModel> extends Swing
 
     public void checkWorkerStatus() {
         if (isCancelled()) {
-            throw new AbortPipelineConsumeException("Worker cancelled by user");
+            throw new AbortActionException("Worker aborted by user");
         }
         if (isPaused()) {
             synchronized (this) {
@@ -128,7 +128,7 @@ public abstract class SwingProgressWorker<P extends ProgressModel> extends Swing
         }
     }
 
-    public P getSwingProgress() {
+    public P getProgressModel() {
         return progress;
     }
 

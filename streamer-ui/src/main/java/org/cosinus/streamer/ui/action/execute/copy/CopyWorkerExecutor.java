@@ -17,8 +17,8 @@
 package org.cosinus.streamer.ui.action.execute.copy;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.action.execute.SwingProgressWorker;
-import org.cosinus.streamer.ui.action.execute.SwingProgressWorkerActionExecutor;
+import org.cosinus.streamer.ui.action.execute.ProgressWorker;
+import org.cosinus.streamer.ui.action.execute.ProgressWorkerActionExecutor;
 import org.cosinus.streamer.ui.action.progress.CopyProgressModel;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class CopyWorkerExecutor<S extends Streamer<?>, T extends Streamer<?>>
-    extends SwingProgressWorkerActionExecutor<CopyActionModel<S, T>, CopyProgressModel> {
+    extends ProgressWorkerActionExecutor<CopyActionModel<S, T>, CopyProgressModel> {
 
     public CopyWorkerExecutor(ProgressFormHandler progressFormHandler,
                               ProgressListenerHandler<CopyProgressModel> progressListenerHandler) {
@@ -45,8 +45,8 @@ public class CopyWorkerExecutor<S extends Streamer<?>, T extends Streamer<?>>
     }
 
     @Override
-    protected SwingProgressWorker<CopyProgressModel> createSwingWorker(CopyActionModel<S, T> actionModel,
-                                                                       ProgressDialog<CopyProgressModel> progressDialog) {
+    protected ProgressWorker<CopyProgressModel> createSwingWorker(CopyActionModel<S, T> actionModel,
+                                                                  ProgressDialog<CopyProgressModel> progressDialog) {
         return new CopyWorker(actionModel, progressDialog);
     }
 

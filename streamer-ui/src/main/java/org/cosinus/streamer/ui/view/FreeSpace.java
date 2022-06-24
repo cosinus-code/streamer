@@ -21,11 +21,10 @@ import org.cosinus.swing.translate.Translator;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.swing.border.CompoundBorder;
 import java.awt.*;
 
+import static java.util.Optional.ofNullable;
 import static org.cosinus.swing.border.Borders.emptyBorder;
-import static org.cosinus.swing.border.Borders.lineBorder;
 import static org.cosinus.swing.util.Formatter.formatMemorySize;
 
 public class FreeSpace extends Label {
@@ -47,13 +46,14 @@ public class FreeSpace extends Label {
     @Override
     public void paint(Graphics g) {
         if (totalSpace > 0) {
-            uiHandler.getInactiveBackgroundColor()
+            ofNullable(uiHandler.getColor("MenuItem.selectionBackground"))
+                .or(uiHandler::getInactiveBackgroundColor)
                 .ifPresent(color -> {
                     int width = (int) (getWidth() * (totalSpace - freeSpace) / totalSpace);
                     Color initialColor = g.getColor();
                     g.setColor(color);
                     g.fillRect(0, 0, width, getHeight());
-                    g.drawRect(0, 0, getWidth(), getHeight() - 1);
+                    g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
                     g.setColor(initialColor);
                 });
         }
@@ -66,9 +66,9 @@ public class FreeSpace extends Label {
         this.totalSpace = totalSpace;
 
         setText(totalSpace > 0 ?
-                    translator.translate("free_memory",
-                                         formatMemorySize(freeSpace),
-                                         formatMemorySize(totalSpace)) :
-                    " ");
+            translator.translate("free_memory",
+                formatMemorySize(freeSpace),
+                formatMemorySize(totalSpace)) :
+            " ");
     }
 }

@@ -18,7 +18,7 @@ package org.cosinus.streamer.ui.action.execute.delete;
 
 import org.cosinus.streamer.api.ContainerStreamer;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.action.execute.SwingProgressWorker;
+import org.cosinus.streamer.ui.action.execute.ProgressWorker;
 import org.cosinus.streamer.ui.action.progress.StreamersProgressModel;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.translate.Translator;
@@ -28,9 +28,9 @@ import java.awt.*;
 import java.util.stream.Stream;
 
 /**
- * {@link SwingProgressWorker} for deleting streamers
+ * {@link ProgressWorker} for deleting streamers
  */
-public class DeleteWorker extends SwingProgressWorker<StreamersProgressModel> {
+public class DeleteWorker extends ProgressWorker<StreamersProgressModel> {
 
     @Autowired
     private Translator translator;

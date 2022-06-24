@@ -20,7 +20,7 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.stream.pipeline.binary.BinaryPipelineStrategy;
 import org.cosinus.streamer.api.stream.pipeline.error.AbortPipelineConsumeException;
 import org.cosinus.streamer.api.stream.pipeline.error.SkipPipelineConsumeException;
-import org.cosinus.streamer.ui.action.execute.SwingProgressWorker;
+import org.cosinus.streamer.ui.action.execute.ProgressWorker;
 import org.cosinus.streamer.ui.action.progress.CopyProgressModel;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.dialog.DialogOption;
@@ -69,7 +69,7 @@ public class CopyBinaryStrategy implements BinaryPipelineStrategy {
     private boolean resumeCopy;
 
     public CopyBinaryStrategy(BinaryStreamer source, BinaryStreamer target, CopyStrategy copyStrategy,
-                              SwingProgressWorker<CopyProgressModel> progressWorker) {
+                              ProgressWorker<CopyProgressModel> progressWorker) {
         injectContext(this);
         this.source = source;
         this.target = target;

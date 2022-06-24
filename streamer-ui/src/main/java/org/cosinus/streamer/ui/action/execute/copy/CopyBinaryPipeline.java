@@ -19,8 +19,7 @@ import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.stream.pipeline.PipelineListener;
 import org.cosinus.streamer.api.stream.pipeline.binary.BinaryPipeline;
 import org.cosinus.streamer.api.stream.pipeline.binary.BinaryPipelineStrategy;
-import org.cosinus.streamer.api.stream.pipeline.error.SkipPipelineConsumeException;
-import org.cosinus.streamer.ui.action.execute.SwingProgressWorker;
+import org.cosinus.streamer.ui.action.execute.ProgressWorker;
 import org.cosinus.streamer.ui.action.progress.CopyProgressModel;
 
 import java.io.InputStream;
@@ -39,7 +38,7 @@ public class CopyBinaryPipeline implements BinaryPipeline {
     public CopyBinaryPipeline(BinaryStreamer source,
                               BinaryStreamer target,
                               CopyStrategy copyStrategy,
-                              SwingProgressWorker<CopyProgressModel> progressWorker) {
+                              ProgressWorker<CopyProgressModel> progressWorker) {
         this.source = source;
         this.target = target;
         this.copyStrategy = new CopyBinaryStrategy(source, target, copyStrategy, progressWorker);

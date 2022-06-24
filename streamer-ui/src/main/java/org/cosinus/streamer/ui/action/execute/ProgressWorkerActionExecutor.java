@@ -29,19 +29,19 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Implementation of {@link ActionExecutor} for deleting streamers based on {@link SwingProgressWorker}
+ * Implementation of {@link ActionExecutor} for deleting streamers based on {@link ProgressWorker}
  */
-public abstract class SwingProgressWorkerActionExecutor<A extends ActionModel, P extends ProgressModel>
+public abstract class ProgressWorkerActionExecutor<A extends ActionModel, P extends ProgressModel>
         implements ActionExecutor<A> {
 
     protected final ProgressFormHandler progressFormHandler;
 
     protected final ProgressListenerHandler<P> progressListenerHandler;
 
-    private final Map<String, SwingProgressWorker<P>> workersMap = new ConcurrentHashMap<>();
+    private final Map<String, ProgressWorker<P>> workersMap = new ConcurrentHashMap<>();
 
-    protected SwingProgressWorkerActionExecutor(ProgressFormHandler progressFormHandler,
-                                                ProgressListenerHandler<P> progressListenerHandler) {
+    protected ProgressWorkerActionExecutor(ProgressFormHandler progressFormHandler,
+                                           ProgressListenerHandler<P> progressListenerHandler) {
         this.progressFormHandler = progressFormHandler;
         this.progressListenerHandler = progressListenerHandler;
     }
@@ -52,7 +52,7 @@ public abstract class SwingProgressWorkerActionExecutor<A extends ActionModel, P
         ProgressDialog<P> progressDialog = createProgressDialog(actionModel);
         progressListenerHandler.register(actionModel.getActionId(), progressDialog);
 
-        SwingProgressWorker<P> worker = createSwingWorker(actionModel, progressDialog);
+        ProgressWorker<P> worker = createSwingWorker(actionModel, progressDialog);
         workersMap.put(actionModel.getActionId(), worker);
 
         worker.execute();
@@ -75,6 +75,6 @@ public abstract class SwingProgressWorkerActionExecutor<A extends ActionModel, P
 
     protected abstract ProgressDialog<P> createProgressDialog(A actionModel);
 
-    protected abstract SwingProgressWorker<P> createSwingWorker(A actionModel,
-                                                                ProgressDialog<P> progressDialog);
+    protected abstract ProgressWorker<P> createSwingWorker(A actionModel,
+                                                           ProgressDialog<P> progressDialog);
 }

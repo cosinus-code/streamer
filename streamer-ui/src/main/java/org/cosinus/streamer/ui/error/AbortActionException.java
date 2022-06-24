@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Cosinus Software
+ * Copyright 2022 Cosinus Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.cosinus.streamer.ui.error;
 
-/**
- * Thrown when the action should be skipped
- */
-public class SkipActionException extends StreamerException {
+public class AbortActionException extends StreamerException {
 
-    public SkipActionException() {
-        super("act_skipped");
+    public AbortActionException(String messageKey, Object[] messageArguments) {
+        super(messageKey, messageArguments);
+    }
+
+    public AbortActionException(String messageKey) {
+        super(messageKey);
+    }
+
+    public AbortActionException(String messageKey, Throwable cause) {
+        super(cause, messageKey);
     }
 }

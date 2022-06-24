@@ -17,7 +17,7 @@ package org.cosinus.streamer.ui.action.execute.copy;
 
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.stream.pipeline.PipelineListener;
-import org.cosinus.streamer.ui.action.execute.SwingProgressWorker;
+import org.cosinus.streamer.ui.action.execute.ProgressWorker;
 import org.cosinus.streamer.ui.action.progress.CopyProgressModel;
 
 public class CopyBinaryListener implements PipelineListener<byte[]> {
@@ -26,16 +26,16 @@ public class CopyBinaryListener implements PipelineListener<byte[]> {
 
     private final BinaryStreamer target;
 
-    private final SwingProgressWorker<CopyProgressModel> progressWorker;
+    private final ProgressWorker<CopyProgressModel> progressWorker;
 
     private final CopyProgressModel progressModel;
 
     public CopyBinaryListener(
-        BinaryStreamer source, BinaryStreamer target, SwingProgressWorker<CopyProgressModel> progressWorker) {
+        BinaryStreamer source, BinaryStreamer target, ProgressWorker<CopyProgressModel> progressWorker) {
         this.source = source;
         this.target = target;
         this.progressWorker = progressWorker;
-        this.progressModel = progressWorker.getSwingProgress();
+        this.progressModel = progressWorker.getProgressModel();
     }
 
     @Override
