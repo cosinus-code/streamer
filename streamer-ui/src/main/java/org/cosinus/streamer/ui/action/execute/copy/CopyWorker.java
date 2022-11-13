@@ -25,7 +25,6 @@ import org.cosinus.streamer.api.stream.pipeline.Pipeline;
 import org.cosinus.streamer.api.stream.pipeline.PipelineListener;
 import org.cosinus.streamer.api.stream.pipeline.error.AbortPipelineConsumeException;
 import org.cosinus.streamer.ui.action.execute.ProgressWorker;
-import org.cosinus.streamer.ui.action.progress.CopyProgressModel;
 import org.cosinus.streamer.ui.error.AbortActionException;
 import org.cosinus.streamer.ui.error.ActionException;
 
@@ -162,6 +161,12 @@ public class CopyWorker<S extends Streamer<?>, T extends Streamer<?>>
         public void afterPipelineDataSkip(long skippedDataSize) {
             progress.updateStreamerProgress(skippedDataSize);
             progress.finishStreamerProgress();
+            publishProgress();
+        }
+
+        @Override
+        public void afterPipelineClose() {
+            progress.finishTotalProgress();
             publishProgress();
         }
     }

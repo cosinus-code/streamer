@@ -61,6 +61,11 @@ public class FtpMainStreamer extends MainStreamer<FtpStreamer> {
     }
 
     @Override
+    public boolean exists() {
+        return true;
+    }
+
+    @Override
     public boolean isCompatible(String urlPath) {
         return false;
     }

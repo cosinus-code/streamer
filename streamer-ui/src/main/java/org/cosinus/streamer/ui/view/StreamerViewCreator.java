@@ -23,7 +23,5 @@ public interface StreamerViewCreator<T> {
 
     StreamerView<T> createStreamerView(PanelLocation location);
 
-    String getName();
-
-    String getHandledType();
+    String getViewName();
 }

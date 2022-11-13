@@ -22,6 +22,8 @@ import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewCreator;
 import org.springframework.stereotype.Component;
 
+import static org.cosinus.streamer.ui.view.table.icon.IconView.ICON_VIEW_NAME;
+
 @Component
 public class IconViewCreator implements StreamerViewCreator<Streamer> {
 
@@ -31,12 +33,7 @@ public class IconViewCreator implements StreamerViewCreator<Streamer> {
     }
 
     @Override
-    public String getName() {
-        return "icon";
-    }
-
-    @Override
-    public String getHandledType() {
-        return null;
+    public String getViewName() {
+        return ICON_VIEW_NAME;
     }
 }

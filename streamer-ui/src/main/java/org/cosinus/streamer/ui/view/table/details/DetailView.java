@@ -22,8 +22,15 @@ import org.cosinus.streamer.ui.view.table.TableStreamerView;
 
 public class DetailView extends TableStreamerView {
 
+    public static final String DETAIL_VIEW_NAME = "detail";
+
     public DetailView(PanelLocation location) {
         super(location);
+    }
+
+    @Override
+    public String getName() {
+        return DETAIL_VIEW_NAME;
     }
 
     @Override

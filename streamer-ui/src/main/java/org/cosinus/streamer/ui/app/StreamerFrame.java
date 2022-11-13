@@ -95,15 +95,20 @@ public class StreamerFrame extends SwingApplicationFrame {
     @Override
     public void loadContent() {
         stream(PanelLocation.values())
-            .forEach(this::createAndLoadStreamerView);
+            .map(this::createStreamerView)
+            .forEach(this::loadStreamerView);
     }
 
-    protected void createAndLoadStreamerView(PanelLocation location) {
-        String urlPath = streamerViewStorage.loadLastLoadedStreamer(location)
+    protected StreamerView createStreamerView(PanelLocation location) {
+        String streamerViewName = streamerViewStorage.loadLastLoadedView(location)
             .orElse(null);
-        Streamer streamer = streamerHandler.getStreamer(urlPath);
-        StreamerView view = streamerViewHandler.createStreamerView(streamer, location);
-        view.loadStreamer(streamer);
+        StreamerView view = streamerViewHandler.createStreamerView(streamerViewName, location);
+        streamerViewStorage.saveLastLoadedView(view, location);
+        return view;
+    }
+
+    protected void loadStreamerView(StreamerView view) {
+        view.loadStreamer(null);
     }
 
     public StreamerView getCurrentView() {

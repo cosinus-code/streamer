@@ -16,7 +16,6 @@
 
 package org.cosinus.streamer.ui.view;
 
-import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.meta.StreamerHandler;
 import org.cosinus.streamer.ui.view.table.details.DetailViewCreator;
 import org.cosinus.swing.preference.Preference;
@@ -24,11 +23,11 @@ import org.cosinus.swing.preference.Preferences;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.function.Function;
 
 import static java.util.Arrays.stream;
-import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toMap;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.LEFT_VIEW;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.RIGHT_VIEW;
 import static org.cosinus.streamer.ui.view.PanelLocation.LEFT;
@@ -47,7 +46,7 @@ public class StreamerViewHandler {
 
     private final StreamerHandler streamerHandler;
 
-    private final Map<Optional<String>, List<StreamerViewCreator>> streamerViewCreatorsMap;
+    private final Map<String, StreamerViewCreator> streamerViewCreatorsMap;
 
     private final StreamerViewCreator defaultStreamerViewCreator;
 
@@ -59,7 +58,7 @@ public class StreamerViewHandler {
         this.streamerHandler = streamerHandler;
         this.streamerViewCreatorsMap = streamerViewCreators
             .stream()
-            .collect(groupingBy(streamerViewCreator -> ofNullable(streamerViewCreator.getHandledType())));
+            .collect(toMap(StreamerViewCreator::getViewName, Function.identity()));
         this.defaultStreamerViewCreator = defaultStreamerViewCreator;
     }
 
@@ -83,8 +82,10 @@ public class StreamerViewHandler {
             .ifPresent(view -> view.setActive(location == currentLocation)));
     }
 
-    public StreamerView createStreamerView(Streamer streamer, PanelLocation location) {
-        StreamerView view = getStreamerViewCreator(streamer, location)
+    public StreamerView createStreamerView(String streamerViewName, PanelLocation location) {
+        StreamerView view = ofNullable(streamerViewName)
+            .map(streamerViewCreatorsMap::get)
+            .orElseGet(() -> getPreferredStreamerViewCreator(location))
             .createStreamerView(location);
         view.initComponents();
         getPanel(location)
@@ -92,25 +93,19 @@ public class StreamerViewHandler {
         return view;
     }
 
-    public StreamerViewCreator getStreamerViewCreator(Streamer streamer, PanelLocation location) {
-        return ofNullable(streamerViewCreatorsMap.get(ofNullable(streamer.getType())))
-            .or(() -> streamer.isContainer() ?
-                ofNullable(streamerViewCreatorsMap.get(Optional.<String>empty())) :
-                empty())
+    public StreamerViewCreator getPreferredStreamerViewCreator(PanelLocation location) {
+        return streamerViewCreatorsMap.values()
             .stream()
-            .flatMap(Collection::stream)
             .filter(streamerViewCreator -> isPreferredView(streamerViewCreator, location))
             .findFirst()
             .orElse(defaultStreamerViewCreator);
     }
 
-    protected boolean isPreferredView(StreamerViewCreator streamerViewCreator, PanelLocation location) {
-        return streamerViewCreator.getHandledType() == null ?
-            preferences.findPreference(LEFT == location ? LEFT_VIEW : RIGHT_VIEW)
-                .map(Preference::getRealValue)
-                .map(streamerViewCreator.getName()::equals)
-                .orElse(false) :
-            false;
+    protected <T> boolean isPreferredView(StreamerViewCreator streamerViewCreator, PanelLocation location) {
+        return preferences.findPreference(LEFT == location ? LEFT_VIEW : RIGHT_VIEW)
+            .map(Preference::getRealValue)
+            .map(streamerViewCreator.getViewName()::equals)
+            .orElse(false);
     }
 
     public StreamerPanel createStreamerPanel(PanelLocation location) {

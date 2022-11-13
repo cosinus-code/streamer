@@ -161,25 +161,24 @@ public abstract class DataTableModel extends TableModel {
     }
 
     public void updateContent(StreamedContent<Streamer> content) {
-        items.clear();
-        selectionMap.clear();
-
-        if (isTopVisible()) {
-            ContainerStreamer parent = content.getStreamer().getParent();
-            if (parent != null) {
-                items.add(new ViewItem(parent, true));
-            }
-        }
-        fireTableDataChanged();
-
         boolean showHidden = preferences.booleanPreference(SHOW_HIDDEN);
-        content.getContent()
+        List<ViewItem> viewItems = content.getContent()
             .stream()
             .filter(Objects::nonNull)
             .filter(streamer -> !streamer.isHidden() || showHidden)
             .map(ViewItem::new)
-            .forEach(items::add);
-        sort();
+            .sorted(comparator)
+            .collect(Collectors.toList());
+
+        if (isTopVisible()) {
+            ofNullable(content.getStreamer().getParent())
+                .map(parent -> new ViewItem(parent, true))
+                .ifPresent(viewItem -> viewItems.add(0, viewItem));
+        }
+
+        items.clear();
+        items.addAll(viewItems);
+        selectionMap.clear();
 
         folder = content.getStreamer();
     }

@@ -43,7 +43,7 @@ public abstract class ChangeViewAction extends StreamerAction<Streamer<?>> {
 
                 Streamer currentLoadedStreamer = context.getCurrentView().getLoadedStreamer();
                 invokeLater(() -> streamerView.loadStreamer(currentLoadedStreamer));
-
+//TODO
 //            Streamer currentStreamer = context.getCurrentView().getCurrentContent();
 //            streamerView.findContent(currentStreamer.getName());
             });

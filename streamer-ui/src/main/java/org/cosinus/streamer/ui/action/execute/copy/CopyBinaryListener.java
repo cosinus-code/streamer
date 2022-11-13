@@ -18,7 +18,6 @@ package org.cosinus.streamer.ui.action.execute.copy;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.stream.pipeline.PipelineListener;
 import org.cosinus.streamer.ui.action.execute.ProgressWorker;
-import org.cosinus.streamer.ui.action.progress.CopyProgressModel;
 
 public class CopyBinaryListener implements PipelineListener<byte[]> {
 

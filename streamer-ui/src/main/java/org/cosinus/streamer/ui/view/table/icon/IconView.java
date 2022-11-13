@@ -5,8 +5,15 @@ import org.cosinus.streamer.ui.view.table.TableStreamerView;
 
 public class IconView extends TableStreamerView {
 
+    public static final String ICON_VIEW_NAME = "icon";
+
     public IconView(PanelLocation location) {
         super(location);
+    }
+
+    @Override
+    public String getName() {
+        return ICON_VIEW_NAME;
     }
 
     @Override

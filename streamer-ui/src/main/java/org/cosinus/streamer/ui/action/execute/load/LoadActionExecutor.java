@@ -20,11 +20,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.api.TransferStreamer;
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.meta.StreamerHandler;
 import org.cosinus.streamer.api.pack.PackerHandler;
 import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
 import org.cosinus.streamer.ui.action.progress.ProgressModel;
 import org.cosinus.streamer.ui.view.AddressBar;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
+import org.cosinus.streamer.ui.view.StreamerViewStorage;
 import org.cosinus.swing.action.execute.ActionExecutor;
 import org.cosinus.swing.worker.SwingWorker;
 import org.springframework.stereotype.Component;
@@ -44,7 +46,11 @@ public class LoadActionExecutor<P extends ProgressModel> implements ActionExecut
 
     private static final Logger LOG = LogManager.getLogger(LoadActionExecutor.class);
 
+    private final StreamerViewStorage streamerViewStorage;
+
     private final PackerHandler packerHandler;
+
+    private final StreamerHandler streamerHandler;
 
     private final StreamerViewHandler streamerViewHandler;
 
@@ -54,11 +60,15 @@ public class LoadActionExecutor<P extends ProgressModel> implements ActionExecut
 
     private final AddressBar addressBar;
 
-    public LoadActionExecutor(PackerHandler packerHandler,
+    public LoadActionExecutor(StreamerViewStorage streamerViewStorage,
+                              PackerHandler packerHandler,
+                              StreamerHandler streamerHandler,
                               StreamerViewHandler streamerViewHandler,
                               ProgressListenerHandler<P> progressListenerHandler,
                               AddressBar addressBar) {
+        this.streamerViewStorage = streamerViewStorage;
         this.packerHandler = packerHandler;
+        this.streamerHandler = streamerHandler;
         this.streamerViewHandler = streamerViewHandler;
         this.progressListenerHandler = progressListenerHandler;
         this.workersMap = new ConcurrentHashMap<>();
@@ -69,43 +79,11 @@ public class LoadActionExecutor<P extends ProgressModel> implements ActionExecut
     public void execute(final LoadActionModel loadActionModel) {
         cancel(loadActionModel.getActionId());
 
-        Streamer aliveStreamer = ofNullable(loadActionModel.getStreamer())
-            .filter(not(Streamer::exists))
-            .map(this::getFirstAncestorAlive)
-            .orElse(loadActionModel.getStreamer());
-
-        if (aliveStreamer == null) {
-            LOG.trace("Cannot load a null streamer -> ignore the command.");
-            return;
-        }
-
-        Streamer streamerToLoad = Optional.of(aliveStreamer)
-            .filter(streamer -> TransferStreamer.class.isAssignableFrom(streamer.getClass()))
-            .map(TransferStreamer.class::cast)
-            .<Streamer>flatMap(transferStream -> packerHandler
-                .findPacker(aliveStreamer.getType())
-                .map(packer -> packer.pack(transferStream)))
-            .orElse(aliveStreamer);
-
-        if (streamerToLoad.isContainer()) {
-            streamerViewHandler.getPanel(loadActionModel.getView().getCurrentLocation())
-                .ifPresent(panel -> ofNullable(streamerToLoad.getUrlPath())
-                    .map(address -> address.split("://"))
-                    .map(address -> address[address.length - 1])
-                    .ifPresent(address -> {
-                        addressBar.setAddress(address);
-                        panel.setAddress(address);
-                        panel.setFreeSpace(streamerToLoad.getParent().getFreeSpace(),
-                                           streamerToLoad.getParent().getTotalSpace());
-                    }));
-
-            progressListenerHandler.register(loadActionModel.getActionId(), loadActionModel.getView());
-            LoadStreamerWorker worker = new LoadStreamerWorker(streamerToLoad,
-                                                               loadActionModel);
-            workersMap.put(loadActionModel.getActionId(), worker);
-            worker.execute();
-            progressListenerHandler.startProgress(loadActionModel.getActionId());
-        }
+        progressListenerHandler.register(loadActionModel.getActionId(), loadActionModel.getView());
+        LoadStreamerWorker worker = new LoadStreamerWorker(loadActionModel);
+        workersMap.put(loadActionModel.getActionId(), worker);
+        worker.execute();
+        progressListenerHandler.startProgress(loadActionModel.getActionId());
     }
 
     private Streamer getFirstAncestorAlive(Streamer streamer) {

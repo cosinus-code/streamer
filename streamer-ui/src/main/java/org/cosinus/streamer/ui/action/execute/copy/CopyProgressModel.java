@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.action.progress;
+package org.cosinus.streamer.ui.action.execute.copy;
 
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.ui.action.progress.ProgressModel;
+import org.cosinus.streamer.ui.action.progress.SimpleProgressModel;
 
 /**
  * Model for a progress over multiple streamers for actions with source and target
@@ -29,9 +31,9 @@ public class CopyProgressModel implements ProgressModel {
 
     private final String actionId;
 
-    private Streamer source;
+    private Streamer<?> source;
 
-    private Streamer target;
+    private Streamer<?> target;
 
     public CopyProgressModel(String actionId) {
         this.actionId = actionId;
@@ -64,7 +66,7 @@ public class CopyProgressModel implements ProgressModel {
         totalProgressModel.startProgress(totalProgressSize);
     }
 
-    public void startStreamerProgress(Streamer source, Streamer target) {
+    public void startStreamerProgress(Streamer<?> source, Streamer<?> target) {
         streamerProgressModel.startProgress(source.getSize());
         this.source = source;
         this.target = target;
@@ -87,11 +89,11 @@ public class CopyProgressModel implements ProgressModel {
         totalProgressModel.finishProgress();
     }
 
-    public Streamer getSource() {
+    public Streamer<?> getSource() {
         return source;
     }
 
-    public Streamer getTarget() {
+    public Streamer<?> getTarget() {
         return target;
     }
 }

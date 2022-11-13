@@ -20,7 +20,6 @@ import org.cosinus.streamer.api.stream.pipeline.PipelineListener;
 import org.cosinus.streamer.api.stream.pipeline.binary.BinaryPipeline;
 import org.cosinus.streamer.api.stream.pipeline.binary.BinaryPipelineStrategy;
 import org.cosinus.streamer.ui.action.execute.ProgressWorker;
-import org.cosinus.streamer.ui.action.progress.CopyProgressModel;
 
 import java.io.InputStream;
 import java.io.OutputStream;

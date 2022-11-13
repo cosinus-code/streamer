@@ -32,6 +32,8 @@ public class StreamerViewStorage {
 
     public static final String LAST_STREAMER = "last.streamer.";
 
+    public static final String LAST_VIEW = "last.view.";
+
     private final ApplicationStorage applicationStorage;
 
     public StreamerViewStorage(ApplicationStorage applicationStorage) {
@@ -48,4 +50,13 @@ public class StreamerViewStorage {
             .ifPresent(path -> applicationStorage.saveString(LAST_STREAMER + location, path));
     }
 
+    public Optional<String> loadLastLoadedView(PanelLocation location) {
+        return ofNullable(applicationStorage.getString(LAST_VIEW + location));
+    }
+
+    public <T> void saveLastLoadedView(StreamerView<T> streamerView, PanelLocation location) {
+        ofNullable(streamerView)
+            .map(StreamerView::getName)
+            .ifPresent(path -> applicationStorage.saveString(LAST_VIEW + location, path));
+    }
 }

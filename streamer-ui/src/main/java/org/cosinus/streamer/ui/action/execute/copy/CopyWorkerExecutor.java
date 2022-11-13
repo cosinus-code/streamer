@@ -19,7 +19,6 @@ package org.cosinus.streamer.ui.action.execute.copy;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.ProgressWorker;
 import org.cosinus.streamer.ui.action.execute.ProgressWorkerActionExecutor;
-import org.cosinus.streamer.ui.action.progress.CopyProgressModel;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
 import org.cosinus.streamer.ui.dialog.ProgressDialog;

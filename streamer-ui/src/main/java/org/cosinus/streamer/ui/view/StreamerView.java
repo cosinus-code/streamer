@@ -18,6 +18,7 @@ package org.cosinus.streamer.ui.view;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.meta.StreamerHandler;
+import org.cosinus.streamer.api.pack.PackStreamer;
 import org.cosinus.streamer.ui.action.LoadStreamerAction;
 import org.cosinus.streamer.ui.action.context.StreamerActionContext;
 import org.cosinus.streamer.ui.action.execute.load.StreamedContent;
@@ -35,6 +36,7 @@ import java.util.UUID;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.SOUTH;
+import static java.util.Optional.ofNullable;
 
 public abstract class StreamerView<T> extends Panel implements ProgressListener<SimpleProgressModel> {
 
@@ -125,6 +127,10 @@ public abstract class StreamerView<T> extends Panel implements ProgressListener<
 
     @Override
     public void finishProgress() {
+        ofNullable(getLoadedStreamer())
+            .filter(streamer -> PackStreamer.class.isAssignableFrom(streamer.getClass()))
+            .map(PackStreamer.class::cast)
+            .ifPresent(PackStreamer::finishLoading);
         loadingIndicator.setVisible(false);
         streamerViewStorage.saveLastLoadedStreamer(getLoadedStreamer(), getCurrentLocation());
     }
@@ -145,6 +151,8 @@ public abstract class StreamerView<T> extends Panel implements ProgressListener<
 
     public void showRename() {
     }
+
+    public abstract String getName();
 
     public abstract void setActive(boolean active);
 

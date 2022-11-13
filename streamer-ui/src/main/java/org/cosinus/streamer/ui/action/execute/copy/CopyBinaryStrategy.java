@@ -21,7 +21,6 @@ import org.cosinus.streamer.api.stream.pipeline.binary.BinaryPipelineStrategy;
 import org.cosinus.streamer.api.stream.pipeline.error.AbortPipelineConsumeException;
 import org.cosinus.streamer.api.stream.pipeline.error.SkipPipelineConsumeException;
 import org.cosinus.streamer.ui.action.execute.ProgressWorker;
-import org.cosinus.streamer.ui.action.progress.CopyProgressModel;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.dialog.DialogOption;
 import org.cosinus.swing.image.icon.IconHandler;

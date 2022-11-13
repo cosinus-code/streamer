@@ -43,12 +43,13 @@ public class ExecuteStreamerAction extends StreamerAction<Streamer<?>> {
 
     @Override
     public void run(StreamerActionContext<Streamer<?>> context) {
-        Optional.ofNullable(context.getCurrentStreamer())
-                .filter(Streamer::isContainer)
-                .map(streamer -> new LoadActionModel(context.getCurrentView(), streamer))
-                .ifPresentOrElse(actionExecutors::execute,
-                        () -> Optional.ofNullable(context.getCurrentStreamer())
-                                .ifPresent(streamer -> streamer.getParent().execute(streamer.getPath())));
+        Streamer<?> streamerToExecute = context.getCurrentStreamer();
+        if (streamerToExecute == null || streamerToExecute.isContainer()) {
+            actionExecutors.execute(new LoadActionModel(context.getCurrentView(), streamerToExecute));
+            return;
+        }
+
+        streamerToExecute.getParent().execute(streamerToExecute.getPath());
     }
 
     @Override
