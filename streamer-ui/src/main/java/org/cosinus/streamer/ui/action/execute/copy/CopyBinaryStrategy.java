@@ -23,6 +23,7 @@ import org.cosinus.streamer.api.stream.pipeline.error.SkipPipelineConsumeExcepti
 import org.cosinus.streamer.ui.action.execute.ProgressWorker;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.dialog.DialogOption;
+import org.cosinus.swing.format.FormatHandler;
 import org.cosinus.swing.image.icon.IconHandler;
 import org.cosinus.swing.image.icon.IconSize;
 import org.cosinus.swing.translate.Translator;
@@ -34,11 +35,14 @@ import java.util.stream.IntStream;
 
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
-import static javax.swing.JOptionPane.*;
-import static org.cosinus.streamer.ui.action.execute.copy.CopyOverwriteOption.*;
+import static javax.swing.JOptionPane.DEFAULT_OPTION;
+import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
+import static javax.swing.JOptionPane.YES_NO_CANCEL_OPTION;
+import static javax.swing.JOptionPane.YES_OPTION;
+import static org.cosinus.streamer.ui.action.execute.copy.CopyOverwriteOption.CANCEL;
+import static org.cosinus.streamer.ui.action.execute.copy.CopyOverwriteOption.RENAME;
+import static org.cosinus.streamer.ui.action.execute.copy.CopyOverwriteOption.values;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
-import static org.cosinus.swing.util.Formatter.formatDate;
-import static org.cosinus.swing.util.Formatter.formatMemorySize;
 
 public class CopyBinaryStrategy implements BinaryPipelineStrategy {
 
@@ -50,6 +54,9 @@ public class CopyBinaryStrategy implements BinaryPipelineStrategy {
 
     @Autowired
     private IconHandler iconHandler;
+
+    @Autowired
+    private FormatHandler formatHandler;
 
     private final BinaryStreamer source;
 
@@ -178,9 +185,11 @@ public class CopyBinaryStrategy implements BinaryPipelineStrategy {
         return format("%s\n\n%s\n%s\n\n",
             translator.translate("act_copy_already_exists", target.getPath()),
             translator.translate("act_copy_source_mofified",
-                formatDate(source.lastModified()), formatMemorySize(source.getSize())),
+                formatHandler.formatDate(source.lastModified()),
+                formatHandler.formatMemorySize(source.getSize())),
             translator.translate("act_copy_target_modified",
-                formatDate(target.lastModified()), formatMemorySize(target.getSize())));
+                formatHandler.formatDate(target.lastModified()),
+                formatHandler.formatMemorySize(target.getSize())));
     }
 
     private BinaryStreamer createRenamedStreamer(BinaryStreamer streamerToRename, String newName) {

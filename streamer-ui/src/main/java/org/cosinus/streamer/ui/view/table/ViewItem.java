@@ -16,13 +16,15 @@
 
 package org.cosinus.streamer.ui.view.table;
 
+import org.cosinus.streamer.api.Streamer;
+import org.cosinus.swing.format.FormatHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.io.File;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.cosinus.streamer.api.Streamer;
-
-import static org.cosinus.swing.util.Formatter.formatMemorySize;
+import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 /**
  * View item used in the view model
@@ -31,15 +33,19 @@ public class ViewItem {
 
     private static final String TOP_ITEM_NAME = "..";
 
+    @Autowired
+    private FormatHandler formatHandler;
     private boolean topItem;
 
     private final Streamer streamer;
 
     public ViewItem(Streamer streamer) {
+        injectContext(this);
         this.streamer = streamer;
     }
 
     public ViewItem(Streamer streamer, boolean topItem) {
+        injectContext(this);
         this.streamer = streamer;
         this.topItem = topItem;
     }
@@ -65,13 +71,13 @@ public class ViewItem {
     }
 
     public String getFormattedSize() {
-        return streamer.isContainer() ? "" : formatMemorySize(streamer.getSize());
+        return streamer.isContainer() ? "" : formatHandler.formatMemorySize(streamer.getSize());
     }
 
     public File toFile() {
         String fileName = Optional.ofNullable(streamer.getPath())
-                .map(Objects::toString)
-                .orElseGet(streamer::getName);
+            .map(Objects::toString)
+            .orElseGet(streamer::getName);
         return new File(fileName) {
             @Override
             public boolean isDirectory() {

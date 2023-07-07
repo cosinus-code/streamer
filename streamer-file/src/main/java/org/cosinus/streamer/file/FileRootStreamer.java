@@ -17,6 +17,8 @@
 package org.cosinus.streamer.file;
 
 import org.cosinus.streamer.api.ContainerStreamer;
+import org.cosinus.swing.format.FormatHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import oshi.software.os.OSFileStore;
 
 import java.nio.file.Paths;
@@ -24,17 +26,21 @@ import java.nio.file.Paths;
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
+import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_STORAGE_INTERNAL;
-import static org.cosinus.swing.util.Formatter.formatShortMemorySize;
 
 public class FileRootStreamer extends FileContainerStreamer {
 
     private final OSFileStore fileStore;
 
+    @Autowired
+    private FormatHandler formatHandler;
+
     public FileRootStreamer(FileMainStreamer fileMainStreamer,
                             FileHandler fileHandler,
                             OSFileStore fileStore) {
         super(fileMainStreamer, fileHandler, Paths.get(fileStore.getMount()));
+        injectContext(this);
         this.fileStore = fileStore;
     }
 
@@ -47,7 +53,7 @@ public class FileRootStreamer extends FileContainerStreamer {
             .or(() -> ofNullable(fileStore.getName())
                 .filter(not(String::isEmpty))
                 .filter(name -> !name.equals(fileStore.getVolume())))
-            .orElseGet(() -> formatShortMemorySize(fileStore.getTotalSpace()) + " Volume");
+            .orElseGet(() -> formatHandler.formatShortMemorySize(fileStore.getTotalSpace()) + " Volume");
     }
 
     @Override

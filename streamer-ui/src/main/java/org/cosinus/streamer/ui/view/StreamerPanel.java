@@ -18,6 +18,7 @@ package org.cosinus.streamer.ui.view;
 
 import org.cosinus.swing.form.Panel;
 import org.cosinus.swing.form.control.Label;
+import org.cosinus.swing.format.FormatHandler;
 import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.translate.Translator;
 import org.cosinus.swing.ui.ApplicationUIHandler;
@@ -26,11 +27,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.swing.*;
 import java.awt.*;
 
-import static java.awt.BorderLayout.*;
+import static java.awt.BorderLayout.CENTER;
+import static java.awt.BorderLayout.EAST;
+import static java.awt.BorderLayout.NORTH;
+import static java.awt.BorderLayout.SOUTH;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.ADDRESS_TOP;
 import static org.cosinus.swing.border.Borders.emptyBorder;
-import static org.cosinus.swing.util.Formatter.formatTextForLabel;
 
 public class StreamerPanel extends Panel {
 
@@ -43,6 +46,8 @@ public class StreamerPanel extends Panel {
     @Autowired
     private Translator translator;
 
+    @Autowired
+    private FormatHandler formatHandler;
     private final Label addressLabel;
 
     private final JLabel freeSpaceLabel;
@@ -105,7 +110,7 @@ public class StreamerPanel extends Panel {
     }
 
     public void setAddress(String address) {
-        addressLabel.setText(formatTextForLabel(addressLabel, address));
+        addressLabel.setText(formatHandler.formatTextForLabel(addressLabel, address));
     }
 
     public StreamerView getView() {

@@ -35,7 +35,6 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
-import static org.cosinus.swing.util.Formatter.formatMemorySize;
 
 /**
  * {@link ProgressWorker} for copying streamers from a source container to target container
@@ -94,7 +93,7 @@ public class CopyWorker<S extends Streamer<?>, T extends Streamer<?>>
         long freeSpace = destination.getFreeSpace();
         if (totalSize > freeSpace && !copyStrategy.shouldContinueWhenNotEnoughFreeSpace()) {
             throw new AbortPipelineConsumeException("Not enough free space on destination: " +
-                formatMemorySize(freeSpace));
+                formatHandler.formatMemorySize(freeSpace));
         }
     }
 

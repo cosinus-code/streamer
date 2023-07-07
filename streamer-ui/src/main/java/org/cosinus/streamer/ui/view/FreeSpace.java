@@ -17,6 +17,7 @@
 package org.cosinus.streamer.ui.view;
 
 import org.cosinus.swing.form.control.Label;
+import org.cosinus.swing.format.FormatHandler;
 import org.cosinus.swing.translate.Translator;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,6 @@ import java.awt.*;
 
 import static java.util.Optional.ofNullable;
 import static org.cosinus.swing.border.Borders.emptyBorder;
-import static org.cosinus.swing.util.Formatter.formatMemorySize;
 
 public class FreeSpace extends Label {
 
@@ -35,6 +35,8 @@ public class FreeSpace extends Label {
     @Autowired
     private Translator translator;
 
+    @Autowired
+    private FormatHandler formatHandler;
     private long freeSpace;
 
     private long totalSpace;
@@ -67,8 +69,8 @@ public class FreeSpace extends Label {
 
         setText(totalSpace > 0 ?
             translator.translate("free_memory",
-                formatMemorySize(freeSpace),
-                formatMemorySize(totalSpace)) :
+                formatHandler.formatMemorySize(freeSpace),
+                formatHandler.formatMemorySize(totalSpace)) :
             " ");
     }
 }

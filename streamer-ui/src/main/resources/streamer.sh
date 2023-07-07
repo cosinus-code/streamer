@@ -12,6 +12,8 @@ else
 fi
 
 "$JAVA_PATH" \
+--add-exports java.desktop/sun.awt=ALL-UNNAMED \
+--add-exports java.desktop/sun.swing=ALL-UNNAMED \
 -jar -Dswing.aatext=true $APPLICATION_DIR/streamer.jar \
 -splash-progress \
 -splash-progress-color=127,206,0 \

@@ -46,7 +46,7 @@ public class IconCellRenderer extends TableCellRenderer<IconTable> {
             .wrapOnSeparators(item.toString(), " .-_)(,")
             .toWrappedText(true);
 
-        label.setText(wrappedText.getText());
+        label.setText(wrappedText.text());
         label.setOpaque(isSelected);
         label.setHorizontalAlignment(JLabel.CENTER);
 
@@ -78,7 +78,7 @@ public class IconCellRenderer extends TableCellRenderer<IconTable> {
 
         icon.map(Icon::getIconHeight)
             .map(iconHeight -> showPreview ? table.getIconDimension() : iconHeight)
-            .map(iconHeight -> iconHeight + wrappedText.getHeight() + 4 * margin)
+            .map(iconHeight -> iconHeight + wrappedText.height() + 4 * margin)
             .filter(panelHeight -> table.getRowHeight(row) < panelHeight)
             .ifPresent(panelHeight -> table.setRowHeight(row, panelHeight));
 

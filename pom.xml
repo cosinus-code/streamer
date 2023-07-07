@@ -18,11 +18,11 @@
     <name>Streamer Parent</name>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
-        <spring-swing.version>1.0.0</spring-swing.version>
+        <spring-swing.version>2.0.0-SNAPSHOT</spring-swing.version>
         <commons-net.version>3.8.0</commons-net.version>
         <commons-pool.version>2.11.1</commons-pool.version>
     </properties>

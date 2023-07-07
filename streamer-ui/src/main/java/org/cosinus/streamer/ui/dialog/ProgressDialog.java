@@ -21,6 +21,7 @@ import org.cosinus.streamer.ui.action.progress.ProgressListener;
 import org.cosinus.streamer.ui.action.progress.ProgressModel;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.action.execute.ActionModel;
+import org.cosinus.swing.format.FormatHandler;
 import org.cosinus.swing.window.Dialog;
 import org.cosinus.swing.window.Frame;
 import org.cosinus.swing.translate.Translator;
@@ -46,6 +47,9 @@ public abstract class ProgressDialog<P extends ProgressModel> extends Dialog<Voi
 
     @Autowired
     protected Translator translator;
+
+    @Autowired
+    protected FormatHandler formatHandler;
 
     protected final ActionModel actionModel;
 

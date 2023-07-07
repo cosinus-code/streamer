@@ -23,6 +23,7 @@ import org.cosinus.streamer.ui.action.progress.ProgressModel;
 import org.cosinus.streamer.ui.error.AbortActionException;
 import org.cosinus.streamer.ui.error.ActionException;
 import org.cosinus.swing.error.ErrorHandler;
+import org.cosinus.swing.format.FormatHandler;
 import org.cosinus.swing.worker.SwingWorker;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -44,6 +45,9 @@ public abstract class ProgressWorker<P extends ProgressModel> extends SwingWorke
 
     @Autowired
     protected ErrorHandler errorHandler;
+
+    @Autowired
+    protected FormatHandler formatHandler;
 
     protected final Window parentWindow;
 
