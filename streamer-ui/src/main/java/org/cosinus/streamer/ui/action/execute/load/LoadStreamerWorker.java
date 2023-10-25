@@ -104,6 +104,7 @@ public class LoadStreamerWorker<T> extends SwingWorker<Void, T> {
     private Streamer prepareStreamerToLoad(Streamer streamerToLoad) {
         return ofNullable(streamerToLoad)
             .or(this::loadLastStreamer)
+            .or(() -> ofNullable(streamerHandler.getDefaultStreamer()))
             .map(this::checkIfStreamerExist)
             .map(this::checkIfStreamerIsPacked)
             .orElse(null);
@@ -111,24 +112,24 @@ public class LoadStreamerWorker<T> extends SwingWorker<Void, T> {
 
     private Optional<Streamer> loadLastStreamer() {
         return streamerViewStorage.loadLastLoadedStreamer(streamerView.getCurrentLocation())
-            .map(urlPath -> streamerHandler.getStreamer(urlPath));
+                .map(urlPath -> streamerHandler.getStreamer(urlPath));
     }
 
     private Streamer checkIfStreamerExist(Streamer streamerToCheck) {
         return ofNullable(streamerToCheck)
-            .filter(not(Streamer::exists))
-            .map(this::getFirstAncestorAlive)
-            .orElse(streamerToCheck);
+                .filter(not(Streamer::exists))
+                .map(this::getFirstAncestorAlive)
+                .orElse(streamerToCheck);
     }
 
     private Streamer checkIfStreamerIsPacked(Streamer streamerToCheck) {
         return ofNullable(streamerToCheck)
-            .filter(streamer -> TransferStreamer.class.isAssignableFrom(streamer.getClass()))
-            .map(TransferStreamer.class::cast)
-            .<Streamer>flatMap(transferStream -> packerHandler
-                .findPacker(transferStream.getType())
-                .map(packer -> packer.pack(transferStream)))
-            .orElse(streamerToCheck);
+                .filter(streamer -> TransferStreamer.class.isAssignableFrom(streamer.getClass()))
+                .map(TransferStreamer.class::cast)
+                .<Streamer>flatMap(transferStream -> packerHandler
+                        .findPacker(transferStream.getType())
+                        .map(packer -> packer.pack(transferStream)))
+                .orElse(streamerToCheck);
     }
 
     @Override
@@ -156,9 +157,9 @@ public class LoadStreamerWorker<T> extends SwingWorker<Void, T> {
             errorHandler.handleError(e);
         } finally {
             ofNullable(streamerToLoad)
-                .filter(streamer -> PackStreamer.class.isAssignableFrom(streamer.getClass()))
-                .map(PackStreamer.class::cast)
-                .ifPresent(PackStreamer::finishLoading);
+                    .filter(streamer -> PackStreamer.class.isAssignableFrom(streamer.getClass()))
+                    .map(PackStreamer.class::cast)
+                    .ifPresent(PackStreamer::finishLoading);
             progressListenerHandler.finishProgress(progress);
         }
     }
@@ -174,21 +175,21 @@ public class LoadStreamerWorker<T> extends SwingWorker<Void, T> {
 
     private void updateAddressBar() {
         streamerViewHandler.getPanel(streamerView.getCurrentLocation())
-            .ifPresent(panel -> ofNullable(streamerToLoad.getUrlPath())
-                .map(address -> address.split("://"))
-                .map(address -> address[address.length - 1])
-                .ifPresent(address -> {
-                    addressBar.setAddress(address);
-                    panel.setAddress(address);
-                    panel.setFreeSpace(streamerToLoad.getParent().getFreeSpace(),
-                        streamerToLoad.getParent().getTotalSpace());
-                }));
+                .ifPresent(panel -> ofNullable(streamerToLoad.getUrlPath())
+                        .map(address -> address.split("://"))
+                        .map(address -> address[address.length - 1])
+                        .ifPresent(address -> {
+                            addressBar.setAddress(address);
+                            panel.setAddress(address);
+                            panel.setFreeSpace(streamerToLoad.getParent().getFreeSpace(),
+                                    streamerToLoad.getParent().getTotalSpace());
+                        }));
     }
 
     private Streamer getFirstAncestorAlive(Streamer streamer) {
         return ofNullable(streamer.getParent())
-            .filter(not(Streamer::exists))
-            .map(this::getFirstAncestorAlive)
-            .orElse(streamer.getParent());
+                .filter(not(Streamer::exists))
+                .map(this::getFirstAncestorAlive)
+                .orElse(streamer.getParent());
     }
 }

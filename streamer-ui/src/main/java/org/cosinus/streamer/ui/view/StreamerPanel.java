@@ -17,7 +17,8 @@
 package org.cosinus.streamer.ui.view;
 
 import org.cosinus.swing.form.Panel;
-import org.cosinus.swing.form.control.Label;
+import org.cosinus.swing.form.ProgressBar;
+import org.cosinus.swing.form.control.TextField;
 import org.cosinus.swing.format.FormatHandler;
 import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.translate.Translator;
@@ -27,10 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.swing.*;
 import java.awt.*;
 
-import static java.awt.BorderLayout.CENTER;
-import static java.awt.BorderLayout.EAST;
-import static java.awt.BorderLayout.NORTH;
-import static java.awt.BorderLayout.SOUTH;
+import static java.awt.BorderLayout.*;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.ADDRESS_TOP;
 import static org.cosinus.swing.border.Borders.emptyBorder;
@@ -48,17 +46,17 @@ public class StreamerPanel extends Panel {
 
     @Autowired
     private FormatHandler formatHandler;
-    private final Label addressLabel;
+    private final TextField addressLabel;
 
     private final JLabel freeSpaceLabel;
 
-    private final FreeSpace freeSpace;
+    private final ProgressBar freeSpace;
 
     private StreamerView view;
 
     public StreamerPanel() {
-        this.addressLabel = new Label(" ");
-        this.freeSpace = new FreeSpace();
+        this.addressLabel = new TextField();
+        this.freeSpace = new ProgressBar();
         this.freeSpaceLabel = new JLabel();
 
         setLayout(new BorderLayout());
@@ -69,14 +67,16 @@ public class StreamerPanel extends Panel {
         super.initComponents();
 
         addressLabel.setBorder(emptyBorder(2));
-        addressLabel.setOpaque(true);
+        addressLabel.setEditable(false);
+        addressLabel.setFont(uiHandler.getLabelFont());
         uiHandler.getInactiveBackgroundColor()
             .ifPresent(addressLabel::setBackground);
         uiHandler.getInactiveForegroundColor()
             .ifPresent(addressLabel::setForeground);
 
-        freeSpaceLabel.setText(translator.translate("free_space"));
         freeSpaceLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        uiHandler.getInactiveForegroundColor()
+            .ifPresent(freeSpaceLabel::setForeground);
         freeSpaceLabel.setVisible(false);
 
         JPanel freesSpacePanel = new JPanel(new BorderLayout(5, 5));
@@ -105,8 +105,12 @@ public class StreamerPanel extends Panel {
     }
 
     public void setFreeSpace(long freeSpace, long totalSpace) {
+        this.freeSpace.setValue(totalSpace > 0 ? (int) (100 - freeSpace * 100 / totalSpace) : 0);
+        freeSpaceLabel.setText(
+            translator.translate("free_memory",
+                formatHandler.formatMemorySize(freeSpace),
+                formatHandler.formatMemorySize(totalSpace)));
         freeSpaceLabel.setVisible(totalSpace > 0);
-        this.freeSpace.setFreeSpace(freeSpace, totalSpace);
     }
 
     public void setAddress(String address) {

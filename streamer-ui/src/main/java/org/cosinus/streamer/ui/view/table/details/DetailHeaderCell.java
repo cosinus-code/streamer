@@ -32,6 +32,7 @@ import static java.util.Optional.ofNullable;
 import static org.cosinus.swing.border.Borders.emptyBorder;
 import static org.cosinus.swing.border.Borders.lineBorder;
 import static org.cosinus.swing.color.Colors.getLighterColor;
+import static org.cosinus.swing.color.SystemColor.TABLE_HEADER_BACKGROUND;
 
 public class DetailHeaderCell extends Label implements TableCellRenderer {
 
@@ -97,7 +98,7 @@ public class DetailHeaderCell extends Label implements TableCellRenderer {
                 sorted = table.getCurrentSortColumn() == colIndex;
                 ascending = table.isSortAscending();
             }
-            Color backgroundColor = uiHandler.getColor("TableHeader.background");
+            Color backgroundColor = uiHandler.getColor(TABLE_HEADER_BACKGROUND);
             setBackground(over ? getLighterColor(backgroundColor) : backgroundColor);
             setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             customizeCellRenderer(colIndex);

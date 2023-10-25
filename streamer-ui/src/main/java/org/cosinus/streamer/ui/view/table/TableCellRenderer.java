@@ -79,10 +79,7 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
                 .ifPresent(component::setForeground);
         }
 
-        if (component instanceof JLabel && value instanceof ViewItem) {
-
-            JLabel label = (JLabel) component;
-            ViewItem item = (ViewItem) value;
+        if (component instanceof JLabel label && value instanceof ViewItem item) {
 
             label.setText(item.toString());
             if (item.isLink()) {
@@ -93,7 +90,7 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
             }
 
             return getCellComponent((JLabel) component,
-                                    (T) table,
+                                    dataTable,
                                     item,
                                     isSelected,
                                     hasFocus,

@@ -155,31 +155,13 @@ public abstract class DataTable extends Table implements FocusListener {
 
     @Override
     protected void processComponentKeyEvent(KeyEvent keyEvent) {
-        // 33 = Page Up
-        // 34 = Page Down
-        // 35 = End
-        // 36 = Home
-        // 37 = Left arrow
-        // 38 = Up arrow
-        // 39 = Right arrow
-        // 40 = Down arrow
-        // 112 = F1
-        // 123 = F12
-
         if (keyEvent.getID() == KEY_PRESSED) {
             shiftDown = keyEvent.getID() == KEY_PRESSED && keyEvent.isShiftDown();
             ctrlDown = keyEvent.getID() == KEY_PRESSED && keyEvent.isControlDown();
             altDown = keyEvent.getID() == KEY_PRESSED && keyEvent.isAltDown();
 
             actionController.runActionByKeyStroke(keyEvent);
-            if (keyEvent.getKeyCode() >= ' ' &&
-                keyEvent.getKeyCode() <= '~' &&
-                !keyEvent.isAltDown() &&
-                !keyEvent.isControlDown() &&
-                !keyEvent.isShiftDown() &&
-                !(keyEvent.getKeyCode() >= 33 && keyEvent.getKeyCode() <= 40) &&
-                !(keyEvent.getKeyCode() >= 112 && keyEvent.getKeyCode() <= 123)) {
-
+            if (actionController.isLetterKey(keyEvent)) {
                 if (!isAction(keyEvent.getWhen(), FIND_STREAMER_SPEED)) {
                     nameToFind = "";
                 }
