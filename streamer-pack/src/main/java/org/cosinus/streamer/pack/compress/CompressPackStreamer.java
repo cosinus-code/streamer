@@ -58,16 +58,6 @@ public class CompressPackStreamer extends PackStreamer<CompressStreamer> impleme
     }
 
     @Override
-    public ParentStreamer<CompressStreamer> createParent(Path path) {
-        return null;
-    }
-
-    @Override
-    public boolean rename(Path path, String newName) {
-        return false;
-    }
-
-    @Override
     public void execute(Path path) {
 
     }

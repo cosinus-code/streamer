@@ -98,7 +98,7 @@ public abstract class RenamingStreamerView extends StreamerView<Streamer> {
 
     private void renameStreamer() {
         String newName = getRenameText();
-        streamerToBeRenamed.getParent().rename(streamerToBeRenamed.getPath(), newName);
+        streamerToBeRenamed.rename(newName);
         reload(newName);
     }
 

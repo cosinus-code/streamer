@@ -16,7 +16,6 @@
 
 package org.cosinus.streamer.file;
 
-import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
@@ -25,7 +24,7 @@ import org.cosinus.streamer.api.error.SaveStreamerException;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-public class FileParentStreamer extends FileStreamer<FileStreamer> implements ParentStreamer<FileStreamer>
+public class FileParentStreamer extends FileStreamer<FileStreamer<?>> implements ParentStreamer<FileStreamer<?>>
 {
 
     public FileParentStreamer(FileMainStreamer fileMainStreamer, FileHandler fileHandler, Path path) {
@@ -33,28 +32,18 @@ public class FileParentStreamer extends FileStreamer<FileStreamer> implements Pa
     }
 
     @Override
-    public Stream<FileStreamer> stream() {
+    public Stream<FileStreamer<?>> stream() {
         return fileHandler.list(file.toPath())
                 .map(fileMainStreamer::create);
     }
 
     @Override
-    public Stream<FileStreamer> flatStream(StreamerFilter streamerFilter) {
+    public Stream<FileStreamer<?>> flatStream(StreamerFilter streamerFilter) {
         return stream()
                 .filter(streamerFilter)
                 .map(Streamer::getPath)
                 .flatMap(fileHandler::walk)
                 .map(fileMainStreamer::create);
-    }
-
-    @Override
-    public FileParentStreamer createParent(Path path) {
-        return new FileParentStreamer(fileMainStreamer, fileHandler, path);
-    }
-
-    @Override
-    public boolean rename(Path path, String newName) {
-        return fileMainStreamer.rename(path, newName);
     }
 
     @Override

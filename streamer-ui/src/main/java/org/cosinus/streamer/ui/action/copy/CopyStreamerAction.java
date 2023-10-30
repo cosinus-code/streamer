@@ -61,7 +61,7 @@ public class CopyStreamerAction<A> extends AbstractCopyAction<A> {
     void execute(CopyActionModel<S, T> copyAction, StreamerActionContext actionContext) {
         //TODO: to avoid cast
         ParentStreamer<T> destination =
-            (ParentStreamer<T>) copyAction.getDestination().getParent().createParent(copyAction.getTargetPath());
+            (ParentStreamer<T>) copyAction.getDestination().create(copyAction.getTargetPath(), true);
         if (destination == null) {
             dialogHandler.showInfo(translator.translate("act_copy_destination_not_found"));
             return;

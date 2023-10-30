@@ -16,7 +16,6 @@
 
 package org.cosinus.streamer.pack.archive;
 
-import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.StreamerFilter;
 
@@ -43,11 +42,6 @@ public class ArchiveParentStreamer extends ArchiveStreamer<ArchiveStreamer> impl
     }
 
     @Override
-    public ParentStreamer<ArchiveStreamer> createParent(Path path) {
-        return archivePackStreamer.createParent(path);
-    }
-
-    @Override
     public long getFreeSpace() {
         return archivePackStreamer.getFreeSpace();
     }
@@ -55,11 +49,6 @@ public class ArchiveParentStreamer extends ArchiveStreamer<ArchiveStreamer> impl
     @Override
     public long getTotalSpace() {
         return archivePackStreamer.getTotalSpace();
-    }
-
-    @Override
-    public boolean rename(Path path, String newName) {
-        return false;
     }
 
     @Override

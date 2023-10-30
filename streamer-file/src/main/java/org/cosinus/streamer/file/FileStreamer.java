@@ -18,9 +18,13 @@ package org.cosinus.streamer.file;
 
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.error.StreamerException;
+import org.cosinus.swing.util.AutoRemovableTemporaryFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 import static java.util.Optional.ofNullable;
@@ -49,7 +53,7 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     }
 
     @Override
-    public ParentStreamer getParent() {
+    public ParentStreamer<?> getParent() {
         return ofNullable(file.toPath().getParent())
             .map(parentPath -> fileMainStreamer
                 .stream()
@@ -63,6 +67,29 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     @Override
     public boolean exists() {
         return file.exists();
+    }
+
+    @Override
+    public boolean rename(String newName)
+    {
+        File fileToRename = file;
+        Path newPath = Paths.get(fileToRename.getParent(), newName);
+        File newFile = newPath.toFile();
+        boolean samePath = fileToRename.toPath().equals(newPath);
+        if (newFile.exists() && !samePath) {
+            throw new StreamerException("rename.error.already.exist", newPath);
+        }
+
+        if (!samePath) {
+            return fileToRename.renameTo(newFile);
+        }
+
+        try (AutoRemovableTemporaryFile tmpFile = new AutoRemovableTemporaryFile(fileToRename)) {
+            return fileToRename.renameTo(tmpFile.getFile()) &&
+                tmpFile.getFile().renameTo(newFile);
+        } catch (IOException ex) {
+            throw new StreamerException("rename.error.cannot.create.temporary.file", fileToRename, ex);
+        }
     }
 
     @Override

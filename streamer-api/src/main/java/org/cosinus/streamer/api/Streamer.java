@@ -26,7 +26,7 @@ public interface Streamer<T> {
 
     Stream<? extends T> stream();
 
-    ParentStreamer getParent();
+    ParentStreamer<?> getParent();
 
     default BinaryStreamer binaryStreamer() {
         return null;
@@ -45,6 +45,10 @@ public interface Streamer<T> {
     long getSize();
 
     long lastModified();
+
+    default boolean rename(String newName) {
+        return false;
+    }
 
     default boolean canRead() {
         return true;

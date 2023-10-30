@@ -76,16 +76,6 @@ public class FtpMainStreamer extends MainStreamer<FtpStreamer> {
     }
 
     @Override
-    public ParentStreamer<FtpStreamer> createParent(Path path) {
-        return null;
-    }
-
-    @Override
-    public boolean rename(Path path, String newName) {
-        return false;
-    }
-
-    @Override
     public void execute(Path path) {
 
     }

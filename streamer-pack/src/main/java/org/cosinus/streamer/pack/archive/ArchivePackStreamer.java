@@ -35,7 +35,7 @@ import java.util.stream.Stream;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
-public class ArchivePackStreamer<A extends ArchiveStreamer> extends PackStreamer<A> implements ParentStreamer<A>
+public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends PackStreamer<A> implements ParentStreamer<A>
 {
 
     @Autowired
@@ -94,14 +94,7 @@ public class ArchivePackStreamer<A extends ArchiveStreamer> extends PackStreamer
             .map(this::createArchiveStreamer);
     }
 
-    @Override
-    public ParentStreamer createParent(Path path) {
-        ArchiveStreamEntry archiveEntry = archiveHolder.get(path)
-            .orElse(createArchiveStreamEntry(path.toString() + "/"));
-        return createDirectoryStreamer(archiveEntry);
-    }
-
-    public BinaryStreamer createBinaryStreamer(Path path) {
+    public ArchiveBinaryStreamer createBinaryStreamer(Path path) {
         ArchiveStreamEntry archiveEntry = archiveHolder.get(path)
             .orElse(createArchiveStreamEntry(path.toString()));
         return createBinaryStreamer(archiveEntry);
@@ -123,11 +116,6 @@ public class ArchivePackStreamer<A extends ArchiveStreamer> extends PackStreamer
             .flatMap(this::find)
             .filter(streamer -> ParentStreamer.class.isAssignableFrom(streamer.getClass()))
             .map(ParentStreamer.class::cast);
-    }
-
-    @Override
-    public boolean rename(Path path, String newName) {
-        return false;
     }
 
     @Override

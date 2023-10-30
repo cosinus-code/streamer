@@ -16,20 +16,15 @@
 
 package org.cosinus.streamer.file;
 
-import org.cosinus.streamer.api.BinaryStreamer;
-import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
-import org.cosinus.streamer.api.error.StreamerException;
 import org.cosinus.streamer.api.meta.MainStreamer;
 import org.cosinus.streamer.api.meta.RootStreamer;
 import org.cosinus.swing.exec.ProcessExecutor;
-import org.cosinus.swing.util.AutoRemovableTemporaryFile;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import oshi.software.os.OSFileStore;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -41,7 +36,7 @@ import static org.cosinus.swing.image.icon.IconProvider.ICON_COMPUTER;
 
 @RootStreamer("Filesystem")
 @ConditionalOnProperty(name = "streamer.file.enabled", matchIfMissing = true)
-public class FileMainStreamer extends MainStreamer<FileStreamer> {
+public class FileMainStreamer extends MainStreamer<FileStreamer<?>> {
 
     public static final String FILE_PROTOCOL = "file://";
 
@@ -56,19 +51,12 @@ public class FileMainStreamer extends MainStreamer<FileStreamer> {
     }
 
     @Override
-    public Stream<FileStreamer> stream() {
-        return getRoots()
-            .stream()
-            .map(FileStreamer.class::cast);
+    public Stream<FileRootStreamer> stream() {
+        return getRoots().stream();
     }
 
     @Override
-    public ParentStreamer<FileStreamer> createParent(Path path) {
-        return null;
-    }
-
-    @Override
-    public Stream<FileStreamer> flatStream(StreamerFilter streamerFilter) {
+    public Stream<FileStreamer<?>> flatStream(StreamerFilter streamerFilter) {
         return stream()
             .filter(streamerFilter)
             .map(Streamer::getPath)
@@ -94,22 +82,22 @@ public class FileMainStreamer extends MainStreamer<FileStreamer> {
         return new FileRootStreamer(this, fileHandler, fileStore);
     }
 
-    public Optional<Streamer> find(Path path) {
+    public Optional<FileStreamer> find(Path path) {
         return findRoot(path)
-            .map(Streamer.class::cast)
+            .map(FileStreamer.class::cast)
             .or(() -> Optional.of(path)
                 .map(Path::toFile)
                 .map(file -> create(path, file.isDirectory())));
     }
 
-    public FileStreamer create(Path path) {
+    public FileStreamer<?> create(Path path) {
         File file = path.toFile();
         boolean directory = !file.exists() || file.isDirectory();
         return create(path, directory);
     }
 
     @Override
-    public FileStreamer create(Path path, boolean directory) {
+    public FileStreamer<?> create(Path path, boolean directory) {
         return directory ?
             new FileParentStreamer(this, fileHandler, path) :
             new FileBinaryStreamer(this, fileHandler, path);
@@ -153,28 +141,5 @@ public class FileMainStreamer extends MainStreamer<FileStreamer> {
     @Override
     public void execute(Path path) {
         processExecutor.executeFile(path.toFile());
-    }
-
-    @Override
-    public boolean rename(Path path, String newName) {
-        File fileToRename = path.toFile();
-
-        Path newPath = Paths.get(fileToRename.getParent(), newName);
-        File newFile = newPath.toFile();
-        boolean samePath = fileToRename.toPath().equals(newPath);
-        if (newFile.exists() && !samePath) {
-            throw new StreamerException("rename.error.already.exist", newPath);
-        }
-
-        if (!samePath) {
-            return fileToRename.renameTo(newFile);
-        }
-
-        try (AutoRemovableTemporaryFile tmpFile = new AutoRemovableTemporaryFile(fileToRename)) {
-            return fileToRename.renameTo(tmpFile.getFile()) &&
-                tmpFile.getFile().renameTo(newFile);
-        } catch (IOException ex) {
-            throw new StreamerException("rename.error.cannot.create.temporary.file", fileToRename, ex);
-        }
     }
 }

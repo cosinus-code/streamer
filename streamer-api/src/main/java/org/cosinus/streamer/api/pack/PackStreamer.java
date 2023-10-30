@@ -42,7 +42,7 @@ public abstract class PackStreamer<T> implements Streamer<T> {
     }
 
     @Override
-    public ParentStreamer getParent() {
+    public ParentStreamer<?> getParent() {
         return binaryStreamer.getParent();
     }
 

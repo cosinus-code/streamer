@@ -42,7 +42,7 @@ public abstract class FtpStreamer<T> implements Streamer<T> {
     }
 
     @Override
-    public ParentStreamer getParent() {
+    public ParentStreamer<?> getParent() {
         //TODO: To compute the parent. There is no need to keep all the parents chain
         return parent;
     }

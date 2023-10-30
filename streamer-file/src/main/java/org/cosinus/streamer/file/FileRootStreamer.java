@@ -92,7 +92,7 @@ public class FileRootStreamer extends FileParentStreamer
     }
 
     @Override
-    public ParentStreamer getParent() {
+    public FileMainStreamer getParent() {
         return fileMainStreamer;
     }
 

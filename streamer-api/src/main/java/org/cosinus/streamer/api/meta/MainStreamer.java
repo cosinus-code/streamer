@@ -24,7 +24,7 @@ import java.nio.file.Paths;
 
 public abstract class MainStreamer<S extends Streamer> implements ParentStreamer<S>, StreamerFinder {
 
-    private ParentStreamer parent;
+    private MetaStreamer parent;
 
     private Path path;
 
@@ -32,12 +32,12 @@ public abstract class MainStreamer<S extends Streamer> implements ParentStreamer
         this.path = Paths.get(name);
     }
 
-    public void setParent(ParentStreamer parent) {
+    public void setParent(MetaStreamer parent) {
         this.parent = parent;
     }
 
     @Override
-    public ParentStreamer getParent() {
+    public MetaStreamer getParent() {
         return parent;
     }
 

@@ -74,7 +74,7 @@ public class JsonStreamer implements ParentStreamer<JsonStreamer>
     }
 
     @Override
-    public ParentStreamer getParent()
+    public JsonStreamer getParent()
     {
         return parent;
     }
@@ -116,15 +116,9 @@ public class JsonStreamer implements ParentStreamer<JsonStreamer>
     }
 
     @Override
-    public ParentStreamer<JsonStreamer> createParent(Path path)
+    public JsonStreamer create(Path path, boolean parent)
     {
         return null;
-    }
-
-    @Override
-    public boolean rename(Path path, String newName)
-    {
-        return false;
     }
 
     @Override

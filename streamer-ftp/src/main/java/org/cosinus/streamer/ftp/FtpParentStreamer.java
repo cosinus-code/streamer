@@ -57,14 +57,10 @@ public class FtpParentStreamer extends FtpStreamer<FtpStreamer> implements Paren
     }
 
     @Override
-    public ParentStreamer<FtpStreamer> createParent(Path path) {
-        FtpFile ftpFile = ftpHandler.createFtpFile(getFtpFile(), path, true);
-        return new FtpParentStreamer(ftpFile, this, ftpHandler);
-    }
-
-    @Override
-    public boolean rename(Path path, String newName) {
-        return false;
+    public FtpStreamer create(Path path, boolean parent)
+    {
+        FtpFile ftpFile = ftpHandler.createFtpFile(getFtpFile(), path, parent);
+        return createFtpStreamer(ftpFile);
     }
 
     @Override

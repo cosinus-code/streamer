@@ -40,7 +40,7 @@ public abstract class ArchiveStreamer<T> implements Streamer<T> {
     }
 
     @Override
-    public ParentStreamer getParent() {
+    public ParentStreamer<?> getParent() {
         return archiveEntry.getParentPath()
             .flatMap(archivePackStreamer::findDirectoryStreamer)
             .orElse(archivePackStreamer);

@@ -85,18 +85,8 @@ public class MetaStreamer implements ParentStreamer<MainStreamer>
     }
 
     @Override
-    public ParentStreamer getParent() {
+    public ParentStreamer<?> getParent() {
         return null;
-    }
-
-    @Override
-    public ParentStreamer<MainStreamer> createParent(Path path) {
-        return null;
-    }
-
-    @Override
-    public boolean rename(Path path, String newName) {
-        return false;
     }
 
     @Override
