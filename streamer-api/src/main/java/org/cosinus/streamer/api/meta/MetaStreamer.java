@@ -95,11 +95,6 @@ public class MetaStreamer implements ParentStreamer<MainStreamer>
     }
 
     @Override
-    public BinaryStreamer createBinaryStreamer(Path path) {
-        return null;
-    }
-
-    @Override
     public boolean rename(Path path, String newName) {
         return false;
     }

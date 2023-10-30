@@ -123,7 +123,7 @@ public class CopyWorker<S extends Streamer<?>, T extends Streamer<?>>
 
     private void copyBinaryStreamer(BinaryStreamer binarySource) {
         Path targetPath = buildTargetPath(binarySource);
-        BinaryStreamer binaryTarget = destination.createBinaryStreamer(targetPath);
+        BinaryStreamer binaryTarget = binarySource.createBinaryStreamer(targetPath);
         CopyBinaryPipeline copyBinaryPipeline =
             new CopyBinaryPipeline(binarySource, binaryTarget, copyStrategy, this);
 

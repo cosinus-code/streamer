@@ -20,6 +20,7 @@ import org.cosinus.streamer.api.stream.binary.BinaryStream;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Path;
 
 public interface BinaryStreamer extends Streamer<byte[]> {
 
@@ -35,6 +36,8 @@ public interface BinaryStreamer extends Streamer<byte[]> {
     {
         return this;
     }
+
+    BinaryStreamer createBinaryStreamer(Path path);
 
     InputStream inputStream();
 

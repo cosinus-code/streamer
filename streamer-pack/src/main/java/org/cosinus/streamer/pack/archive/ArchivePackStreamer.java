@@ -101,7 +101,6 @@ public class ArchivePackStreamer<A extends ArchiveStreamer> extends PackStreamer
         return createDirectoryStreamer(archiveEntry);
     }
 
-    @Override
     public BinaryStreamer createBinaryStreamer(Path path) {
         ArchiveStreamEntry archiveEntry = archiveHolder.get(path)
             .orElse(createArchiveStreamEntry(path.toString()));

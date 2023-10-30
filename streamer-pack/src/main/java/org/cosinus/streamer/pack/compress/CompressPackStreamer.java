@@ -63,11 +63,6 @@ public class CompressPackStreamer extends PackStreamer<CompressStreamer> impleme
     }
 
     @Override
-    public CompressStreamer createBinaryStreamer(Path path) {
-        return null;
-    }
-
-    @Override
     public boolean rename(Path path, String newName) {
         return false;
     }

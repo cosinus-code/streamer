@@ -51,8 +51,6 @@ public interface ParentStreamer<S extends Streamer> extends Streamer<S> {
 
     ParentStreamer<S> createParent(Path path);
 
-    BinaryStreamer createBinaryStreamer(Path path);
-
     boolean rename(Path path, String newName);
 
     void execute(Path path);

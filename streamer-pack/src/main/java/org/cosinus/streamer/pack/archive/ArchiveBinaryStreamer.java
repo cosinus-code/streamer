@@ -20,12 +20,19 @@ import org.cosinus.streamer.api.BinaryStreamer;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Path;
 
 public class ArchiveBinaryStreamer extends ArchiveStreamer<byte[]> implements BinaryStreamer {
 
     public ArchiveBinaryStreamer(ArchivePackStreamer archivePackStreamer,
                                  ArchiveStreamEntry archiveEntry) {
         super(archivePackStreamer, archiveEntry);
+    }
+
+    @Override
+    public BinaryStreamer createBinaryStreamer(Path path)
+    {
+        return archivePackStreamer.createBinaryStreamer(path);
     }
 
     @Override

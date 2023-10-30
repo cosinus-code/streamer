@@ -122,12 +122,6 @@ public class JsonStreamer implements ParentStreamer<JsonStreamer>
     }
 
     @Override
-    public BinaryStreamer createBinaryStreamer(Path path)
-    {
-        return null;
-    }
-
-    @Override
     public boolean rename(Path path, String newName)
     {
         return false;

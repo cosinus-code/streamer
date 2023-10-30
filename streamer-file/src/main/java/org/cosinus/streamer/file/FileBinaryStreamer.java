@@ -31,6 +31,12 @@ public class FileBinaryStreamer extends FileStreamer<byte[]> implements BinarySt
     }
 
     @Override
+    public BinaryStreamer createBinaryStreamer(Path path)
+    {
+        return new FileBinaryStreamer(fileMainStreamer, fileHandler, path);
+    }
+
+    @Override
     public InputStream inputStream() {
         try {
             return new FileInputStream(file);

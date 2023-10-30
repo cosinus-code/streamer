@@ -48,11 +48,6 @@ public class ArchiveParentStreamer extends ArchiveStreamer<ArchiveStreamer> impl
     }
 
     @Override
-    public BinaryStreamer createBinaryStreamer(Path path) {
-        return archivePackStreamer.createBinaryStreamer(path);
-    }
-
-    @Override
     public long getFreeSpace() {
         return archivePackStreamer.getFreeSpace();
     }

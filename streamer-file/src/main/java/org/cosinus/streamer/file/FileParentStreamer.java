@@ -53,11 +53,6 @@ public class FileParentStreamer extends FileStreamer<FileStreamer> implements Pa
     }
 
     @Override
-    public BinaryStreamer createBinaryStreamer(Path path) {
-        return new FileBinaryStreamer(fileMainStreamer, fileHandler, path);
-    }
-
-    @Override
     public boolean rename(Path path, String newName) {
         return fileMainStreamer.rename(path, newName);
     }

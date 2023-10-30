@@ -16,7 +16,6 @@
 
 package org.cosinus.streamer.ftp;
 
-import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
@@ -61,12 +60,6 @@ public class FtpParentStreamer extends FtpStreamer<FtpStreamer> implements Paren
     public ParentStreamer<FtpStreamer> createParent(Path path) {
         FtpFile ftpFile = ftpHandler.createFtpFile(getFtpFile(), path, true);
         return new FtpParentStreamer(ftpFile, this, ftpHandler);
-    }
-
-    @Override
-    public BinaryStreamer createBinaryStreamer(Path path) {
-        FtpFile ftpFile = ftpHandler.createFtpFile(getFtpFile(), path, false);
-        return new FtpBinaryStreamer(ftpFile, this, ftpHandler);
     }
 
     @Override

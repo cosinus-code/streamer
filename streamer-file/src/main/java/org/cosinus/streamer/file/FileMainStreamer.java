@@ -68,11 +68,6 @@ public class FileMainStreamer extends MainStreamer<FileStreamer> {
     }
 
     @Override
-    public BinaryStreamer createBinaryStreamer(Path path) {
-        return null;
-    }
-
-    @Override
     public Stream<FileStreamer> flatStream(StreamerFilter streamerFilter) {
         return stream()
             .filter(streamerFilter)

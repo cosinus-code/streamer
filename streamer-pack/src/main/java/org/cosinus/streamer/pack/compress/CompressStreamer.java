@@ -43,6 +43,12 @@ public class CompressStreamer implements BinaryStreamer {
     }
 
     @Override
+    public BinaryStreamer createBinaryStreamer(Path path)
+    {
+        return null;
+    }
+
+    @Override
     public InputStream inputStream() {
         return compressPackStreamer.createCompressorInputStream();
     }
