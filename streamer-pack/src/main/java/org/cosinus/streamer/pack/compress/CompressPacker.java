@@ -16,7 +16,7 @@
 
 package org.cosinus.streamer.pack.compress;
 
-import org.cosinus.streamer.api.TransferStreamer;
+import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.pack.MainPacker;
 import org.cosinus.streamer.api.pack.PackStreamer;
 import org.cosinus.streamer.api.pack.Packer;
@@ -25,7 +25,7 @@ import org.cosinus.streamer.api.pack.Packer;
 public class CompressPacker implements MainPacker<CompressStreamer> {
 
     @Override
-    public PackStreamer pack(TransferStreamer<?> streamerToPack) {
+    public PackStreamer pack(BinaryStreamer streamerToPack) {
         return new CompressPackStreamer(streamerToPack);
     }
 

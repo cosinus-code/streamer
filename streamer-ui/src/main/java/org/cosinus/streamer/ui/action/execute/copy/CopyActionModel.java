@@ -16,7 +16,7 @@
 
 package org.cosinus.streamer.ui.action.execute.copy;
 
-import org.cosinus.streamer.api.ContainerStreamer;
+import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.swing.action.execute.ActionModel;
@@ -42,9 +42,9 @@ public class CopyActionModel<S extends Streamer<?>, T extends Streamer<?>> exten
 
     private List<Streamer<?>> streamersToCopy;
 
-    private ContainerStreamer<S> source;
+    private ParentStreamer<S> source;
 
-    private ContainerStreamer<T> destination;
+    private ParentStreamer<T> destination;
 
     private Path targetPath;
 
@@ -97,7 +97,7 @@ public class CopyActionModel<S extends Streamer<?>, T extends Streamer<?>> exten
         return this;
     }
 
-    public ContainerStreamer<S> getSource() {
+    public ParentStreamer<S> getSource() {
         return source;
     }
 
@@ -120,16 +120,16 @@ public class CopyActionModel<S extends Streamer<?>, T extends Streamer<?>> exten
         return streamersToCopy;
     }
 
-    public CopyActionModel<S, T> from(ContainerStreamer<S> source) {
+    public CopyActionModel<S, T> from(ParentStreamer<S> source) {
         this.source = source;
         return this;
     }
 
-    public ContainerStreamer<T> getDestination() {
+    public ParentStreamer<T> getDestination() {
         return destination;
     }
 
-    public CopyActionModel<S, T> to(ContainerStreamer<T> destination) {
+    public CopyActionModel<S, T> to(ParentStreamer<T> destination) {
         this.destination = destination;
         this.targetPath = destination.getPath();
         return this;

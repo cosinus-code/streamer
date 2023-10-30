@@ -16,7 +16,7 @@
 
 package org.cosinus.streamer.file;
 
-import org.cosinus.streamer.api.ContainerStreamer;
+import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.swing.format.FormatHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import oshi.software.os.OSFileStore;
@@ -29,7 +29,8 @@ import static java.util.function.Predicate.not;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_STORAGE_INTERNAL;
 
-public class FileRootStreamer extends FileContainerStreamer {
+public class FileRootStreamer extends FileParentStreamer
+{
 
     private final OSFileStore fileStore;
 
@@ -91,7 +92,7 @@ public class FileRootStreamer extends FileContainerStreamer {
     }
 
     @Override
-    public ContainerStreamer getParent() {
+    public ParentStreamer getParent() {
         return fileMainStreamer;
     }
 

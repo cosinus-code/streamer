@@ -17,7 +17,7 @@
 package org.cosinus.streamer.ui.action.execute.copy;
 
 import org.cosinus.streamer.api.BinaryStreamer;
-import org.cosinus.streamer.api.ContainerStreamer;
+import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
@@ -37,15 +37,15 @@ import java.util.stream.Stream;
 import static java.util.Optional.ofNullable;
 
 /**
- * {@link ProgressWorker} for copying streamers from a source container to target container
+ * {@link ProgressWorker} for copying streamers from a source parent streamer to target parent streamer
  */
 public class CopyWorker<S extends Streamer<?>, T extends Streamer<?>>
     extends ProgressWorker<CopyProgressModel>
     implements Pipeline<S, Stream<S>, StreamConsumer<S>, CopyStrategy> {
 
-    private final ContainerStreamer<S> source;
+    private final ParentStreamer<S> source;
 
-    private final ContainerStreamer<T> destination;
+    private final ParentStreamer<T> destination;
 
     private final StreamerFilter streamerFilter;
 
@@ -68,7 +68,7 @@ public class CopyWorker<S extends Streamer<?>, T extends Streamer<?>>
     @Override
     protected void doWork() {
         try {
-            consume();
+            openPipeline();
         } catch (AbortPipelineConsumeException ex) {
             throw new AbortActionException("Copy pipeline aborted", ex);
         } catch (IOException | UncheckedIOException ex) {
@@ -106,30 +106,29 @@ public class CopyWorker<S extends Streamer<?>, T extends Streamer<?>>
     public StreamConsumer<S> openPipelineOutputStream(CopyStrategy pipelineStrategy) {
         return streamerToCopy -> {
             checkWorkerStatus();
-            if (streamerToCopy.isContainer()) {
-                copyContainerStreamer((ContainerStreamer<? extends Streamer<?>>) streamerToCopy);
-            } else {
-                copyBinaryStreamer((BinaryStreamer) streamerToCopy);
-            }
+            ofNullable(streamerToCopy.binaryStreamer())
+                .ifPresentOrElse(
+                    this::copyBinaryStreamer,
+                    () -> createTargetStreamer(streamerToCopy));
         };
     }
 
-    private void copyContainerStreamer(ContainerStreamer<? extends Streamer<?>> streamerToCopy) {
-        Path targetPath = buildTargetPath(streamerToCopy);
-        ContainerStreamer<T> target = destination.container(targetPath);
+    private void createTargetStreamer(Streamer<?> sourceStreamer) {
+        Path targetPath = buildTargetPath(sourceStreamer);
+        T target = destination.create(targetPath, sourceStreamer.isParent());
         if (!target.exists()) {
-            target.create();
+            target.save();
         }
     }
 
     private void copyBinaryStreamer(BinaryStreamer binarySource) {
         Path targetPath = buildTargetPath(binarySource);
-        BinaryStreamer binaryTarget = destination.binary(targetPath);
+        BinaryStreamer binaryTarget = destination.createBinaryStreamer(targetPath);
         CopyBinaryPipeline copyBinaryPipeline =
             new CopyBinaryPipeline(binarySource, binaryTarget, copyStrategy, this);
 
         try {
-            copyBinaryPipeline.consume();
+            copyBinaryPipeline.openPipeline();
         } catch (IOException | UncheckedIOException ex) {
             throw new ActionException(ex, "act_copy_error", binarySource.getPath(), binaryTarget.getPath());
         }

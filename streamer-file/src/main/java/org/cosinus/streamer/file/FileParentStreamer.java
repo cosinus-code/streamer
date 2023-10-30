@@ -17,7 +17,7 @@
 package org.cosinus.streamer.file;
 
 import org.cosinus.streamer.api.BinaryStreamer;
-import org.cosinus.streamer.api.ContainerStreamer;
+import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.api.error.SaveStreamerException;
@@ -25,9 +25,10 @@ import org.cosinus.streamer.api.error.SaveStreamerException;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-public class FileContainerStreamer extends FileStreamer<FileStreamer> implements ContainerStreamer<FileStreamer> {
+public class FileParentStreamer extends FileStreamer<FileStreamer> implements ParentStreamer<FileStreamer>
+{
 
-    public FileContainerStreamer(FileMainStreamer fileMainStreamer, FileHandler fileHandler, Path path) {
+    public FileParentStreamer(FileMainStreamer fileMainStreamer, FileHandler fileHandler, Path path) {
         super(fileMainStreamer, fileHandler, path);
     }
 
@@ -47,12 +48,12 @@ public class FileContainerStreamer extends FileStreamer<FileStreamer> implements
     }
 
     @Override
-    public FileContainerStreamer container(Path path) {
-        return new FileContainerStreamer(fileMainStreamer, fileHandler, path);
+    public FileParentStreamer createParent(Path path) {
+        return new FileParentStreamer(fileMainStreamer, fileHandler, path);
     }
 
     @Override
-    public BinaryStreamer binary(Path path) {
+    public BinaryStreamer createBinaryStreamer(Path path) {
         return new FileBinaryStreamer(fileMainStreamer, fileHandler, path);
     }
 
@@ -67,8 +68,8 @@ public class FileContainerStreamer extends FileStreamer<FileStreamer> implements
     }
 
     @Override
-    public FileStreamer create(Path path) {
-        return fileMainStreamer.create(path);
+    public FileStreamer create(Path path, boolean parent) {
+        return fileMainStreamer.create(path, parent);
     }
 
     @Override
@@ -82,7 +83,7 @@ public class FileContainerStreamer extends FileStreamer<FileStreamer> implements
     }
 
     @Override
-    public FileContainerStreamer create() {
+    public FileParentStreamer save() {
         if (!file.exists() && !file.mkdirs()) {
             throw new SaveStreamerException("Failed to create directory:" + file.getPath());
         }

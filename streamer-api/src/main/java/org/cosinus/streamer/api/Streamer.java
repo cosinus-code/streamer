@@ -26,9 +26,13 @@ public interface Streamer<T> {
 
     Stream<? extends T> stream();
 
-    Streamer<T> create();
+    ParentStreamer getParent();
 
-    ContainerStreamer getParent();
+    default BinaryStreamer binaryStreamer() {
+        return null;
+    }
+
+    Streamer<T> save();
 
     boolean delete();
 
@@ -84,7 +88,7 @@ public interface Streamer<T> {
         return getProtocol() + getPath();
     }
 
-    default boolean isContainer() {
+    default boolean isParent() {
         return false;
     }
 

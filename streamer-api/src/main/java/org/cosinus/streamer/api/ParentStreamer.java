@@ -26,7 +26,7 @@ import java.util.stream.StreamSupport;
 import static java.util.function.Predicate.not;
 import static org.cosinus.streamer.api.stream.FlatStreamingStrategy.LEVEL_UP_BOTTOM;
 
-public interface ContainerStreamer<S extends Streamer> extends Streamer<S> {
+public interface ParentStreamer<S extends Streamer> extends Streamer<S> {
 
     /**
      * Get the flat stream of all sub-streamers
@@ -49,9 +49,9 @@ public interface ContainerStreamer<S extends Streamer> extends Streamer<S> {
             new FlatStreamingSpliterator(strategy, stream().filter(streamerFilter)), false);
     }
 
-    ContainerStreamer<S> container(Path path);
+    ParentStreamer<S> createParent(Path path);
 
-    BinaryStreamer binary(Path path);
+    BinaryStreamer createBinaryStreamer(Path path);
 
     boolean rename(Path path, String newName);
 
@@ -70,7 +70,7 @@ public interface ContainerStreamer<S extends Streamer> extends Streamer<S> {
     default long getTotalSize(StreamerFilter streamerFilter) {
         try (Stream<? extends Streamer> flatStreamers = flatStream(streamerFilter)) {
             return flatStreamers
-                    .filter(not(Streamer::isContainer))
+                    .filter(not(Streamer::isParent))
                     .mapToLong(Streamer::getSize)
                     .sum();
         }
@@ -85,17 +85,17 @@ public interface ContainerStreamer<S extends Streamer> extends Streamer<S> {
     default long count(StreamerFilter streamerFilter) {
         try (Stream<? extends Streamer> flatStreamers = flatStream(streamerFilter)) {
             return flatStreamers
-                    .filter(not(Streamer::isContainer))
+                    .filter(not(Streamer::isParent))
                     .count();
         }
     }
 
     @Override
-    default boolean isContainer() {
+    default boolean isParent() {
         return true;
     }
 
-    default S create(Path path) {
+    default S create(Path path, boolean parent) {
         return null;
     }
 }

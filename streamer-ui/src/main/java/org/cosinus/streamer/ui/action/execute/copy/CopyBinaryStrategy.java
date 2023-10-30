@@ -195,7 +195,7 @@ public class CopyBinaryStrategy implements BinaryPipelineStrategy {
     private BinaryStreamer createRenamedStreamer(BinaryStreamer streamerToRename, String newName) {
         return ofNullable(streamerToRename)
             .map(Streamer::getParent)
-            .map(parent -> parent.binary(parent.getPath().resolve(newName)))
+            .map(parent -> parent.createBinaryStreamer(parent.getPath().resolve(newName)))
             .orElse(null);
     }
 

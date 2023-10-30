@@ -16,8 +16,8 @@
 
 package org.cosinus.streamer.api.pack;
 
-import org.cosinus.streamer.api.ContainerStreamer;
-import org.cosinus.streamer.api.TransferStreamer;
+import org.cosinus.streamer.api.BinaryStreamer;
+import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 
 import java.nio.file.Path;
@@ -28,55 +28,57 @@ import java.util.Optional;
  */
 public abstract class PackStreamer<T> implements Streamer<T> {
 
-    protected final TransferStreamer transferStreamer;
+    protected final BinaryStreamer binaryStreamer;
 
-    public PackStreamer(TransferStreamer transferStreamer) {
-        this.transferStreamer = transferStreamer;
+    public PackStreamer(BinaryStreamer binaryStreamer) {
+        this.binaryStreamer = binaryStreamer;
     }
 
     @Override
-    public Streamer<T> create() {
-        return transferStreamer.create();
+    public Streamer<T> save() {
+        return null;
+        //TODO
+        //return binaryStreamer.create();
     }
 
     @Override
-    public ContainerStreamer getParent() {
-        return transferStreamer.getParent();
+    public ParentStreamer getParent() {
+        return binaryStreamer.getParent();
     }
 
     @Override
     public boolean delete() {
-        return transferStreamer.delete();
+        return binaryStreamer.delete();
     }
 
     @Override
     public String getProtocol() {
-        return transferStreamer.getProtocol();
+        return binaryStreamer.getProtocol();
     }
 
     @Override
     public Path getPath() {
-        return transferStreamer.getPath();
+        return binaryStreamer.getPath();
     }
 
     @Override
     public boolean exists() {
-        return transferStreamer.exists();
+        return binaryStreamer.exists();
     }
 
     @Override
     public long getSize() {
-        return transferStreamer.getSize();
+        return binaryStreamer.getSize();
     }
 
     @Override
     public long lastModified() {
-        return transferStreamer.lastModified();
+        return binaryStreamer.lastModified();
     }
 
     @Override
     public String getUrlPath() {
-        return transferStreamer.getUrlPath();
+        return binaryStreamer.getUrlPath();
     }
 
     public abstract Optional<T> find(String path);

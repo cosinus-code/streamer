@@ -16,7 +16,7 @@
 
 package org.cosinus.streamer.ui.action;
 
-import org.cosinus.streamer.api.ContainerStreamer;
+import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.pack.PackerHandler;
 import org.cosinus.streamer.ui.action.context.StreamerActionContext;
@@ -107,8 +107,8 @@ public class PackStreamerAction<A> extends AbstractCopyAction<A> {
     protected <S extends Streamer<?>, T extends Streamer<?>>
     CopyActionModel<S, T> copySpecifications(StreamerActionContext actionContext) {
         return pack(actionContext.getCurrentView().getSelectedContent())
-            .from((ContainerStreamer<S>) actionContext.getCurrentView().getLoadedStreamer())
-            .to((ContainerStreamer<T>) actionContext.getOppositeView().getLoadedStreamer());
+            .from((ParentStreamer<S>) actionContext.getCurrentView().getLoadedStreamer())
+            .to((ParentStreamer<T>) actionContext.getOppositeView().getLoadedStreamer());
     }
 
     @Override

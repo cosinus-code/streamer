@@ -18,8 +18,8 @@ package org.cosinus.streamer.ui.action.execute.load;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.TransferStreamer;
 import org.cosinus.streamer.api.meta.StreamerHandler;
 import org.cosinus.streamer.api.pack.PackStreamer;
 import org.cosinus.streamer.api.pack.PackerHandler;
@@ -124,11 +124,11 @@ public class LoadStreamerWorker<T> extends SwingWorker<Void, T> {
 
     private Streamer checkIfStreamerIsPacked(Streamer streamerToCheck) {
         return ofNullable(streamerToCheck)
-                .filter(streamer -> TransferStreamer.class.isAssignableFrom(streamer.getClass()))
-                .map(TransferStreamer.class::cast)
-                .<Streamer>flatMap(transferStream -> packerHandler
-                        .findPacker(transferStream.getType())
-                        .map(packer -> packer.pack(transferStream)))
+                .filter(streamer -> BinaryStreamer.class.isAssignableFrom(streamer.getClass()))
+                .map(BinaryStreamer.class::cast)
+                .<Streamer>flatMap(binaryStream -> packerHandler
+                        .findPacker(binaryStream.getType())
+                        .map(packer -> packer.pack(binaryStream)))
                 .orElse(streamerToCheck);
     }
 

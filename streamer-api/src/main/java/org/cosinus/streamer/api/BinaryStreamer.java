@@ -18,11 +18,29 @@ package org.cosinus.streamer.api;
 
 import org.cosinus.streamer.api.stream.binary.BinaryStream;
 
-public interface BinaryStreamer extends TransferStreamer<byte[]> {
+import java.io.InputStream;
+import java.io.OutputStream;
+
+public interface BinaryStreamer extends Streamer<byte[]> {
+
+    int DEFAULT_TRANSFER_RATE = 8192;
 
     @Override
     default BinaryStream stream() {
         return BinaryStream.of(inputStream(), getTransferRate());
     }
 
+    @Override
+    default BinaryStreamer binaryStreamer()
+    {
+        return this;
+    }
+
+    InputStream inputStream();
+
+    OutputStream outputStream(boolean append);
+
+    default int getTransferRate() {
+        return DEFAULT_TRANSFER_RATE;
+    }
 }

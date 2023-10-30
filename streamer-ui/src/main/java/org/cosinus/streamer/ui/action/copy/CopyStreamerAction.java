@@ -16,7 +16,7 @@
 
 package org.cosinus.streamer.ui.action.copy;
 
-import org.cosinus.streamer.api.ContainerStreamer;
+import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.LoadStreamerAction;
 import org.cosinus.streamer.ui.action.context.StreamerActionContext;
@@ -60,8 +60,8 @@ public class CopyStreamerAction<A> extends AbstractCopyAction<A> {
     protected <S extends Streamer<?>, T extends Streamer<?>>
     void execute(CopyActionModel<S, T> copyAction, StreamerActionContext actionContext) {
         //TODO: to avoid cast
-        ContainerStreamer<T> destination =
-            (ContainerStreamer<T>) copyAction.getDestination().getParent().container(copyAction.getTargetPath());
+        ParentStreamer<T> destination =
+            (ParentStreamer<T>) copyAction.getDestination().getParent().createParent(copyAction.getTargetPath());
         if (destination == null) {
             dialogHandler.showInfo(translator.translate("act_copy_destination_not_found"));
             return;
@@ -73,8 +73,8 @@ public class CopyStreamerAction<A> extends AbstractCopyAction<A> {
     protected <S extends Streamer<?>, T extends Streamer<?>>
     CopyActionModel<S, T> copySpecifications(StreamerActionContext actionContext) {
         return copy(actionContext.getCurrentView().getSelectedContent())
-            .from((ContainerStreamer<S>) actionContext.getCurrentView().getLoadedStreamer())
-            .to((ContainerStreamer<T>) actionContext.getOppositeView().getLoadedStreamer());
+            .from((ParentStreamer<S>) actionContext.getCurrentView().getLoadedStreamer())
+            .to((ParentStreamer<T>) actionContext.getOppositeView().getLoadedStreamer());
     }
 
     @Override

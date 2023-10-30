@@ -18,7 +18,7 @@ package org.cosinus.streamer.api.util;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.cosinus.streamer.api.BinaryStreamer;
-import org.cosinus.streamer.api.ContainerStreamer;
+import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 
 import java.nio.file.Path;
@@ -35,7 +35,7 @@ import static java.util.Optional.ofNullable;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(NON_NULL)
-public class JsonStreamer implements ContainerStreamer<JsonStreamer>
+public class JsonStreamer implements ParentStreamer<JsonStreamer>
 {
     private String name;
 
@@ -68,13 +68,13 @@ public class JsonStreamer implements ContainerStreamer<JsonStreamer>
     }
 
     @Override
-    public Streamer<JsonStreamer> create()
+    public Streamer<JsonStreamer> save()
     {
         return null;
     }
 
     @Override
-    public ContainerStreamer getParent()
+    public ParentStreamer getParent()
     {
         return parent;
     }
@@ -116,13 +116,13 @@ public class JsonStreamer implements ContainerStreamer<JsonStreamer>
     }
 
     @Override
-    public ContainerStreamer<JsonStreamer> container(Path path)
+    public ParentStreamer<JsonStreamer> createParent(Path path)
     {
         return null;
     }
 
     @Override
-    public BinaryStreamer binary(Path path)
+    public BinaryStreamer createBinaryStreamer(Path path)
     {
         return null;
     }

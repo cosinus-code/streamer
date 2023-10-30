@@ -18,7 +18,7 @@ public interface Pipeline<D, I extends Stream<D>, O extends StreamConsumer<D>, S
 
     PipelineListener<D> getPipelineListener();
 
-    default void consume() throws IOException {
+    default void openPipeline() throws IOException {
         S pipelineStrategy = getPipelineStrategy();
         PipelineListener<D> pipelineListener = ofNullable(getPipelineListener())
             .orElseGet(() -> new PipelineListener<>(){});

@@ -17,7 +17,7 @@
 package org.cosinus.streamer.file;
 
 import org.cosinus.streamer.api.BinaryStreamer;
-import org.cosinus.streamer.api.ContainerStreamer;
+import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.api.error.StreamerException;
@@ -63,12 +63,12 @@ public class FileMainStreamer extends MainStreamer<FileStreamer> {
     }
 
     @Override
-    public ContainerStreamer<FileStreamer> container(Path path) {
+    public ParentStreamer<FileStreamer> createParent(Path path) {
         return null;
     }
 
     @Override
-    public BinaryStreamer binary(Path path) {
+    public BinaryStreamer createBinaryStreamer(Path path) {
         return null;
     }
 
@@ -107,17 +107,16 @@ public class FileMainStreamer extends MainStreamer<FileStreamer> {
                 .map(file -> create(path, file.isDirectory())));
     }
 
-    @Override
     public FileStreamer create(Path path) {
         File file = path.toFile();
         boolean directory = !file.exists() || file.isDirectory();
         return create(path, directory);
     }
 
-    //@Override
+    @Override
     public FileStreamer create(Path path, boolean directory) {
         return directory ?
-            new FileContainerStreamer(this, fileHandler, path) :
+            new FileParentStreamer(this, fileHandler, path) :
             new FileBinaryStreamer(this, fileHandler, path);
 //                fileHandler.mimeType(path).startsWith("text") ?
 //                        new TextFileStreamer(this, fileHandler, path) :

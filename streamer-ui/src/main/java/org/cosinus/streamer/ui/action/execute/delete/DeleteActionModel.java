@@ -16,7 +16,7 @@
 
 package org.cosinus.streamer.ui.action.execute.delete;
 
-import org.cosinus.streamer.api.ContainerStreamer;
+import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.swing.action.execute.ActionModel;
@@ -36,7 +36,7 @@ public class DeleteActionModel extends ActionModel {
 
     private StreamerFilter streamerFilter;
 
-    private ContainerStreamer<Streamer<?>> streamer;
+    private ParentStreamer<Streamer<?>> streamer;
 
     public DeleteActionModel(String actionName) {
         super(UUID.randomUUID().toString(), actionName);
@@ -56,11 +56,11 @@ public class DeleteActionModel extends ActionModel {
         return streamerFilter;
     }
 
-    public ContainerStreamer<Streamer<?>> getStreamer() {
+    public ParentStreamer<Streamer<?>> getStreamer() {
         return streamer;
     }
 
-    public DeleteActionModel from(ContainerStreamer<Streamer<?>> streamer) {
+    public DeleteActionModel from(ParentStreamer<Streamer<?>> streamer) {
         this.streamer = streamer;
         return this;
     }

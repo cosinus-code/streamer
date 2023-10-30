@@ -17,7 +17,10 @@
 package org.cosinus.streamer.pack.archive;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.cosinus.streamer.api.*;
+import org.cosinus.streamer.api.BinaryStreamer;
+import org.cosinus.streamer.api.ParentStreamer;
+import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.api.error.StreamerException;
 import org.cosinus.streamer.api.pack.PackStreamer;
 import org.cosinus.streamer.pack.archive.stream.ArchiveStream;
@@ -32,15 +35,16 @@ import java.util.stream.Stream;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
-public class ArchivePackStreamer<A extends ArchiveStreamer> extends PackStreamer<A> implements ContainerStreamer<A> {
+public class ArchivePackStreamer<A extends ArchiveStreamer> extends PackStreamer<A> implements ParentStreamer<A>
+{
 
     @Autowired
     private ArchiveInputStreamFactory archiveInputStreamFactory;
 
     private ArchiveHolder archiveHolder;
 
-    protected ArchivePackStreamer(TransferStreamer transferStreamer) {
-        super(transferStreamer);
+    protected ArchivePackStreamer(BinaryStreamer binaryStreamer) {
+        super(binaryStreamer);
         injectContext(this);
     }
 
@@ -91,14 +95,14 @@ public class ArchivePackStreamer<A extends ArchiveStreamer> extends PackStreamer
     }
 
     @Override
-    public ContainerStreamer container(Path path) {
+    public ParentStreamer createParent(Path path) {
         ArchiveStreamEntry archiveEntry = archiveHolder.get(path)
             .orElse(createArchiveStreamEntry(path.toString() + "/"));
         return createDirectoryStreamer(archiveEntry);
     }
 
     @Override
-    public BinaryStreamer binary(Path path) {
+    public BinaryStreamer createBinaryStreamer(Path path) {
         ArchiveStreamEntry archiveEntry = archiveHolder.get(path)
             .orElse(createArchiveStreamEntry(path.toString()));
         return createBinaryStreamer(archiveEntry);
@@ -114,12 +118,12 @@ public class ArchivePackStreamer<A extends ArchiveStreamer> extends PackStreamer
             .map(this::createArchiveStreamer);
     }
 
-    public Optional<ContainerStreamer> findDirectoryStreamer(Path path) {
+    public Optional<ParentStreamer> findDirectoryStreamer(Path path) {
         return ofNullable(path)
             .map(Path::toString)
             .flatMap(this::find)
-            .filter(streamer -> ContainerStreamer.class.isAssignableFrom(streamer.getClass()))
-            .map(ContainerStreamer.class::cast);
+            .filter(streamer -> ParentStreamer.class.isAssignableFrom(streamer.getClass()))
+            .map(ParentStreamer.class::cast);
     }
 
     @Override
@@ -154,7 +158,7 @@ public class ArchivePackStreamer<A extends ArchiveStreamer> extends PackStreamer
     }
 
     protected Stream<ArchiveStreamEntry> createStream() {
-        return ArchiveStream.stream(createArchiveInputStream(transferStreamer));
+        return ArchiveStream.stream(createArchiveInputStream(binaryStreamer));
     }
 
     public A createArchiveStreamer(ArchiveStreamEntry archiveEntry) {
@@ -167,8 +171,8 @@ public class ArchivePackStreamer<A extends ArchiveStreamer> extends PackStreamer
         return archiveHolder.listEntries(path);
     }
 
-    public ArchiveContainerStreamer createDirectoryStreamer(ArchiveStreamEntry archiveEntry) {
-        return new ArchiveContainerStreamer(this, archiveEntry);
+    public ArchiveParentStreamer createDirectoryStreamer(ArchiveStreamEntry archiveEntry) {
+        return new ArchiveParentStreamer(this, archiveEntry);
     }
 
     public ArchiveBinaryStreamer createBinaryStreamer(ArchiveStreamEntry archiveEntry) {
@@ -180,7 +184,7 @@ public class ArchivePackStreamer<A extends ArchiveStreamer> extends PackStreamer
         return null;
     }
 
-    private EntryInputStream createArchiveInputStream(TransferStreamer<?> streamerToPack) {
+    private EntryInputStream createArchiveInputStream(BinaryStreamer streamerToPack) {
         return archiveInputStreamFactory.detectArchiverName(streamerToPack.getName(),
                                                             streamerToPack.inputStream())
             .map(archiverName -> archiveInputStreamFactory.createArchiveInputStream(archiverName,

@@ -17,7 +17,7 @@
 package org.cosinus.streamer.ftp;
 
 import org.cosinus.streamer.api.BinaryStreamer;
-import org.cosinus.streamer.api.ContainerStreamer;
+import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.api.error.SaveStreamerException;
@@ -27,9 +27,10 @@ import org.cosinus.streamer.ftp.client.FtpFile;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-public class FtpContainerStreamer extends FtpStreamer<FtpStreamer> implements ContainerStreamer<FtpStreamer> {
+public class FtpParentStreamer extends FtpStreamer<FtpStreamer> implements ParentStreamer<FtpStreamer>
+{
 
-    public FtpContainerStreamer(FtpFile ftpFile, ContainerStreamer parent, FtpHandler ftpHandler) {
+    public FtpParentStreamer(FtpFile ftpFile, ParentStreamer parent, FtpHandler ftpHandler) {
         super(ftpFile, parent, ftpHandler);
     }
 
@@ -49,7 +50,7 @@ public class FtpContainerStreamer extends FtpStreamer<FtpStreamer> implements Co
     }
 
     @Override
-    public Streamer<FtpStreamer> create() {
+    public Streamer<FtpStreamer> save() {
         if (!ftpHandler.makeDirectory(getFtpFile())) {
             throw new SaveStreamerException("Failed to create directory:" + getFtpFile());
         }
@@ -57,13 +58,13 @@ public class FtpContainerStreamer extends FtpStreamer<FtpStreamer> implements Co
     }
 
     @Override
-    public ContainerStreamer<FtpStreamer> container(Path path) {
+    public ParentStreamer<FtpStreamer> createParent(Path path) {
         FtpFile ftpFile = ftpHandler.createFtpFile(getFtpFile(), path, true);
-        return new FtpContainerStreamer(ftpFile, this, ftpHandler);
+        return new FtpParentStreamer(ftpFile, this, ftpHandler);
     }
 
     @Override
-    public BinaryStreamer binary(Path path) {
+    public BinaryStreamer createBinaryStreamer(Path path) {
         FtpFile ftpFile = ftpHandler.createFtpFile(getFtpFile(), path, false);
         return new FtpBinaryStreamer(ftpFile, this, ftpHandler);
     }
@@ -92,7 +93,7 @@ public class FtpContainerStreamer extends FtpStreamer<FtpStreamer> implements Co
 
     private FtpStreamer createFtpStreamer(FtpFile ftpFile) {
         return ftpFile.isDirectory() ?
-            new FtpContainerStreamer(ftpFile, this, ftpHandler) :
+            new FtpParentStreamer(ftpFile, this, ftpHandler) :
             new FtpBinaryStreamer(ftpFile, this, ftpHandler);
     }
 }

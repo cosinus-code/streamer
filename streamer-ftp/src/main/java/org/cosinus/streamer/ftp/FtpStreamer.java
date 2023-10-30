@@ -16,7 +16,7 @@
 
 package org.cosinus.streamer.ftp;
 
-import org.cosinus.streamer.api.ContainerStreamer;
+import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ftp.client.FtpFile;
 
@@ -33,16 +33,16 @@ public abstract class FtpStreamer<T> implements Streamer<T> {
 
     private final FtpFile ftpFile;
 
-    private final ContainerStreamer parent;
+    private final ParentStreamer parent;
 
-    protected FtpStreamer(FtpFile ftpFile, ContainerStreamer parent, FtpHandler ftpHandler) {
+    protected FtpStreamer(FtpFile ftpFile, ParentStreamer parent, FtpHandler ftpHandler) {
         this.parent = parent;
         this.ftpFile = ftpFile;
         this.ftpHandler = ftpHandler;
     }
 
     @Override
-    public ContainerStreamer getParent() {
+    public ParentStreamer getParent() {
         return parent;
     }
 

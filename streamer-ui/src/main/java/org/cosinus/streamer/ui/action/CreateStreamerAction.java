@@ -61,8 +61,8 @@ public class CreateStreamerAction extends StreamerAction<Streamer<?>> {
                     translator.translate("act-new-new-streamer"),
                     PLAIN_MESSAGE)
                 .map(currentFolder.getPath()::resolve)
-                .map(parent::container)
-                .map(Streamer::create))
+                .map(parent::createParent)
+                .map(Streamer::save))
             .ifPresent(streamer -> context.getCurrentView().reload(streamer.getName()));
     }
 

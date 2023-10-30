@@ -16,7 +16,7 @@
 
 package org.cosinus.streamer.file;
 
-import org.cosinus.streamer.api.ContainerStreamer;
+import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 
 import java.io.File;
@@ -49,14 +49,14 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     }
 
     @Override
-    public ContainerStreamer getParent() {
+    public ParentStreamer getParent() {
         return ofNullable(file.toPath().getParent())
             .map(parentPath -> fileMainStreamer
                 .stream()
                 .filter(fileStreamer -> fileStreamer.getPath().equals(parentPath))
                 .findFirst()
-                .map(ContainerStreamer.class::cast)
-                .orElseGet(() -> new FileContainerStreamer(fileMainStreamer, fileHandler, parentPath)))
+                .map(ParentStreamer.class::cast)
+                .orElseGet(() -> new FileParentStreamer(fileMainStreamer, fileHandler, parentPath)))
             .orElse(fileMainStreamer);
     }
 

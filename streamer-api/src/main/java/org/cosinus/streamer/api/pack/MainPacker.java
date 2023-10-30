@@ -16,7 +16,7 @@
 
 package org.cosinus.streamer.api.pack;
 
-import org.cosinus.streamer.api.TransferStreamer;
+import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.Streamer;
 
 import java.util.Optional;
@@ -28,9 +28,9 @@ import static java.util.Optional.ofNullable;
  */
 public interface MainPacker<T extends Streamer> {
 
-    PackStreamer<T> pack(TransferStreamer<?> streamerToPack);
+    PackStreamer<T> pack(BinaryStreamer streamerToPack);
 
-    default Optional<T> findPackedStreamer(TransferStreamer mainStreamer, String path) {
+    default Optional<T> findPackedStreamer(BinaryStreamer mainStreamer, String path) {
         return ofNullable(mainStreamer)
             .map(this::pack)
             .flatMap(packStreamer -> packStreamer.find(path));

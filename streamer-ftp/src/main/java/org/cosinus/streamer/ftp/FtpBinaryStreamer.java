@@ -17,7 +17,7 @@
 package org.cosinus.streamer.ftp;
 
 import org.cosinus.streamer.api.BinaryStreamer;
-import org.cosinus.streamer.api.ContainerStreamer;
+import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.error.SaveStreamerException;
 import org.cosinus.streamer.ftp.client.FtpFile;
@@ -27,7 +27,7 @@ import java.io.OutputStream;
 
 public class FtpBinaryStreamer extends FtpStreamer<byte[]> implements BinaryStreamer {
 
-    public FtpBinaryStreamer(FtpFile ftpFile, ContainerStreamer parent, FtpHandler ftpHandler) {
+    public FtpBinaryStreamer(FtpFile ftpFile, ParentStreamer parent, FtpHandler ftpHandler) {
         super(ftpFile, parent, ftpHandler);
     }
 
@@ -42,7 +42,7 @@ public class FtpBinaryStreamer extends FtpStreamer<byte[]> implements BinaryStre
     }
 
     @Override
-    public Streamer<byte[]> create() {
+    public Streamer<byte[]> save() {
         if (!ftpHandler.makeFile(getFtpFile())) {
             throw new SaveStreamerException("Failed to create file:" + getFtpFile());
         }

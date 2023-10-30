@@ -65,7 +65,7 @@ public class DeleteWorker extends ProgressWorker<StreamersProgressModel>
     @Override
     protected void doWork() {
         try {
-            consume();
+            openPipeline();
         } catch (AbortPipelineConsumeException ex) {
             throw new AbortActionException("Delete pipeline aborted", ex);
         } catch (IOException | UncheckedIOException ex) {

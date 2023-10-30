@@ -16,7 +16,7 @@
 
 package org.cosinus.streamer.pack.archive;
 
-import org.cosinus.streamer.api.ContainerStreamer;
+import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 
 import java.nio.file.Path;
@@ -35,12 +35,12 @@ public abstract class ArchiveStreamer<T> implements Streamer<T> {
     }
 
     @Override
-    public Streamer<T> create() {
+    public Streamer<T> save() {
         return null;
     }
 
     @Override
-    public ContainerStreamer getParent() {
+    public ParentStreamer getParent() {
         return archiveEntry.getParentPath()
             .flatMap(archivePackStreamer::findDirectoryStreamer)
             .orElse(archivePackStreamer);

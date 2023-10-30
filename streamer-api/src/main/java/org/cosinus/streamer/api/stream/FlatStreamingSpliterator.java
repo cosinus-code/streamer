@@ -16,7 +16,6 @@
 
 package org.cosinus.streamer.api.stream;
 
-import org.cosinus.streamer.api.ContainerStreamer;
 import org.cosinus.streamer.api.Streamer;
 
 import java.util.Collections;
@@ -29,7 +28,6 @@ import java.util.Spliterator;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static java.lang.Long.MAX_VALUE;
@@ -74,7 +72,7 @@ public class FlatStreamingSpliterator<S extends Streamer<?>> implements Splitera
             return false;
         }
 
-        boolean isStreamableButNotYetStreamed = streamer.isContainer() && isStreamed(streamer);
+        boolean isStreamableButNotYetStreamed = streamer.isParent() && isStreamed(streamer);
         if (strategy.isParentFirst() || !isStreamableButNotYetStreamed) {
             action.accept(streamers.poll());
         }

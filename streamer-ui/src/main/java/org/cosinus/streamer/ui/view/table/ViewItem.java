@@ -71,7 +71,7 @@ public class ViewItem {
     }
 
     public String getFormattedSize() {
-        return streamer.isContainer() ? "" : formatHandler.formatMemorySize(streamer.getSize());
+        return streamer.isParent() ? "" : formatHandler.formatMemorySize(streamer.getSize());
     }
 
     public File toFile() {
@@ -81,7 +81,7 @@ public class ViewItem {
         return new File(fileName) {
             @Override
             public boolean isDirectory() {
-                return streamer.isContainer();
+                return streamer.isParent();
             }
         };
     }
