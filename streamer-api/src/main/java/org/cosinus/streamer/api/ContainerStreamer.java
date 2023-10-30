@@ -16,20 +16,38 @@
 
 package org.cosinus.streamer.api;
 
+import org.cosinus.streamer.api.stream.FlatStreamingSpliterator;
+import org.cosinus.streamer.api.stream.FlatStreamingStrategy;
+
 import java.nio.file.Path;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static java.util.function.Predicate.not;
+import static org.cosinus.streamer.api.stream.FlatStreamingStrategy.LEVEL_UP_BOTTOM;
 
 public interface ContainerStreamer<S extends Streamer> extends Streamer<S> {
 
     /**
-     * Get the flat stream for the stream of sub-trees given by a stream of tree roots
+     * Get the flat stream of all sub-streamers
      *
      * @param streamerFilter the filter to apply on the direct children
-     * @return the flat stream of the sub-trees
+     * @return the flat stream of sub-streamers
      */
-    Stream<S> flatStream(StreamerFilter streamerFilter);
+    default Stream<S> flatStream(StreamerFilter streamerFilter) {
+        return flatStream(LEVEL_UP_BOTTOM, streamerFilter);
+    }
+
+    /**
+     * Get the flat stream of all sub-streamers, using a specific tree parsing strategy
+     *
+     * @param streamerFilter the filter to apply on the direct children
+     * @return the flat stream of sub-streamers
+     */
+    default Stream<S> flatStream(FlatStreamingStrategy strategy, StreamerFilter streamerFilter) {
+        return StreamSupport.stream(
+            new FlatStreamingSpliterator(strategy, stream().filter(streamerFilter)), false);
+    }
 
     ContainerStreamer<S> container(Path path);
 

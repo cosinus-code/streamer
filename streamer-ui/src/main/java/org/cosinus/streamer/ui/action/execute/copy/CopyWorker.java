@@ -152,21 +152,20 @@ public class CopyWorker<S extends Streamer<?>, T extends Streamer<?>>
     private class OverallCopyListener implements PipelineListener<S> {
         @Override
         public void beforePipelineOpen() {
-            progress.startTotalProgress(totalSize);
-            publishProgress();
+            publishProgress(() -> progress.startTotalProgress(totalSize));
         }
 
         @Override
         public void afterPipelineDataSkip(long skippedDataSize) {
-            progress.updateStreamerProgress(skippedDataSize);
-            progress.finishStreamerProgress();
-            publishProgress();
+            publishProgress(() -> {
+                progress.updateStreamerProgress(skippedDataSize);
+                progress.finishStreamerProgress();
+            });
         }
 
         @Override
         public void afterPipelineClose() {
-            progress.finishTotalProgress();
-            publishProgress();
+            publishProgress(progress::finishTotalProgress);
         }
     }
 }

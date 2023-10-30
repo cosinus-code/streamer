@@ -21,6 +21,7 @@ import org.cosinus.streamer.api.ContainerStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.api.error.SaveStreamerException;
+import org.cosinus.streamer.api.stream.FlatStreamingStrategy;
 import org.cosinus.streamer.ftp.client.FtpFile;
 
 import java.nio.file.Path;
@@ -39,8 +40,8 @@ public class FtpContainerStreamer extends FtpStreamer<FtpStreamer> implements Co
     }
 
     @Override
-    public Stream<FtpStreamer> flatStream(StreamerFilter streamerFilter) {
-        return ftpHandler.flatStream(getFtpFile(),
+    public Stream<FtpStreamer> flatStream(FlatStreamingStrategy strategy, StreamerFilter streamerFilter) {
+        return ftpHandler.flatStream(strategy, getFtpFile(),
                                      stream()
                                          .filter(streamerFilter)
                                          .map(FtpStreamer::getFtpFile))

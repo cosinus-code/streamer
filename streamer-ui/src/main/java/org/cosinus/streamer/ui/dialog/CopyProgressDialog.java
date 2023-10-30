@@ -47,14 +47,14 @@ public class CopyProgressDialog extends ProgressDialog<CopyProgressModel> {
     public void initComponents() {
         super.initComponents();
 
-        copyFromLabel = new JLabel(translator.translate("form_copy_from"));
-        copyToLabel = new JLabel(translator.translate("form_copy_to"));
+        copyFromLabel = new JLabel();
+        copyToLabel = new JLabel();
 
         itemProgressBar = new JProgressBar();
         totalProgressBar = new JProgressBar();
 
-        totalProgressBar.setStringPainted(true);
-        itemProgressBar.setStringPainted(true);
+        totalProgressBar.setStringPainted(uiHandler.isProgressTextAllowed());
+        itemProgressBar.setStringPainted(uiHandler.isProgressTextAllowed());
 
         JPanel panNorth = new JPanel(new BorderLayout(5, 5));
         JPanel pathsPanel = new JPanel(new GridLayout(3, 1, 5, 5));

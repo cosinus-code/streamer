@@ -32,21 +32,21 @@ import static org.springframework.util.CollectionUtils.isEmpty;
  */
 public class DeleteActionModel extends ActionModel {
 
-    private List<Streamer> streamersToDelete = new ArrayList<>();
+    private List<Streamer<?>> streamersToDelete = new ArrayList<>();
 
     private StreamerFilter streamerFilter;
 
-    private ContainerStreamer streamer;
+    private ContainerStreamer<Streamer<?>> streamer;
 
     public DeleteActionModel(String actionName) {
         super(UUID.randomUUID().toString(), actionName);
     }
 
-    public List<Streamer> getStreamersToDelete() {
+    public List<Streamer<?>> getStreamersToDelete() {
         return streamersToDelete;
     }
 
-    public DeleteActionModel deleteStreamers(List<Streamer> streamersToDelete) {
+    public DeleteActionModel deleteStreamers(List<Streamer<?>> streamersToDelete) {
         this.streamersToDelete = streamersToDelete;
         this.streamerFilter = streamersToDelete::contains;
         return this;
@@ -56,11 +56,11 @@ public class DeleteActionModel extends ActionModel {
         return streamerFilter;
     }
 
-    public ContainerStreamer getStreamer() {
+    public ContainerStreamer<Streamer<?>> getStreamer() {
         return streamer;
     }
 
-    public DeleteActionModel from(ContainerStreamer streamer) {
+    public DeleteActionModel from(ContainerStreamer<Streamer<?>> streamer) {
         this.streamer = streamer;
         return this;
     }

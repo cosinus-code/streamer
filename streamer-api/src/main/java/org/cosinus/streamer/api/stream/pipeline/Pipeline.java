@@ -6,6 +6,8 @@ import org.cosinus.streamer.api.stream.pipeline.error.SkipPipelineConsumeExcepti
 import java.io.IOException;
 import java.util.stream.Stream;
 
+import static java.util.Optional.ofNullable;
+
 public interface Pipeline<D, I extends Stream<D>, O extends StreamConsumer<D>, S extends PipelineStrategy> {
 
     I openPipelineInputStream(S pipelineStrategy);
@@ -18,7 +20,8 @@ public interface Pipeline<D, I extends Stream<D>, O extends StreamConsumer<D>, S
 
     default void consume() throws IOException {
         S pipelineStrategy = getPipelineStrategy();
-        PipelineListener<D> pipelineListener = getPipelineListener();
+        PipelineListener<D> pipelineListener = ofNullable(getPipelineListener())
+            .orElseGet(() -> new PipelineListener<>(){});
 
         try {
             preparePipelineOpen(pipelineStrategy, pipelineListener);

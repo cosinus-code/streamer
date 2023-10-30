@@ -20,6 +20,7 @@ import static org.apache.commons.net.ftp.FTPFile.DIRECTORY_TYPE;
 import static org.apache.commons.net.ftp.FTPFile.FILE_TYPE;
 
 import org.apache.commons.net.ftp.FTPFile;
+import org.cosinus.streamer.api.stream.FlatStreamingStrategy;
 import org.cosinus.streamer.ftp.client.FtpClientPool;
 import org.cosinus.streamer.ftp.client.FtpFile;
 import org.springframework.stereotype.Component;
@@ -47,10 +48,11 @@ public class FtpHandler {
                 .stream(ftpFile);
     }
 
-    public Stream<FtpFile> flatStream(FtpFile parentFtpFile, Stream<FtpFile> ftpFiles) {
+    public Stream<FtpFile> flatStream(
+        FlatStreamingStrategy strategy, FtpFile parentFtpFile, Stream<FtpFile> ftpFiles) {
         return ftpClientPool
                 .borrowObject(parentFtpFile.getFtpClientName())
-                .flatStream(ftpFiles);
+                .flatStream(strategy, ftpFiles);
     }
 
     public InputStream inputStream(FtpFile ftpFile) {

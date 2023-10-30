@@ -47,11 +47,11 @@ public class StreamersProgressDialog extends ProgressDialog<StreamersProgressMod
     public void initComponents() {
         super.initComponents();
 
-        lblStreamer = new JLabel(actionName + ": " + translator.translate("form_copy_from"));
+        lblStreamer = new JLabel();
         actionLabel.setHorizontalAlignment(CENTER);
 
         progressBar = new JProgressBar();
-        progressBar.setStringPainted(true);
+        progressBar.setStringPainted(uiHandler.isProgressTextAllowed());
 
         JPanel pathsPanel = new JPanel(new GridLayout(2, 1, 5, 5));
         pathsPanel.add(actionLabel);

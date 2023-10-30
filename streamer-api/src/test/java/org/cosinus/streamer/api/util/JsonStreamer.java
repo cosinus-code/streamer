@@ -1,0 +1,153 @@
+/*
+ * Copyright 2020 Cosinus Software
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.cosinus.streamer.api.util;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import org.cosinus.streamer.api.BinaryStreamer;
+import org.cosinus.streamer.api.ContainerStreamer;
+import org.cosinus.streamer.api.Streamer;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Stream;
+
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static java.util.Optional.ofNullable;
+
+/**
+ * Json based implementation of {@link Streamer} used for tests
+ */
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(NON_NULL)
+public class JsonStreamer implements ContainerStreamer<JsonStreamer>
+{
+    private String name;
+
+    private List<JsonStreamer> children;
+
+    private JsonStreamer parent;
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    public void setChildren(List<JsonStreamer> children)
+    {
+        this.children = children;
+        children.forEach(child -> child.setParent(this));
+    }
+
+    public void setParent(JsonStreamer parent)
+    {
+        this.parent = parent;
+    }
+
+    @Override
+    public Stream<JsonStreamer> stream()
+    {
+        return ofNullable(children)
+            .stream()
+            .flatMap(Collection::stream);
+    }
+
+    @Override
+    public Streamer<JsonStreamer> create()
+    {
+        return null;
+    }
+
+    @Override
+    public ContainerStreamer getParent()
+    {
+        return parent;
+    }
+
+    @Override
+    public boolean delete()
+    {
+        return false;
+    }
+
+    @Override
+    public String getProtocol()
+    {
+        return null;
+    }
+
+    @Override
+    public Path getPath()
+    {
+        return Paths.get(name);
+    }
+
+    @Override
+    public boolean exists()
+    {
+        return true;
+    }
+
+    @Override
+    public long getSize()
+    {
+        return 0;
+    }
+
+    @Override
+    public long lastModified()
+    {
+        return 0;
+    }
+
+    @Override
+    public ContainerStreamer<JsonStreamer> container(Path path)
+    {
+        return null;
+    }
+
+    @Override
+    public BinaryStreamer binary(Path path)
+    {
+        return null;
+    }
+
+    @Override
+    public boolean rename(Path path, String newName)
+    {
+        return false;
+    }
+
+    @Override
+    public void execute(Path path)
+    {
+
+    }
+
+    @Override
+    public long getFreeSpace()
+    {
+        return 0;
+    }
+
+    @Override
+    public long getTotalSpace()
+    {
+        return 0;
+    }
+}

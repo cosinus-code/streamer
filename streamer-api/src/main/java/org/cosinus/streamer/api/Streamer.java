@@ -91,4 +91,17 @@ public interface Streamer<T> {
     default boolean isOlderThan(Streamer<?> streamerToCompareTo) {
         return lastModified() < streamerToCompareTo.lastModified();
     }
+
+    default String getKey() {
+        return ofNullable(getPath())
+            .map(Path::toString)
+            .map(path -> ofNullable(getProtocol())
+                .map(protocol -> protocol.concat(path))
+                .orElse(path))
+            .orElseGet(() -> ofNullable(getName())
+                .map(name -> ofNullable(getProtocol())
+                    .map(protocol -> protocol.concat(name))
+                    .orElse(name))
+                .orElse(""));
+    }
 }

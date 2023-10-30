@@ -75,6 +75,11 @@ public abstract class ProgressWorker<P extends ProgressModel> extends SwingWorke
         this.paused = paused;
     }
 
+    public void publishProgress(Runnable runnable) {
+        runnable.run();
+        publishProgress();
+    }
+
     public void publishProgress() {
         publish(progress);
     }

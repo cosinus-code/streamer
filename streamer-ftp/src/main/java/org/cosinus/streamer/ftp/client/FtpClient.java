@@ -18,7 +18,8 @@ package org.cosinus.streamer.ftp.client;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
-import org.cosinus.streamer.api.stream.FlatStreamerSpliterator;
+import org.cosinus.streamer.api.stream.FlatStreamingSpliterator;
+import org.cosinus.streamer.api.stream.FlatStreamingStrategy;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,10 +57,12 @@ public class FtpClient extends FTPClient implements AutoCloseable {
                 .onClose(this::close);
     }
 
-    public Stream<FtpFile> flatStream(Stream<FtpFile> roots) {
-        return StreamSupport
-                .stream(new FlatStreamerSpliterator<>(roots, this::internalStream), false)
-                .onClose(this::close);
+    public Stream<FtpFile> flatStream(FlatStreamingStrategy strategy, Stream<FtpFile> roots) {
+        return null;
+        //TODO
+//        return StreamSupport
+//                .stream(new FlatStreamingSpliterator<>(strategy, roots, this::internalStream), false)
+//                .onClose(this::close);
     }
 
     private Stream<FtpFile> internalStream(FtpFile parent) {

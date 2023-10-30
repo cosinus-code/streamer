@@ -39,27 +39,25 @@ public class CopyBinaryListener implements PipelineListener<byte[]> {
 
     @Override
     public void beforePipelineOpen() {
-        progressModel.startStreamerProgress(source, target);
-        progressWorker.publishProgress();
+        progressWorker.publishProgress(() -> progressModel.startStreamerProgress(source, target));
     }
 
     @Override
-    public void afterPipelineDataConsume(byte[] bytes) {
+    public void afterPipelineDataConsume(final byte[] bytes) {
         progressWorker.checkWorkerStatus();
-        progressModel.updateStreamerProgress(bytes.length);
-        progressWorker.publishProgress();
+        progressWorker.publishProgress(() -> progressModel.updateStreamerProgress(bytes.length));
     }
 
     @Override
     public void afterPipelineDataSkip(long skippedDataSize) {
-        progressModel.updateStreamerProgress(skippedDataSize);
-        progressModel.finishStreamerProgress();
-        progressWorker.publishProgress();
+        progressWorker.publishProgress(() -> {
+            progressModel.updateStreamerProgress(skippedDataSize);
+            progressModel.finishStreamerProgress();
+        });
     }
 
     @Override
     public void afterPipelineClose() {
-        progressModel.finishStreamerProgress();
-        progressWorker.publishProgress();
+        progressWorker.publishProgress(progressModel::finishStreamerProgress);
     }
 }
