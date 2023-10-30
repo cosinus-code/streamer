@@ -84,14 +84,13 @@ public class CopyBinaryStrategy implements BinaryPipelineStrategy {
     }
 
     @Override
-    public boolean shouldRetryOnFailed() {
+    public boolean shouldRetryOnFail() {
         DialogOption optionValue = dialogHandler.retryWithSkipDialog(parentWindow,
             translator.translate("act_copy_error_write", target.getPath()));
         if (optionValue == DialogOption.ABORT) {
             throw new AbortPipelineConsumeException("Copy aborted by user after data consume failed");
         }
         if (optionValue == DialogOption.SKIP) {
-            //TODO: the skipped bytes should be source.getSize() - already copied bytes
             long skippedBytes = source.getSize();
             throw new SkipPipelineConsumeException(skippedBytes, format("Accepted to skip %d bytes", skippedBytes));
         }
@@ -141,21 +140,24 @@ public class CopyBinaryStrategy implements BinaryPipelineStrategy {
 
     private BinaryStreamer applyOverwriteOption(BinaryStreamer source, BinaryStreamer target) {
 
-        if (shouldSkipAllExistingTargets() ||
-            shouldOverwriteAllExistingTargets() ||
+        if (shouldSkipAllExistingTargets()) {
+            throw new SkipPipelineConsumeException(source.getSize());
+        }
+
+        if (shouldOverwriteAllExistingTargets() ||
             shouldOverwriteAllExistingTargetsIfOlder()) {
             return target;
         }
 
         CopyOverwriteOption overwriteOption = dialogHandler.showCustomOptionDialog(
             parentWindow,
-            translator.translate("act_copy_file_exists"),
+            translator.translate("act_copy_target_exists"),
             getOverwriteMessage(source, target),
             DEFAULT_OPTION,
             INFORMATION_MESSAGE,
             iconHandler.findIconByFile(source.getPath().toFile(), IconSize.X32).orElse(null),
             3,
-            450,
+            550,
             values());
 
         if (overwriteOption == null || overwriteOption == CANCEL) {
@@ -182,9 +184,10 @@ public class CopyBinaryStrategy implements BinaryPipelineStrategy {
     }
 
     protected String getOverwriteMessage(BinaryStreamer source, BinaryStreamer target) {
-        return format("%s\n\n%s\n%s\n\n",
+        return format("%s\n%s\n\n%s\n%s\n\n",
             translator.translate("act_copy_already_exists", target.getPath()),
-            translator.translate("act_copy_source_mofified",
+            target.getPath(),
+            translator.translate("act_copy_source_modified",
                 formatHandler.formatDate(source.lastModified()),
                 formatHandler.formatMemorySize(source.getSize())),
             translator.translate("act_copy_target_modified",

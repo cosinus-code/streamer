@@ -77,7 +77,6 @@ public class CopyProgressDialog extends ProgressDialog<CopyProgressModel> {
         copyToLabel.setSize(400, 16);
 
         setSize(new Dimension(463, 193));
-        centerWindow();
     }
 
     @Override
@@ -88,14 +87,16 @@ public class CopyProgressDialog extends ProgressDialog<CopyProgressModel> {
     }
 
     protected void updateActionStatus(final CopyProgressModel progress) {
-        String actionStatus = progress.getTotalProgress() == 0 ?
+        boolean preparingAction = progress.getTotalProgress() == 0;
+        itemProgressBar.setIndeterminate(preparingAction);
+        String actionStatus = preparingAction ?
             translator.translate("action_preparing") :
             progress.getSpeed() == 0 ?
-                "" :
+                translator.translate("form_copying") :
                 translator.translate("form_copy_speed",
                     formatHandler.formatMemorySize(progress.getSpeed()),
                     formatHandler.formatTime(progress.getRemainingTime()));
-        actionLabel.setText(actionName + ":" + actionStatus);
+        actionLabel.setText(actionStatus);
     }
 
     protected void updateActionFromTo(final CopyProgressModel progress) {

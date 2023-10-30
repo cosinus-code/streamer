@@ -66,7 +66,7 @@ public abstract class ProgressDialog<P extends ProgressModel> extends Dialog<Voi
     protected final String actionName;
 
     public ProgressDialog(Frame frame, ActionModel actionModel) {
-        super(frame, frame.getTitle() + " " + actionModel.getActionName(), true, false);
+        super(frame, frame.getTitle(), true, false);
         this.actionModel = actionModel;
         this.actionName = translator.translate(actionModel.getActionName());
     }

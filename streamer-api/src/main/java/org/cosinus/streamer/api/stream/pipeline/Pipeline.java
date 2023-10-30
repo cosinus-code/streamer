@@ -4,6 +4,7 @@ import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
 import org.cosinus.streamer.api.stream.pipeline.error.SkipPipelineConsumeException;
 
 import java.io.IOException;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
@@ -38,7 +39,9 @@ public interface Pipeline<D, I extends Stream<D>, O extends StreamConsumer<D>, S
             preparePipelineConsume(pipelineInputStream, pipelineOutputStream, pipelineStrategy, pipelineListener);
             pipelineOutputStream.consume(
                 pipelineInputStream,
-                pipelineStrategy::shouldRetryOnFailed,
+                ofNullable(pipelineStrategy)
+                    .map(strategy -> (Supplier<Boolean>) strategy::shouldRetryOnFail)
+                    .orElse(null),
                 pipelineListener::beforePipelineDataConsume,
                 pipelineListener::afterPipelineDataConsume);
             checkPipelineConsume(pipelineInputStream, pipelineOutputStream, pipelineStrategy, pipelineListener);

@@ -26,7 +26,7 @@ import static java.util.Optional.ofNullable;
 
 public interface StreamConsumer<T> extends Consumer<T>, AutoCloseable {
 
-    int RETRY_MAX_ATTEMPTS = 3;
+    int RETRY_MAX_ATTEMPTS = 1;
 
     default void consume(Stream<T> stream) {
         consume(stream, null, null, null);
