@@ -113,9 +113,6 @@ public class FileMainStreamer extends MainStreamer<FileStreamer> {
         return directory ?
             new FileParentStreamer(this, fileHandler, path) :
             new FileBinaryStreamer(this, fileHandler, path);
-//                fileHandler.mimeType(path).startsWith("text") ?
-//                        new TextFileStreamer(this, fileHandler, path) :
-//                        new BinaryFileStreamer(this, fileHandler, path);
     }
 
     @Override

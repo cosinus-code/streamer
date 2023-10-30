@@ -35,6 +35,7 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 
 /**
  * {@link ProgressWorker} for copying streamers from a source parent streamer to target parent streamer
@@ -89,7 +90,13 @@ public class CopyWorker<S extends Streamer<?>, T extends Streamer<?>>
     @Override
     public void preparePipelineOpen(CopyStrategy pipelineStrategy,
                                     PipelineListener<S> pipelineListener) {
-        this.totalSize = source.getTotalSize(streamerFilter);
+        try (Stream<? extends Streamer<?>> flatStreamers = source.flatStream(streamerFilter)) {
+            this.totalSize = flatStreamers
+                .filter(not(Streamer::isParent))
+                .mapToLong(Streamer::getSize)
+                .sum();
+        }
+
         long freeSpace = destination.getFreeSpace();
         if (totalSize > freeSpace && !copyStrategy.shouldContinueWhenNotEnoughFreeSpace()) {
             throw new AbortPipelineConsumeException("Not enough free space on destination: " +

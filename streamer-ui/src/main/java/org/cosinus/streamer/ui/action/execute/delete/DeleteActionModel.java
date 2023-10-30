@@ -36,7 +36,7 @@ public class DeleteActionModel extends ActionModel {
 
     private StreamerFilter streamerFilter;
 
-    private ParentStreamer<Streamer<?>> streamer;
+    private ParentStreamer<Streamer<?>> parentStreamer;
 
     public DeleteActionModel(String actionName) {
         super(UUID.randomUUID().toString(), actionName);
@@ -56,12 +56,12 @@ public class DeleteActionModel extends ActionModel {
         return streamerFilter;
     }
 
-    public ParentStreamer<Streamer<?>> getStreamer() {
-        return streamer;
+    public ParentStreamer<Streamer<?>> getParentStreamer() {
+        return parentStreamer;
     }
 
-    public DeleteActionModel from(ParentStreamer<Streamer<?>> streamer) {
-        this.streamer = streamer;
+    public DeleteActionModel from(ParentStreamer<Streamer<?>> parentStreamer) {
+        this.parentStreamer = parentStreamer;
         return this;
     }
 

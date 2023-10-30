@@ -23,7 +23,6 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static java.util.function.Predicate.not;
 import static org.cosinus.streamer.api.stream.FlatStreamingStrategy.LEVEL_UP_BOTTOM;
 
 public interface ParentStreamer<S extends Streamer> extends Streamer<S> {
@@ -58,35 +57,6 @@ public interface ParentStreamer<S extends Streamer> extends Streamer<S> {
     long getFreeSpace();
 
     long getTotalSpace();
-
-    /**
-     * Get amount of space occupied by a streamer.
-     *
-     * @param streamerFilter the filter to apply on the direct children
-     * @return the amount of space occupied by the streamer in bytes
-     */
-    default long getTotalSize(StreamerFilter streamerFilter) {
-        try (Stream<? extends Streamer> flatStreamers = flatStream(streamerFilter)) {
-            return flatStreamers
-                    .filter(not(Streamer::isParent))
-                    .mapToLong(Streamer::getSize)
-                    .sum();
-        }
-    }
-
-    /**
-     * Count all streamers that are not directories in the whole sub-tree.
-     *
-     * @param streamerFilter the filter to apply on the direct children
-     * @return the number of non-directories
-     */
-    default long count(StreamerFilter streamerFilter) {
-        try (Stream<? extends Streamer> flatStreamers = flatStream(streamerFilter)) {
-            return flatStreamers
-                    .filter(not(Streamer::isParent))
-                    .count();
-        }
-    }
 
     @Override
     default boolean isParent() {
