@@ -115,10 +115,6 @@ public class StreamerFrame extends SwingApplicationFrame {
         return streamerViewHandler.getCurrentView();
     }
 
-    public void setCurrentLocation(PanelLocation currentLocation) {
-        streamerViewHandler.setCurrentLocation(currentLocation);
-    }
-
     @Override
     public void translate() {
         super.translate();

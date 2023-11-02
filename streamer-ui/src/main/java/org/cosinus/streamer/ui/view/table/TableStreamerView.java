@@ -174,7 +174,7 @@ public abstract class TableStreamerView extends RenamingStreamerView {
 
     @Override
     public void workerFinished() {
-        if (table.getCurrentIndex() < 0) {
+        if (isActive() && table.getCurrentIndex() < 0) {
             table.setCurrentIndex(0);
         }
     }
