@@ -70,7 +70,7 @@ public class StreamersProgressDialog extends ProgressDialog<StreamersProgressMod
     }
 
     @Override
-    public void setProgress(StreamersProgressModel progressModel) {
+    public void workerUpdated(StreamersProgressModel progressModel) {
         actionLabel.setText(actionName);
         Optional.ofNullable(progressModel.getCurrentStreamer())
             .map(Streamer::getPath)

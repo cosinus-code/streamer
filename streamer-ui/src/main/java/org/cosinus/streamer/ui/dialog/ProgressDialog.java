@@ -17,8 +17,8 @@
 package org.cosinus.streamer.ui.dialog;
 
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
-import org.cosinus.streamer.ui.action.progress.ProgressListener;
-import org.cosinus.streamer.ui.action.progress.ProgressModel;
+import org.cosinus.streamer.ui.action.execute.WorkerListener;
+import org.cosinus.streamer.ui.action.execute.WorkerModel;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.action.execute.ActionModel;
 import org.cosinus.swing.format.FormatHandler;
@@ -40,7 +40,8 @@ import static java.awt.BorderLayout.SOUTH;
 /**
  * Generic dialog for showing progress
  */
-public abstract class ProgressDialog<P extends ProgressModel> extends Dialog<Void> implements ProgressListener<P> {
+public abstract class ProgressDialog<M extends WorkerModel> extends Dialog<Void> implements WorkerListener<M>
+{
 
     @Autowired
     protected ActionExecutors actionExecutors;
@@ -148,12 +149,12 @@ public abstract class ProgressDialog<P extends ProgressModel> extends Dialog<Voi
     }
 
     @Override
-    public void startProgress() {
+    public void workerStarted() {
         setVisible(true);
     }
 
     @Override
-    public void finishProgress() {
+    public void workerFinished() {
         dispose();
     }
 

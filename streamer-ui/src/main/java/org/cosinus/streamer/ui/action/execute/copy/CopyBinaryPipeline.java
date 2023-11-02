@@ -19,7 +19,6 @@ import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.stream.pipeline.PipelineListener;
 import org.cosinus.streamer.api.stream.pipeline.binary.BinaryPipeline;
 import org.cosinus.streamer.api.stream.pipeline.binary.BinaryPipelineStrategy;
-import org.cosinus.streamer.ui.action.execute.ProgressWorker;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -37,11 +36,11 @@ public class CopyBinaryPipeline implements BinaryPipeline {
     public CopyBinaryPipeline(BinaryStreamer source,
                               BinaryStreamer target,
                               CopyStrategy copyStrategy,
-                              ProgressWorker<CopyProgressModel> progressWorker) {
+                              CopyWorker copyWorker) {
         this.source = source;
         this.target = target;
-        this.copyStrategy = new CopyBinaryStrategy(source, target, copyStrategy, progressWorker);
-        this.pipelineListener = new CopyBinaryListener(source, target, progressWorker);
+        this.copyStrategy = new CopyBinaryStrategy(source, target, copyStrategy);
+        this.pipelineListener = new CopyBinaryListener(source, target, copyWorker);
     }
 
     @Override

@@ -24,9 +24,12 @@ import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
 import org.cosinus.streamer.api.stream.pipeline.Pipeline;
 import org.cosinus.streamer.api.stream.pipeline.PipelineListener;
 import org.cosinus.streamer.api.stream.pipeline.error.AbortPipelineConsumeException;
-import org.cosinus.streamer.ui.action.execute.ProgressWorker;
+import org.cosinus.streamer.ui.action.execute.SimpleWorker;
+import org.cosinus.streamer.ui.action.execute.Worker;
 import org.cosinus.streamer.ui.error.AbortActionException;
 import org.cosinus.streamer.ui.error.ActionException;
+import org.cosinus.swing.format.FormatHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
 import java.io.IOException;
@@ -38,11 +41,14 @@ import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 
 /**
- * {@link ProgressWorker} for copying streamers from a source parent streamer to target parent streamer
+ * {@link Worker} for copying streamers from a source parent streamer to target parent streamer
  */
 public class CopyWorker<S extends Streamer<?>, T extends Streamer<?>>
-    extends ProgressWorker<CopyProgressModel>
+    extends SimpleWorker<CopyProgressModel>
     implements Pipeline<S, Stream<S>, StreamConsumer<S>, CopyStrategy> {
+
+    @Autowired
+    protected FormatHandler formatHandler;
 
     private final ParentStreamer<S> source;
 
@@ -56,9 +62,8 @@ public class CopyWorker<S extends Streamer<?>, T extends Streamer<?>>
 
     private long totalSize;
 
-    public CopyWorker(CopyActionModel<S, T> copyModel,
-                      Window parentWindow) {
-        super(parentWindow, copyModel.getActionId(), new CopyProgressModel(copyModel.getActionId()));
+    public CopyWorker(CopyActionModel<S, T> copyModel) {
+        super(copyModel.getActionId(), new CopyProgressModel());
         this.source = copyModel.getSource();
         this.destination = copyModel.getDestination();
         this.streamerFilter = copyModel.getSourceFilter();
@@ -112,7 +117,6 @@ public class CopyWorker<S extends Streamer<?>, T extends Streamer<?>>
     @Override
     public StreamConsumer<S> openPipelineOutputStream(CopyStrategy pipelineStrategy) {
         return streamerToCopy -> {
-            checkWorkerStatus();
             ofNullable(streamerToCopy.binaryStreamer())
                 .ifPresentOrElse(
                     this::copyBinaryStreamer,
@@ -158,20 +162,20 @@ public class CopyWorker<S extends Streamer<?>, T extends Streamer<?>>
     private class OverallCopyListener implements PipelineListener<S> {
         @Override
         public void beforePipelineOpen() {
-            publishProgress(() -> progress.startTotalProgress(totalSize));
+            updateModel(() -> workerModel.startTotalProgress(totalSize));
         }
 
         @Override
         public void afterPipelineDataSkip(long skippedDataSize) {
-            publishProgress(() -> {
-                progress.updateStreamerProgress(skippedDataSize);
-                progress.finishStreamerProgress();
+            updateModel(() -> {
+                workerModel.updateStreamerProgress(skippedDataSize);
+                workerModel.finishStreamerProgress();
             });
         }
 
         @Override
         public void afterPipelineClose() {
-            publishProgress(progress::finishTotalProgress);
+            updateModel(workerModel::finishTotalProgress);
         }
     }
 }

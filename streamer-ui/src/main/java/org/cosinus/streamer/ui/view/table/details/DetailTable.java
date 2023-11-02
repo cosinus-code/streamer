@@ -86,11 +86,9 @@ public class DetailTable extends DataTable implements ActionListener {
         setSelectionType();
 
         setSelectionModel(new DefaultListSelectionModel() {
-            public void setSelectionInterval(int row1,
-                                             int row2) {
+            public void setSelectionInterval(int row1, int row2) {
                 try {
-                    super.setSelectionInterval(row1,
-                                               row2);
+                    super.setSelectionInterval(row1, row2);
                     getTableModel().setCurrentIndex(row1);
                 } catch (Exception ex) {
                     errorHandler.handleError(DetailTable.this, ex);

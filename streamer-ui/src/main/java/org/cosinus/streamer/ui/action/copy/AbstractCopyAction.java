@@ -21,8 +21,8 @@ import org.cosinus.streamer.ui.action.LoadStreamerAction;
 import org.cosinus.streamer.ui.action.StreamerAction;
 import org.cosinus.streamer.ui.action.context.StreamerActionContext;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
-import org.cosinus.streamer.ui.action.progress.DefaultProgressListener;
-import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
+import org.cosinus.streamer.ui.action.execute.DefaultWorkerListener;
+import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
 import org.cosinus.streamer.ui.dialog.CopyConfirmationDialog;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.dialog.DialogHandler;
@@ -45,7 +45,7 @@ public abstract class AbstractCopyAction<A> extends StreamerAction<A> {
 
     protected final ActionExecutors actionExecutors;
 
-    protected final ProgressListenerHandler progressListenerHandler;
+    protected final WorkerListenerHandler workerListenerHandler;
 
     protected final LoadStreamerAction loadStreamerAction;
 
@@ -53,13 +53,13 @@ public abstract class AbstractCopyAction<A> extends StreamerAction<A> {
                                  Translator translator,
                                  DialogHandler dialogHandler,
                                  ActionExecutors actionExecutors,
-                                 ProgressListenerHandler progressListenerHandler,
+                                 WorkerListenerHandler workerListenerHandler,
                                  LoadStreamerAction loadStreamerAction) {
         this.preferences = preferences;
         this.translator = translator;
         this.dialogHandler = dialogHandler;
         this.actionExecutors = actionExecutors;
-        this.progressListenerHandler = progressListenerHandler;
+        this.workerListenerHandler = workerListenerHandler;
         this.loadStreamerAction = loadStreamerAction;
     }
 
@@ -87,9 +87,9 @@ public abstract class AbstractCopyAction<A> extends StreamerAction<A> {
 
     protected <S extends Streamer<?>, T extends Streamer<?>> void execute(CopyActionModel<S, T> copyAction,
                                                                           StreamerActionContext actionContext) {
-        progressListenerHandler.register(copyAction.getActionId(), new DefaultProgressListener() {
+        workerListenerHandler.register(copyAction.getActionId(), new DefaultWorkerListener() {
             @Override
-            public void finishProgress() {
+            public void workerFinished() {
                 loadStreamerAction.run(new StreamerActionContext(actionContext.getOppositeView()));
             }
         });

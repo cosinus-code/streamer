@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cosinus.streamer.ui.action.execute.delete;
+package org.cosinus.streamer.ui.action.execute;
 
-import org.cosinus.streamer.api.stream.pipeline.PipelineStrategy;
-
-public class DeleteStrategy implements PipelineStrategy
+public interface WorkerView
 {
 }

@@ -16,12 +16,15 @@
 
 package org.cosinus.streamer.ui.action.progress;
 
+import org.cosinus.streamer.ui.action.execute.WorkerModel;
+
+import java.util.List;
+
 /**
  * Action progress model
  */
-public class SimpleProgressModel implements ProgressModel {
-
-    private final String actionId;
+public class SimpleProgressModel implements WorkerModel<Long>
+{
 
     private long progressSize;
 
@@ -35,13 +38,13 @@ public class SimpleProgressModel implements ProgressModel {
 
     private long remainingTime;
 
-    public SimpleProgressModel(String actionId) {
-        this.actionId = actionId;
-    }
-
     @Override
-    public String getActionId() {
-        return actionId;
+    public void update(List<Long> items)
+    {
+        updateProgress(items
+            .stream()
+            .mapToLong(Long::longValue)
+            .sum());
     }
 
     public void startProgress(long totalProgressSize) {

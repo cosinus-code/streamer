@@ -18,53 +18,62 @@ package org.cosinus.streamer.ui.action.execute;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
-import org.cosinus.streamer.ui.action.progress.ProgressModel;
+import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.error.AbortActionException;
 import org.cosinus.streamer.ui.error.ActionException;
+import org.cosinus.swing.action.execute.ActionExecutors;
+import org.cosinus.swing.boot.SwingApplicationFrame;
 import org.cosinus.swing.error.ErrorHandler;
-import org.cosinus.swing.format.FormatHandler;
 import org.cosinus.swing.worker.SwingWorker;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.awt.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import static java.lang.Thread.currentThread;
 import static java.util.Optional.ofNullable;
 
 /**
  * Abstract {@link javax.swing.SwingWorker} with custom progress
  */
-public abstract class ProgressWorker<P extends ProgressModel> extends SwingWorker<Void, P> {
+public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M, T> {
 
-    private static final Logger LOG = LogManager.getLogger(ProgressWorker.class);
+    private static final Logger LOG = LogManager.getLogger(Worker.class);
 
     @Autowired
-    protected ProgressListenerHandler<P> progressListenerHandler;
+    private SwingApplicationFrame applicationFrame;
+
+    @Autowired
+    protected ActionExecutors actionExecutors;
+
+    @Autowired
+    protected WorkerListenerHandler<M> workerListenerHandler;
 
     @Autowired
     protected ErrorHandler errorHandler;
 
-    @Autowired
-    protected FormatHandler formatHandler;
+    private final String id;
 
-    protected final Window parentWindow;
-
-    private final String actionId;
-
-    protected final P progress;
+    protected final M workerModel;
 
     private ActionException error;
 
     private boolean paused;
 
-    protected ProgressWorker(Window parentWindow,
-                             String actionId,
-                             P progress) {
-        this.parentWindow = parentWindow;
-        this.actionId = actionId;
-        this.progress = progress;
+    protected Worker(String id, M workerModel) {
+        this.id = id;
+        this.workerModel = workerModel;
+    }
+
+    public String getId()
+    {
+        return id;
+    }
+
+    public void start()
+    {
+        execute();
+        workerListenerHandler.workerStarted(getId());
     }
 
     public boolean isPaused() {
@@ -75,36 +84,36 @@ public abstract class ProgressWorker<P extends ProgressModel> extends SwingWorke
         this.paused = paused;
     }
 
-    public void publishProgress(Runnable runnable) {
-        runnable.run();
-        publishProgress();
-    }
-
-    public void publishProgress() {
-        publish(progress);
-    }
+//    public void publishProgress(Runnable runnable) {
+//        runnable.run();
+//        publishProgress();
+//    }
+//
+//    public void publishProgress() {
+//        publish(workerModel);
+//    }
 
     protected void setError(ActionException error) {
         this.error = error;
     }
 
     @Override
-    protected Void doInBackground() {
+    protected M doInBackground() {
         try {
             doWork();
         } catch (ActionException ex) {
             setError(ex);
         } catch (AbortActionException ex) {
-            LOG.trace("Action aborted: " + actionId);
+            LOG.trace("Action aborted: " + id);
         }
-        return null;
+        return workerModel;
     }
 
     @Override
-    protected void process(List<P> progress) {
-        if (!isCancelled()) {
-            progressListenerHandler.setProgress(progress.get(progress.size() - 1));
-        }
+    protected void process(List<T> items) {
+        checkWorkerStatus();
+        workerModel.update(items);
+        workerListenerHandler.workerUpdated(getId(), workerModel);
     }
 
     @Override
@@ -114,12 +123,17 @@ public abstract class ProgressWorker<P extends ProgressModel> extends SwingWorke
                 get();
             }
         } catch (InterruptedException | ExecutionException e) {
-            LOG.error("Failed to update progress", e);
+            LOG.error(e);
+            error = new ActionException("Failed to update worker model", e);
         }
 
         ofNullable(error)
-            .ifPresent(error -> errorHandler.handleError(parentWindow, error));
-        progressListenerHandler.finishProgress(progress);
+            .ifPresent(error -> errorHandler.handleError(applicationFrame, error));
+
+        workerListenerHandler.workerFinished(getId(), workerModel);
+        actionExecutors.getActionExecutor(CopyActionModel.class)
+            .ifPresent(executor -> executor.remove(getId()));
+
     }
 
     public void checkWorkerStatus() {
@@ -131,18 +145,14 @@ public abstract class ProgressWorker<P extends ProgressModel> extends SwingWorke
                 try {
                     wait();
                 } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
+                    currentThread().interrupt();
                 }
             }
         }
     }
 
-    public P getProgressModel() {
-        return progress;
-    }
-
-    public Window getParentWindow() {
-        return parentWindow;
+    public M getWorkerModel() {
+        return workerModel;
     }
 
     protected abstract void doWork();

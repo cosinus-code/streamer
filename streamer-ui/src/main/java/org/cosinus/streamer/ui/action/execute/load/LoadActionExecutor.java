@@ -18,14 +18,10 @@ package org.cosinus.streamer.ui.action.execute.load;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.meta.StreamerHandler;
-import org.cosinus.streamer.api.pack.PackerHandler;
-import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
-import org.cosinus.streamer.ui.action.progress.ProgressModel;
-import org.cosinus.streamer.ui.view.AddressBar;
+import org.cosinus.streamer.ui.action.execute.WorkerListener;
+import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
+import org.cosinus.streamer.ui.action.execute.WorkerModel;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.streamer.ui.view.StreamerViewStorage;
 import org.cosinus.swing.action.execute.ActionExecutor;
 import org.cosinus.swing.worker.SwingWorker;
 import org.springframework.stereotype.Component;
@@ -34,67 +30,51 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Optional.ofNullable;
-import static java.util.function.Predicate.not;
 
 /**
  * Implementation of {@link ActionExecutor} based on {@link LoadStreamerWorker}
  */
 @Component
-public class LoadActionExecutor<P extends ProgressModel> implements ActionExecutor<LoadActionModel> {
+public class LoadActionExecutor<M extends WorkerModel> implements ActionExecutor<LoadActionModel> {
 
     private static final Logger LOG = LogManager.getLogger(LoadActionExecutor.class);
 
-    private final StreamerViewStorage streamerViewStorage;
-
-    private final PackerHandler packerHandler;
-
-    private final StreamerHandler streamerHandler;
-
     private final StreamerViewHandler streamerViewHandler;
 
-    protected final ProgressListenerHandler<P> progressListenerHandler;
+    protected final WorkerListenerHandler<M> workerListenerHandler;
 
     private final Map<String, LoadStreamerWorker> workersMap;
 
-    private final AddressBar addressBar;
-
-    public LoadActionExecutor(StreamerViewStorage streamerViewStorage,
-                              PackerHandler packerHandler,
-                              StreamerHandler streamerHandler,
-                              StreamerViewHandler streamerViewHandler,
-                              ProgressListenerHandler<P> progressListenerHandler,
-                              AddressBar addressBar) {
-        this.streamerViewStorage = streamerViewStorage;
-        this.packerHandler = packerHandler;
-        this.streamerHandler = streamerHandler;
+    public LoadActionExecutor(StreamerViewHandler streamerViewHandler,
+                              WorkerListenerHandler<M> workerListenerHandler) {
         this.streamerViewHandler = streamerViewHandler;
-        this.progressListenerHandler = progressListenerHandler;
+        this.workerListenerHandler = workerListenerHandler;
         this.workersMap = new ConcurrentHashMap<>();
-        this.addressBar = addressBar;
     }
 
     @Override
     public void execute(final LoadActionModel loadActionModel) {
-        cancel(loadActionModel.getActionId());
-
-        progressListenerHandler.register(loadActionModel.getActionId(), loadActionModel.getView());
         LoadStreamerWorker worker = new LoadStreamerWorker(loadActionModel);
-        workersMap.put(loadActionModel.getActionId(), worker);
-        worker.execute();
-        progressListenerHandler.startProgress(loadActionModel.getActionId());
+        workerListenerHandler.register(worker.getId(), loadActionModel.getView());
+        registerWorker(worker);
+        worker.start();
     }
 
-    private Streamer getFirstAncestorAlive(Streamer streamer) {
-        return ofNullable(streamer.getParent())
-            .filter(not(Streamer::exists))
-            .map(this::getFirstAncestorAlive)
-            .orElse(streamer.getParent());
+    private void registerWorker(LoadStreamerWorker worker) {
+        cancel(worker.getId());
+        workersMap.put(worker.getId(), worker);
     }
 
     @Override
-    public void cancel(final String actionId) {
-        ofNullable(workersMap.get(actionId))
+    public void cancel(final String workerId) {
+        ofNullable(workersMap.get(workerId))
             .ifPresent(SwingWorker::cancel);
+    }
+
+    @Override
+    public void remove(String workerId)
+    {
+        workersMap.remove(workerId);
     }
 
     @Override

@@ -21,24 +21,31 @@ import org.cosinus.streamer.api.meta.StreamerHandler;
 import org.cosinus.streamer.api.pack.PackStreamer;
 import org.cosinus.streamer.ui.action.LoadStreamerAction;
 import org.cosinus.streamer.ui.action.context.StreamerActionContext;
+import org.cosinus.streamer.ui.action.execute.WorkerListener;
 import org.cosinus.streamer.ui.action.execute.load.StreamedContent;
-import org.cosinus.streamer.ui.action.progress.ProgressListener;
-import org.cosinus.streamer.ui.action.progress.SimpleProgressModel;
 import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.form.Panel;
+import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicProgressBarUI;
 import java.awt.*;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.SOUTH;
+import static java.awt.RenderingHints.KEY_ANTIALIASING;
+import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
 import static java.util.Optional.ofNullable;
+import static org.cosinus.swing.border.Borders.emptyBorder;
+import static org.cosinus.swing.color.SystemColor.MENU_SELECTION_BACKGROUND;
 
-public abstract class StreamerView<T> extends Panel implements ProgressListener<SimpleProgressModel> {
+public abstract class StreamerView<T> extends Panel implements WorkerListener<StreamedContent<T>>
+{
 
     protected final String id;
 
@@ -47,6 +54,9 @@ public abstract class StreamerView<T> extends Panel implements ProgressListener<
     protected final JPanel panContent;
 
     protected Component loadingIndicator;
+
+    @Autowired
+    private ApplicationUIHandler uiHandler;
 
     @Autowired
     protected StreamerViewHandler streamerViewHandler;
@@ -59,6 +69,9 @@ public abstract class StreamerView<T> extends Panel implements ProgressListener<
 
     @Autowired
     public ActionController actionController;
+
+    @Autowired
+    public AddressBar addressBar;
 
     public StreamerView(PanelLocation location) {
         this.id = UUID.randomUUID().toString();
@@ -76,9 +89,20 @@ public abstract class StreamerView<T> extends Panel implements ProgressListener<
     }
 
     protected Component createLoadingIndicator() {
-        JProgressBar loading = new JProgressBar();
+        JProgressBar loading = new JProgressBar(0, 100);
         loading.setIndeterminate(true);
-        loading.setPreferredSize(new Dimension(getWidth(), 10));
+        loading.setPreferredSize(new Dimension(getWidth(), 7));
+        loading.setUI(new BasicProgressBarUI() {
+            @Override
+            protected void paintIndeterminate(Graphics g, JComponent c) {
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
+                Rectangle rectangle = new Rectangle();
+                getBox(rectangle);
+                g.setColor(uiHandler.getColor(MENU_SELECTION_BACKGROUND));
+                g.fillRoundRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height - 1, 10, 10);
+            }
+        });
 
         return loading;
     }
@@ -117,36 +141,64 @@ public abstract class StreamerView<T> extends Panel implements ProgressListener<
     }
 
     @Override
-    public void startProgress() {
+    public void workerStarted() {
         loadingIndicator.setVisible(true);
     }
 
     @Override
-    public void setProgress(SimpleProgressModel progressModel) {
+    public void workerUpdated(StreamedContent<T> streamedContent) {
+        boolean newStreamer = !Objects.equals(streamedContent.getStreamer(), getLoadedStreamer());
+        internalUpdateContent(streamedContent);
+        if (!isActive()) {
+            setActive(false);
+        }
+        streamerViewHandler.getCurrentView().requestFocus();
+
+        if (newStreamer)
+        {
+            updateAddressBarAndStreamerPanel();
+        }
+    }
+
+    private void updateAddressBarAndStreamerPanel() {
+        ofNullable(getLoadedStreamer())
+            .ifPresent(loadedStreamer -> ofNullable(loadedStreamer.getUrlPath())
+                .map(address -> address.split("://"))
+                .map(address -> address[address.length - 1])
+                .ifPresent(address -> {
+                    addressBar.setAddress(address);
+                    getPanel().ifPresent(panel -> {
+                        panel.setAddress(address);
+                        ofNullable(loadedStreamer.getParent())
+                            .ifPresent(parent -> panel.setFreeSpace(
+                                parent.getFreeSpace(),
+                                parent.getTotalSpace()));
+                    });
+                }));
     }
 
     @Override
-    public void finishProgress() {
+    public void workerFinished(StreamedContent<T> streamedContent) {
         ofNullable(getLoadedStreamer())
             .filter(streamer -> PackStreamer.class.isAssignableFrom(streamer.getClass()))
             .map(PackStreamer.class::cast)
             .ifPresent(PackStreamer::finishLoading);
         loadingIndicator.setVisible(false);
         streamerViewStorage.saveLastLoadedStreamer(getLoadedStreamer(), getCurrentLocation());
+
+        ofNullable(streamedContent.getStreamer())
+            .filter(streamer -> PackStreamer.class.isAssignableFrom(streamer.getClass()))
+            .map(PackStreamer.class::cast)
+            .ifPresent(PackStreamer::finishLoading);
+        workerFinished();
+    }
+
+    public Optional<StreamerPanel> getPanel() {
+        return streamerViewHandler.getPanel(getCurrentLocation());
     }
 
     public boolean isActive() {
         return location == streamerViewHandler.getCurrentLocation();
-    }
-
-    public void updateContent(StreamedContent<T> content) {
-        internalUpdateContent(content);
-        if (!isActive()) {
-            setActive(false);
-        } else {
-            //TODO: to investigate why this is needed after delete
-            requestFocus();
-        }
     }
 
     public void showRename() {

@@ -154,8 +154,12 @@ public abstract class TableStreamerView extends RenamingStreamerView {
         getDataTableModel().updateContent(content);
         table.reset();
 
-        ofNullable(content.getContentIdentifier())
-            .ifPresent(this::findContent);
+        if(getDataTableModel().getCurrentIndex() >= 0)
+        {
+            System.out.println(getCurrentLocation() + " -> currentIndex: " + getDataTableModel().getCurrentIndex());
+            ofNullable(content.getContentIdentifier())
+                .ifPresent(this::findContent);
+        }
     }
 
     private DataTableModel getDataTableModel() {
@@ -163,14 +167,13 @@ public abstract class TableStreamerView extends RenamingStreamerView {
     }
 
     @Override
-    public void startProgress() {
-        super.startProgress();
+    public void workerStarted() {
+        super.workerStarted();
         table.setCurrentIndex(-1);
     }
 
     @Override
-    public void finishProgress() {
-        super.finishProgress();
+    public void workerFinished() {
         if (table.getCurrentIndex() < 0) {
             table.setCurrentIndex(0);
         }

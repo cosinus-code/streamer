@@ -17,33 +17,33 @@
 package org.cosinus.streamer.ui.action.execute.copy;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.action.progress.ProgressModel;
+import org.cosinus.streamer.ui.action.execute.WorkerModel;
 import org.cosinus.streamer.ui.action.progress.SimpleProgressModel;
+
+import java.util.List;
 
 /**
  * Model for a progress over multiple streamers for actions with source and target
  */
-public class CopyProgressModel implements ProgressModel {
+public class CopyProgressModel implements WorkerModel<CopyProgressModel>
+{
 
     private final SimpleProgressModel totalProgressModel;
 
     private final SimpleProgressModel streamerProgressModel;
 
-    private final String actionId;
-
     private Streamer<?> source;
 
     private Streamer<?> target;
 
-    public CopyProgressModel(String actionId) {
-        this.actionId = actionId;
-        totalProgressModel = new SimpleProgressModel(actionId);
-        streamerProgressModel = new SimpleProgressModel(actionId);
+    public CopyProgressModel() {
+        totalProgressModel = new SimpleProgressModel();
+        streamerProgressModel = new SimpleProgressModel();
     }
 
     @Override
-    public String getActionId() {
-        return actionId;
+    public void update(List<CopyProgressModel> items)
+    {
     }
 
     public int getTotalProgress() {

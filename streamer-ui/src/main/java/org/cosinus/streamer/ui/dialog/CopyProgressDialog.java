@@ -80,7 +80,7 @@ public class CopyProgressDialog extends ProgressDialog<CopyProgressModel> {
     }
 
     @Override
-    public void setProgress(final CopyProgressModel progress) {
+    public void workerUpdated(final CopyProgressModel progress) {
         updateActionStatus(progress);
         updateActionFromTo(progress);
         updateProgressBar(progress);

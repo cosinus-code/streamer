@@ -17,24 +17,45 @@
 package org.cosinus.streamer.ui.action.progress;
 
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.ui.action.execute.WorkerModel;
+
+import java.util.List;
 
 /**
  * Model for a progress over multiple streamers
  */
-public class StreamersProgressModel extends SimpleProgressModel {
+public class StreamersProgressModel implements WorkerModel<StreamersProgressModel>
+{
+    private final SimpleProgressModel simpleProgressMode;
 
-    private Streamer currentStreamer;
+    private Streamer<?> currentStreamer;
 
-    public StreamersProgressModel(String actionId) {
-        super(actionId);
+    public StreamersProgressModel() {
+        this.simpleProgressMode = new SimpleProgressModel();
     }
 
-    public void updateProgress(Streamer streamer) {
-        super.updateProgress(1);
+    public void updateProgress(Streamer<?> streamer) {
+        simpleProgressMode.updateProgress(1);
         this.currentStreamer = streamer;
     }
 
-    public Streamer getCurrentStreamer() {
+    public Streamer<?> getCurrentStreamer() {
         return currentStreamer;
+    }
+
+    public int getProgress() {
+        return simpleProgressMode.getProgress();
+    }
+
+    public void startProgress(long totalProgressSize) {
+        simpleProgressMode.startProgress(totalProgressSize);
+    }
+
+    public void finishProgress() {
+        simpleProgressMode.finishProgress();
+    }
+
+    @Override
+    public void update(List<StreamersProgressModel> items) {
     }
 }

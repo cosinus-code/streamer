@@ -20,7 +20,7 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.stream.pipeline.binary.BinaryPipelineStrategy;
 import org.cosinus.streamer.api.stream.pipeline.error.AbortPipelineConsumeException;
 import org.cosinus.streamer.api.stream.pipeline.error.SkipPipelineConsumeException;
-import org.cosinus.streamer.ui.action.execute.ProgressWorker;
+import org.cosinus.swing.boot.SwingApplicationFrame;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.dialog.DialogOption;
 import org.cosinus.swing.format.FormatHandler;
@@ -29,7 +29,6 @@ import org.cosinus.swing.image.icon.IconSize;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.awt.*;
 import java.util.Objects;
 import java.util.stream.IntStream;
 
@@ -45,6 +44,9 @@ import static org.cosinus.streamer.ui.action.execute.copy.CopyOverwriteOption.va
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 public class CopyBinaryStrategy implements BinaryPipelineStrategy {
+
+    @Autowired
+    SwingApplicationFrame applicationFrame;
 
     @Autowired
     private Translator translator;
@@ -64,8 +66,6 @@ public class CopyBinaryStrategy implements BinaryPipelineStrategy {
 
     private final CopyStrategy copyStrategy;
 
-    private final Window parentWindow;
-
     private boolean overwriteCurrentTarget;
 
     private boolean skipCurrentTargets;
@@ -74,18 +74,17 @@ public class CopyBinaryStrategy implements BinaryPipelineStrategy {
 
     private boolean resumeCopy;
 
-    public CopyBinaryStrategy(BinaryStreamer source, BinaryStreamer target, CopyStrategy copyStrategy,
-                              ProgressWorker<CopyProgressModel> progressWorker) {
+    public CopyBinaryStrategy(BinaryStreamer source, BinaryStreamer target, CopyStrategy copyStrategy) {
+
         injectContext(this);
         this.source = source;
         this.target = target;
         this.copyStrategy = copyStrategy;
-        this.parentWindow = progressWorker.getParentWindow();
     }
 
     @Override
     public boolean shouldRetryOnFail() {
-        DialogOption optionValue = dialogHandler.retryWithSkipDialog(parentWindow,
+        DialogOption optionValue = dialogHandler.retryWithSkipDialog(applicationFrame,
             translator.translate("act_copy_error_write", target.getPath()));
         if (optionValue == DialogOption.ABORT) {
             throw new AbortPipelineConsumeException("Copy aborted by user after data consume failed");
@@ -99,7 +98,7 @@ public class CopyBinaryStrategy implements BinaryPipelineStrategy {
 
     @Override
     public boolean shouldContinueWhenCannotResume(long skippedBytes, long bytesToSkip) {
-        int option = dialogHandler.showConfirmationDialog(parentWindow,
+        int option = dialogHandler.showConfirmationDialog(applicationFrame,
             translator.translate("act_copy_resume_not_match", source.getPath(), target.getPath()),
             translator.translate("act_copy_resume_confirmation"),
             YES_NO_CANCEL_OPTION);
@@ -108,7 +107,7 @@ public class CopyBinaryStrategy implements BinaryPipelineStrategy {
 
     @Override
     public boolean shouldContinueWhenCheckFailed() {
-        return dialogHandler.confirm(parentWindow,
+        return dialogHandler.confirm(applicationFrame,
             translator.translate("act_copy_check_error", source.getPath(), target.getPath()));
     }
 
@@ -150,7 +149,7 @@ public class CopyBinaryStrategy implements BinaryPipelineStrategy {
         }
 
         CopyOverwriteOption overwriteOption = dialogHandler.showCustomOptionDialog(
-            parentWindow,
+            applicationFrame,
             translator.translate("act_copy_target_exists"),
             getOverwriteMessage(source, target),
             DEFAULT_OPTION,
@@ -165,7 +164,7 @@ public class CopyBinaryStrategy implements BinaryPipelineStrategy {
         }
 
         if (overwriteOption == RENAME) {
-            BinaryStreamer newTarget = dialogHandler.showInputDialog(parentWindow,
+            BinaryStreamer newTarget = dialogHandler.showInputDialog(applicationFrame,
                     translator.translate("act_copy_new_name"))
                 .map(newName -> createRenamedStreamer(target, newName))
                 .orElseThrow(() -> new AbortPipelineConsumeException(

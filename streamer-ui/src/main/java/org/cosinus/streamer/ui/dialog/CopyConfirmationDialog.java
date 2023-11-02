@@ -110,8 +110,7 @@ public class CopyConfirmationDialog extends Dialog<CopyActionModel> {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         setSize(new Dimension(363, 213));
-
-        setLocationRelativeTo(getParent());
+        centerWindow();
     }
 
     public void browse() {

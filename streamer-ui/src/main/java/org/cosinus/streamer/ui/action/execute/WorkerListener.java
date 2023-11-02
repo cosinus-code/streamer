@@ -14,25 +14,39 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.action.progress;
+package org.cosinus.streamer.ui.action.execute;
 
-public interface ProgressListener<P extends ProgressModel> {
+import org.cosinus.streamer.ui.action.execute.WorkerModel;
+
+/**
+ * Worker listener.
+ *
+ * @param <M> the worker model type
+ */
+public interface WorkerListener<M extends WorkerModel> {
 
     /**
-     * Start the progress
+     * Signal the worker was started
      */
-    void startProgress();
+    void workerStarted();
 
     /**
-     * Set the progress
+     * Signal the worker model was updated
      *
-     * @param progressModel the progress model
+     * @param workerModel the worker model
      */
-    void setProgress(P progressModel);
+    void workerUpdated(M workerModel);
 
     /**
-     * Finish the progress
+     * Signal the worker was finished
      */
-    void finishProgress();
+    void workerFinished();
 
+    /**
+     * Signal the worker was finished
+     * @param workerModel the worker model
+     */
+    default void workerFinished(M workerModel) {
+        workerFinished();
+    }
 }

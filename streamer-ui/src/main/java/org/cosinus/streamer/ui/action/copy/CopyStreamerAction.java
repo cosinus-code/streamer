@@ -21,7 +21,7 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.LoadStreamerAction;
 import org.cosinus.streamer.ui.action.context.StreamerActionContext;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
-import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
+import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.preference.Preferences;
@@ -46,13 +46,13 @@ public class CopyStreamerAction<A> extends AbstractCopyAction<A> {
                               Translator translator,
                               DialogHandler dialogHandler,
                               ActionExecutors actionExecutors,
-                              ProgressListenerHandler progressListenerHandler,
+                              WorkerListenerHandler workerListenerHandler,
                               LoadStreamerAction loadStreamerAction) {
         super(preferences,
               translator,
               dialogHandler,
               actionExecutors,
-              progressListenerHandler,
+            workerListenerHandler,
               loadStreamerAction);
     }
 

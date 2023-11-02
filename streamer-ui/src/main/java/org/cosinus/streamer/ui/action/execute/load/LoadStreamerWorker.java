@@ -21,30 +21,26 @@ import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.meta.StreamerHandler;
-import org.cosinus.streamer.api.pack.PackStreamer;
 import org.cosinus.streamer.api.pack.PackerHandler;
-import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
-import org.cosinus.streamer.ui.action.progress.SimpleProgressModel;
-import org.cosinus.streamer.ui.view.AddressBar;
-import org.cosinus.streamer.ui.view.StreamerView;
-import org.cosinus.streamer.ui.view.StreamerViewHandler;
+import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
+import org.cosinus.streamer.api.stream.pipeline.PipelineListener;
+import org.cosinus.streamer.api.stream.pipeline.PipelineStrategy;
+import org.cosinus.streamer.ui.action.execute.PipelineWorker;
+import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerViewStorage;
-import org.cosinus.swing.error.ErrorHandler;
-import org.cosinus.swing.worker.SwingWorker;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static java.lang.Thread.sleep;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 
 /**
- * {@link javax.swing.SwingWorker} for loading an streamer
+ * {@link javax.swing.SwingWorker} for loading a streamer
  */
-public class LoadStreamerWorker<T> extends SwingWorker<Void, T> {
+public class LoadStreamerWorker<T> extends PipelineWorker<StreamedContent<T>, T> {
 
     private static final Logger LOG = LogManager.getLogger(LoadStreamerWorker.class);
 
@@ -57,48 +53,47 @@ public class LoadStreamerWorker<T> extends SwingWorker<Void, T> {
     @Autowired
     private PackerHandler packerHandler;
 
-    @Autowired
-    private StreamerViewHandler streamerViewHandler;
-
-    @Autowired
-    private ErrorHandler errorHandler;
-
-    @Autowired
-    private ProgressListenerHandler<SimpleProgressModel> progressListenerHandler;
-
-    @Autowired
-    private AddressBar addressBar;
-
-    private Streamer<T> streamerToLoad;
-
-    private final StreamerView<T> streamerView;
-
-    private final String contentIdentifier;
-
-    private final SimpleProgressModel progress;
-
-    private final List<T> content;
+    private final PanelLocation panelLocation;
 
     public LoadStreamerWorker(LoadActionModel loadActionModel) {
-        this.streamerToLoad = loadActionModel.getStreamer();
-        this.streamerView = loadActionModel.getView();
-        this.contentIdentifier = loadActionModel.getContentIdentifier();
-        this.content = new ArrayList<>();
-        this.progress = new SimpleProgressModel(loadActionModel.getActionId());
+        super(loadActionModel.getActionId(),
+            new StreamedContent<>(
+                loadActionModel.getStreamer(),
+                loadActionModel.getContentIdentifier()));
+        this.panelLocation = loadActionModel.getView().getCurrentLocation();
     }
 
     @Override
-    protected Void doInBackground() {
-        streamerToLoad = prepareStreamerToLoad(streamerToLoad);
-        if (streamerToLoad == null) {
-            LOG.trace("Streamer to load is null -> ignore the command.");
-            return null;
-        }
+    public Stream<T> openPipelineInputStream(PipelineStrategy pipelineStrategy)
+    {
+        return (Stream<T>) workerModel.getStreamer().stream();
+    }
 
-        try (Stream<? extends T> contentStream = streamerToLoad.stream()) {
-            contentStream.forEach(this::publish);
+    @Override
+    public StreamConsumer<T> openPipelineOutputStream(PipelineStrategy pipelineStrategy)
+    {
+        return item -> {
+            try
+            {
+                sleep(100);
+            }
+            catch (InterruptedException e)
+            {
+                throw new RuntimeException(e);
+            }
+            publish(item);
+        };
+        //return this::publish;
+    }
+
+    @Override
+    public void preparePipelineOpen(PipelineStrategy pipelineStrategy, PipelineListener<T> pipelineListener)
+    {
+        workerModel.setStreamer(prepareStreamerToLoad(workerModel.getStreamer()));
+        if (workerModel.getStreamer() == null) {
+            LOG.trace("No streamer to load.");
+            cancel();
         }
-        return null;
     }
 
     private Streamer prepareStreamerToLoad(Streamer streamerToLoad) {
@@ -111,85 +106,31 @@ public class LoadStreamerWorker<T> extends SwingWorker<Void, T> {
     }
 
     private Optional<Streamer> loadLastStreamer() {
-        return streamerViewStorage.loadLastLoadedStreamer(streamerView.getCurrentLocation())
-                .map(urlPath -> streamerHandler.getStreamer(urlPath));
+        return streamerViewStorage.loadLastLoadedStreamer(panelLocation)
+            .map(urlPath -> streamerHandler.getStreamer(urlPath));
     }
 
     private Streamer checkIfStreamerExist(Streamer streamerToCheck) {
         return ofNullable(streamerToCheck)
-                .filter(not(Streamer::exists))
-                .map(this::getFirstAncestorAlive)
-                .orElse(streamerToCheck);
+            .filter(not(Streamer::exists))
+            .map(this::getFirstAncestorAlive)
+            .orElse(streamerToCheck);
     }
 
     private Streamer checkIfStreamerIsPacked(Streamer streamerToCheck) {
         return ofNullable(streamerToCheck)
-                .filter(streamer -> BinaryStreamer.class.isAssignableFrom(streamer.getClass()))
-                .map(BinaryStreamer.class::cast)
-                .<Streamer>flatMap(binaryStream -> packerHandler
-                        .findPacker(binaryStream.getType())
-                        .map(packer -> packer.pack(binaryStream)))
-                .orElse(streamerToCheck);
-    }
-
-    @Override
-    protected void process(List<T> chunk) {
-        try {
-            if (!isCancelled()) {
-                content.addAll(chunk);
-                updateView();
-            }
-        } catch (Exception e) {
-            LOG.error("Failed to update the view", e);
-            errorHandler.handleError(e);
-        }
-    }
-
-    @Override
-    protected void done() {
-        try {
-            if (!isCancelled()) {
-                get();
-                updateView();
-            }
-        } catch (Exception e) {
-            LOG.error("Failed to update the view", e);
-            errorHandler.handleError(e);
-        } finally {
-            ofNullable(streamerToLoad)
-                    .filter(streamer -> PackStreamer.class.isAssignableFrom(streamer.getClass()))
-                    .map(PackStreamer.class::cast)
-                    .ifPresent(PackStreamer::finishLoading);
-            progressListenerHandler.finishProgress(progress);
-        }
-    }
-
-    private void updateView() {
-        if (streamerToLoad != null) {
-            streamerView.updateContent(new StreamedContent<>(streamerToLoad, content, contentIdentifier));
-            updateAddressBar();
-            progress.updateProgress(content.size());
-            progressListenerHandler.setProgress(progress);
-        }
-    }
-
-    private void updateAddressBar() {
-        streamerViewHandler.getPanel(streamerView.getCurrentLocation())
-                .ifPresent(panel -> ofNullable(streamerToLoad.getUrlPath())
-                        .map(address -> address.split("://"))
-                        .map(address -> address[address.length - 1])
-                        .ifPresent(address -> {
-                            addressBar.setAddress(address);
-                            panel.setAddress(address);
-                            panel.setFreeSpace(streamerToLoad.getParent().getFreeSpace(),
-                                    streamerToLoad.getParent().getTotalSpace());
-                        }));
+            .filter(streamer -> BinaryStreamer.class.isAssignableFrom(streamer.getClass()))
+            .map(BinaryStreamer.class::cast)
+            .<Streamer>flatMap(binaryStream -> packerHandler
+                .findPacker(binaryStream.getType())
+                .map(packer -> packer.pack(binaryStream)))
+            .orElse(streamerToCheck);
     }
 
     private Streamer getFirstAncestorAlive(Streamer streamer) {
         return ofNullable(streamer.getParent())
-                .filter(not(Streamer::exists))
-                .map(this::getFirstAncestorAlive)
-                .orElse(streamer.getParent());
+            .filter(not(Streamer::exists))
+            .map(this::getFirstAncestorAlive)
+            .orElse(streamer.getParent());
     }
 }

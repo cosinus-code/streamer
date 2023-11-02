@@ -22,7 +22,7 @@ import org.cosinus.streamer.api.pack.PackerHandler;
 import org.cosinus.streamer.ui.action.context.StreamerActionContext;
 import org.cosinus.streamer.ui.action.copy.AbstractCopyAction;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
-import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
+import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.preference.Preferences;
@@ -52,7 +52,7 @@ public class PackStreamerAction<A> extends AbstractCopyAction<A> {
                               Translator translator,
                               DialogHandler dialogHandler,
                               ActionExecutors actionExecutors,
-                              ProgressListenerHandler progressListenerHandler,
+                              WorkerListenerHandler workerListenerHandler,
                               LoadStreamerAction loadStreamerAction,
                               ApplicationUIHandler uiHandler,
                               PackerHandler packerHandler) {
@@ -60,7 +60,7 @@ public class PackStreamerAction<A> extends AbstractCopyAction<A> {
             translator,
             dialogHandler,
             actionExecutors,
-            progressListenerHandler,
+            workerListenerHandler,
             loadStreamerAction);
         this.uiHandler = uiHandler;
         this.packerHandler = packerHandler;

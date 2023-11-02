@@ -17,7 +17,7 @@ package org.cosinus.streamer.ui.action.execute.copy;
 
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.stream.pipeline.PipelineListener;
-import org.cosinus.streamer.ui.action.execute.ProgressWorker;
+import org.cosinus.streamer.ui.action.execute.SimpleWorker;
 
 public class CopyBinaryListener implements PipelineListener<byte[]> {
 
@@ -25,39 +25,39 @@ public class CopyBinaryListener implements PipelineListener<byte[]> {
 
     private final BinaryStreamer target;
 
-    private final ProgressWorker<CopyProgressModel> progressWorker;
+    private final SimpleWorker<CopyProgressModel> copyWorker;
 
-    private final CopyProgressModel progressModel;
+    private final CopyProgressModel workerModel;
 
     public CopyBinaryListener(
-        BinaryStreamer source, BinaryStreamer target, ProgressWorker<CopyProgressModel> progressWorker) {
+        BinaryStreamer source, BinaryStreamer target, SimpleWorker<CopyProgressModel> copyWorker) {
         this.source = source;
         this.target = target;
-        this.progressWorker = progressWorker;
-        this.progressModel = progressWorker.getProgressModel();
+        this.copyWorker = copyWorker;
+        this.workerModel = copyWorker.getWorkerModel();
     }
 
     @Override
     public void beforePipelineOpen() {
-        progressWorker.publishProgress(() -> progressModel.startStreamerProgress(source, target));
+        copyWorker.updateModel(() -> workerModel.startStreamerProgress(source, target));
     }
 
     @Override
     public void afterPipelineDataConsume(final byte[] bytes) {
-        progressWorker.checkWorkerStatus();
-        progressWorker.publishProgress(() -> progressModel.updateStreamerProgress(bytes.length));
+        copyWorker.checkWorkerStatus();
+        copyWorker.updateModel(() -> workerModel.updateStreamerProgress(bytes.length));
     }
 
     @Override
     public void afterPipelineDataSkip(long skippedDataSize) {
-        progressWorker.publishProgress(() -> {
-            progressModel.updateStreamerProgress(skippedDataSize);
-            progressModel.finishStreamerProgress();
+        copyWorker.updateModel(() -> {
+            workerModel.updateStreamerProgress(skippedDataSize);
+            workerModel.finishStreamerProgress();
         });
     }
 
     @Override
     public void afterPipelineClose() {
-        progressWorker.publishProgress(progressModel::finishStreamerProgress);
+        copyWorker.updateModel(workerModel::finishStreamerProgress);
     }
 }

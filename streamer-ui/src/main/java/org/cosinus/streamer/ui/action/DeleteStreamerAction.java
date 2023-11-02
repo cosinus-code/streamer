@@ -20,8 +20,8 @@ import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.context.StreamerActionContext;
 import org.cosinus.streamer.ui.action.execute.delete.DeleteActionModel;
-import org.cosinus.streamer.ui.action.progress.DefaultProgressListener;
-import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
+import org.cosinus.streamer.ui.action.execute.DefaultWorkerListener;
+import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.translate.Translator;
@@ -49,19 +49,19 @@ public class DeleteStreamerAction extends StreamerAction<Streamer<?>> {
 
     private final ActionExecutors actionExecutors;
 
-    private final ProgressListenerHandler progressListenerHandler;
+    private final WorkerListenerHandler workerListenerHandler;
 
     private final LoadStreamerAction loadStreamerAction;
 
     public DeleteStreamerAction(DialogHandler dialogHandler,
                                 Translator translator,
                                 ActionExecutors actionExecutors,
-                                ProgressListenerHandler progressListenerHandler,
+                                WorkerListenerHandler workerListenerHandler,
                                 LoadStreamerAction loadStreamerAction) {
         this.dialogHandler = dialogHandler;
         this.translator = translator;
         this.actionExecutors = actionExecutors;
-        this.progressListenerHandler = progressListenerHandler;
+        this.workerListenerHandler = workerListenerHandler;
         this.loadStreamerAction = loadStreamerAction;
     }
 
@@ -94,9 +94,9 @@ public class DeleteStreamerAction extends StreamerAction<Streamer<?>> {
                                   translator.translate("act-delete-are-you-sure-streamers"),
                                   getActionName(),
                                   YES_NO_CANCEL_OPTION)) {
-            progressListenerHandler.register(deleteAction.getActionId(), new DefaultProgressListener() {
+            workerListenerHandler.register(deleteAction.getActionId(), new DefaultWorkerListener() {
                 @Override
-                public void finishProgress() {
+                public void workerFinished() {
                     loadStreamerAction.run(new StreamerActionContext(actionContext.getCurrentView()));
                 }
             });

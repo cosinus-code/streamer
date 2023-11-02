@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.action.progress;
+package org.cosinus.streamer.ui.action.execute;
+
+import java.util.List;
 
 /**
  * Generic interface for a progress model
  */
-public interface ProgressModel {
+public interface WorkerModel<T>
+{
 
-    String getActionId();
+    void update(List<T> items);
 }

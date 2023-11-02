@@ -9,6 +9,14 @@ import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 
+/**
+ * Pipeline interface.
+ *
+ * @param <D> the type of data consumed through the pipeline
+ * @param <I> the type of input stream
+ * @param <O> the type of output stream consumer
+ * @param <S> the type of stream pipeline strategy
+ */
 public interface Pipeline<D, I extends Stream<D>, O extends StreamConsumer<D>, S extends PipelineStrategy> {
 
     I openPipelineInputStream(S pipelineStrategy);

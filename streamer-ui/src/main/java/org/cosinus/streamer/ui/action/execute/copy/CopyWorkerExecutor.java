@@ -17,10 +17,10 @@
 package org.cosinus.streamer.ui.action.execute.copy;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.action.execute.ProgressWorker;
-import org.cosinus.streamer.ui.action.execute.ProgressWorkerActionExecutor;
+import org.cosinus.streamer.ui.action.execute.SimpleWorker;
+import org.cosinus.streamer.ui.action.execute.WorkerExecutor;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
-import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
+import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
 import org.cosinus.streamer.ui.dialog.ProgressDialog;
 import org.cosinus.swing.action.execute.ActionExecutor;
 import org.springframework.stereotype.Component;
@@ -30,12 +30,11 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class CopyWorkerExecutor<S extends Streamer<?>, T extends Streamer<?>>
-    extends ProgressWorkerActionExecutor<CopyActionModel<S, T>, CopyProgressModel> {
+    extends WorkerExecutor<CopyActionModel<S, T>, CopyProgressModel, CopyProgressModel> {
 
     public CopyWorkerExecutor(ProgressFormHandler progressFormHandler,
-                              ProgressListenerHandler<CopyProgressModel> progressListenerHandler) {
-        super(progressFormHandler,
-            progressListenerHandler);
+                              WorkerListenerHandler<CopyProgressModel> workerListenerHandler) {
+        super(progressFormHandler, workerListenerHandler);
     }
 
     @Override
@@ -44,9 +43,8 @@ public class CopyWorkerExecutor<S extends Streamer<?>, T extends Streamer<?>>
     }
 
     @Override
-    protected ProgressWorker<CopyProgressModel> createSwingWorker(CopyActionModel<S, T> actionModel,
-                                                                  ProgressDialog<CopyProgressModel> progressDialog) {
-        return new CopyWorker(actionModel, progressDialog);
+    protected SimpleWorker<CopyProgressModel> createSwingWorker(final CopyActionModel<S, T> actionModel) {
+        return new CopyWorker<>(actionModel);
     }
 
     @Override

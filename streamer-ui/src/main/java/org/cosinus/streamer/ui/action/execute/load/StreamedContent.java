@@ -17,30 +17,44 @@
 package org.cosinus.streamer.ui.action.execute.load;
 
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.ui.action.execute.WorkerModel;
+import org.cosinus.streamer.ui.action.progress.SimpleProgressModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Data model
  */
-public class StreamedContent<T> {
+public class StreamedContent<T> implements WorkerModel<T> {
 
-    private final Streamer<T> streamer;
+    private Streamer<T> streamer;
 
     private final String contentIdentifier;
 
     private final List<T> content;
 
-    public StreamedContent(Streamer<T> streamer,
-                           List<T> content,
-                           String contentIdentifier) {
+    private final SimpleProgressModel progress;
+
+    public StreamedContent(Streamer<T> streamer, String contentIdentifier) {
         this.streamer = streamer;
-        this.content = content;
         this.contentIdentifier = contentIdentifier;
+        this.content =  new ArrayList<>();
+        this.progress = new SimpleProgressModel();
+    }
+
+    public void update(List<T> items) {
+        content.addAll(items);
+        progress.updateProgress(content.size());
     }
 
     public Streamer<T> getStreamer() {
         return streamer;
+    }
+
+    public void setStreamer(Streamer<T> streamer)
+    {
+        this.streamer = streamer;
     }
 
     public String getContentIdentifier() {

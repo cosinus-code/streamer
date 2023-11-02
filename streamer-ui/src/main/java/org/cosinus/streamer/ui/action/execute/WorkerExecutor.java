@@ -17,8 +17,6 @@
 package org.cosinus.streamer.ui.action.execute;
 
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
-import org.cosinus.streamer.ui.action.progress.ProgressListenerHandler;
-import org.cosinus.streamer.ui.action.progress.ProgressModel;
 import org.cosinus.streamer.ui.dialog.ProgressDialog;
 import org.cosinus.swing.action.execute.ActionExecutor;
 import org.cosinus.swing.action.execute.ActionModel;
@@ -28,41 +26,46 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static java.util.Optional.ofNullable;
+
 /**
- * Implementation of {@link ActionExecutor} for deleting streamers based on {@link ProgressWorker}
+ * Implementation of {@link ActionExecutor} for deleting streamers based on {@link Worker}
  */
-public abstract class ProgressWorkerActionExecutor<A extends ActionModel, P extends ProgressModel>
-        implements ActionExecutor<A> {
+public abstract class WorkerExecutor<A extends ActionModel, M extends WorkerModel<T>, T> implements ActionExecutor<A> {
 
     protected final ProgressFormHandler progressFormHandler;
 
-    protected final ProgressListenerHandler<P> progressListenerHandler;
+    protected final WorkerListenerHandler<M> workerListenerHandler;
 
-    private final Map<String, ProgressWorker<P>> workersMap = new ConcurrentHashMap<>();
+    private final Map<String, Worker<M, T>> workersMap = new ConcurrentHashMap<>();
 
-    protected ProgressWorkerActionExecutor(ProgressFormHandler progressFormHandler,
-                                           ProgressListenerHandler<P> progressListenerHandler) {
+    protected WorkerExecutor(ProgressFormHandler progressFormHandler,
+                                           WorkerListenerHandler<M> workerListenerHandler) {
         this.progressFormHandler = progressFormHandler;
-        this.progressListenerHandler = progressListenerHandler;
+        this.workerListenerHandler = workerListenerHandler;
     }
 
     @Override
     public void execute(A actionModel) {
 
-        ProgressDialog<P> progressDialog = createProgressDialog(actionModel);
-        progressListenerHandler.register(actionModel.getActionId(), progressDialog);
+        ProgressDialog<M> progressDialog = createProgressDialog(actionModel);
+        workerListenerHandler.register(actionModel.getActionId(), progressDialog);
 
-        ProgressWorker<P> worker = createSwingWorker(actionModel, progressDialog);
+        Worker<M, T> worker = createSwingWorker(actionModel);
         workersMap.put(actionModel.getActionId(), worker);
 
-        worker.execute();
-        progressListenerHandler.startProgress(actionModel.getActionId());
+        worker.start();
     }
 
     @Override
-    public void cancel(String copyId) {
-        Optional.ofNullable(workersMap.get(copyId))
+    public void cancel(String executionId) {
+        ofNullable(workersMap.get(executionId))
                 .ifPresent(SwingWorker::cancel);
+    }
+
+    @Override
+    public void remove(String workerId) {
+        workersMap.remove(workerId);
     }
 
 //    @Override
@@ -73,8 +76,7 @@ public abstract class ProgressWorkerActionExecutor<A extends ActionModel, P exte
 //                });
 //    }
 
-    protected abstract ProgressDialog<P> createProgressDialog(A actionModel);
+    protected abstract ProgressDialog<M> createProgressDialog(A actionModel);
 
-    protected abstract ProgressWorker<P> createSwingWorker(A actionModel,
-                                                           ProgressDialog<P> progressDialog);
+    protected abstract Worker<M, T> createSwingWorker(A actionModel);
 }

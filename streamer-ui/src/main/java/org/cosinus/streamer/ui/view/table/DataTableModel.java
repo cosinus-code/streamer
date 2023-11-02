@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.ui.view.table;
 
+import org.apache.commons.collections4.list.TreeList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.api.Streamer;
@@ -42,13 +43,13 @@ public abstract class DataTableModel extends TableModel {
 
     private static final Logger LOG = LogManager.getLogger(DataTableModel.class);
 
-    protected final List<ViewItem> items = new ArrayList<>();
+    protected final List<ViewItem> items;
 
     private final ViewItemComparator comparator;
 
     protected final Map<Integer, Boolean> selectionMap;
 
-    protected Streamer folder;
+    protected Streamer<?> folder;
 
     private int currentIndex;
 
@@ -58,6 +59,7 @@ public abstract class DataTableModel extends TableModel {
     public DataTableModel() {
         this.selectionMap = new ConcurrentHashMap<>();
         this.comparator = new ViewItemComparator();
+        this.items = new ArrayList<>();
     }
 
     public int getCurrentIndex() {
@@ -68,7 +70,7 @@ public abstract class DataTableModel extends TableModel {
         this.currentIndex = currentIndex;
     }
 
-    public Streamer getItemAt(int index) {
+    public Streamer<?> getItemAt(int index) {
         return ((ViewItem) getValueAt(getRowForIndex(index),
                                       getColumnForIndex(index)))
             .getStreamer();
@@ -115,7 +117,7 @@ public abstract class DataTableModel extends TableModel {
         }
     }
 
-    public Streamer getCurrentFolder() {
+    public Streamer<?> getCurrentFolder() {
         return folder;
     }
 
@@ -161,25 +163,26 @@ public abstract class DataTableModel extends TableModel {
 
     public void updateContent(StreamedContent<Streamer> content) {
         boolean showHidden = preferences.booleanPreference(SHOW_HIDDEN);
-        List<ViewItem> viewItems = content.getContent()
+        items.clear();
+
+        if (isTopVisible()) {
+            ofNullable(content.getStreamer().getParent())
+                .map(parent -> new ViewItem(parent, true))
+                .ifPresent(items::add);
+        }
+
+        content.getContent()
             .stream()
             .filter(Objects::nonNull)
             .filter(streamer -> !streamer.isHidden() || showHidden)
             .map(ViewItem::new)
             .sorted(comparator)
-            .collect(Collectors.toList());
+            .forEach(items::add);
 
-        if (isTopVisible()) {
-            ofNullable(content.getStreamer().getParent())
-                .map(parent -> new ViewItem(parent, true))
-                .ifPresent(viewItem -> viewItems.add(0, viewItem));
-        }
 
-        items.clear();
-        items.addAll(viewItems);
         selectionMap.clear();
-
         folder = content.getStreamer();
+        fireTableDataChanged();
     }
 
     public List<Streamer> getSelectedStreamers() {

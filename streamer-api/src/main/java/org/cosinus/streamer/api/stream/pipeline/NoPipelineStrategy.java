@@ -13,23 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.cosinus.streamer.api.stream.pipeline;
 
-package org.cosinus.streamer.ui.action.progress;
-
-/**
- * Simple implementation of {@link ProgressListener} to be used when we want to implement only some methods
- */
-public class DefaultProgressListener<P extends ProgressModel> implements ProgressListener<P> {
-
-    @Override
-    public void startProgress() {
-    }
-
-    @Override
-    public void setProgress(P progress) {
-    }
-
-    @Override
-    public void finishProgress() {
-    }
+public class NoPipelineStrategy implements PipelineStrategy
+{
 }

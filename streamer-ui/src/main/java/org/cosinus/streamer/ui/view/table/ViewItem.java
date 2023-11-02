@@ -50,7 +50,7 @@ public class ViewItem {
         this.topItem = topItem;
     }
 
-    public Streamer getStreamer() {
+    public Streamer<?> getStreamer() {
         return streamer;
     }
 
