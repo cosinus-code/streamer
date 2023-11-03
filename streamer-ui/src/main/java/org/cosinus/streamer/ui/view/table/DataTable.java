@@ -158,7 +158,6 @@ public abstract class DataTable extends Table implements FocusListener {
         super.processComponentKeyEvent(keyEvent);
 
         if (actionController.isGoKey(keyEvent)) {
-            System.out.println("mama: " + getCurrentStreamerName());
             getTableModel().setContentIdentifier(getCurrentStreamerName());
         }
     }
@@ -200,14 +199,16 @@ public abstract class DataTable extends Table implements FocusListener {
 
     public void movePositionByName(String name) {
         List<StreamerViewItem> items = getAllItems();
-        int min = model.isTopVisible() ? 1 : 0;
-        int start = getSelectedRow() + (name.length() == 1 ? 1 : 0);
-
-        concat(range(start, items.size()),
-               range(min, start))
-            .filter(i -> items.get(i).getName().toLowerCase().startsWith(name.toLowerCase()))
-            .findFirst()
-            .ifPresent(this::setCurrentIndex);
+        if (!items.isEmpty())
+        {
+            int min = model.isTopVisible() ? 1 : 0;
+            int start = getSelectedRow() + (name.length() == 1 ? 1 : 0);
+            concat(range(start, items.size()),
+                range(min, start))
+                .filter(i -> items.get(i).getName().toLowerCase().startsWith(name.toLowerCase()))
+                .findFirst()
+                .ifPresent(this::setCurrentIndex);
+        }
     }
 
     private int getIndexForItemAtPoint(Point point) {

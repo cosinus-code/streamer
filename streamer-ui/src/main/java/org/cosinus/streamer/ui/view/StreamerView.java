@@ -145,9 +145,6 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<St
 
     @Override
     public void workerUpdated(StreamerContentModel<T> model) {
-        if (!isActive()) {
-            setActive(false);
-        }
         streamerViewHandler.getCurrentView().requestFocus();
         updateAddressBarAndStreamerPanel();
     }

@@ -33,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static java.lang.Thread.sleep;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 
@@ -53,9 +52,9 @@ public class LoadStreamerWorker<T> extends PipelineWorker<StreamerContentModel<T
     @Autowired
     private PackerHandler packerHandler;
 
-    private final LoadActionModel loadActionModel;
+    private final LoadActionModel<T, Streamer<T>> loadActionModel;
 
-    public LoadStreamerWorker(LoadActionModel loadActionModel) {
+    public LoadStreamerWorker(LoadActionModel<T, Streamer<T>> loadActionModel) {
         super(loadActionModel.getActionId(), loadActionModel.getView().getModel());
         this.loadActionModel = loadActionModel;
     }
@@ -69,18 +68,19 @@ public class LoadStreamerWorker<T> extends PipelineWorker<StreamerContentModel<T
     @Override
     public StreamConsumer<T> openPipelineOutputStream(PipelineStrategy pipelineStrategy)
     {
-        return item -> {
-            try
-            {
-                sleep(100);
-            }
-            catch (InterruptedException e)
-            {
-                throw new RuntimeException(e);
-            }
-            publish(item);
-        };
-//        return this::publish;
+          //for testing purpose:
+//        return item -> {
+//            try
+//            {
+//                java.lang.Thread.sleep(100);
+//            }
+//            catch (InterruptedException e)
+//            {
+//                throw new RuntimeException(e);
+//            }
+//            publish(item);
+//        };
+        return this::publish;
     }
 
     @Override
@@ -109,14 +109,14 @@ public class LoadStreamerWorker<T> extends PipelineWorker<StreamerContentModel<T
             .map(urlPath -> streamerHandler.getStreamer(urlPath));
     }
 
-    private Streamer checkIfStreamerExist(Streamer streamerToCheck) {
+    private Streamer<?> checkIfStreamerExist(Streamer streamerToCheck) {
         return ofNullable(streamerToCheck)
             .filter(not(Streamer::exists))
             .map(this::getFirstAncestorAlive)
             .orElse(streamerToCheck);
     }
 
-    private Streamer checkIfStreamerIsPacked(Streamer streamerToCheck) {
+    private Streamer<?> checkIfStreamerIsPacked(Streamer streamerToCheck) {
         return ofNullable(streamerToCheck)
             .filter(streamer -> BinaryStreamer.class.isAssignableFrom(streamer.getClass()))
             .map(BinaryStreamer.class::cast)
@@ -126,7 +126,7 @@ public class LoadStreamerWorker<T> extends PipelineWorker<StreamerContentModel<T
             .orElse(streamerToCheck);
     }
 
-    private Streamer getFirstAncestorAlive(Streamer streamer) {
+    private Streamer<?> getFirstAncestorAlive(Streamer streamer) {
         return ofNullable(streamer.getParent())
             .filter(not(Streamer::exists))
             .map(this::getFirstAncestorAlive)

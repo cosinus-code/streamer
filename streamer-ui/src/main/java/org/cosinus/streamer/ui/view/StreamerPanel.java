@@ -125,4 +125,11 @@ public class StreamerPanel extends Panel {
     public void translate() {
         view.translate();
     }
+
+    @Override
+    public void setEnabled(boolean enabled)
+    {
+        freeSpace.setEnabled(enabled);
+        super.setEnabled(enabled);
+    }
 }

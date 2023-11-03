@@ -6,7 +6,19 @@ public interface ViewItem {
 
     boolean isTopItem();
 
+    boolean isParent();
+
     String getName();
+
+    String getValue();
+
+    String getType();
+
+    String getDescription();
+
+    long getSize();
+
+    long getLastModified();
 
     boolean isLink();
 

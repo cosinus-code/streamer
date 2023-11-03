@@ -36,7 +36,7 @@ public class StreamerHandler {
 
     private final PackerHandler packerHandler;
 
-    private final Streamer defaultStreamer;
+    private final Streamer<?> defaultStreamer;
 
     public StreamerHandler(List<MainStreamer> mainStreamers,
                            PackerHandler packerHandler,
@@ -66,7 +66,7 @@ public class StreamerHandler {
             .orElseGet(this::getDefaultStreamer);
     }
 
-    public Streamer getDefaultStreamer() {
+    public Streamer<?> getDefaultStreamer() {
         return defaultStreamer;
     }
 

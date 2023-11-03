@@ -57,6 +57,42 @@ public class StreamerViewItem implements ViewItem {
         return streamer.getName();
     }
 
+    @Override
+    public String getValue()
+    {
+        return streamer.getValue();
+    }
+
+    @Override
+    public String getType()
+    {
+        return streamer.getType();
+    }
+
+    @Override
+    public String getDescription()
+    {
+        return streamer.getDescription();
+    }
+
+    @Override
+    public long getSize()
+    {
+        return streamer.getSize();
+    }
+
+    @Override
+    public long getLastModified()
+    {
+        return streamer.lastModified();
+    }
+
+    @Override
+    public boolean isParent()
+    {
+        return streamer.isParent();
+    }
+
     public boolean isLink() {
         return streamer.isLink();
     }

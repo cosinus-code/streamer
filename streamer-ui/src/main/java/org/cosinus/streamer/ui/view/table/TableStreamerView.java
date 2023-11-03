@@ -86,6 +86,9 @@ public abstract class TableStreamerView extends RenamingStreamerView {
         } else {
             table.getSelectionModel().clearSelection();
         }
+
+        streamerViewHandler.getPanel(getCurrentLocation())
+            .ifPresent(panel -> panel.setEnabled(active));
     }
 
     @Override

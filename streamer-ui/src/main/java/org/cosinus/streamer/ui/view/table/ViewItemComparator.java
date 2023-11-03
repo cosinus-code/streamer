@@ -20,7 +20,7 @@ import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.Comparator;
 
-public class ViewItemComparator implements Comparator<StreamerViewItem> {
+public class ViewItemComparator implements Comparator<ViewItem> {
 
     protected int column;
 
@@ -44,7 +44,7 @@ public class ViewItemComparator implements Comparator<StreamerViewItem> {
     }
 
     @Override
-    public int compare(StreamerViewItem item1, StreamerViewItem item2) {
+    public int compare(ViewItem item1, ViewItem item2) {
 
         if (item1.isTopItem()) {
             return -1;
@@ -54,37 +54,26 @@ public class ViewItemComparator implements Comparator<StreamerViewItem> {
             return 1;
         }
 
-        if (item1.getStreamer().isParent() && !item2.getStreamer().isParent()) {
+        if (item1.isParent() && !item2.isParent()) {
             return -1;
         }
 
-        if (!item1.getStreamer().isParent() && item2.getStreamer().isParent()) {
+        if (!item1.isParent() && item2.isParent()) {
             return 1;
         }
 
-        int compare;
-        switch (column) {
-            case 1:
-                compare = ObjectUtils.compare(item1.getStreamer().getValue(),
-                                              item2.getStreamer().getValue());
-                break;
-            case 2:
-                compare = ObjectUtils.compare(item1.getStreamer().getType(),
-                                              item2.getStreamer().getType());
-                break;
-            case 3:
-                compare = Long.compare(item1.getStreamer().getSize(),
-                                       item2.getStreamer().getSize());
-                break;
-            case 4:
-                compare = Long.compare(item1.getStreamer().lastModified(),
-                                       item2.getStreamer().lastModified());
-                break;
-            default:
-                compare = ObjectUtils.compare(item1.getName(),
-                                              item2.getName());
-                break;
-        }
+        int compare = switch (column) {
+            case 1 -> ObjectUtils.compare(item1.getValue(),
+                item2.getValue());
+            case 2 -> ObjectUtils.compare(item1.getType(),
+                item2.getType());
+            case 3 -> Long.compare(item1.getSize(),
+                item2.getSize());
+            case 4 -> Long.compare(item1.getLastModified(),
+                item2.getLastModified());
+            default -> ObjectUtils.compare(item1.getName(),
+                item2.getName());
+        };
 
         return ascending ? compare : -compare;
     }
