@@ -72,18 +72,7 @@ public class LoadStreamerWorker<T> extends PipelineWorker<StreamedContent<T>, T>
     @Override
     public StreamConsumer<T> openPipelineOutputStream(PipelineStrategy pipelineStrategy)
     {
-        return item -> {
-            try
-            {
-                sleep(100);
-            }
-            catch (InterruptedException e)
-            {
-                throw new RuntimeException(e);
-            }
-            publish(item);
-        };
-        //return this::publish;
+        return this::publish;
     }
 
     @Override
