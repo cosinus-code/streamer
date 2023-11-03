@@ -17,7 +17,7 @@
 package org.cosinus.streamer.ui.view.table;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.action.execute.load.StreamedContent;
+import org.cosinus.streamer.ui.model.StreamerContentModel;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.RenamingStreamerView;
 
@@ -74,21 +74,27 @@ public abstract class TableStreamerView extends RenamingStreamerView {
     protected abstract DataTable createDataTable();
 
     @Override
+    public StreamerContentModel<Streamer<?>> getModel()
+    {
+        return getDataTableModel();
+    }
+
+    @Override
     public void setActive(boolean active) {
         if (active) {
-            table.setCurrentIndex(table.getCurrentIndex());
+            table.setCurrentIndex(table.getCurrentIndex(), true);
         } else {
             table.getSelectionModel().clearSelection();
         }
     }
 
     @Override
-    public Streamer getCurrentContent() {
+    public Streamer<?> getCurrentContent() {
         return table.getCurrentStreamer();
     }
 
     @Override
-    public List<Streamer> getSelectedContent() {
+    public List<Streamer<?>> getSelectedContent() {
         return table.getSelectedStreamers();
     }
 
@@ -118,9 +124,6 @@ public abstract class TableStreamerView extends RenamingStreamerView {
     @Override
     public void updateForm() {
         super.updateForm();
-//        scroll.setBorder(uiHandler.isLookAndFeelGTK() ?
-//                                 Borders.createEmptyBorder() :
-//                                 Borders.borderButtonIn());
         table.updateForm();
     }
 
@@ -130,7 +133,7 @@ public abstract class TableStreamerView extends RenamingStreamerView {
     }
 
     @Override
-    public Streamer getLoadedStreamer() {
+    public Streamer<Streamer<?>> getLoadedStreamer() {
         return table.getCurrentFolder();
     }
 
@@ -150,33 +153,36 @@ public abstract class TableStreamerView extends RenamingStreamerView {
     }
 
     @Override
-    public void internalUpdateContent(StreamedContent<Streamer> content) {
-        getDataTableModel().updateContent(content);
-        table.reset();
-
-        ofNullable(content.getContentIdentifier())
-            .ifPresent(this::findContent);
-    }
-
-    private DataTableModel getDataTableModel() {
-        return (DataTableModel) table.getModel();
-    }
-
-//    @Override
-//    public void workerStarted() {
-//        super.workerStarted();
+    public void workerStarted() {
+        super.workerStarted();
 //        if (isActive()) {
 //            table.setCurrentIndex(-1);
 //        }
-//    }
+        table.reset();
+        getDataTableModel().clear();
+    }
+
+    @Override
+    public void workerUpdated(StreamerContentModel<Streamer<?>> model)
+    {
+        ofNullable(model.getContentIdentifier())
+            .ifPresent(this::findContent);
+        getDataTableModel().fireTableDataChanged();
+
+        super.workerUpdated(model);
+    }
+
+    private DataTableModel<Streamer<?>> getDataTableModel() {
+        return (DataTableModel<Streamer<?>>) table.getModel();
+    }
 
     @Override
     public void workerFinished() {
         if (isActive()) {
             if (table.getCurrentIndex() < 0) {
-                goHome();
+                table.setCurrentIndex(0, true);
             } else if (table.getCurrentIndex() >= table.getStreamersCount()) {
-                goEnd();
+                table.setCurrentIndex(table.getStreamersCount() - 1, true);
             }
         }
     }

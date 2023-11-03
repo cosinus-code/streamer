@@ -26,7 +26,7 @@ import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
 import org.cosinus.streamer.api.stream.pipeline.PipelineListener;
 import org.cosinus.streamer.api.stream.pipeline.PipelineStrategy;
 import org.cosinus.streamer.ui.action.execute.PipelineWorker;
-import org.cosinus.streamer.ui.view.PanelLocation;
+import org.cosinus.streamer.ui.model.StreamerContentModel;
 import org.cosinus.streamer.ui.view.StreamerViewStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -40,7 +40,7 @@ import static java.util.function.Predicate.not;
 /**
  * {@link javax.swing.SwingWorker} for loading a streamer
  */
-public class LoadStreamerWorker<T> extends PipelineWorker<StreamedContent<T>, T> {
+public class LoadStreamerWorker<T> extends PipelineWorker<StreamerContentModel<T>, T> {
 
     private static final Logger LOG = LogManager.getLogger(LoadStreamerWorker.class);
 
@@ -53,36 +53,46 @@ public class LoadStreamerWorker<T> extends PipelineWorker<StreamedContent<T>, T>
     @Autowired
     private PackerHandler packerHandler;
 
-    private final PanelLocation panelLocation;
+    private final LoadActionModel loadActionModel;
 
     public LoadStreamerWorker(LoadActionModel loadActionModel) {
-        super(loadActionModel.getActionId(),
-            new StreamedContent<>(
-                loadActionModel.getStreamer(),
-                loadActionModel.getContentIdentifier()));
-        this.panelLocation = loadActionModel.getView().getCurrentLocation();
+        super(loadActionModel.getActionId(), loadActionModel.getView().getModel());
+        this.loadActionModel = loadActionModel;
     }
 
     @Override
     public Stream<T> openPipelineInputStream(PipelineStrategy pipelineStrategy)
     {
-        return (Stream<T>) workerModel.getStreamer().stream();
+        return (Stream<T>) workerModel.getParentStreamer().stream();
     }
 
     @Override
     public StreamConsumer<T> openPipelineOutputStream(PipelineStrategy pipelineStrategy)
     {
-        return this::publish;
+        return item -> {
+            try
+            {
+                sleep(100);
+            }
+            catch (InterruptedException e)
+            {
+                throw new RuntimeException(e);
+            }
+            publish(item);
+        };
+//        return this::publish;
     }
 
     @Override
     public void preparePipelineOpen(PipelineStrategy pipelineStrategy, PipelineListener<T> pipelineListener)
     {
-        workerModel.setStreamer(prepareStreamerToLoad(workerModel.getStreamer()));
-        if (workerModel.getStreamer() == null) {
-            LOG.trace("No streamer to load.");
-            cancel();
-        }
+        workerModel.setContentIdentifier(loadActionModel.getContentIdentifier());
+        ofNullable(prepareStreamerToLoad(loadActionModel.getStreamerToLoad()))
+            .ifPresentOrElse(workerModel::setParentStreamer,
+                () -> {
+                    LOG.trace("No streamer to load.");
+                    cancel();
+                });
     }
 
     private Streamer prepareStreamerToLoad(Streamer streamerToLoad) {
@@ -95,7 +105,7 @@ public class LoadStreamerWorker<T> extends PipelineWorker<StreamedContent<T>, T>
     }
 
     private Optional<Streamer> loadLastStreamer() {
-        return streamerViewStorage.loadLastLoadedStreamer(panelLocation)
+        return streamerViewStorage.loadLastLoadedStreamer(loadActionModel.getView().getCurrentLocation())
             .map(urlPath -> streamerHandler.getStreamer(urlPath));
     }
 

@@ -16,8 +16,9 @@
 
 package org.cosinus.streamer.ui.view.table.details;
 
+import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.view.table.DataTableModel;
-import org.cosinus.streamer.ui.view.table.ViewItem;
+import org.cosinus.streamer.ui.view.table.StreamerViewItem;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -29,7 +30,7 @@ import java.util.Map;
 import static java.util.Arrays.stream;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.FULL_TYPE_DESCRIPTION;
 
-public class DetailTableModel extends DataTableModel {
+public class DetailTableModel<T extends Streamer<?>> extends DataTableModel<T> {
 
     public static final SimpleDateFormat DATE_FORMAT =
         new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
@@ -48,7 +49,7 @@ public class DetailTableModel extends DataTableModel {
 
     @Override
     public int getRowCount() {
-        return items.size();
+        return viewItems.size();
     }
 
     @Override
@@ -64,10 +65,10 @@ public class DetailTableModel extends DataTableModel {
     @Override
     public Object getValueAt(int row,
                              int column) {
-        if (row >= items.size()) {
+        if (row >= viewItems.size()) {
             return null;
         }
-        ViewItem item = items.get(row);
+        StreamerViewItem item = viewItems.get(row);
         if (item.isTopItem() && column > 0) {
             return "";
         }

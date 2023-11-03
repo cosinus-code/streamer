@@ -7,7 +7,7 @@
 package org.cosinus.streamer.ui.view.table.icon;
 
 import org.cosinus.streamer.ui.view.table.TableCellRenderer;
-import org.cosinus.streamer.ui.view.table.ViewItem;
+import org.cosinus.streamer.ui.view.table.StreamerViewItem;
 import org.cosinus.swing.text.WrappedText;
 import org.cosinus.swing.text.WrappedTextBuilder;
 
@@ -26,7 +26,7 @@ public class IconCellRenderer extends TableCellRenderer<IconTable> {
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-        if (!(value instanceof ViewItem)) {
+        if (!(value instanceof StreamerViewItem)) {
             component.setBackground(new Color(table.getBackground().getRGB()));
         }
         return component;
@@ -35,7 +35,7 @@ public class IconCellRenderer extends TableCellRenderer<IconTable> {
     @Override
     public Component getCellComponent(JLabel label,
                                       IconTable table,
-                                      ViewItem item,
+                                      StreamerViewItem item,
                                       boolean isSelected,
                                       boolean hasFocus,
                                       int row,

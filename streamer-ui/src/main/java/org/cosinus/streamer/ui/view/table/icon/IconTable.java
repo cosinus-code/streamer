@@ -6,6 +6,7 @@
 
 package org.cosinus.streamer.ui.view.table.icon;
 
+import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.view.table.DataTable;
 import org.cosinus.streamer.ui.view.table.DataTableModel;
 import org.cosinus.swing.error.ErrorHandler;
@@ -69,7 +70,7 @@ public class IconTable extends DataTable {
     }
 
     @Override
-    protected DataTableModel createDataTableModel() {
+    protected DataTableModel<Streamer<?>> createDataTableModel() {
         return new IconTableModel();
     }
 

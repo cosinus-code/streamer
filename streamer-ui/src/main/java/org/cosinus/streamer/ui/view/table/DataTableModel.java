@@ -16,11 +16,10 @@
 
 package org.cosinus.streamer.ui.view.table;
 
-import org.apache.commons.collections4.list.TreeList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.action.execute.load.StreamedContent;
+import org.cosinus.streamer.ui.model.StreamerContentModel;
 import org.cosinus.swing.form.TableModel;
 import org.cosinus.swing.preference.Preferences;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,17 +38,19 @@ import static java.util.stream.IntStream.range;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_HIDDEN;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.TOP_VISIBLE;
 
-public abstract class DataTableModel extends TableModel {
+public abstract class DataTableModel<T extends Streamer<?>> extends TableModel implements StreamerContentModel<T> {
 
     private static final Logger LOG = LogManager.getLogger(DataTableModel.class);
 
-    protected final List<ViewItem> items;
+    protected final List<StreamerViewItem> viewItems;
 
     private final ViewItemComparator comparator;
 
     protected final Map<Integer, Boolean> selectionMap;
 
-    protected Streamer<?> folder;
+    protected Streamer<T> parentStreamer;
+
+    protected String contentIdentifier;
 
     private int currentIndex;
 
@@ -59,7 +60,30 @@ public abstract class DataTableModel extends TableModel {
     public DataTableModel() {
         this.selectionMap = new ConcurrentHashMap<>();
         this.comparator = new ViewItemComparator();
-        this.items = new ArrayList<>();
+        this.viewItems = new ArrayList<>();
+    }
+
+    @Override
+    public Streamer<T> getParentStreamer() {
+        return parentStreamer;
+    }
+
+    @Override
+    public void setParentStreamer(Streamer<T> parentStreamer)
+    {
+        this.parentStreamer = parentStreamer;
+    }
+
+    @Override
+    public String getContentIdentifier()
+    {
+        return contentIdentifier;
+    }
+
+    @Override
+    public void setContentIdentifier(String contentIdentifier)
+    {
+        this.contentIdentifier = contentIdentifier;
     }
 
     public int getCurrentIndex() {
@@ -70,22 +94,24 @@ public abstract class DataTableModel extends TableModel {
         this.currentIndex = currentIndex;
     }
 
-    public Streamer<?> getItemAt(int index) {
-        return ((ViewItem) getValueAt(getRowForIndex(index),
-                                      getColumnForIndex(index)))
-            .getStreamer();
+    public Streamer<?> getStreamerAt(int index) {
+        return getViewItemAt(getRowForIndex(index), getColumnForIndex(index)).getStreamer();
+    }
+
+    private StreamerViewItem getViewItemAt(int rowIndex, int columnIndex) {
+        return (StreamerViewItem) getValueAt(rowIndex, columnIndex);
     }
 
     public int getItemsCount() {
-        return items.size();
+        return viewItems.size();
     }
 
-    public List<ViewItem> getAllItems() {
-        return items;
+    public List<StreamerViewItem> getAllViewItems() {
+        return viewItems;
     }
 
     public boolean isIndexSelected(int index) {
-        if (index < 0 || index >= items.size()) {
+        if (index < 0 || index >= viewItems.size()) {
             return false;
         }
         return ofNullable(selectionMap.get(index))
@@ -110,26 +136,20 @@ public abstract class DataTableModel extends TableModel {
 
     public void sort() {
         try {
-            items.sort(comparator);
+            viewItems.sort(comparator);
             fireTableDataChanged();
         } catch (Exception ex) {
             LOG.error("Error while sorting streamers", ex);
         }
     }
 
-    public Streamer<?> getCurrentFolder() {
-        return folder;
-    }
-
     public void addToSelection(int index) {
-        if (index < getMinimumToSelect() || index >= items.size()) {
+        if (index < getMinimumToSelect() || index >= viewItems.size()) {
             return;
         }
         selectionMap.put(index, ofNullable(selectionMap.get(index))
             .map(selected -> !selected)
             .orElse(true));
-
-        //panel.updateStatus();
     }
 
     public void addToSelection(int start,
@@ -140,16 +160,12 @@ public abstract class DataTableModel extends TableModel {
             clearSelection();
         }
         range(max(start, getMinimumToSelect()),
-              min(items.size(), end + 1))
+              min(viewItems.size(), end + 1))
             .forEach(i -> selectionMap.put(i, !deselect));
-
-        //panel.updateStatus();
     }
 
     public void clearSelection() {
         selectionMap.clear();
-
-        //panel.updateStatus();
     }
 
     public boolean isTopVisible() {
@@ -161,35 +177,36 @@ public abstract class DataTableModel extends TableModel {
         return isTopVisible() ? 1 : 0;
     }
 
-    public void updateContent(StreamedContent<Streamer> content) {
-        boolean showHidden = preferences.booleanPreference(SHOW_HIDDEN);
-        items.clear();
+    public void clear() {
+        viewItems.clear();
+        selectionMap.clear();
+    }
 
-        if (isTopVisible()) {
-            ofNullable(content.getStreamer().getParent())
-                .map(parent -> new ViewItem(parent, true))
-                .ifPresent(items::add);
+    @Override
+    public void update(List<T> streamers)
+    {
+        if (viewItems.isEmpty() && isTopVisible()) {
+            ofNullable(parentStreamer.getParent())
+                .map(parent -> new StreamerViewItem(parent, true))
+                .ifPresent(viewItems::add);
         }
 
-        content.getContent()
+        boolean showHidden = preferences.booleanPreference(SHOW_HIDDEN);
+        streamers
             .stream()
             .filter(Objects::nonNull)
             .filter(streamer -> !streamer.isHidden() || showHidden)
-            .map(ViewItem::new)
-            .sorted(comparator)
-            .forEach(items::add);
+            .map(StreamerViewItem::new)
+            .forEach(viewItems::add);
 
-
-        selectionMap.clear();
-        folder = content.getStreamer();
-        fireTableDataChanged();
+        viewItems.sort(comparator);
     }
 
-    public List<Streamer> getSelectedStreamers() {
+    public List<Streamer<?>> getSelectedStreamers() {
         return selectionMap.keySet()
             .stream()
-            .map(items::get)
-            .map(ViewItem::getStreamer)
+            .map(viewItems::get)
+            .map(StreamerViewItem::getStreamer)
             .collect(Collectors.toList());
     }
 

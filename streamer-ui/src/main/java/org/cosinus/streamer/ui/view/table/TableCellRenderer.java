@@ -79,7 +79,7 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
                 .ifPresent(component::setForeground);
         }
 
-        if (component instanceof JLabel label && value instanceof ViewItem item) {
+        if (component instanceof JLabel label && value instanceof StreamerViewItem item) {
 
             label.setText(item.toString());
             if (item.isLink()) {
@@ -103,7 +103,7 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
 
     protected abstract Component getCellComponent(JLabel label,
                                                   T table,
-                                                  ViewItem value,
+                                                  StreamerViewItem value,
                                                   boolean isSelected,
                                                   boolean hasFocus,
                                                   int row,
@@ -114,11 +114,11 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
             .or(() -> iconHandler.findIconByName(ICON_FOLDER, X16));
     }
 
-    protected Optional<Icon> getIcon(IconSize size, ViewItem item) {
+    protected Optional<Icon> getIcon(IconSize size, StreamerViewItem item) {
         return getIcon(size, item, false);
     }
 
-    protected Optional<Icon> getIcon(IconSize size, ViewItem item, boolean showPreview) {
+    protected Optional<Icon> getIcon(IconSize size, StreamerViewItem item, boolean showPreview) {
         return ofNullable(item.getIconName())
             .flatMap(iconName -> iconHandler.findIconByName(item.getIconName(), size))
             .or(() -> showPreview ?
@@ -126,12 +126,12 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
                 iconHandler.findIconByFile(item.toFile(), size));
     }
 
-    private Optional<Icon> findIconWithPreview(IconSize size, ViewItem item) {
+    private Optional<Icon> findIconWithPreview(IconSize size, StreamerViewItem item) {
         return getPreviewIcon(item)
             .or(() -> iconHandler.findIconByFile(item.toFile(), size));
     }
 
-    private Optional<Icon> getPreviewIcon(ViewItem item) {
+    private Optional<Icon> getPreviewIcon(StreamerViewItem item) {
         try {
             return imageHandler.getPreviewImage(item.toFile(), PREVIEW_CELL_SIZE);
         } catch (IOException e) {

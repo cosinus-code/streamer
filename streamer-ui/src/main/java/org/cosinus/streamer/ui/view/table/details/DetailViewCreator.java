@@ -25,10 +25,10 @@ import org.springframework.stereotype.Component;
 import static org.cosinus.streamer.ui.view.table.details.DetailView.DETAIL_VIEW_NAME;
 
 @Component
-public class DetailViewCreator implements StreamerViewCreator<Streamer> {
+public class DetailViewCreator implements StreamerViewCreator<Streamer<?>> {
 
     @Override
-    public StreamerView<Streamer> createStreamerView(PanelLocation location) {
+    public StreamerView<Streamer<?>> createStreamerView(PanelLocation location) {
         return new DetailView(location);
     }
 

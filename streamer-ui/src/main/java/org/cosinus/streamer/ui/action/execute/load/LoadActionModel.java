@@ -30,23 +30,23 @@ public class LoadActionModel<T, S extends Streamer<T>> extends ActionModel {
 
     private final StreamerView<T> view;
 
-    private final S streamer;
+    private final S streamerToLoad;
 
     private final String contentIdentifier;
 
     public LoadActionModel(StreamerView<T> view,
-                           S streamer) {
-        this(view, streamer, ofNullable(view.getLoadedStreamer())
+                           S streamerToLoad) {
+        this(view, streamerToLoad, ofNullable(view.getLoadedStreamer())
             .map(Streamer::getName)
             .orElse(null));
     }
 
     public LoadActionModel(StreamerView<T> view,
-                           S streamer,
+                           S streamerToLoad,
                            String contentIdentifier) {
         super(view.getId(), LoadStreamerAction.LOAD_STREAMER_ACTION_ID);
         this.view = view;
-        this.streamer = streamer;
+        this.streamerToLoad = streamerToLoad;
         this.contentIdentifier = contentIdentifier;
     }
 
@@ -54,8 +54,8 @@ public class LoadActionModel<T, S extends Streamer<T>> extends ActionModel {
         return view;
     }
 
-    public S getStreamer() {
-        return streamer;
+    public S getStreamerToLoad() {
+        return streamerToLoad;
     }
 
     public String getContentIdentifier() {

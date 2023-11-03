@@ -100,7 +100,7 @@ public interface Streamer<T> {
         return lastModified() < streamerToCompareTo.lastModified();
     }
 
-    default String getKey() {
+    default String getId() {
         return ofNullable(getPath())
             .map(Path::toString)
             .map(path -> ofNullable(getProtocol())

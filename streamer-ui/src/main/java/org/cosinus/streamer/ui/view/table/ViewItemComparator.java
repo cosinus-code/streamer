@@ -20,7 +20,7 @@ import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.Comparator;
 
-public class ViewItemComparator implements Comparator<ViewItem> {
+public class ViewItemComparator implements Comparator<StreamerViewItem> {
 
     protected int column;
 
@@ -44,7 +44,7 @@ public class ViewItemComparator implements Comparator<ViewItem> {
     }
 
     @Override
-    public int compare(ViewItem item1, ViewItem item2) {
+    public int compare(StreamerViewItem item1, StreamerViewItem item2) {
 
         if (item1.isTopItem()) {
             return -1;

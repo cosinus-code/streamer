@@ -25,10 +25,10 @@ import org.springframework.stereotype.Component;
 import static org.cosinus.streamer.ui.view.table.icon.IconView.ICON_VIEW_NAME;
 
 @Component
-public class IconViewCreator implements StreamerViewCreator<Streamer> {
+public class IconViewCreator implements StreamerViewCreator<Streamer<?>> {
 
     @Override
-    public StreamerView<Streamer> createStreamerView(PanelLocation location) {
+    public StreamerView<Streamer<?>> createStreamerView(PanelLocation location) {
         return new IconView(location);
     }
 

@@ -17,7 +17,7 @@
 package org.cosinus.streamer.ui.view.table.details;
 
 import org.cosinus.streamer.ui.view.table.TableCellRenderer;
-import org.cosinus.streamer.ui.view.table.ViewItem;
+import org.cosinus.streamer.ui.view.table.StreamerViewItem;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,7 +32,7 @@ public class DetailCellRenderer extends TableCellRenderer<DetailTable> {
     @Override
     public Component getCellComponent(JLabel label,
                                       DetailTable table,
-                                      ViewItem item,
+                                      StreamerViewItem item,
                                       boolean isSelected,
                                       boolean hasFocus,
                                       int row,

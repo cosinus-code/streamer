@@ -88,11 +88,11 @@ public class FlatStreamingSpliterator<S extends Streamer<?>> implements Splitera
     }
 
     private void setStreamed(final S streamer) {
-        streamedMap.put(streamer.getKey(), streamer);
+        streamedMap.put(streamer.getId(), streamer);
     }
 
     private boolean isStreamed(final S streamer) {
-        return streamedMap.get(streamer.getKey()) == null;
+        return streamedMap.get(streamer.getId()) == null;
     }
 
     private void pushInQueue(Stream<? extends S> stream) {

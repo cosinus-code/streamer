@@ -22,7 +22,7 @@ import org.cosinus.streamer.api.pack.PackStreamer;
 import org.cosinus.streamer.ui.action.LoadStreamerAction;
 import org.cosinus.streamer.ui.action.context.StreamerActionContext;
 import org.cosinus.streamer.ui.action.execute.WorkerListener;
-import org.cosinus.streamer.ui.action.execute.load.StreamedContent;
+import org.cosinus.streamer.ui.model.StreamerContentModel;
 import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.form.Panel;
 import org.cosinus.swing.ui.ApplicationUIHandler;
@@ -32,7 +32,6 @@ import javax.swing.*;
 import javax.swing.plaf.basic.BasicProgressBarUI;
 import java.awt.*;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -41,10 +40,9 @@ import static java.awt.BorderLayout.SOUTH;
 import static java.awt.RenderingHints.KEY_ANTIALIASING;
 import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
 import static java.util.Optional.ofNullable;
-import static org.cosinus.swing.border.Borders.emptyBorder;
 import static org.cosinus.swing.color.SystemColor.MENU_SELECTION_BACKGROUND;
 
-public abstract class StreamerView<T> extends Panel implements WorkerListener<StreamedContent<T>>
+public abstract class StreamerView<T> extends Panel implements WorkerListener<StreamerContentModel<T>>
 {
 
     protected final String id;
@@ -146,18 +144,18 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<St
     }
 
     @Override
-    public void workerUpdated(StreamedContent<T> streamedContent) {
-        boolean newStreamer = !Objects.equals(streamedContent.getStreamer(), getLoadedStreamer());
-        internalUpdateContent(streamedContent);
+    public void workerUpdated(StreamerContentModel<T> model) {
         if (!isActive()) {
             setActive(false);
         }
         streamerViewHandler.getCurrentView().requestFocus();
+        updateAddressBarAndStreamerPanel();
+    }
 
-        if (newStreamer)
-        {
-            updateAddressBarAndStreamerPanel();
-        }
+    @Override
+    public void workerFinished()
+    {
+
     }
 
     private void updateAddressBarAndStreamerPanel() {
@@ -178,7 +176,7 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<St
     }
 
     @Override
-    public void workerFinished(StreamedContent<T> streamedContent) {
+    public void workerFinished(StreamerContentModel<T> streamedContent) {
         ofNullable(getLoadedStreamer())
             .filter(streamer -> PackStreamer.class.isAssignableFrom(streamer.getClass()))
             .map(PackStreamer.class::cast)
@@ -186,7 +184,7 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<St
         loadingIndicator.setVisible(false);
         streamerViewStorage.saveLastLoadedStreamer(getLoadedStreamer(), getCurrentLocation());
 
-        ofNullable(streamedContent.getStreamer())
+        ofNullable(streamedContent.getParentStreamer())
             .filter(streamer -> PackStreamer.class.isAssignableFrom(streamer.getClass()))
             .map(PackStreamer.class::cast)
             .ifPresent(PackStreamer::finishLoading);
@@ -208,8 +206,6 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<St
 
     public abstract void setActive(boolean active);
 
-    protected abstract void internalUpdateContent(StreamedContent<T> content);
-
     public abstract void selectCurrentContent();
 
     public abstract void findContent(String name);
@@ -227,4 +223,6 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<St
     public abstract List<T> getSelectedContent();
 
     public abstract Optional<String> getSelectedContentIdentifier();
+
+    public abstract StreamerContentModel<T> getModel();
 }

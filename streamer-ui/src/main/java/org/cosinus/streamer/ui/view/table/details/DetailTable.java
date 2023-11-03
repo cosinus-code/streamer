@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.ui.view.table.details;
 
+import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.view.table.DataTable;
 import org.cosinus.streamer.ui.view.table.DataTableModel;
 import org.cosinus.swing.image.icon.IconHandler;
@@ -204,17 +205,14 @@ public class DetailTable extends DataTable implements ActionListener {
 
     @Override
     public void setCurrentIndex(int index) {
-        getSelectionModel().setSelectionInterval(index,
-                                                 index);
-        scrollRectToVisible(getCellRect(index,
-                                        0,
-                                        false));
+        getSelectionModel().setSelectionInterval(index, index);
+        scrollRectToVisible(getCellRect(index, 0, false));
         repaint();
     }
 
     @Override
-    protected DataTableModel createDataTableModel() {
-        return new DetailTableModel();
+    protected DataTableModel<Streamer<?>> createDataTableModel() {
+        return new DetailTableModel<>();
     }
 
     public void actionPerformed(ActionEvent e) {

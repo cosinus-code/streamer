@@ -32,11 +32,11 @@ import java.awt.event.KeyEvent;
 
 import static org.cosinus.swing.border.Borders.emptyInsets;
 
-public abstract class RenamingStreamerView extends StreamerView<Streamer> {
+public abstract class RenamingStreamerView extends StreamerView<Streamer<?>> {
 
     protected JTextComponent txtRename;
 
-    private Streamer streamerToBeRenamed;
+    private Streamer<?> streamerToBeRenamed;
 
     @Autowired
     public Translator translator;
