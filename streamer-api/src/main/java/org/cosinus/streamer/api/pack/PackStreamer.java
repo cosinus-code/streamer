@@ -35,10 +35,15 @@ public abstract class PackStreamer<T> implements Streamer<T> {
     }
 
     @Override
+    public BinaryStreamer binaryStreamer()
+    {
+        return binaryStreamer;
+    }
+
+    @Override
     public Streamer<T> save() {
         return null;
-        //TODO
-        //return binaryStreamer.create();
+        //return binaryStreamer.save();
     }
 
     @Override

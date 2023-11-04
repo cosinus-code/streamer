@@ -28,11 +28,14 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
+import static java.awt.Cursor.HAND_CURSOR;
+import static java.awt.Cursor.getPredefinedCursor;
+import static java.awt.RenderingHints.KEY_ANTIALIASING;
+import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.swing.border.Borders.emptyBorder;
 import static org.cosinus.swing.border.Borders.lineBorder;
-import static org.cosinus.swing.color.Colors.getLighterColor;
-import static org.cosinus.swing.color.SystemColor.TABLE_HEADER_BACKGROUND;
+import static org.cosinus.swing.color.SystemColor.BUTTON_BACKGROUND;
 
 public class DetailHeaderCell extends Label implements TableCellRenderer {
 
@@ -76,12 +79,10 @@ public class DetailHeaderCell extends Label implements TableCellRenderer {
             yyy = new int[]{y - 1, y - 1, y + 2};
         }
         Graphics2D g2d = (Graphics2D) g;
-        Object oldRendering = g2d.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                             RenderingHints.VALUE_ANTIALIAS_ON);
+        Object oldRendering = g2d.getRenderingHint(KEY_ANTIALIASING);
+        g2d.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
         g.drawPolygon(xxx, yyy, 3);
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                             oldRendering);
+        g2d.setRenderingHint(KEY_ANTIALIASING, oldRendering);
         g.fillPolygon(xxx, yyy, 3);
     }
 
@@ -98,9 +99,8 @@ public class DetailHeaderCell extends Label implements TableCellRenderer {
                 sorted = table.getCurrentSortColumn() == colIndex;
                 ascending = table.isSortAscending();
             }
-            Color backgroundColor = uiHandler.getColor(TABLE_HEADER_BACKGROUND);
-            setBackground(over ? getLighterColor(backgroundColor) : backgroundColor);
-            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            setBackground(uiHandler.getColor(BUTTON_BACKGROUND));
+            setCursor(getPredefinedCursor(HAND_CURSOR));
             customizeCellRenderer(colIndex);
 
             ofNullable(value)
@@ -115,7 +115,8 @@ public class DetailHeaderCell extends Label implements TableCellRenderer {
     }
 
     protected void customizeCellRenderer(int colIndex) {
-        setBorder(new CompoundBorder(lineBorder(uiHandler.getInactiveCaptionColor(), 0, colIndex > 0 ? 1 : 0, 1, 0),
-                                     emptyBorder(3)));
+        setBorder(new CompoundBorder(
+            lineBorder(uiHandler.getInactiveCaptionColor(), 0, colIndex > 0 ? 1 : 0, 2, 0),
+            emptyBorder(2)));
     }
 }

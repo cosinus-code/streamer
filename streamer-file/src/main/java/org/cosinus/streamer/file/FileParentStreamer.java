@@ -52,7 +52,7 @@ public class FileParentStreamer extends FileStreamer<FileStreamer<?>> implements
     }
 
     @Override
-    public FileStreamer create(Path path, boolean parent) {
+    public FileStreamer<?> create(Path path, boolean parent) {
         return fileMainStreamer.create(path, parent);
     }
 

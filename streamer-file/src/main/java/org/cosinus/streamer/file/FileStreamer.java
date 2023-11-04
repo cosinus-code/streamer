@@ -132,11 +132,10 @@ public abstract class FileStreamer<T> implements Streamer<T> {
         if (this == other) {
             return true;
         }
-        if (!(other instanceof FileStreamer)) {
+        if (!(other instanceof FileStreamer that)) {
             return false;
         }
 
-        FileStreamer that = (FileStreamer) other;
         return file.equals(that.file);
     }
 
