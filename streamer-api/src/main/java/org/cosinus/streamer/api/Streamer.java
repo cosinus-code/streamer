@@ -118,4 +118,8 @@ public interface Streamer<T> {
     }
 
     BinaryStreamer createBinaryStreamer(Path path);
+
+    default boolean isTextCompatible() {
+        return false;
+    }
 }

@@ -68,4 +68,10 @@ public class FileBinaryStreamer extends FileStreamer<byte[]> implements BinarySt
             throw new UncheckedIOException(ex);
         }
     }
+
+    @Override
+    public boolean isTextCompatible()
+    {
+        return fileHandler.isTextCompatible(getPath());
+    }
 }

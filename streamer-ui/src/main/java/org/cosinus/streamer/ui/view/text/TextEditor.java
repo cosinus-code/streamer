@@ -167,6 +167,7 @@ public class TextEditor extends TextArea implements LoadWorkerModel<String>
             }
             append(join(lineSeparator(), textLines));
         }
+        setCaretPosition(0);
     }
 
     @Override

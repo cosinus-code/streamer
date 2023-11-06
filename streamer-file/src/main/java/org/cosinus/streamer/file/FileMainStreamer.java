@@ -34,8 +34,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.Optional.ofNullable;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_COMPUTER;
+import static org.springframework.util.MimeTypeUtils.TEXT_PLAIN_VALUE;
 
 @RootStreamer("Filesystem")
 @ConditionalOnProperty(name = "streamer.file.enabled", matchIfMissing = true)
@@ -107,18 +107,7 @@ public class FileMainStreamer extends MainStreamer<FileStreamer<?>> {
     }
 
     public TextStreamer createTextStreamer(BinaryStreamer binaryStreamer) {
-        return isTextCompatible(binaryStreamer.getPath()) ? new FileTextStreamer(this, fileHandler, binaryStreamer) : null;
-    }
-
-    private boolean isTextCompatible(Path path) {
-        return ofNullable(path)
-            .map(fileHandler::mimeType)
-            //TODO
-            .filter(mimeType -> mimeType.contains("text")
-                || mimeType.contains("java")
-                || mimeType.contains("xml")
-                || mimeType.contains("json"))
-            .isPresent();
+        return new FileTextStreamer(this, fileHandler, binaryStreamer);
     }
 
     @Override

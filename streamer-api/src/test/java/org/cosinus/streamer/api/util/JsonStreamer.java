@@ -116,6 +116,12 @@ public class JsonStreamer implements ParentStreamer<JsonStreamer>
     }
 
     @Override
+    public BinaryStreamer createBinaryStreamer(Path path)
+    {
+        return null;
+    }
+
+    @Override
     public JsonStreamer create(Path path, boolean parent)
     {
         return null;

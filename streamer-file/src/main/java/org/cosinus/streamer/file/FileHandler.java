@@ -16,6 +16,11 @@
 
 package org.cosinus.streamer.file;
 
+import net.sf.jmimemagic.Magic;
+import net.sf.jmimemagic.MagicException;
+import net.sf.jmimemagic.MagicMatch;
+import net.sf.jmimemagic.MagicMatchNotFoundException;
+import net.sf.jmimemagic.MagicParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -27,7 +32,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
+
+import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
+import static org.springframework.util.MimeTypeUtils.TEXT_PLAIN_VALUE;
 
 /**
  * Proxy for handling files.
@@ -90,11 +100,24 @@ public class FileHandler {
         return new SystemInfo().getOperatingSystem().getFileSystem().getFileStores();
     }
 
-    public String mimeType(Path path) {
-        try {
-            return Files.probeContentType(path);
-        } catch (IOException ex) {
-            throw new UncheckedIOException(ex);
-        }
+    public boolean isTextCompatible(Path path) {
+        return mimeType(path)
+            .filter(TEXT_PLAIN_VALUE::equals)
+            .isPresent();
+    }
+
+    public Optional<String> mimeType(Path path) {
+        //return Files.probeContentType(path);
+        return ofNullable(path)
+            .map(Path::toFile)
+            .filter(not(File::isDirectory))
+            .map(file -> {
+                try {
+                    return Magic.getMagicMatch(path.toFile(), false).getMimeType();
+                }
+                catch (MagicMatchNotFoundException | MagicException | MagicParseException e) {
+                    throw new RuntimeException(e);
+                }
+            });
     }
 }

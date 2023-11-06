@@ -81,9 +81,7 @@ public class StreamerViewHandler {
     }
 
     public <V> StreamerView<V> createStreamerView(Streamer<V> streamer, PanelLocation location) {
-        //TODO to find other way of detecting the type of streaming
-        //streaming.isTextCompatible()
-        String viewName = streamer instanceof TextStreamer ? TEXT_EDITOR : null;
+        String viewName = streamer.isTextCompatible() ? TEXT_EDITOR : null;
         return createStreamerView(viewName, location);
     }
 

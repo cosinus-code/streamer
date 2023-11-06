@@ -77,6 +77,9 @@ public class LoadActionExecutor<M extends WorkerModel<T>, T>
         PanelLocation location = loadActionModel.getView().getCurrentLocation();
         Streamer streamerToLoad = prepareStreamerToLoad(loadActionModel.getStreamerToLoad(), location);
         StreamerView streamerViewToLoadTo = findStreamerToLoadTo(streamerToLoad, location);
+        if (streamerViewToLoadTo == null) {
+            return;
+        }
         LoadWorker<T> worker = new LoadWorker<>(
             loadActionModel.getActionId(),
             streamerToLoad,
@@ -120,7 +123,7 @@ public class LoadActionExecutor<M extends WorkerModel<T>, T>
             .or(() -> ofNullable(streamerHandler.getDefaultStreamer()))
             .map(this::checkIfStreamerExist)
             .map(this::checkIfStreamerIsPacked)
-            .map(this::checkIfStreamerIsText)
+            //.map(this::checkIfStreamerIsText)
             .orElse(null);
     }
 
