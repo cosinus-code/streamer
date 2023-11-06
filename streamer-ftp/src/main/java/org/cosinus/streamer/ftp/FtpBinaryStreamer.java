@@ -24,7 +24,6 @@ import org.cosinus.streamer.ftp.client.FtpFile;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Path;
 
 public class FtpBinaryStreamer extends FtpStreamer<byte[]> implements BinaryStreamer {
 
@@ -48,12 +47,6 @@ public class FtpBinaryStreamer extends FtpStreamer<byte[]> implements BinaryStre
             throw new SaveStreamerException("Failed to create file:" + getFtpFile());
         }
         return this;
-    }
-
-    @Override
-    public BinaryStreamer createBinaryStreamer(Path path) {
-        FtpFile ftpFile = ftpHandler.createFtpFile(getFtpFile(), path, false);
-        return new FtpBinaryStreamer(ftpFile, getParent(), ftpHandler);
     }
 
 }

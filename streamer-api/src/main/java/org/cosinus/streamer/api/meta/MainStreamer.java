@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.api.meta;
 
+import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 
@@ -84,5 +85,11 @@ public abstract class MainStreamer<S extends Streamer> implements ParentStreamer
     @Override
     public boolean delete() {
         return false;
+    }
+
+    @Override
+    public BinaryStreamer createBinaryStreamer(Path path)
+    {
+        return null;
     }
 }

@@ -16,8 +16,10 @@
 
 package org.cosinus.streamer.file;
 
+import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
+import org.cosinus.streamer.api.TextStreamer;
 import org.cosinus.streamer.api.meta.MainStreamer;
 import org.cosinus.streamer.api.meta.RootStreamer;
 import org.cosinus.swing.exec.ProcessExecutor;
@@ -32,6 +34,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Optional.ofNullable;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_COMPUTER;
 
 @RootStreamer("Filesystem")
@@ -101,6 +104,21 @@ public class FileMainStreamer extends MainStreamer<FileStreamer<?>> {
         return directory ?
             new FileParentStreamer(this, fileHandler, path) :
             new FileBinaryStreamer(this, fileHandler, path);
+    }
+
+    public TextStreamer createTextStreamer(BinaryStreamer binaryStreamer) {
+        return isTextCompatible(binaryStreamer.getPath()) ? new FileTextStreamer(this, fileHandler, binaryStreamer) : null;
+    }
+
+    private boolean isTextCompatible(Path path) {
+        return ofNullable(path)
+            .map(fileHandler::mimeType)
+            //TODO
+            .filter(mimeType -> mimeType.contains("text")
+                || mimeType.contains("java")
+                || mimeType.contains("xml")
+                || mimeType.contains("json"))
+            .isPresent();
     }
 
     @Override

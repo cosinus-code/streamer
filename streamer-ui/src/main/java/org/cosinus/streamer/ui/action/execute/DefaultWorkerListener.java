@@ -23,14 +23,14 @@ public class DefaultWorkerListener<M extends WorkerModel> implements WorkerListe
 {
 
     @Override
-    public void workerStarted() {
+    public void workerStarted(M workerModel) {
     }
 
     @Override
-    public void workerUpdated(M progress) {
+    public void workerUpdated(M workerModel) {
     }
 
     @Override
-    public void workerFinished() {
+    public void workerFinished(M workerModel) {
     }
 }

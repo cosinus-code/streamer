@@ -13,34 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.cosinus.streamer.ui.view.text;
 
-package org.cosinus.streamer.api;
+import org.cosinus.streamer.ui.view.PanelLocation;
+import org.cosinus.streamer.ui.view.StreamerView;
+import org.cosinus.streamer.ui.view.StreamerViewCreator;
+import org.springframework.stereotype.Component;
 
-import org.cosinus.streamer.api.stream.binary.BinaryStream;
+import static org.cosinus.streamer.ui.view.text.TextStreamerView.TEXT_EDITOR;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-
-public interface BinaryStreamer extends Streamer<byte[]> {
-
-    int DEFAULT_TRANSFER_RATE = 8192;
-
+@Component
+public class TextStreamerViewCreator implements StreamerViewCreator<String>
+{
     @Override
-    default BinaryStream stream() {
-        return BinaryStream.of(inputStream(), getTransferRate());
-    }
-
-    @Override
-    default BinaryStreamer binaryStreamer()
+    public StreamerView<String> createStreamerView(PanelLocation location)
     {
-        return this;
+        return new TextStreamerView(location);
     }
 
-    InputStream inputStream();
-
-    OutputStream outputStream(boolean append);
-
-    default int getTransferRate() {
-        return DEFAULT_TRANSFER_RATE;
+    @Override
+    public String getViewName()
+    {
+        return TEXT_EDITOR;
     }
 }

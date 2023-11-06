@@ -21,8 +21,6 @@ import java.util.List;
 /**
  * Generic interface for a progress model
  */
-public interface WorkerModel<T>
-{
-
+public interface WorkerModel<T> {
     void update(List<T> items);
 }

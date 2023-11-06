@@ -16,7 +16,8 @@
 
 package org.cosinus.streamer.ui.view;
 
-import org.cosinus.streamer.api.meta.StreamerHandler;
+import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.TextStreamer;
 import org.cosinus.streamer.ui.view.table.details.DetailViewCreator;
 import org.cosinus.swing.preference.Preference;
 import org.cosinus.swing.preference.Preferences;
@@ -31,6 +32,7 @@ import static java.util.stream.Collectors.toMap;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.LEFT_VIEW;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.RIGHT_VIEW;
 import static org.cosinus.streamer.ui.view.PanelLocation.LEFT;
+import static org.cosinus.streamer.ui.view.text.TextStreamerView.TEXT_EDITOR;
 
 /**
  * Handler for data views
@@ -44,18 +46,14 @@ public class StreamerViewHandler {
 
     private final Preferences preferences;
 
-    private final StreamerHandler streamerHandler;
-
     private final Map<String, StreamerViewCreator> streamerViewCreatorsMap;
 
     private final StreamerViewCreator defaultStreamerViewCreator;
 
     public StreamerViewHandler(Preferences preferences,
-                               StreamerHandler streamerHandler,
                                Set<StreamerViewCreator> streamerViewCreators,
                                DetailViewCreator defaultStreamerViewCreator) {
         this.preferences = preferences;
-        this.streamerHandler = streamerHandler;
         this.streamerViewCreatorsMap = streamerViewCreators
             .stream()
             .collect(toMap(StreamerViewCreator::getViewName, Function.identity()));
@@ -82,12 +80,18 @@ public class StreamerViewHandler {
             .ifPresent(view -> view.setActive(location == currentLocation)));
     }
 
+    public <V> StreamerView<V> createStreamerView(Streamer<V> streamer, PanelLocation location) {
+        //TODO to find other way of detecting the type of streaming
+        //streaming.isTextCompatible()
+        String viewName = streamer instanceof TextStreamer ? TEXT_EDITOR : null;
+        return createStreamerView(viewName, location);
+    }
+
     public StreamerView createStreamerView(String streamerViewName, PanelLocation location) {
         StreamerView view = ofNullable(streamerViewName)
             .map(streamerViewCreatorsMap::get)
             .orElseGet(() -> getPreferredStreamerViewCreator(location))
             .createStreamerView(location);
-        view.initComponents();
         getPanel(location)
             .ifPresent(panel -> panel.setView(view));
         return view;

@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 import java.util.zip.CheckedInputStream;
 import java.util.zip.Checksum;
 
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.StreamSupport.stream;
 
 /**
@@ -50,7 +51,7 @@ public class BinaryStream extends StreamDelegate<byte[]> {
      * @return the binary stream
      */
     public static BinaryStream of(InputStream inputStream, int bufferSize) {
-        Objects.requireNonNull(inputStream);
+        requireNonNull(inputStream);
         BinarySpliterator spliterator = new BinarySpliterator(inputStream, bufferSize);
         return new BinaryStream(stream(spliterator, false), inputStream);
     }

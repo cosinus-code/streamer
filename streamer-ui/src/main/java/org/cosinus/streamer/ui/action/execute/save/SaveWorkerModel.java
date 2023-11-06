@@ -13,23 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.cosinus.streamer.ui.action.execute.save;
 
-package org.cosinus.streamer.api;
+import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
+import org.cosinus.streamer.ui.action.execute.WorkerModel;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.stream.Stream;
 
-import static org.cosinus.streamer.api.stream.text.TextStream.lines;
+public interface SaveWorkerModel<T> extends WorkerModel<T> {
 
-public interface TextStreamer extends Streamer<String> {
+    Stream<T> streamToSave();
 
-    @Override
-    default Stream<String> stream() {
-        return lines(inputStream());
-    }
+    StreamConsumer<T> saveConsumer();
 
-    InputStream inputStream();
-
-    OutputStream outputStream(boolean append);
+    int totalItemsToSave();
 }

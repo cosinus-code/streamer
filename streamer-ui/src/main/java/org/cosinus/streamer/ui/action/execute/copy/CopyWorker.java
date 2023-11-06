@@ -116,12 +116,10 @@ public class CopyWorker<S extends Streamer<?>, T extends Streamer<?>>
 
     @Override
     public StreamConsumer<S> openPipelineOutputStream(CopyStrategy pipelineStrategy) {
-        return streamerToCopy -> {
-            ofNullable(streamerToCopy.binaryStreamer())
-                .ifPresentOrElse(
-                    this::copyBinaryStreamer,
-                    () -> createTargetStreamer(streamerToCopy));
-        };
+        return streamerToCopy -> ofNullable(streamerToCopy.binaryStreamer())
+            .ifPresentOrElse(
+                this::copyBinaryStreamer,
+                () -> createTargetStreamer(streamerToCopy));
     }
 
     private void createTargetStreamer(Streamer<?> sourceStreamer) {
@@ -134,7 +132,7 @@ public class CopyWorker<S extends Streamer<?>, T extends Streamer<?>>
 
     private void copyBinaryStreamer(BinaryStreamer binarySource) {
         Path targetPath = buildTargetPath(binarySource);
-        BinaryStreamer binaryTarget = binarySource.createBinaryStreamer(targetPath);
+        BinaryStreamer binaryTarget = destination.createBinaryStreamer(targetPath);
         CopyBinaryPipeline copyBinaryPipeline =
             new CopyBinaryPipeline(binarySource, binaryTarget, copyStrategy, this);
 

@@ -93,6 +93,7 @@ public abstract class DataTable extends Table implements FocusListener {
             .put(getKeyStroke(KeyEvent.VK_ENTER, 0), "no-action");
     }
 
+    @Override
     public void focusGained(FocusEvent e) {
         try {
             streamerViewHandler.setCurrentLocation(view.getCurrentLocation());
@@ -101,6 +102,7 @@ public abstract class DataTable extends Table implements FocusListener {
         }
     }
 
+    @Override
     public void focusLost(FocusEvent e) {
     }
 
@@ -141,9 +143,9 @@ public abstract class DataTable extends Table implements FocusListener {
     @Override
     protected void processComponentKeyEvent(KeyEvent keyEvent) {
         if (keyEvent.getID() == KEY_PRESSED) {
-            shiftDown = keyEvent.getID() == KEY_PRESSED && keyEvent.isShiftDown();
-            ctrlDown = keyEvent.getID() == KEY_PRESSED && keyEvent.isControlDown();
-            altDown = keyEvent.getID() == KEY_PRESSED && keyEvent.isAltDown();
+            shiftDown = keyEvent.isShiftDown();
+            ctrlDown = keyEvent.isControlDown();
+            altDown = keyEvent.isAltDown();
 
             actionController.runActionByKeyStroke(keyEvent);
             if (actionController.isLetterKey(keyEvent)) {
@@ -156,10 +158,6 @@ public abstract class DataTable extends Table implements FocusListener {
             }
         }
         super.processComponentKeyEvent(keyEvent);
-
-        if (actionController.isGoKey(keyEvent)) {
-            getTableModel().setContentIdentifier(getCurrentStreamerName());
-        }
     }
 
     private boolean isAction(long actionTime, int speed) {

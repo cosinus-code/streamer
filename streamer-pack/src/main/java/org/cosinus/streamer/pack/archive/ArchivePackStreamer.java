@@ -166,7 +166,7 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends PackStrea
         return new ArchiveBinaryStreamer(this, archiveEntry);
     }
 
-    protected ArchiveEntry createArchiveEntry(String name) {
+    protected ArchiveEntry createArchiveEntry(String path) {
         //TODO:
         return null;
     }

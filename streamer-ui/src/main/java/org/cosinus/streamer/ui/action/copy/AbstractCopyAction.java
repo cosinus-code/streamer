@@ -20,6 +20,7 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.LoadStreamerAction;
 import org.cosinus.streamer.ui.action.StreamerAction;
 import org.cosinus.streamer.ui.action.context.StreamerActionContext;
+import org.cosinus.streamer.ui.action.execute.WorkerModel;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.execute.DefaultWorkerListener;
 import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
@@ -89,7 +90,7 @@ public abstract class AbstractCopyAction<A> extends StreamerAction<A> {
                                                                           StreamerActionContext actionContext) {
         workerListenerHandler.register(copyAction.getActionId(), new DefaultWorkerListener() {
             @Override
-            public void workerFinished() {
+            public void workerFinished(WorkerModel workerModel) {
                 loadStreamerAction.run(new StreamerActionContext(actionContext.getOppositeView()));
             }
         });

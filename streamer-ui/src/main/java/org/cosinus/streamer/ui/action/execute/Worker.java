@@ -73,7 +73,7 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
     public void start()
     {
         execute();
-        workerListenerHandler.workerStarted(getId());
+        workerListenerHandler.workerStarted(getId(), getWorkerModel());
     }
 
     public boolean isPaused() {
@@ -122,9 +122,8 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
             if (!isCancelled()) {
                 get();
             }
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.error(e);
-            error = new ActionException("Failed to update worker model", e);
+        } catch (InterruptedException | ExecutionException ex) {
+            errorHandler.handleError(applicationFrame, ex);
         }
 
         ofNullable(error)

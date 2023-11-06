@@ -22,14 +22,13 @@ import org.cosinus.streamer.api.pack.PackStreamer;
 import org.cosinus.streamer.ui.action.LoadStreamerAction;
 import org.cosinus.streamer.ui.action.context.StreamerActionContext;
 import org.cosinus.streamer.ui.action.execute.WorkerListener;
-import org.cosinus.streamer.ui.model.StreamerContentModel;
+import org.cosinus.streamer.ui.action.execute.save.SaveWorkerModel;
+import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.form.Panel;
-import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicProgressBarUI;
 import java.awt.*;
 import java.util.List;
 import java.util.Optional;
@@ -37,24 +36,17 @@ import java.util.UUID;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.SOUTH;
-import static java.awt.RenderingHints.KEY_ANTIALIASING;
-import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
 import static java.util.Optional.ofNullable;
-import static org.cosinus.swing.color.SystemColor.MENU_SELECTION_BACKGROUND;
 
-public abstract class StreamerView<T> extends Panel implements WorkerListener<StreamerContentModel<T>>
-{
+public abstract class StreamerView<T> extends Panel implements WorkerListener<LoadWorkerModel<T>> {
 
     protected final String id;
 
     protected final PanelLocation location;
 
-    protected final JPanel panContent;
+    protected final JPanel streamerViewMainPanel;
 
-    protected Component loadingIndicator;
-
-    @Autowired
-    private ApplicationUIHandler uiHandler;
+    protected LoadingProgress loadingIndicator;
 
     @Autowired
     protected StreamerViewHandler streamerViewHandler;
@@ -75,7 +67,7 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<St
         this.id = UUID.randomUUID().toString();
         this.location = location;
 
-        panContent = new JPanel(new BorderLayout());
+        streamerViewMainPanel = new JPanel(new BorderLayout());
         setLayout(new BorderLayout());
     }
 
@@ -86,22 +78,10 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<St
     public void updateForm() {
     }
 
-    protected Component createLoadingIndicator() {
-        JProgressBar loading = new JProgressBar(0, 100);
+    protected LoadingProgress createLoadingIndicator() {
+        LoadingProgress loading = new LoadingProgress();
         loading.setIndeterminate(true);
         loading.setPreferredSize(new Dimension(getWidth(), 7));
-        loading.setUI(new BasicProgressBarUI() {
-            @Override
-            protected void paintIndeterminate(Graphics g, JComponent c) {
-                Graphics2D g2d = (Graphics2D) g;
-                g2d.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
-                Rectangle rectangle = new Rectangle();
-                getBox(rectangle);
-                g.setColor(uiHandler.getColor(MENU_SELECTION_BACKGROUND));
-                g.fillRoundRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height - 1, 10, 10);
-            }
-        });
-
         return loading;
     }
 
@@ -110,7 +90,7 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<St
         super.initComponents();
 
         this.loadingIndicator = createLoadingIndicator();
-        add(panContent, CENTER);
+        add(streamerViewMainPanel, CENTER);
         add(loadingIndicator, SOUTH);
 
         updateForm();
@@ -139,53 +119,53 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<St
     }
 
     @Override
-    public void workerStarted() {
-        loadingIndicator.setVisible(true);
-    }
-
-    @Override
-    public void workerUpdated(StreamerContentModel<T> model) {
-        streamerViewHandler.getCurrentView().requestFocus();
+    public void workerStarted(LoadWorkerModel<T> loadWorkerModel)
+    {
+        loadingIndicator.startLoading(loadWorkerModel.getTotalSizeToLoad());
         updateAddressBarAndStreamerPanel();
     }
 
     @Override
-    public void workerFinished()
-    {
-
-    }
-
-    private void updateAddressBarAndStreamerPanel() {
-        ofNullable(getLoadedStreamer())
-            .ifPresent(loadedStreamer -> ofNullable(loadedStreamer.getUrlPath())
-                .map(address -> address.split("://"))
-                .map(address -> address[address.length - 1])
-                .ifPresent(address -> {
-                    addressBar.setAddress(address);
-                    getPanel().ifPresent(panel -> {
-                        panel.setAddress(address);
-                        ofNullable(loadedStreamer.getParent())
-                            .ifPresent(parent -> panel.setFreeSpace(
-                                parent.getFreeSpace(),
-                                parent.getTotalSpace()));
-                    });
-                }));
+    public void workerUpdated(LoadWorkerModel<T> loadWorkerModel) {
+        streamerViewHandler.getCurrentView().requestFocus();
+        loadingIndicator.updateLoading(loadWorkerModel.getLoadedSize(), loadWorkerModel.getTotalSizeToLoad());
     }
 
     @Override
-    public void workerFinished(StreamerContentModel<T> streamedContent) {
+    public void workerFinished(LoadWorkerModel<T> loadWorkerModel) {
         ofNullable(getLoadedStreamer())
             .filter(streamer -> PackStreamer.class.isAssignableFrom(streamer.getClass()))
             .map(PackStreamer.class::cast)
             .ifPresent(PackStreamer::finishLoading);
-        loadingIndicator.setVisible(false);
+        loadingIndicator.finishLoading();
+
         streamerViewStorage.saveLastLoadedStreamer(getLoadedStreamer(), getCurrentLocation());
 
-        ofNullable(streamedContent.getParentStreamer())
+        ofNullable(loadWorkerModel.getParentStreamer())
             .filter(streamer -> PackStreamer.class.isAssignableFrom(streamer.getClass()))
             .map(PackStreamer.class::cast)
             .ifPresent(PackStreamer::finishLoading);
-        workerFinished();
+    }
+
+    public void updateAddressBarAndStreamerPanel() {
+        getStreamerAddress().ifPresent(address -> {
+            addressBar.setAddress(address);
+            getPanel().ifPresent(panel -> {
+                panel.setAddress(address);
+                ofNullable(getLoadedStreamer())
+                    .map(Streamer::getParent)
+                    .ifPresent(parent -> panel.setFreeSpace(
+                        parent.getFreeSpace(),
+                        parent.getTotalSpace()));
+            });
+        });
+    }
+
+    protected Optional<String> getStreamerAddress() {
+        return ofNullable(getLoadedStreamer())
+            .map(Streamer::getUrlPath)
+            .map(address -> address.split("://"))
+            .map(address -> address[address.length - 1]);
     }
 
     public Optional<StreamerPanel> getPanel() {
@@ -196,30 +176,43 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<St
         return location == streamerViewHandler.getCurrentLocation();
     }
 
+    public void setActive(boolean active) {
+        getPanel().ifPresent(panel -> panel.setEnabled(active));
+    }
+
+    public void selectCurrentContent() {
+    }
+
     public void showRename() {
     }
 
+    public void goHome() {
+    }
+
+    public void goEnd() {
+    }
+
+    public void findContent(String name) {
+
+    }
+
+    public SaveWorkerModel<T> getSaveModel() {
+        return null;
+    }
+
+    public WorkerListener<? extends SaveWorkerModel<T>> getSaveWorkerListener() {
+        return null;
+    }
+
     public abstract String getName();
-
-    public abstract void setActive(boolean active);
-
-    public abstract void selectCurrentContent();
-
-    public abstract void findContent(String name);
 
     public abstract T getCurrentContent();
 
     public abstract Streamer<T> getLoadedStreamer();
 
-    public abstract Rectangle getCurrentRectangle();
-
-    public abstract void goHome();
-
-    public abstract void goEnd();
-
     public abstract List<T> getSelectedContent();
 
     public abstract Optional<String> getSelectedContentIdentifier();
 
-    public abstract StreamerContentModel<T> getModel();
+    public abstract LoadWorkerModel<T> getLoadWorkerModel();
 }

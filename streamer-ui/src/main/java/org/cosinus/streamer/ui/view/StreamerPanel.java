@@ -50,13 +50,13 @@ public class StreamerPanel extends Panel {
 
     private final JLabel freeSpaceLabel;
 
-    private final ProgressBar freeSpace;
+    private final ProgressBar freeSpaceMarker;
 
     private StreamerView<?> view;
 
     public StreamerPanel() {
         this.addressLabel = new TextField();
-        this.freeSpace = new ProgressBar();
+        this.freeSpaceMarker = new ProgressBar();
         this.freeSpaceLabel = new JLabel();
 
         setLayout(new BorderLayout());
@@ -81,7 +81,7 @@ public class StreamerPanel extends Panel {
 
         JPanel freesSpacePanel = new JPanel(new BorderLayout(5, 5));
         freesSpacePanel.add(freeSpaceLabel, CENTER);
-        freesSpacePanel.add(freeSpace, EAST);
+        freesSpacePanel.add(freeSpaceMarker, EAST);
         freesSpacePanel.setBorder(emptyBorder(3));
 
         JPanel topPanel = new JPanel(new BorderLayout());
@@ -105,12 +105,14 @@ public class StreamerPanel extends Panel {
     }
 
     public void setFreeSpace(long freeSpace, long totalSpace) {
-        this.freeSpace.setValue(totalSpace > 0 ? (int) (100 - freeSpace * 100 / totalSpace) : 0);
-        freeSpaceLabel.setText(
+        boolean isFreeSpaceRelevant = totalSpace > 0;
+        freeSpaceMarker.setValue(isFreeSpaceRelevant ? (int) (100 - freeSpace * 100 / totalSpace) : 0);
+        freeSpaceLabel.setText(isFreeSpaceRelevant ?
             translator.translate("free_memory",
                 formatHandler.formatMemorySize(freeSpace),
-                formatHandler.formatMemorySize(totalSpace)));
-        freeSpaceLabel.setVisible(totalSpace > 0);
+                formatHandler.formatMemorySize(totalSpace)) : "");
+        freeSpaceLabel.setVisible(isFreeSpaceRelevant);
+        freeSpaceMarker.setVisible(isFreeSpaceRelevant);
     }
 
     public void setAddress(String address) {
@@ -127,9 +129,8 @@ public class StreamerPanel extends Panel {
     }
 
     @Override
-    public void setEnabled(boolean enabled)
-    {
-        freeSpace.setEnabled(enabled);
+    public void setEnabled(boolean enabled) {
+        freeSpaceMarker.setEnabled(enabled);
         super.setEnabled(enabled);
     }
 }

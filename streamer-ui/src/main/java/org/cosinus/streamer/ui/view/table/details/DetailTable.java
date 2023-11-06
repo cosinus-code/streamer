@@ -217,11 +217,9 @@ public class DetailTable extends DataTable implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         try {
-            if (e.getSource() instanceof CheckBoxMenuItem) {
-                CheckBoxMenuItem menuItem = (CheckBoxMenuItem) e.getSource();
+            if (e.getSource() instanceof CheckBoxMenuItem menuItem) {
                 DetailColumn.findByKey(menuItem.getActionKey())
-                    .ifPresent(column -> setColVisible(column.ordinal(),
-                                                       menuItem.isSelected()));
+                    .ifPresent(column -> setColVisible(column.ordinal(), menuItem.isSelected()));
             }
         } catch (Exception ex) {
             errorHandler.handleError(this, ex);

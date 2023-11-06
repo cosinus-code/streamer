@@ -27,8 +27,9 @@ public interface WorkerListener<M extends WorkerModel> {
 
     /**
      * Signal the worker was started
+     * @param workerModel the worker model
      */
-    void workerStarted();
+    void workerStarted(M workerModel);
 
     /**
      * Signal the worker model was updated
@@ -39,14 +40,7 @@ public interface WorkerListener<M extends WorkerModel> {
 
     /**
      * Signal the worker was finished
-     */
-    void workerFinished();
-
-    /**
-     * Signal the worker was finished
      * @param workerModel the worker model
      */
-    default void workerFinished(M workerModel) {
-        workerFinished();
-    }
+    void workerFinished(M workerModel);
 }

@@ -18,6 +18,7 @@ package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.context.StreamerActionContext;
+import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.springframework.stereotype.Component;
@@ -37,13 +38,18 @@ public class ExecuteStreamerAction extends StreamerAction<Streamer<?>> {
 
     private final ActionExecutors actionExecutors;
 
-    public ExecuteStreamerAction(ActionExecutors actionExecutors) {
+    private final LoadActionExecutor loadActionExecutor;
+
+    public ExecuteStreamerAction(ActionExecutors actionExecutors, LoadActionExecutor loadActionExecutor) {
         this.actionExecutors = actionExecutors;
+        this.loadActionExecutor = loadActionExecutor;
     }
 
     @Override
     public void run(StreamerActionContext<Streamer<?>> context) {
         Streamer<?> streamerToExecute = context.getCurrentStreamer();
+//        LoadActionModel loadActionModel = loadActionExecutor.createLoadActionModel(context);
+//        actionExecutors.execute(loadActionModel);
         if (streamerToExecute == null || streamerToExecute.isParent()) {
             actionExecutors.execute(new LoadActionModel(context.getCurrentView(), streamerToExecute));
             return;

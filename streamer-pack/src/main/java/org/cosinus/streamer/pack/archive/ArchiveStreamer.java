@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.pack.archive;
 
+import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 
@@ -32,6 +33,12 @@ public abstract class ArchiveStreamer<T> implements Streamer<T> {
                            ArchiveStreamEntry archiveEntry) {
         this.archivePackStreamer = archivePackStreamer;
         this.archiveEntry = archiveEntry;
+    }
+
+    @Override
+    public BinaryStreamer createBinaryStreamer(Path path)
+    {
+        return archivePackStreamer.createBinaryStreamer(path);
     }
 
     @Override

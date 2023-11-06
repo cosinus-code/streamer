@@ -32,6 +32,10 @@ public interface Streamer<T> {
         return null;
     }
 
+    default TextStreamer textStreamer() {
+        return null;
+    }
+
     Streamer<T> save();
 
     boolean delete();
@@ -112,4 +116,6 @@ public interface Streamer<T> {
                     .orElse(name))
                 .orElse(""));
     }
+
+    BinaryStreamer createBinaryStreamer(Path path);
 }

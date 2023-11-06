@@ -53,6 +53,12 @@ public class CompressPackStreamer extends PackStreamer<CompressStreamer> impleme
     }
 
     @Override
+    public BinaryStreamer createBinaryStreamer(Path path)
+    {
+        return null;
+    }
+
+    @Override
     public Stream<CompressStreamer> flatStream(StreamerFilter streamerFilter) {
         return stream();
     }

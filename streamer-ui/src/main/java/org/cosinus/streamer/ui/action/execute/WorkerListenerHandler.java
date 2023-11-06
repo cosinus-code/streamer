@@ -53,9 +53,9 @@ public class WorkerListenerHandler<M extends WorkerModel> {
      *
      * @param workerId the worker id
      */
-    public void workerStarted(String workerId) {
+    public void workerStarted(String workerId, M workerModel) {
         getListeners(workerId)
-            .forEach(WorkerListener::workerStarted);
+            .forEach(listener -> listener.workerStarted(workerModel));
     }
 
     /**

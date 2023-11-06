@@ -149,12 +149,12 @@ public abstract class ProgressDialog<M extends WorkerModel> extends Dialog<Void>
     }
 
     @Override
-    public void workerStarted() {
+    public void workerStarted(M workerModel) {
         setVisible(true);
     }
 
     @Override
-    public void workerFinished() {
+    public void workerFinished(M workerModel) {
         dispose();
     }
 

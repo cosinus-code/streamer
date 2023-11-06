@@ -17,7 +17,7 @@
 package org.cosinus.streamer.ui.view.table;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.model.StreamerContentModel;
+import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.RenamingStreamerView;
 
@@ -61,7 +61,7 @@ public abstract class TableStreamerView extends RenamingStreamerView {
                 table.requestFocus();
             }
         });
-        panContent.add(scroll, CENTER);
+        streamerViewMainPanel.add(scroll, CENTER);
         table.init(this);
 
         addComponentListener(new ResizeListener());
@@ -74,7 +74,7 @@ public abstract class TableStreamerView extends RenamingStreamerView {
     protected abstract DataTable createDataTable();
 
     @Override
-    public StreamerContentModel<Streamer<?>> getModel()
+    public LoadWorkerModel<Streamer<?>> getLoadWorkerModel()
     {
         return getDataTableModel();
     }
@@ -86,9 +86,7 @@ public abstract class TableStreamerView extends RenamingStreamerView {
         } else {
             table.getSelectionModel().clearSelection();
         }
-
-        streamerViewHandler.getPanel(getCurrentLocation())
-            .ifPresent(panel -> panel.setEnabled(active));
+        super.setActive(active);
     }
 
     @Override
@@ -156,31 +154,24 @@ public abstract class TableStreamerView extends RenamingStreamerView {
     }
 
     @Override
-    public void workerStarted() {
-        super.workerStarted();
-//        if (isActive()) {
-//            table.setCurrentIndex(-1);
-//        }
+    public void workerStarted(LoadWorkerModel<Streamer<?>> loadWorkerModel) {
+        super.workerStarted(loadWorkerModel);
         table.reset();
         getDataTableModel().clear();
     }
 
     @Override
-    public void workerUpdated(StreamerContentModel<Streamer<?>> model)
-    {
-        ofNullable(model.getContentIdentifier())
+    public void workerUpdated(LoadWorkerModel<Streamer<?>> loadWorkerModel) {
+        ofNullable(loadWorkerModel.getContentIdentifier())
             .ifPresent(this::findContent);
         getDataTableModel().fireTableDataChanged();
 
-        super.workerUpdated(model);
-    }
-
-    private DataTableModel<Streamer<?>> getDataTableModel() {
-        return (DataTableModel<Streamer<?>>) table.getModel();
+        super.workerUpdated(loadWorkerModel);
     }
 
     @Override
-    public void workerFinished() {
+    public void workerFinished(LoadWorkerModel<Streamer<?>> loadWorkerModel) {
+        super.workerFinished(loadWorkerModel);
         if (isActive()) {
             if (table.getCurrentIndex() < 0) {
                 table.setCurrentIndex(0, true);
@@ -188,6 +179,10 @@ public abstract class TableStreamerView extends RenamingStreamerView {
                 table.setCurrentIndex(table.getStreamersCount() - 1, true);
             }
         }
+    }
+
+    private DataTableModel<Streamer<?>> getDataTableModel() {
+        return (DataTableModel<Streamer<?>>) table.getModel();
     }
 
     @Override

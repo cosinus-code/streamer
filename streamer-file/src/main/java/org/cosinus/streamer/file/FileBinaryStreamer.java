@@ -17,6 +17,7 @@
 package org.cosinus.streamer.file;
 
 import org.cosinus.streamer.api.BinaryStreamer;
+import org.cosinus.streamer.api.TextStreamer;
 import org.cosinus.streamer.api.error.SaveStreamerException;
 
 import java.io.*;
@@ -31,9 +32,9 @@ public class FileBinaryStreamer extends FileStreamer<byte[]> implements BinarySt
     }
 
     @Override
-    public BinaryStreamer createBinaryStreamer(Path path)
+    public TextStreamer textStreamer()
     {
-        return new FileBinaryStreamer(fileMainStreamer, fileHandler, path);
+        return fileMainStreamer.createTextStreamer(this);
     }
 
     @Override

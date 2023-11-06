@@ -19,7 +19,7 @@ package org.cosinus.streamer.ui.view.table;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.model.StreamerContentModel;
+import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.swing.form.TableModel;
 import org.cosinus.swing.preference.Preferences;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,8 @@ import static java.util.stream.IntStream.range;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_HIDDEN;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.TOP_VISIBLE;
 
-public abstract class DataTableModel<T extends Streamer<?>> extends TableModel implements StreamerContentModel<T> {
+public abstract class DataTableModel<T extends Streamer<?>> extends TableModel implements LoadWorkerModel<T>
+{
 
     private static final Logger LOG = LogManager.getLogger(DataTableModel.class);
 

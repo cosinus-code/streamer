@@ -128,4 +128,7 @@ public abstract class RenamingStreamerView extends StreamerView<Streamer<?>> {
     protected JTextComponent getRenameComponent() {
         return new JTextField();
     }
+
+    public abstract Rectangle getCurrentRectangle();
+
 }

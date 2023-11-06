@@ -19,6 +19,7 @@ package org.cosinus.streamer.ui.action;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.context.StreamerActionContext;
+import org.cosinus.streamer.ui.action.execute.WorkerModel;
 import org.cosinus.streamer.ui.action.execute.delete.DeleteActionModel;
 import org.cosinus.streamer.ui.action.execute.DefaultWorkerListener;
 import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
@@ -95,8 +96,9 @@ public class DeleteStreamerAction extends StreamerAction<Streamer<?>> {
                                   getActionName(),
                                   YES_NO_CANCEL_OPTION)) {
             workerListenerHandler.register(deleteAction.getActionId(), new DefaultWorkerListener() {
+
                 @Override
-                public void workerFinished() {
+                public void workerFinished(WorkerModel workerModel) {
                     loadStreamerAction.run(new StreamerActionContext(actionContext.getCurrentView()));
                 }
             });

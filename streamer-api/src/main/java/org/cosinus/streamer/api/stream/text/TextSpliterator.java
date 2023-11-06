@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.cosinus.streamer.api.stream.text;
 
-package org.cosinus.streamer.api.stream.binary;
-
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.util.Arrays;
-import java.util.function.Consumer;
 import java.util.Spliterators.AbstractSpliterator;
+import java.util.function.Consumer;
 
 import static java.lang.Long.MAX_VALUE;
 
@@ -30,45 +28,36 @@ import static java.lang.Long.MAX_VALUE;
  * <p>
  * The size of chunks is configurable in the constructor.
  */
-public class BinarySpliterator extends AbstractSpliterator<byte[]> {
+public class TextSpliterator extends AbstractSpliterator<String> {
 
-    private final InputStream inputStream;
+    private final BufferedReader reader;
 
-    private final byte[] buffer;
-
-    public BinarySpliterator(InputStream inputStream, int bufferSize) {
+    public TextSpliterator(final BufferedReader reader) {
         super(MAX_VALUE, ORDERED | NONNULL);
-        this.inputStream = inputStream;
-        this.buffer = new byte[bufferSize];
-    }
-
-    public InputStream getInputStream() {
-        return inputStream;
+        this.reader = reader;
     }
 
     @Override
-    public boolean tryAdvance(Consumer<? super byte[]> action) {
-        int readSize = tryRead();
-        if (readSize <= 0) {
+    public boolean tryAdvance(final Consumer<? super String> action) {
+        String line = tryRead();
+        if (line == null) {
             return false;
         }
 
-        action.accept(readSize == buffer.length ?
-                          buffer :
-                          Arrays.copyOf(buffer, readSize));
+        action.accept(line);
         return true;
     }
 
     /**
-     * Try to read a new chunk of data.
+     * Try to read a new line.
      * <p>
-     * If no data is available anymore, it should return 0;
+     * If no data is available anymore, it should return null;
      *
-     * @return the size of read data
+     * @return the read line
      */
-    protected int tryRead() {
+    protected String tryRead() {
         try {
-            return inputStream.read(buffer);
+            return reader.readLine();
         } catch (IOException ex) {
             throw new UncheckedIOException(ex);
         }
