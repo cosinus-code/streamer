@@ -26,17 +26,15 @@ public interface Streamer<T> {
 
     Stream<? extends T> stream();
 
-    ParentStreamer<?> getParent();
-
     default BinaryStreamer binaryStreamer() {
         return null;
     }
 
-    default TextStreamer textStreamer() {
-        return null;
-    }
+    ParentStreamer<?> getParent();
 
-    Streamer<T> save();
+    default void save()
+    {
+    }
 
     boolean delete();
 

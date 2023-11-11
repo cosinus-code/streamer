@@ -19,6 +19,7 @@ package org.cosinus.streamer.ui.action.execute.load;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.TextStreamer;
 import org.cosinus.streamer.api.meta.StreamerHandler;
 import org.cosinus.streamer.api.pack.PackerHandler;
 import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
@@ -123,7 +124,7 @@ public class LoadActionExecutor<M extends WorkerModel<T>, T>
             .or(() -> ofNullable(streamerHandler.getDefaultStreamer()))
             .map(this::checkIfStreamerExist)
             .map(this::checkIfStreamerIsPacked)
-            //.map(this::checkIfStreamerIsText)
+            .map(this::checkIfStreamerIsText)
             .orElse(null);
     }
 
@@ -155,7 +156,8 @@ public class LoadActionExecutor<M extends WorkerModel<T>, T>
     }
 
     private Streamer<?> checkIfStreamerIsText(Streamer<?> streamerToCheck) {
-        Streamer<?> textStreamer = streamerToCheck.textStreamer();
-        return textStreamer != null ? textStreamer : streamerToCheck;
+        return streamerToCheck.isTextCompatible() ?
+            new TextStreamer(streamerToCheck.binaryStreamer()) :
+            streamerToCheck;
     }
 }

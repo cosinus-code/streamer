@@ -78,11 +78,6 @@ public abstract class MainStreamer<S extends Streamer> implements ParentStreamer
     }
 
     @Override
-    public MainStreamer save() {
-        return this;
-    }
-
-    @Override
     public boolean delete() {
         return false;
     }

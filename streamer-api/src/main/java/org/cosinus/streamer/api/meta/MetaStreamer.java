@@ -129,11 +129,6 @@ public class MetaStreamer implements ParentStreamer<MainStreamer>
         return null;
     }
 
-    @Override
-    public MetaStreamer save() {
-        return this;
-    }
-
     public Optional<MainStreamer> find(Path path) {
         return stream()
             .filter(mainStreamer -> mainStreamer.getPath().equals(path))

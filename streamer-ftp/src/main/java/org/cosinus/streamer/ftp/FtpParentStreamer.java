@@ -49,11 +49,10 @@ public class FtpParentStreamer extends FtpStreamer<FtpStreamer> implements Paren
     }
 
     @Override
-    public Streamer<FtpStreamer> save() {
+    public void save() {
         if (!ftpHandler.makeDirectory(getFtpFile())) {
             throw new SaveStreamerException("Failed to create directory:" + getFtpFile());
         }
-        return this;
     }
 
     @Override

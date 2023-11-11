@@ -41,10 +41,6 @@ public abstract class ArchiveStreamer<T> implements Streamer<T> {
         return archivePackStreamer.createBinaryStreamer(path);
     }
 
-    @Override
-    public Streamer<T> save() {
-        return null;
-    }
 
     @Override
     public ParentStreamer<?> getParent() {

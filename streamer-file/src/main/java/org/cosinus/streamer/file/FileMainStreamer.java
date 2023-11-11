@@ -16,10 +16,8 @@
 
 package org.cosinus.streamer.file;
 
-import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
-import org.cosinus.streamer.api.TextStreamer;
 import org.cosinus.streamer.api.meta.MainStreamer;
 import org.cosinus.streamer.api.meta.RootStreamer;
 import org.cosinus.swing.exec.ProcessExecutor;
@@ -104,10 +102,6 @@ public class FileMainStreamer extends MainStreamer<FileStreamer<?>> {
         return directory ?
             new FileParentStreamer(this, fileHandler, path) :
             new FileBinaryStreamer(this, fileHandler, path);
-    }
-
-    public TextStreamer createTextStreamer(BinaryStreamer binaryStreamer) {
-        return new FileTextStreamer(this, fileHandler, binaryStreamer);
     }
 
     @Override

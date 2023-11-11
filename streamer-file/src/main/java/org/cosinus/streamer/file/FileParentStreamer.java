@@ -67,11 +67,10 @@ public class FileParentStreamer extends FileStreamer<FileStreamer<?>> implements
     }
 
     @Override
-    public FileParentStreamer save() {
+    public void save() {
         if (!file.exists() && !file.mkdirs()) {
             throw new SaveStreamerException("Failed to create directory:" + file.getPath());
         }
-        return this;
     }
 
     @Override

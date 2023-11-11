@@ -17,7 +17,6 @@
 package org.cosinus.streamer.ui.view;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.TextStreamer;
 import org.cosinus.streamer.ui.view.table.details.DetailViewCreator;
 import org.cosinus.swing.preference.Preference;
 import org.cosinus.swing.preference.Preferences;

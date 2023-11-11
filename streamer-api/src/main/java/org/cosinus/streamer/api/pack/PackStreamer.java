@@ -41,12 +41,6 @@ public abstract class PackStreamer<T> implements Streamer<T> {
     }
 
     @Override
-    public Streamer<T> save() {
-        return null;
-        //return binaryStreamer.save();
-    }
-
-    @Override
     public ParentStreamer<?> getParent() {
         return binaryStreamer.getParent();
     }
