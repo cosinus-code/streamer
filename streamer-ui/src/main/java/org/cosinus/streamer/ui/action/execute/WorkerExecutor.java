@@ -35,12 +35,12 @@ public abstract class WorkerExecutor<A extends ActionModel, M extends WorkerMode
 
     protected final ProgressFormHandler progressFormHandler;
 
-    protected final WorkerListenerHandler<M> workerListenerHandler;
+    protected final WorkerListenerHandler workerListenerHandler;
 
     private final Map<String, Worker<M, T>> workersMap = new ConcurrentHashMap<>();
 
     protected WorkerExecutor(ProgressFormHandler progressFormHandler,
-                                           WorkerListenerHandler<M> workerListenerHandler) {
+                             WorkerListenerHandler workerListenerHandler) {
         this.progressFormHandler = progressFormHandler;
         this.workerListenerHandler = workerListenerHandler;
     }

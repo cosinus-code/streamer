@@ -47,7 +47,7 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
     protected ActionExecutors actionExecutors;
 
     @Autowired
-    protected WorkerListenerHandler<M> workerListenerHandler;
+    protected WorkerListenerHandler workerListenerHandler;
 
     @Autowired
     protected ErrorHandler errorHandler;

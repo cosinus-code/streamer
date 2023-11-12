@@ -79,12 +79,12 @@ public class StreamerViewHandler {
             .ifPresent(view -> view.setActive(location == currentLocation)));
     }
 
-    public <V> StreamerView<V> createStreamerView(Streamer<V> streamer, PanelLocation location) {
+    public <V> StreamerView<V> resolveStreamerView(Streamer<V> streamer, PanelLocation location) {
         String viewName = streamer.isTextCompatible() ? TEXT_EDITOR : null;
-        return createStreamerView(viewName, location);
+        return resolveStreamerView(viewName, location);
     }
 
-    public StreamerView createStreamerView(String streamerViewName, PanelLocation location) {
+    public StreamerView resolveStreamerView(String streamerViewName, PanelLocation location) {
         StreamerView view = ofNullable(streamerViewName)
             .map(streamerViewCreatorsMap::get)
             .orElseGet(() -> getPreferredStreamerViewCreator(location))

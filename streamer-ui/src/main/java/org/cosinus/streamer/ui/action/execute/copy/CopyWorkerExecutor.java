@@ -33,7 +33,7 @@ public class CopyWorkerExecutor<S extends Streamer<?>, T extends Streamer<?>>
     extends WorkerExecutor<CopyActionModel<S, T>, CopyProgressModel, CopyProgressModel> {
 
     public CopyWorkerExecutor(ProgressFormHandler progressFormHandler,
-                              WorkerListenerHandler<CopyProgressModel> workerListenerHandler) {
+                              WorkerListenerHandler workerListenerHandler) {
         super(progressFormHandler, workerListenerHandler);
     }
 

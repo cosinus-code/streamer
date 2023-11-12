@@ -18,6 +18,7 @@ package org.cosinus.streamer.ui.action.execute.load;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.LoadStreamerAction;
+import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.swing.action.execute.ActionModel;
 
@@ -26,35 +27,35 @@ import static java.util.Optional.ofNullable;
 /**
  * Encapsulates the model of the load streamer action
  */
-public class LoadActionModel<T, S extends Streamer<T>> extends ActionModel {
+public class LoadActionModel extends ActionModel {
 
-    private final StreamerView<T> view;
+    private final PanelLocation location;
 
-    private final S streamerToLoad;
+    private final Streamer<?> streamerToLoad;
 
     private final String contentIdentifier;
 
-    public LoadActionModel(StreamerView<T> view,
-                           S streamerToLoad) {
+    public LoadActionModel(StreamerView<?> view, Streamer<?> streamerToLoad) {
         this(view, streamerToLoad, ofNullable(view.getLoadedStreamer())
             .map(Streamer::getName)
             .orElse(null));
     }
 
-    public LoadActionModel(StreamerView<T> view,
-                           S streamerToLoad,
+    public LoadActionModel(StreamerView<?> view,
+                           Streamer<?> streamerToLoad,
                            String contentIdentifier) {
         super(view.getId(), LoadStreamerAction.LOAD_STREAMER_ACTION_ID);
-        this.view = view;
+        this.location = view.getCurrentLocation();
         this.streamerToLoad = streamerToLoad;
         this.contentIdentifier = contentIdentifier;
     }
 
-    public StreamerView<T> getView() {
-        return view;
+    public PanelLocation getLocation()
+    {
+        return location;
     }
 
-    public S getStreamerToLoad() {
+    public Streamer<?>  getStreamerToLoad() {
         return streamerToLoad;
     }
 

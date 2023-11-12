@@ -47,7 +47,7 @@ public class ReloadStreamerAction<T> extends StreamerAction<T> {
 
     @Override
     public void run(StreamerActionContext<T> context) {
-        actionExecutors.execute(new LoadActionModel<>(
+        actionExecutors.execute(new LoadActionModel(
             context.getCurrentView(),
             context.getCurrentView().getLoadedStreamer(),
             context.getContentIdentifier()));

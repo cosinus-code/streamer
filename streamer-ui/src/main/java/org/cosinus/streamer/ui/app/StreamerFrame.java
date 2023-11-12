@@ -16,7 +16,6 @@
 
 package org.cosinus.streamer.ui.app;
 
-import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.meta.StreamerHandler;
 import org.cosinus.streamer.ui.view.*;
 import org.cosinus.swing.boot.SwingApplicationFrame;
@@ -102,7 +101,7 @@ public class StreamerFrame extends SwingApplicationFrame {
     protected StreamerView createStreamerView(PanelLocation location) {
         String streamerViewName = streamerViewStorage.loadLastLoadedView(location)
             .orElse(null);
-        StreamerView view = streamerViewHandler.createStreamerView(streamerViewName, location);
+        StreamerView view = streamerViewHandler.resolveStreamerView(streamerViewName, location);
         streamerViewStorage.saveLastLoadedView(view, location);
         return view;
     }

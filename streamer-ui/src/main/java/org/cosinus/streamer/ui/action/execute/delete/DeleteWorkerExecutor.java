@@ -34,7 +34,7 @@ public class DeleteWorkerExecutor
 {
 
     public DeleteWorkerExecutor(ProgressFormHandler progressFormHandler,
-                                WorkerListenerHandler<StreamersProgressModel> workerListenerHandler) {
+                                WorkerListenerHandler workerListenerHandler) {
         super(progressFormHandler,
             workerListenerHandler);
     }

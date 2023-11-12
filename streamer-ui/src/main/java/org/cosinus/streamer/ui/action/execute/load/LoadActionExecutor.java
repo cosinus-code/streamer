@@ -23,7 +23,6 @@ import org.cosinus.streamer.api.TextStreamer;
 import org.cosinus.streamer.api.meta.StreamerHandler;
 import org.cosinus.streamer.api.pack.PackerHandler;
 import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
-import org.cosinus.streamer.ui.action.execute.WorkerModel;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
@@ -43,8 +42,7 @@ import static java.util.function.Predicate.not;
  * Implementation of {@link ActionExecutor} based on {@link LoadWorker}
  */
 @Component
-public class LoadActionExecutor<M extends WorkerModel<T>, T>
-    implements ActionExecutor<LoadActionModel<T, Streamer<T>>> {
+public class LoadActionExecutor implements ActionExecutor<LoadActionModel> {
 
     private static final Logger LOG = LogManager.getLogger(LoadActionExecutor.class);
 
@@ -56,15 +54,15 @@ public class LoadActionExecutor<M extends WorkerModel<T>, T>
 
     private final PackerHandler packerHandler;
 
-    protected final WorkerListenerHandler<M> workerListenerHandler;
+    protected final WorkerListenerHandler workerListenerHandler;
 
-    private final Map<String, LoadWorker<T>> workersMap;
+    private final Map<String, LoadWorker<?>> workersMap;
 
     public LoadActionExecutor(StreamerViewStorage streamerViewStorage,
                               StreamerViewHandler streamerViewHandler,
                               StreamerHandler streamerHandler,
                               PackerHandler packerHandler,
-                              WorkerListenerHandler<M> workerListenerHandler) {
+                              WorkerListenerHandler workerListenerHandler) {
         this.streamerViewStorage = streamerViewStorage;
         this.streamerViewHandler = streamerViewHandler;
         this.streamerHandler = streamerHandler;
@@ -74,25 +72,27 @@ public class LoadActionExecutor<M extends WorkerModel<T>, T>
     }
 
     @Override
-    public void execute(final LoadActionModel<T, Streamer<T>> loadActionModel) {
-        PanelLocation location = loadActionModel.getView().getCurrentLocation();
-        Streamer streamerToLoad = prepareStreamerToLoad(loadActionModel.getStreamerToLoad(), location);
-        StreamerView streamerViewToLoadTo = findStreamerToLoadTo(streamerToLoad, location);
+    public void execute(LoadActionModel actionModel) {
+        startLoadWorker(
+            actionModel.getActionId(),
+            actionModel.getStreamerToLoad(),
+            actionModel.getContentIdentifier(),
+            actionModel.getLocation());
+    }
+
+    private <V> void startLoadWorker(String id, Streamer<?> streamer, String contentIdentifier, PanelLocation location) {
+        Streamer<V> streamerToLoad = prepareStreamerToLoad(streamer, location);
+        StreamerView<V> streamerViewToLoadTo = resolveStreamerToLoadTo(streamerToLoad, location);
         if (streamerViewToLoadTo == null) {
             return;
         }
-        LoadWorker<T> worker = new LoadWorker<>(
-            loadActionModel.getActionId(),
-            streamerToLoad,
-            streamerViewToLoadTo,
-            loadActionModel.getContentIdentifier());
-
+        LoadWorker<V> worker = new LoadWorker<>(id, streamerToLoad, streamerViewToLoadTo, contentIdentifier);
         workerListenerHandler.register(worker.getId(), streamerViewToLoadTo);
         registerWorker(worker);
         worker.start();
     }
 
-    private void registerWorker(LoadWorker<T> worker) {
+    private <V> void registerWorker(LoadWorker<V> worker) {
         cancel(worker.getId());
         workersMap.put(worker.getId(), worker);
     }
@@ -114,8 +114,8 @@ public class LoadActionExecutor<M extends WorkerModel<T>, T>
         return LoadActionModel.class.getName();
     }
 
-    private <V> StreamerView<V> findStreamerToLoadTo(Streamer<V> streamerToLoad, PanelLocation location) {
-        return streamerViewHandler.createStreamerView(streamerToLoad, location);
+    private <V> StreamerView<V> resolveStreamerToLoadTo(Streamer<V> streamerToLoad, PanelLocation location) {
+        return streamerViewHandler.resolveStreamerView(streamerToLoad, location);
     }
 
     private Streamer prepareStreamerToLoad(Streamer streamerToLoad, PanelLocation location) {

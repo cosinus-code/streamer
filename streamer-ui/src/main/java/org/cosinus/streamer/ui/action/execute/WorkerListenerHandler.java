@@ -32,20 +32,20 @@ import static java.util.Optional.ofNullable;
  * Handler for worker listeners
  */
 @Component
-public class WorkerListenerHandler<M extends WorkerModel> {
+public class WorkerListenerHandler {
 
-    private final Map<String, Queue<WorkerListener<M>>> workerListenersMap = new HashMap<>();
+    private final Map<String, Queue<WorkerListener>> workerListenersMap = new HashMap<>();
 
     /**
      * Register a worker listener.
      *
      * @param workerId the worker id
-     * @param listener the worker listener
+     * @param listeners the worker listener
      */
-    public void register(String workerId, final WorkerListener<M>... listener) {
+    public void register(String workerId, final WorkerListener... listeners) {
         workerListenersMap
             .computeIfAbsent(workerId, k -> new ConcurrentLinkedQueue<>())
-            .addAll(asList(listener));
+            .addAll(asList(listeners));
     }
 
     /**
@@ -53,7 +53,7 @@ public class WorkerListenerHandler<M extends WorkerModel> {
      *
      * @param workerId the worker id
      */
-    public void workerStarted(String workerId, M workerModel) {
+    public <M extends WorkerModel> void workerStarted(String workerId, M workerModel) {
         getListeners(workerId)
             .forEach(listener -> listener.workerStarted(workerModel));
     }
@@ -63,7 +63,7 @@ public class WorkerListenerHandler<M extends WorkerModel> {
      *
      * @param workerModel the worker model
      */
-    public void workerUpdated(String workerId, M workerModel) {
+    public <M extends WorkerModel> void workerUpdated(String workerId, WorkerModel workerModel) {
         getListeners(workerId)
             .forEach(listener -> listener.workerUpdated(workerModel));
     }
@@ -73,19 +73,9 @@ public class WorkerListenerHandler<M extends WorkerModel> {
      *
      * @param workerModel the worker model
      */
-    public void workerFinished(String workerId, M workerModel) {
-        ofNullable(workerListenersMap.get(workerId))
-            .ifPresent(listeners -> workerFinished(listeners, workerModel));
-    }
-
-    /**
-     * Signal to listeners that a worker was finished.
-     *
-     * @param listeners the listeners
-     */
-    private void workerFinished(Collection<WorkerListener<M>> listeners, M workerModel) {
-        listeners.forEach(listener -> listener.workerFinished(workerModel));
-        listeners.clear();
+    public <M extends WorkerModel> void workerFinished(String workerId, M workerModel) {
+        getListeners(workerId)
+            .forEach(listener -> listener.workerFinished(workerModel));
     }
 
     /**
@@ -94,7 +84,7 @@ public class WorkerListenerHandler<M extends WorkerModel> {
      * @param workerId the worker is
      * @return the stream of listeners
      */
-    private Stream<WorkerListener<M>> getListeners(String workerId) {
+    private Stream<WorkerListener> getListeners(String workerId) {
         return ofNullable(workerListenersMap.get(workerId))
             .stream()
             .flatMap(Collection::stream);
