@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cosinus.streamer.api.stream;
+package org.cosinus.streamer.api.remote;
 
-import org.cosinus.streamer.api.Streamer;
+public interface ConnectionPool<C extends Connection<R>, R> {
 
-import java.util.function.Function;
-import java.util.stream.Stream;
+    C borrowConnection(String key);
 
-public interface StreamSupplier<S extends Streamer>
-    extends Function<Streamer<S>, Stream<S>>
-{
+    void returnConnection(String key, C connection);
 }

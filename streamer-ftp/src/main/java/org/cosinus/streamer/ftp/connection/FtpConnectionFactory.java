@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.cosinus.streamer.ftp.client;
+package org.cosinus.streamer.ftp.connection;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.commons.pool2.BaseKeyedPooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
@@ -33,107 +32,106 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.Optional;
 
-/**
- * Factory for {@link FTPClient} objects
- */
+import static java.util.Optional.ofNullable;
+
 @Component
-public class FtpClientFactory extends BaseKeyedPooledObjectFactory<String, FtpClient> {
+public class FtpConnectionFactory extends BaseKeyedPooledObjectFactory<String, FtpConnection> {
 
-    private static final Logger LOG = LogManager.getLogger(FtpClientFactory.class);
-
+    private static final Logger LOG = LogManager.getLogger(FtpConnectionFactory.class);
     private final FtpModel ftpModel;
 
-    public FtpClientFactory(FtpModelProvider ftpModelProvider) {
+    public FtpConnectionFactory(final FtpModelProvider ftpModelProvider) {
         this.ftpModel = ftpModelProvider.getFtpModel();
     }
 
-    public FtpClientModel getFtpClientConfig(String name) {
-        return ftpModel.findFtpClientConfiguration(name)
-            .orElseThrow(() -> new StreamerException("FTP client configuration not found: " + name));
-    }
-
     @Override
-    public FtpClient create(String name) throws IOException {
-        FtpClientModel ftpConfig = getFtpClientConfig(name);
+    public FtpConnection create(String name) throws Exception
+    {
+        FtpClientModel ftpConfig = getFtpConnectionConfig(name);
 
-        FtpClient ftpClient = new FtpClient(name);
-        Optional.ofNullable(ftpConfig.getEncoding())
-            .ifPresent(ftpClient::setControlEncoding);
-        ftpClient.setConnectTimeout(ftpConfig.getConnectionTimeout() * 1000);
+        FtpConnection ftpConnection = new FtpConnection(name);
+        ftpConnection.configure(new FTPClientConfig(FTPClientConfig.SYST_UNIX));
+        ofNullable(ftpConfig.getEncoding())
+            .ifPresent(ftpConnection::setControlEncoding);
+        ftpConnection.setConnectTimeout(ftpConfig.getConnectionTimeout() * 1000);
 
-        ftpClient.connect(ftpConfig.getHost(),
-                          ftpConfig.getPort());
-        int replyCode = ftpClient.getReplyCode();
+        ftpConnection.connect(ftpConfig.getHost(), ftpConfig.getPort());
+        int replyCode = ftpConnection.getReplyCode();
         if (!FTPReply.isPositiveCompletion(replyCode)) {
-            ftpClient.disconnect();
+            ftpConnection.disconnect();
             LOG.warn("FTP server {} refused connection: {}",
-                     ftpConfig.getHost(),
-                     replyCode);
+                ftpConfig.getHost(),
+                replyCode);
             return null;
         }
         LOG.info("Connected to FTP server " + ftpConfig.getHost());
-        LOG.info(ftpClient.getReplyString());
+        LOG.info(ftpConnection.getReplyString());
 
-        if (!ftpClient.login(ftpConfig.getUsername(),
-                             ftpConfig.getPassword())) {
+        if (!ftpConnection.login(ftpConfig.getUsername(), ftpConfig.getPassword())) {
             LOG.warn("FTP login to server {} failed for username {}",
-                     ftpConfig.getHost(),
-                     ftpConfig.getUsername());
+                ftpConfig.getHost(),
+                ftpConfig.getUsername());
             return null;
         }
 
         if (ftpConfig.isPassiveMode()) {
-            ftpClient.enterLocalPassiveMode();
+            ftpConnection.enterLocalPassiveMode();
         }
 
         if (!StringUtils.isEmpty(ftpConfig.getRemoteDir())) {
-            ftpClient.changeWorkingDirectory(ftpConfig.getRemoteDir());
+            ftpConnection.changeWorkingDirectory(ftpConfig.getRemoteDir());
         }
 
-        return ftpClient;
+        return ftpConnection;
     }
 
     @Override
-    public PooledObject<FtpClient> wrap(FtpClient ftpClient) {
-        return new DefaultPooledObject<>(ftpClient);
+    public PooledObject<FtpConnection> wrap(FtpConnection ftpConnection)
+    {
+        return new DefaultPooledObject<>(ftpConnection);
     }
 
     @Override
-    public boolean validateObject(String name, PooledObject<FtpClient> pooledFtpClient) {
-        return Optional.ofNullable(pooledFtpClient)
+    public boolean validateObject(String name, PooledObject<FtpConnection> pooledFtpConnection) {
+        return Optional.ofNullable(pooledFtpConnection)
             .map(PooledObject::getObject)
             .map(this::runValidateCommand)
             .map(FTPReply::isPositiveCompletion)
             .orElse(false);
     }
 
-    protected int runValidateCommand(FTPClient ftpClient) {
+    protected int runValidateCommand(FtpConnection ftpConnection) {
         try {
-            return ftpClient.noop();
+            return ftpConnection.noop();
         } catch (IOException e) {
-            LOG.error("FTP client validation failed", e);
+            LOG.error("FTP connection validation failed", e);
             return 0;
         }
     }
 
     @Override
-    public void destroyObject(String name, PooledObject<FtpClient> pooledFtpClient) {
-        Optional.ofNullable(pooledFtpClient)
+    public void destroyObject(String name, PooledObject<FtpConnection> ftpConnection) {
+        ofNullable(ftpConnection)
             .map(PooledObject::getObject)
-            .ifPresent(ftpClient -> {
+            .ifPresent(connection -> {
                 try {
-                    if (ftpClient.isConnected()) {
-                        ftpClient.logout();
+                    if (connection.isConnected()) {
+                        connection.logout();
                     }
                 } catch (IOException io) {
                     LOG.error("FTP logout failed", io);
                 } finally {
                     try {
-                        ftpClient.disconnect();
+                        connection.disconnect();
                     } catch (IOException io) {
                         LOG.error("FTP disconnect failed", io);
                     }
                 }
             });
+    }
+
+    public FtpClientModel getFtpConnectionConfig(String name) {
+        return ftpModel.findFtpClientConfiguration(name)
+            .orElseThrow(() -> new StreamerException("FTP connection configuration not found: " + name));
     }
 }

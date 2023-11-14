@@ -13,75 +13,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.cosinus.streamer.ftp;
 
-import org.cosinus.streamer.api.ParentStreamer;
-import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.StreamerFilter;
-import org.cosinus.streamer.api.error.SaveStreamerException;
-import org.cosinus.streamer.api.stream.FlatStreamingStrategy;
-import org.cosinus.streamer.ftp.client.FtpFile;
+import org.apache.commons.net.ftp.FTPFile;
+import org.cosinus.streamer.api.remote.RemoteParentStreamer;
+import org.cosinus.streamer.ftp.connection.FtpConnection;
 
 import java.nio.file.Path;
-import java.util.stream.Stream;
 
-public class FtpParentStreamer extends FtpStreamer<FtpStreamer> implements ParentStreamer<FtpStreamer>
+public class FtpParentStreamer extends FtpStreamer<FtpStreamer<?>>
+    implements RemoteParentStreamer<FtpStreamer<?>, FTPFile, FtpConnection>
 {
 
-    public FtpParentStreamer(FtpFile ftpFile, ParentStreamer parent, FtpHandler ftpHandler) {
-        super(ftpFile, parent, ftpHandler);
-    }
-
-    @Override
-    public Stream<FtpStreamer> stream() {
-        return ftpHandler.stream(getFtpFile())
-            .map(this::createFtpStreamer);
-    }
-
-    @Override
-    public Stream<FtpStreamer> flatStream(FlatStreamingStrategy strategy, StreamerFilter streamerFilter) {
-        return ftpHandler.flatStream(strategy, getFtpFile(),
-                                     stream()
-                                         .filter(streamerFilter)
-                                         .map(FtpStreamer::getFtpFile))
-            .map(this::createFtpStreamer);
-    }
-
-    @Override
-    public void save() {
-        if (!ftpHandler.makeDirectory(getFtpFile())) {
-            throw new SaveStreamerException("Failed to create directory:" + getFtpFile());
-        }
-    }
-
-    @Override
-    public FtpStreamer create(Path path, boolean parent)
+    public FtpParentStreamer(final FTPFile ftpFile, Path path, String connectionName)
     {
-        FtpFile ftpFile = ftpHandler.createFtpFile(getFtpFile(), path, parent);
-        return createFtpStreamer(ftpFile);
+        super(ftpFile, path, connectionName);
     }
 
     @Override
-    public void execute(Path path) {
+    public void execute(Path path)
+    {
 
     }
 
     @Override
-    public long getFreeSpace() {
-        //TODO
+    public long getFreeSpace()
+    {
         return 0;
     }
 
     @Override
-    public long getTotalSpace() {
-        //TODO
+    public long getTotalSpace()
+    {
         return 0;
     }
 
-    private FtpStreamer createFtpStreamer(FtpFile ftpFile) {
+    @Override
+    public boolean delete()
+    {
+        return false;
+    }
+
+    @Override
+    public FtpStreamer<?> createFromRemote(FTPFile ftpFile)
+    {
         return ftpFile.isDirectory() ?
-            new FtpParentStreamer(ftpFile, this, ftpHandler) :
-            new FtpBinaryStreamer(ftpFile, this, ftpHandler);
+            new FtpParentStreamer(ftpFile, path.resolve(ftpFile.getName()), connectionName) :
+            new FtpBinaryStreamer(ftpFile, path.resolve(ftpFile.getName()), connectionName);
     }
 }

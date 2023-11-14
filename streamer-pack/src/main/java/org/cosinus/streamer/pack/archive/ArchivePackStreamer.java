@@ -59,7 +59,7 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends PackStrea
     }
 
     @Override
-    public Stream<? extends A> stream() {
+    public Stream<A> stream() {
         if (archiveHolder == null || !archiveHolder.isLoaded()) {
             archiveHolder = new ArchiveHolder();
             return createStream()

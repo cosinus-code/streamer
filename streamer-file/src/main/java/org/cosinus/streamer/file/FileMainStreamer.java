@@ -52,27 +52,23 @@ public class FileMainStreamer extends MainStreamer<FileStreamer<?>> {
     }
 
     @Override
-    public Stream<FileRootStreamer> stream() {
+    public Stream<FileStreamer<?>> stream() {
         return getRoots().stream();
     }
 
     @Override
     public Stream<FileStreamer<?>> flatStream(StreamerFilter streamerFilter) {
-        return stream()
-            .filter(streamerFilter)
-            .map(Streamer::getPath)
-            .flatMap(fileHandler::walk)
-            .map(this::create);
+        return Stream.empty();
     }
 
-    public Optional<FileRootStreamer> findRoot(Path path) {
+    public Optional<FileStreamer<?>> findRoot(Path path) {
         return getRoots()
             .stream()
             .filter(root -> fileHandler.isSameFile(path, root.getPath()))
             .findFirst();
     }
 
-    protected List<FileRootStreamer> getRoots() {
+    protected List<FileStreamer<?>> getRoots() {
         return fileHandler.getFileStores()
             .stream()
             .map(this::createFileRootStreamer)

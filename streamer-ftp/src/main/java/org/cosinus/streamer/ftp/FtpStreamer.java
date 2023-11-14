@@ -13,98 +13,124 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.cosinus.streamer.ftp;
 
+import org.apache.commons.net.ftp.FTPFile;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.ParentStreamer;
-import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ftp.client.FtpFile;
+import org.cosinus.streamer.api.remote.RemoteStreamer;
+import org.cosinus.streamer.ftp.connection.FtpConnection;
+import org.cosinus.streamer.ftp.connection.FtpConnectionPool;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.file.Path;
 import java.util.Calendar;
 import java.util.Objects;
-import java.util.Optional;
 
+import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ftp.FtpMainStreamer.FTP_PROTOCOL;
+import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
-public abstract class FtpStreamer<T> implements Streamer<T> {
+public abstract class FtpStreamer<T> implements RemoteStreamer<T, FTPFile, FtpConnection>
+{
 
-    protected final FtpHandler ftpHandler;
+    @Autowired
+    protected FtpConnectionPool ftpConnectionPool;
 
-    private final FtpFile ftpFile;
+    protected final FTPFile ftpFile;
 
-    private final ParentStreamer parent;
+    protected final Path path;
 
-    protected FtpStreamer(FtpFile ftpFile, ParentStreamer parent, FtpHandler ftpHandler) {
-        this.parent = parent;
+    protected final String connectionName;
+
+    public FtpStreamer(final FTPFile ftpFile, final Path path, String connectionName) {
+        injectContext(this);
         this.ftpFile = ftpFile;
-        this.ftpHandler = ftpHandler;
+        this.path = path;
+        this.connectionName = connectionName;
     }
 
     @Override
-    public ParentStreamer<?> getParent() {
-        //TODO: To compute the parent. There is no need to keep all the parents chain
-        return parent;
+    public ParentStreamer<?> getParent()
+    {
+        return null;
     }
 
     @Override
-    public boolean delete() {
-        return false;
-    }
-
-    @Override
-    public String getProtocol() {
+    public String getProtocol()
+    {
         return FTP_PROTOCOL;
     }
 
     @Override
-    public Path getPath() {
-        return ftpFile.getPath();
+    public Path getPath()
+    {
+        return path;
     }
 
     @Override
-    public BinaryStreamer createBinaryStreamer(Path path) {
-        FtpFile ftpFile = ftpHandler.createFtpFile(getFtpFile(), path, false);
-        return new FtpBinaryStreamer(ftpFile, getParent(), ftpHandler);
-    }
-
-    @Override
-    public boolean exists() {
+    public boolean exists()
+    {
         return true;
     }
 
     @Override
-    public long getSize() {
+    public long getSize()
+    {
         return ftpFile.getSize();
     }
 
     @Override
-    public long lastModified() {
-        return Optional.ofNullable(ftpFile.getTimestamp())
-            .map(Calendar::getTimeInMillis)
-            .orElse(0L);
-    }
-
-    public FtpFile getFtpFile() {
-        return ftpFile;
+    public long lastModified()
+    {
+        return ofNullable(ftpFile.getTimestamp())
+        .map(Calendar::getTimeInMillis)
+        .orElse(0L);
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (this == other) {
+    public boolean isLink()
+    {
+        return ftpFile.isSymbolicLink();
+    }
+
+    @Override
+    public BinaryStreamer createBinaryStreamer(Path path)
+    {
+        return null;
+    }
+
+    @Override
+    public boolean isTextCompatible()
+    {
+        return false;
+    }
+
+    @Override
+    public String connectionName()
+    {
+        return connectionName;
+    }
+
+    @Override
+    public FtpConnectionPool connectionPool()
+    {
+        return ftpConnectionPool;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
             return true;
-        }
-        if (!(other instanceof FtpStreamer)) {
+        if (!(o instanceof FtpStreamer<?> that))
             return false;
-        }
-
-        FtpStreamer that = (FtpStreamer) other;
-        return ftpFile.equals(that.ftpFile);
+        return Objects.equals(getPath(), that.getPath());
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(ftpFile);
+    public int hashCode()
+    {
+        return Objects.hash(getPath());
     }
 }

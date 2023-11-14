@@ -36,7 +36,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Spliterator for flattening a tree of streams
  */
-public class FlatStreamingSpliterator<S extends Streamer<?>> implements Spliterator<S>
+public class FlatStreamingSpliterator<S extends Streamer> implements Spliterator<S>
 {
 
     private final FlatStreamingStrategy strategy;
@@ -78,7 +78,7 @@ public class FlatStreamingSpliterator<S extends Streamer<?>> implements Splitera
         }
 
         if (isStreamableButNotYetStreamed) {
-            try(Stream<? extends S> stream = streamSupplier.apply((Streamer<? extends S>) streamer)) {
+            try(Stream<S> stream = streamSupplier.apply(streamer)) {
                 pushInQueue(stream);
             }
             setStreamed(streamer);

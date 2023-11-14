@@ -13,31 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.cosinus.streamer.api.remote;
 
-package org.cosinus.streamer.ftp.client;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Path;
+import java.util.stream.Stream;
 
-import org.apache.commons.net.ftp.FTPFile;
+public interface Connection<R> extends AutoCloseable {
 
-import java.nio.file.Paths;
+    Stream<R> stream(Path path);
 
-public class FtpRootFile extends FtpFile {
+    InputStream inputStream(Path path);
 
-    public static final String ROOT_PATH = "./";
+    OutputStream outputStream(Path path, boolean append);
 
-    private final String name;
-
-    public FtpRootFile(String name) {
-        super(name, Paths.get(name), new FTPFile());
-        this.name = name;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public boolean isDirectory() {
-        return true;
-    }
+    boolean makeDirectory(Path pat);
 }

@@ -41,6 +41,6 @@ public class LoadWorker<T> extends PipelineWorker<LoadWorkerModel<T>, T> {
     @Override
     public Stream<T> openPipelineInputStream(PipelineStrategy pipelineStrategy)
     {
-        return (Stream<T>) streamerToLoad.stream();
+        return streamerToLoad.stream();
     }
 }

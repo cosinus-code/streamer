@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ftp.client;
+package org.cosinus.streamer.ftp.connection;
 
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
 import org.springframework.stereotype.Component;
 
 /**
- * Configuration for {@link FtpClientPool}
+ * Configuration for {@link FtpConnection}
  */
 @Component
-public class FtpClientPoolConfig extends GenericKeyedObjectPoolConfig<FtpClient> {
+public class FtpConnectionPoolConfig extends GenericKeyedObjectPoolConfig<FtpConnection> {
 
-    public FtpClientPoolConfig() {
+    public FtpConnectionPoolConfig() {
         setMaxIdlePerKey(0);
     }
 }

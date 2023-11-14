@@ -13,39 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.cosinus.streamer.ftp;
 
-import org.cosinus.streamer.api.BinaryStreamer;
-import org.cosinus.streamer.api.ParentStreamer;
-import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.error.SaveStreamerException;
-import org.cosinus.streamer.ftp.client.FtpFile;
+import org.apache.commons.net.ftp.FTPFile;
+import org.cosinus.streamer.api.remote.RemoteBinaryStreamer;
+import org.cosinus.streamer.ftp.connection.FtpConnection;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.file.Path;
 
-public class FtpBinaryStreamer extends FtpStreamer<byte[]> implements BinaryStreamer {
+public class FtpBinaryStreamer extends FtpStreamer<byte[]>
+    implements RemoteBinaryStreamer<FTPFile, FtpConnection>
+{
 
-    public FtpBinaryStreamer(FtpFile ftpFile, ParentStreamer parent, FtpHandler ftpHandler) {
-        super(ftpFile, parent, ftpHandler);
+    public FtpBinaryStreamer(final FTPFile ftpFile, Path path, String connectionName) {
+        super(ftpFile, path, connectionName);
     }
 
     @Override
-    public InputStream inputStream() {
-        return ftpHandler.inputStream(getFtpFile());
+    public boolean delete() {
+        return false;
     }
-
-    @Override
-    public OutputStream outputStream(boolean append) {
-        return ftpHandler.outputStream(getFtpFile(), append);
-    }
-
-    @Override
-    public void save() {
-        if (!ftpHandler.makeFile(getFtpFile())) {
-            throw new SaveStreamerException("Failed to create file:" + getFtpFile());
-        }
-    }
-
 }

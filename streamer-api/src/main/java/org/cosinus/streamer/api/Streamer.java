@@ -24,7 +24,7 @@ import static org.apache.commons.io.FilenameUtils.getExtension;
 
 public interface Streamer<T> {
 
-    Stream<? extends T> stream();
+    Stream<T> stream();
 
     default BinaryStreamer binaryStreamer() {
         return null;

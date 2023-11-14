@@ -31,7 +31,7 @@ public class ArchiveParentStreamer extends ArchiveStreamer<ArchiveStreamer> impl
     }
 
     @Override
-    public Stream<? extends ArchiveStreamer> stream() {
+    public Stream<ArchiveStreamer> stream() {
         return archivePackStreamer.listEntries(getPath())
             .map(entry -> archivePackStreamer.createArchiveStreamer(entry));
     }
