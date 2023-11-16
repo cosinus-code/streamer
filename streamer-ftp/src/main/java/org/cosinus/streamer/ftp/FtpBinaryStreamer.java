@@ -22,8 +22,7 @@ import org.cosinus.streamer.ftp.connection.FtpConnection;
 import java.nio.file.Path;
 
 public class FtpBinaryStreamer extends FtpStreamer<byte[]>
-    implements RemoteBinaryStreamer<FTPFile, FtpConnection>
-{
+    implements RemoteBinaryStreamer<FTPFile, FtpConnection> {
 
     public FtpBinaryStreamer(final FTPFile ftpFile, Path path, String connectionName) {
         super(ftpFile, path, connectionName);

@@ -65,13 +65,12 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
         this.workerModel = workerModel;
     }
 
-    public String getId()
-    {
+    public String getId() {
         return id;
     }
 
-    public void start()
-    {
+    public void start() {
+        workerModel.init();
         execute();
         workerListenerHandler.workerStarted(getId(), getWorkerModel());
     }

@@ -23,7 +23,6 @@ import org.cosinus.swing.action.execute.ActionModel;
 import org.cosinus.swing.worker.SwingWorker;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Optional.ofNullable;
@@ -60,7 +59,7 @@ public abstract class WorkerExecutor<A extends ActionModel, M extends WorkerMode
     @Override
     public void cancel(String executionId) {
         ofNullable(workersMap.get(executionId))
-                .ifPresent(SwingWorker::cancel);
+            .ifPresent(SwingWorker::cancel);
     }
 
     @Override

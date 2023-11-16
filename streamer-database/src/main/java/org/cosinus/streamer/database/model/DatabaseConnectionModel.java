@@ -13,23 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.cosinus.streamer.database.model;
 
-package org.cosinus.streamer.ftp.model;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Optional;
-
-/**
- * FTP client model
- */
-public class FtpModel extends HashMap<String, FtpClientModel> {
-
-    public Optional<FtpClientModel> findFtpClientConfiguration(String key) {
-        return Optional.ofNullable(get(key));
-    }
-
-    public Collection<String> getFtpClientNames() {
-        return keySet();
-    }
+public record DatabaseConnectionModel(String name, String url, String username, String password,
+                                      String type, String host, int port, String service) {
 }

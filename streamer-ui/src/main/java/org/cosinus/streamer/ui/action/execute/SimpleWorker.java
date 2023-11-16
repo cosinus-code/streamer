@@ -17,21 +17,18 @@ package org.cosinus.streamer.ui.action.execute;
 
 import java.util.List;
 
-public abstract class SimpleWorker<M extends WorkerModel<M>> extends Worker<M, M>
-{
+public abstract class SimpleWorker<M extends WorkerModel<M>> extends Worker<M, M> {
     protected SimpleWorker(String actionId, M workerModel) {
         super(actionId, workerModel);
     }
 
-    public void updateModel(Runnable runnable)
-    {
+    public void updateModel(Runnable runnable) {
         runnable.run();
         publish(workerModel);
     }
 
     @Override
-    protected void process(List<M> items)
-    {
+    protected void process(List<M> items) {
         checkWorkerStatus();
         workerListenerHandler.workerUpdated(getId(), workerModel);
     }

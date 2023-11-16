@@ -51,6 +51,11 @@
             <artifactId>streamer-pack</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.cosinuscode.streamer</groupId>
+            <artifactId>streamer-database</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

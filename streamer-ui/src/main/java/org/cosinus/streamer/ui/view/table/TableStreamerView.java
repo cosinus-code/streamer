@@ -74,8 +74,7 @@ public abstract class TableStreamerView extends RenamingStreamerView {
     protected abstract DataTable createDataTable();
 
     @Override
-    public LoadWorkerModel<Streamer<?>> getLoadWorkerModel()
-    {
+    public LoadWorkerModel<Streamer<?>> getLoadWorkerModel() {
         return getDataTableModel();
     }
 
@@ -157,7 +156,6 @@ public abstract class TableStreamerView extends RenamingStreamerView {
     public void workerStarted(LoadWorkerModel<Streamer<?>> loadWorkerModel) {
         super.workerStarted(loadWorkerModel);
         table.reset();
-        getDataTableModel().clear();
     }
 
     @Override

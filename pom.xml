@@ -13,6 +13,7 @@
         <module>streamer-file</module>
         <module>streamer-ftp</module>
         <module>streamer-pack</module>
+        <module>streamer-database</module>
     </modules>
     <packaging>pom</packaging>
     <name>Streamer Parent</name>

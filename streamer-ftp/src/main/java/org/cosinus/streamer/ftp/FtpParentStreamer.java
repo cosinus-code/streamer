@@ -22,41 +22,34 @@ import org.cosinus.streamer.ftp.connection.FtpConnection;
 import java.nio.file.Path;
 
 public class FtpParentStreamer extends FtpStreamer<FtpStreamer<?>>
-    implements RemoteParentStreamer<FtpStreamer<?>, FTPFile, FtpConnection>
-{
+    implements RemoteParentStreamer<FtpStreamer<?>, FTPFile, FtpConnection> {
 
-    public FtpParentStreamer(final FTPFile ftpFile, Path path, String connectionName)
-    {
+    public FtpParentStreamer(final FTPFile ftpFile, Path path, String connectionName) {
         super(ftpFile, path, connectionName);
     }
 
     @Override
-    public void execute(Path path)
-    {
+    public void execute(Path path) {
 
     }
 
     @Override
-    public long getFreeSpace()
-    {
+    public long getFreeSpace() {
         return 0;
     }
 
     @Override
-    public long getTotalSpace()
-    {
+    public long getTotalSpace() {
         return 0;
     }
 
     @Override
-    public boolean delete()
-    {
+    public boolean delete() {
         return false;
     }
 
     @Override
-    public FtpStreamer<?> createFromRemote(FTPFile ftpFile)
-    {
+    public FtpStreamer<?> createFromRemote(FTPFile ftpFile) {
         return ftpFile.isDirectory() ?
             new FtpParentStreamer(ftpFile, path.resolve(ftpFile.getName()), connectionName) :
             new FtpBinaryStreamer(ftpFile, path.resolve(ftpFile.getName()), connectionName);

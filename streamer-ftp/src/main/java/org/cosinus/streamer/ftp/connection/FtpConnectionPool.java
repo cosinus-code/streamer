@@ -16,36 +16,16 @@
 package org.cosinus.streamer.ftp.connection;
 
 import org.apache.commons.net.ftp.FTPFile;
-import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
-import org.cosinus.streamer.api.remote.ConnectionPool;
+import org.cosinus.streamer.api.remote.DefaultConnectionPool;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FtpConnectionPool extends GenericKeyedObjectPool<String, FtpConnection>
-    implements ConnectionPool<FtpConnection, FTPFile> {
+public class FtpConnectionPool extends DefaultConnectionPool<FtpConnection, FTPFile> {
 
-    public FtpConnectionPool(
-        final FtpConnectionFactory ftpConnectionFactory,
-        final FtpConnectionPoolConfig ftpConnectionPoolConfig) {
+    public FtpConnectionPool(final FtpConnectionFactory ftpConnectionFactory,
+                             final FtpConnectionPoolConfig ftpConnectionPoolConfig) {
 
         super(ftpConnectionFactory, ftpConnectionPoolConfig);
     }
 
-    @Override
-    public FtpConnection borrowConnection(String key)
-    {
-        try
-        {
-            return borrowObject(key);
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void returnConnection(String key, FtpConnection connection) {
-        returnObject(key, connection);
-    }
 }

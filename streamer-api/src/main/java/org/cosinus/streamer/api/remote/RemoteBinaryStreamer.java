@@ -34,7 +34,7 @@ public interface RemoteBinaryStreamer<R, C extends Connection<R>>
         }
 
         return ofNullable(connectionPool.borrowConnection(connectionKey))
-            .map(connection -> connection.inputStream(getPath()))
+            .map(connection -> connection.inputStream(getStreamQuery()))
             .orElse(null);
     }
 
@@ -47,7 +47,7 @@ public interface RemoteBinaryStreamer<R, C extends Connection<R>>
         }
 
         return ofNullable(connectionPool.borrowConnection(connectionKey))
-            .map(connection -> connection.outputStream(getPath(), append))
+            .map(connection -> connection.outputStream(getStreamQuery(), append))
             .orElse(null);
     }
 }

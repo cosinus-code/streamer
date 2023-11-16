@@ -13,17 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cosinus.streamer.api.remote;
+package org.cosinus.streamer.database.connection;
 
-import org.cosinus.streamer.api.Streamer;
+import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
+import org.springframework.stereotype.Component;
 
-public interface RemoteStreamer<T, R, C extends Connection<R>> extends Streamer<T> {
-
-    default String connectionName() {
-        return getName();
-    }
-
-    ConnectionPool<C, R> connectionPool();
-
-    String getStreamQuery();
+@Component
+public class DatabaseConnectionConfig extends GenericKeyedObjectPoolConfig<DatabaseConnection> {
 }

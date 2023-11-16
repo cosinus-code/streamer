@@ -29,10 +29,10 @@ import java.util.Objects;
 
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ftp.FtpMainStreamer.FTP_PROTOCOL;
+import static org.cosinus.streamer.ftp.connection.FtpConnection.ROOT_PATH;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
-public abstract class FtpStreamer<T> implements RemoteStreamer<T, FTPFile, FtpConnection>
-{
+public abstract class FtpStreamer<T> implements RemoteStreamer<T, FTPFile, FtpConnection> {
 
     @Autowired
     protected FtpConnectionPool ftpConnectionPool;
@@ -51,76 +51,74 @@ public abstract class FtpStreamer<T> implements RemoteStreamer<T, FTPFile, FtpCo
     }
 
     @Override
-    public ParentStreamer<?> getParent()
-    {
+    public ParentStreamer<?> getParent() {
+        //TODO
         return null;
     }
 
     @Override
-    public String getProtocol()
-    {
+    public String getProtocol() {
         return FTP_PROTOCOL;
     }
 
     @Override
-    public Path getPath()
-    {
+    public Path getPath() {
         return path;
     }
 
     @Override
-    public boolean exists()
-    {
+    public boolean exists() {
         return true;
     }
 
     @Override
-    public long getSize()
-    {
+    public long getSize() {
         return ftpFile.getSize();
     }
 
     @Override
-    public long lastModified()
-    {
+    public long lastModified() {
         return ofNullable(ftpFile.getTimestamp())
-        .map(Calendar::getTimeInMillis)
-        .orElse(0L);
+            .map(Calendar::getTimeInMillis)
+            .orElse(0L);
     }
 
     @Override
-    public boolean isLink()
-    {
+    public boolean isLink() {
         return ftpFile.isSymbolicLink();
     }
 
     @Override
-    public BinaryStreamer createBinaryStreamer(Path path)
-    {
+    public BinaryStreamer createBinaryStreamer(Path path) {
         return null;
     }
 
     @Override
-    public boolean isTextCompatible()
-    {
+    public boolean isTextCompatible() {
         return false;
     }
 
     @Override
-    public String connectionName()
-    {
+    public String getStreamQuery() {
+        return path.startsWith(getName()) ?
+            path.getNameCount() == 1 ?
+                ROOT_PATH :
+                path.subpath(1, path.getNameCount()).toString() :
+            path.toString();
+    }
+
+    @Override
+    public String connectionName() {
         return connectionName;
     }
 
     @Override
-    public FtpConnectionPool connectionPool()
-    {
+    public FtpConnectionPool connectionPool() {
         return ftpConnectionPool;
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (this == o)
             return true;
         if (!(o instanceof FtpStreamer<?> that))
@@ -129,8 +127,7 @@ public abstract class FtpStreamer<T> implements RemoteStreamer<T, FTPFile, FtpCo
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(getPath());
     }
 }

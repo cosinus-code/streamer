@@ -17,16 +17,15 @@ package org.cosinus.streamer.api.remote;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Path;
 import java.util.stream.Stream;
 
 public interface Connection<R> extends AutoCloseable {
 
-    Stream<R> stream(Path path);
+    Stream<R> stream(String query);
 
-    InputStream inputStream(Path path);
+    InputStream inputStream(String query);
 
-    OutputStream outputStream(Path path, boolean append);
+    OutputStream outputStream(String query, boolean append);
 
-    boolean makeDirectory(Path pat);
+    boolean makeDirectory(String query);
 }

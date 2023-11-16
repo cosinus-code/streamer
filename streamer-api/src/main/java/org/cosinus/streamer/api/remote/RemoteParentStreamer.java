@@ -22,6 +22,8 @@ import org.cosinus.streamer.api.error.SaveStreamerException;
 import org.cosinus.streamer.api.stream.FlatStreamingSpliterator;
 import org.cosinus.streamer.api.stream.FlatStreamingStrategy;
 
+import java.nio.file.Path;
+import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -32,58 +34,55 @@ public interface RemoteParentStreamer<S extends Streamer<?>, R, C extends Connec
 
     @Override
     default Stream<S> stream() {
-        String connectionName = connectionName();
-        ConnectionPool<C, R> connectionPool = connectionPool();
-        if (connectionName == null || connectionPool == null) {
-            return Stream.empty();
-        }
-
-        return ofNullable(connectionPool.borrowConnection(connectionName))
+        return getConnection()
             .map(connection -> connection
-                .stream(getPath())
+                .stream(getStreamQuery())
                 .map(this::createFromRemote)
-                .onClose(() -> connectionPool.returnConnection(connectionName, connection)))
+                .onClose(() -> returnConnection(connection)))
             .orElseGet(Stream::empty);
     }
 
     @Override
     default Stream<S> flatStream(final FlatStreamingStrategy strategy, final StreamerFilter streamerFilter) {
-        String connectionName = connectionName();
-        ConnectionPool<C, R> connectionPool = connectionPool();
-        if (connectionName == null || connectionPool == null) {
-            return Stream.empty();
-        }
-
-        return ofNullable(connectionPool.borrowConnection(connectionName))
+        return getConnection()
             .map(connection -> StreamSupport
                 .stream(new FlatStreamingSpliterator<>(strategy,
                     connection
-                        .stream(getPath())
+                        .stream(getStreamQuery())
                         .map(this::createFromRemote)
                         .filter(streamerFilter),
                     streamer -> connection
-                        .stream(streamer.getPath())
+                        .stream(((RemoteStreamer<S, R, C>) streamer).getStreamQuery())
                         .map(this::createFromRemote)), false)
-                .onClose(() -> connectionPool.returnConnection(connectionName, connection)))
+                .onClose(() -> returnConnection(connection)))
             .orElseGet(Stream::empty);
     }
 
     @Override
     default void save() {
-        String connectionName = connectionName();
-        ConnectionPool<C, R> connectionPool = connectionPool();
-        if (connectionName == null || connectionPool == null) {
-            return;
-        }
-
-        ofNullable(connectionPool.borrowConnection(connectionName()))
+        getConnection()
             .ifPresent(connection -> {
-                if (!connection.makeDirectory(getPath())) {
+                if (!connection.makeDirectory(getStreamQuery())) {
                     throw new SaveStreamerException("Failed to create ftp directory:" + getPath().toString());
                 }
-                connectionPool.returnConnection(connectionName, connection);
+                returnConnection(connection);
             });
     }
+
+    default Optional<C> getConnection() {
+        return ofNullable(connectionPool())
+            .flatMap(connectionPool -> ofNullable(connectionName())
+                .map(connectionPool::borrowConnection));
+    }
+
+    default void returnConnection(C connection) {
+        connectionPool().returnConnection(connectionName(), connection);
+    }
+
+    @Override
+    default void execute(Path path) {
+    }
+
 
     S createFromRemote(R remote);
 }

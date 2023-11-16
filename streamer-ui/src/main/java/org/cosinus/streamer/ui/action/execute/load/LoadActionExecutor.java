@@ -156,7 +156,7 @@ public class LoadActionExecutor implements ActionExecutor<LoadActionModel> {
     }
 
     private Streamer<?> checkIfStreamerIsText(Streamer<?> streamerToCheck) {
-        return streamerToCheck.isTextCompatible() ?
+        return streamerToCheck.binaryStreamer() != null && streamerToCheck.isTextCompatible() ?
             new TextStreamer(streamerToCheck.binaryStreamer()) :
             streamerToCheck;
     }

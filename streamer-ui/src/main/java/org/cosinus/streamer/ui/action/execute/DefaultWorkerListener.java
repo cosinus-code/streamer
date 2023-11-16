@@ -19,8 +19,7 @@ package org.cosinus.streamer.ui.action.execute;
 /**
  * Simple implementation of {@link WorkerListener} to be used when we want to implement only some methods
  */
-public class DefaultWorkerListener<M extends WorkerModel> implements WorkerListener<M>
-{
+public class DefaultWorkerListener<M extends WorkerModel> implements WorkerListener<M> {
 
     @Override
     public void workerStarted(M workerModel) {

@@ -13,23 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cosinus.streamer.ftp;
+package org.cosinus.streamer.database;
 
-import org.apache.commons.net.ftp.FTPFile;
 import org.cosinus.streamer.api.ParentStreamer;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.nio.file.Paths;
+import java.sql.ResultSet;
 
-import static org.cosinus.swing.image.icon.IconProvider.ICON_FILE_SERVER;
+public class DatabaseSchemaStreamer extends DatabaseParentStreamer<DatabaseTableStreamer> {
 
-public class FtpConnectionStreamer extends FtpParentStreamer {
+    private final DatabaseConnectionStreamer parent;
 
-    @Autowired
-    private FtpMainStreamer parent;
+    private final String schemaName;
 
-    public FtpConnectionStreamer(String connectionName) {
-        super(new FTPFile(), Paths.get(connectionName), connectionName);
+    public DatabaseSchemaStreamer(String schemaName, String connectionName) {
+        super(connectionName);
+        this.schemaName = schemaName;
+        parent = new DatabaseConnectionStreamer(connectionName);
+    }
+
+    @Override
+    public DatabaseTableStreamer createFromRemote(ResultSet resultSet) {
+        return new DatabaseTableStreamer(resultSet, connectionName);
     }
 
     @Override
@@ -38,7 +42,12 @@ public class FtpConnectionStreamer extends FtpParentStreamer {
     }
 
     @Override
-    public String getIconName() {
-        return ICON_FILE_SERVER;
+    public String getName() {
+        return schemaName;
+    }
+
+    @Override
+    public String getStreamQuery() {
+        return schemaName;
     }
 }

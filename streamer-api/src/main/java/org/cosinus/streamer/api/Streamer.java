@@ -91,7 +91,12 @@ public interface Streamer<T> {
     }
 
     default String getUrlPath() {
-        return getProtocol() + getPath();
+        String pathText = ofNullable(getPath())
+            .map(Path::toString)
+            .orElse("");
+        return ofNullable(getProtocol())
+            .map(protocol -> protocol.concat(pathText))
+            .orElse(pathText);
     }
 
     default boolean isParent() {

@@ -38,8 +38,7 @@ import static java.util.stream.IntStream.range;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_HIDDEN;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.TOP_VISIBLE;
 
-public abstract class DataTableModel<T extends Streamer<?>> extends TableModel implements LoadWorkerModel<T>
-{
+public abstract class DataTableModel<T extends Streamer<?>> extends TableModel implements LoadWorkerModel<T> {
 
     private static final Logger LOG = LogManager.getLogger(DataTableModel.class);
 
@@ -70,20 +69,17 @@ public abstract class DataTableModel<T extends Streamer<?>> extends TableModel i
     }
 
     @Override
-    public void setParentStreamer(Streamer<T> parentStreamer)
-    {
+    public void setParentStreamer(Streamer<T> parentStreamer) {
         this.parentStreamer = parentStreamer;
     }
 
     @Override
-    public String getContentIdentifier()
-    {
+    public String getContentIdentifier() {
         return contentIdentifier;
     }
 
     @Override
-    public void setContentIdentifier(String contentIdentifier)
-    {
+    public void setContentIdentifier(String contentIdentifier) {
         this.contentIdentifier = contentIdentifier;
     }
 
@@ -161,7 +157,7 @@ public abstract class DataTableModel<T extends Streamer<?>> extends TableModel i
             clearSelection();
         }
         range(max(start, getMinimumToSelect()),
-              min(viewItems.size(), end + 1))
+            min(viewItems.size(), end + 1))
             .forEach(i -> selectionMap.put(i, !deselect));
     }
 
@@ -184,14 +180,18 @@ public abstract class DataTableModel<T extends Streamer<?>> extends TableModel i
     }
 
     @Override
-    public void update(List<T> streamers)
-    {
-        if (viewItems.isEmpty() && isTopVisible()) {
+    public void init() {
+        clear();
+        if (isTopVisible()) {
             ofNullable(parentStreamer.getParent())
                 .map(parent -> new StreamerViewItem(parent, true))
                 .ifPresent(viewItems::add);
+            fireTableDataChanged();
         }
+    }
 
+    @Override
+    public void update(List<T> streamers) {
         boolean showHidden = preferences.booleanPreference(SHOW_HIDDEN);
         streamers
             .stream()

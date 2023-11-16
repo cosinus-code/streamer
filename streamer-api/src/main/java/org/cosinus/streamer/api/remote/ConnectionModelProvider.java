@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ftp.model;
+package org.cosinus.streamer.api.remote;
+
+import java.util.Map;
 
 /**
- * Generic interface for a FTP model provider
+ * Generic interface for a model provider
  */
-public interface FtpModelProvider {
+public interface ConnectionModelProvider<M> {
 
-    FtpModel getFtpModel();
+    Map<String, M> getConnectionModelsMap();
 }

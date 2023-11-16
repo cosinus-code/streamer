@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
@@ -37,72 +36,50 @@ public class FtpConnection extends FTPClient implements Connection<FTPFile> {
         this.name = name;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public Stream<FTPFile> stream(Path path)
-    {
-        try
-        {
-            return Arrays.stream(listFiles(ftpPath(path)));
-        }
-        catch (IOException e)
-        {
-            throw new UncheckedIOException(e);
-        }
-    }
-
     @Override
-    public InputStream inputStream(Path path)
-    {
-        try
-        {
-            return retrieveFileStream(ftpPath(path));
-        }
-        catch (IOException e)
-        {
-            throw new UncheckedIOException(e);
-        }
-    }
-
-    @Override
-    public OutputStream outputStream(Path path, boolean append)
-    {
+    public Stream<FTPFile> stream(String query) {
         try {
-            return append ?
-                appendFileStream(ftpPath(path)) :
-                storeFileStream(ftpPath(path));
+            return Arrays.stream(listFiles(query));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
     @Override
-    public boolean makeDirectory(Path path)
-    {
-        try
-        {
-            return makeDirectory(ftpPath(path));
-        }
-        catch (IOException e)
-        {
+    public InputStream inputStream(String query) {
+        try {
+            return retrieveFileStream(query);
+        } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
     @Override
-    public void close() throws Exception
-    {
-        completePendingCommand();
+    public OutputStream outputStream(String query, boolean append) {
+        try {
+            return append ?
+                appendFileStream(query) :
+                storeFileStream(query);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
-    public String ftpPath(Path path) {
-        return path.startsWith(getName()) ?
-            path.getNameCount() == 1 ?
-                ROOT_PATH :
-                path.subpath(1, path.getNameCount()).toString() :
-            path.toString();
+    @Override
+    public boolean makeDirectory(String query) {
+        try {
+            return super.makeDirectory(query);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    @Override
+    public void close() throws Exception {
+        completePendingCommand();
     }
 }

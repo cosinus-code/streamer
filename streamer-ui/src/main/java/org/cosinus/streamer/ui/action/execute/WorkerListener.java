@@ -16,8 +16,6 @@
 
 package org.cosinus.streamer.ui.action.execute;
 
-import org.cosinus.streamer.ui.action.execute.WorkerModel;
-
 /**
  * Worker listener.
  *
@@ -27,6 +25,7 @@ public interface WorkerListener<M extends WorkerModel> {
 
     /**
      * Signal the worker was started
+     *
      * @param workerModel the worker model
      */
     void workerStarted(M workerModel);
@@ -40,6 +39,7 @@ public interface WorkerListener<M extends WorkerModel> {
 
     /**
      * Signal the worker was finished
+     *
      * @param workerModel the worker model
      */
     void workerFinished(M workerModel);

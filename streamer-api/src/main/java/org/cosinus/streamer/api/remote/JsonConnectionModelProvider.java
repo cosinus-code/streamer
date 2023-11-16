@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ftp.model;
+package org.cosinus.streamer.api.remote;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cosinus.swing.convert.JsonFileConverter;
 import org.cosinus.swing.resource.ResourceResolver;
 import org.cosinus.swing.resource.ResourceType;
-import org.springframework.stereotype.Component;
 
+import java.util.Map;
 import java.util.Set;
 
 import static org.cosinus.swing.resource.ResourceType.CONF;
@@ -29,20 +29,22 @@ import static org.cosinus.swing.resource.ResourceType.CONF;
 /**
  * FTP connection provider
  */
-@Component
-public class JsonFtpModelProvider extends JsonFileConverter<FtpModel> implements FtpModelProvider {
+public abstract class JsonConnectionModelProvider<M>
+    extends JsonFileConverter<M> implements ConnectionModelProvider<M> {
 
-    private static final String FTP_CONNECTIONS_FILE_NAME = "ftp.json";
+    protected JsonConnectionModelProvider(final ObjectMapper objectMapper,
+                                          final Class<M> connectionModelType,
+                                          final Set<ResourceResolver> resourceResolvers) {
 
-    protected JsonFtpModelProvider(ObjectMapper objectMapper,
-                                   Set<ResourceResolver> resourceResolvers) {
-        super(objectMapper, FtpModel.class, resourceResolvers);
+        super(objectMapper, connectionModelType, resourceResolvers);
     }
 
-    public FtpModel getFtpModel() {
-        return convert(FTP_CONNECTIONS_FILE_NAME)
+    public Map<String, M> getConnectionModelsMap() {
+        return convertToMapOfModels(getJsonFileName())
             .orElse(null);
     }
+
+    protected abstract String getJsonFileName();
 
     @Override
     protected ResourceType resourceLocator() {

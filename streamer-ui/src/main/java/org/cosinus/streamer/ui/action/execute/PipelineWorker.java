@@ -15,32 +15,24 @@ import static java.util.Optional.ofNullable;
 
 public abstract class PipelineWorker<M extends WorkerModel<T>, T>
     extends Worker<M, T>
-    implements StreamPipeline<T>, StreamConsumer<T>
-{
+    implements StreamPipeline<T>, StreamConsumer<T> {
 
     private static final Logger LOG = LogManager.getLogger(PipelineWorker.class);
 
     private final StreamConsumer<T> streamConsumer;
 
-    protected PipelineWorker(String id, M workerModel)
-    {
+    protected PipelineWorker(String id, M workerModel) {
         super(id, workerModel);
         this.streamConsumer = streamConsumer();
     }
 
     @Override
-    protected void doWork()
-    {
-        try
-        {
+    protected void doWork() {
+        try {
             openPipeline();
-        }
-        catch (AbortActionException ex)
-        {
+        } catch (AbortActionException ex) {
             LOG.trace("Action aborted: " + getId());
-        }
-        catch (IOException | UncheckedIOException ex)
-        {
+        } catch (IOException | UncheckedIOException ex) {
             throw new ActionException(ex, "act-load-error");
         }
     }
@@ -70,10 +62,8 @@ public abstract class PipelineWorker<M extends WorkerModel<T>, T>
     }
 
     @Override
-    public void close() throws IOException
-    {
-        if (streamConsumer != null)
-        {
+    public void close() throws IOException {
+        if (streamConsumer != null) {
             streamConsumer.close();
         }
     }

@@ -13,17 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cosinus.streamer.api.remote;
 
-import org.cosinus.streamer.api.Streamer;
+package org.cosinus.streamer.ftp.model;
 
-public interface RemoteStreamer<T, R, C extends Connection<R>> extends Streamer<T> {
-
-    default String connectionName() {
-        return getName();
+/**
+ * FTP connection info
+ */
+public record FtpConfiguration(String name, String host, int port, String username, String password,
+                               int connectionTimeout, boolean passiveMode, String remoteDir, String localDir,
+                               String keepAliveCommand, int keepAliveTimeout, String encoding) {
+    public FtpConfiguration {
+        port = 21;
+        connectionTimeout = 30;
+        keepAliveTimeout = 90;
+        encoding = "UTF-8";
     }
 
-    ConnectionPool<C, R> connectionPool();
-
-    String getStreamQuery();
 }

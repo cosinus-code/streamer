@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.cosinus.swing.image.icon.IconProvider.ICON_COMPUTER;
-import static org.springframework.util.MimeTypeUtils.TEXT_PLAIN_VALUE;
 
 @RootStreamer("Filesystem")
 @ConditionalOnProperty(name = "streamer.file.enabled", matchIfMissing = true)

@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cosinus.streamer.api.remote;
+package org.cosinus.streamer.database.connection;
 
-import org.cosinus.streamer.api.Streamer;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-public interface RemoteStreamer<T, R, C extends Connection<R>> extends Streamer<T> {
+@FunctionalInterface
+public interface ResultSetSupplier {
 
-    default String connectionName() {
-        return getName();
-    }
+    ResultSet get() throws SQLException;
 
-    ConnectionPool<C, R> connectionPool();
-
-    String getStreamQuery();
 }
