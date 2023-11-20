@@ -29,7 +29,7 @@ import java.sql.SQLException;
 
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
-public abstract class DatabaseStreamer implements RemoteStreamer<ResultSet, ResultSet, DatabaseConnection> {
+public abstract class DatabaseStreamer implements RemoteStreamer<DatabaseRecord, ResultSet, DatabaseConnection> {
 
     @Autowired
     protected DatabaseConnectionPool connectionPool;

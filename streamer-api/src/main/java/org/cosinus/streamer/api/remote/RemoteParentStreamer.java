@@ -69,16 +69,6 @@ public interface RemoteParentStreamer<S extends Streamer<?>, R, C extends Connec
             });
     }
 
-    default Optional<C> getConnection() {
-        return ofNullable(connectionPool())
-            .flatMap(connectionPool -> ofNullable(connectionName())
-                .map(connectionPool::borrowConnection));
-    }
-
-    default void returnConnection(C connection) {
-        connectionPool().returnConnection(connectionName(), connection);
-    }
-
     @Override
     default void execute(Path path) {
     }

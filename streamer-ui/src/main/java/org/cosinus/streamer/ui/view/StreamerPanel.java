@@ -94,14 +94,18 @@ public class StreamerPanel extends Panel {
     }
 
     public void setView(StreamerView<?> view) {
-        view.initComponents();
+        if (this.view == view) {
+            return;
+        }
 
         ofNullable(this.view)
             .ifPresent(this::remove);
         add(view, CENTER);
-        revalidate();
 
         this.view = view;
+        this.view.initComponents();
+
+        revalidate();
     }
 
     public void setFreeSpace(long freeSpace, long totalSpace) {
@@ -125,7 +129,7 @@ public class StreamerPanel extends Panel {
 
     @Override
     public void translate() {
-        view.translate();
+        ofNullable(view).ifPresent(StreamerView::translate);
     }
 
     @Override

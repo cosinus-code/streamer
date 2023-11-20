@@ -190,15 +190,14 @@ public abstract class DataTable extends Table implements FocusListener {
         }
 
         return stream(getSelectedRows())
-                .filter(index -> index >= getTableModel().getMinimumToSelect())
-                .mapToObj(this::getStreamerAt)
-                .collect(toList());
+            .filter(index -> index >= getTableModel().getMinimumToSelect())
+            .mapToObj(this::getStreamerAt)
+            .collect(toList());
     }
 
     public void movePositionByName(String name) {
         List<StreamerViewItem> items = getAllItems();
-        if (!items.isEmpty())
-        {
+        if (!items.isEmpty()) {
             int min = model.isTopVisible() ? 1 : 0;
             int start = getSelectedRow() + (name.length() == 1 ? 1 : 0);
             concat(range(start, items.size()),
@@ -213,7 +212,7 @@ public abstract class DataTable extends Table implements FocusListener {
         int row = rowAtPoint(point);
         int col = columnAtPoint(point);
         return getTableModel().getIndex(row,
-                                        col);
+            col);
     }
 
     public int getCurrentSortColumn() {
@@ -279,8 +278,8 @@ public abstract class DataTable extends Table implements FocusListener {
         lastActionTime = 0;
     }
 
-    public Streamer<Streamer<?>> getCurrentFolder() {
-        return getTableModel().getParentStreamer();
+    public Streamer<Streamer<?>> getParentStreamer() {
+        return view.getParentStreamer();
     }
 
     public void onResize() {

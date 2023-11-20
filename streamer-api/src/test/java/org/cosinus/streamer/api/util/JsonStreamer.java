@@ -68,12 +68,6 @@ public class JsonStreamer implements ParentStreamer<JsonStreamer>
     }
 
     @Override
-    public Streamer<JsonStreamer> save()
-    {
-        return null;
-    }
-
-    @Override
     public JsonStreamer getParent()
     {
         return parent;

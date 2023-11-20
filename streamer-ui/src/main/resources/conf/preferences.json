@@ -103,22 +103,6 @@
       "type": "boolean",
       "value": true
     },
-    "show-value-column": {
-      "type": "boolean",
-      "value": false
-    },
-    "show-type-column": {
-      "type": "boolean",
-      "value": false
-    },
-    "show-size-column": {
-      "type": "boolean",
-      "value": true
-    },
-    "show-date-column": {
-      "type": "boolean",
-      "value": true
-    },
     "root-combo": {
       "type": "boolean",
       "value": true

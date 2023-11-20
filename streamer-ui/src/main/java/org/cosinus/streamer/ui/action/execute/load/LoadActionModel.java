@@ -35,17 +35,15 @@ public class LoadActionModel extends ActionModel {
 
     private final String contentIdentifier;
 
-    public LoadActionModel(StreamerView<?> view, Streamer<?> streamerToLoad) {
-        this(view, streamerToLoad, ofNullable(view.getLoadedStreamer())
-            .map(Streamer::getName)
-            .orElse(null));
+    public LoadActionModel(PanelLocation location, Streamer<?> streamerToLoad) {
+        this(location, streamerToLoad, streamerToLoad.getName());
     }
 
-    public LoadActionModel(StreamerView<?> view,
+    public LoadActionModel(PanelLocation location,
                            Streamer<?> streamerToLoad,
                            String contentIdentifier) {
-        super(view.getId(), LoadStreamerAction.LOAD_STREAMER_ACTION_ID);
-        this.location = view.getCurrentLocation();
+        super(location.name(), LoadStreamerAction.LOAD_STREAMER_ACTION_ID);
+        this.location = location;
         this.streamerToLoad = streamerToLoad;
         this.contentIdentifier = contentIdentifier;
     }

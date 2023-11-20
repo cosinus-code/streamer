@@ -17,10 +17,24 @@ package org.cosinus.streamer.api.remote;
 
 import org.cosinus.streamer.api.Streamer;
 
+import java.util.Optional;
+
+import static java.util.Optional.ofNullable;
+
 public interface RemoteStreamer<T, R, C extends Connection<R>> extends Streamer<T> {
 
     default String connectionName() {
         return getName();
+    }
+
+    default Optional<C> getConnection() {
+        return ofNullable(connectionPool())
+            .flatMap(connectionPool -> ofNullable(connectionName())
+                .map(connectionPool::borrowConnection));
+    }
+
+    default void returnConnection(C connection) {
+        connectionPool().returnConnection(connectionName(), connection);
     }
 
     ConnectionPool<C, R> connectionPool();

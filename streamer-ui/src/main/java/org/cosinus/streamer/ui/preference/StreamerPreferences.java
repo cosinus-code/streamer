@@ -38,10 +38,6 @@ public interface StreamerPreferences {
     String ICON_PATH = "icon-path";
     String DOWNLOAD_DIR = "download-dir";
     String EDIT_APP = "edit-app";
-    String COLUMN_VALUE = "show-value-column";
-    String COLUMN_TYPE = "show-type-column";
-    String COLUMN_SIZE = "show-size-column";
-    String COLUMN_TIME = "show-date-column";
     String ASK_DELETE = "ask-delete-folders";
     String TAB_SIZE = "tab-size";
     String FULL_TYPE_DESCRIPTION = "full-type-description";

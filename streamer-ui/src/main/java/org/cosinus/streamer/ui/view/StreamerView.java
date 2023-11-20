@@ -63,9 +63,12 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
     @Autowired
     public AddressBar addressBar;
 
-    public StreamerView(PanelLocation location) {
+    protected final Streamer<T> parentStreamer;
+
+    public StreamerView(PanelLocation location, Streamer<T> parentStreamer) {
         this.id = UUID.randomUUID().toString();
         this.location = location;
+        this.parentStreamer = parentStreamer;
 
         streamerViewMainPanel = new JPanel(new BorderLayout());
         setLayout(new BorderLayout());
@@ -118,6 +121,10 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
         return location;
     }
 
+    public Streamer<T> getParentStreamer() {
+        return parentStreamer;
+    }
+
     @Override
     public void workerStarted(LoadWorkerModel<T> loadWorkerModel)
     {
@@ -141,7 +148,7 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
 
         streamerViewStorage.saveLastLoadedStreamer(getLoadedStreamer(), getCurrentLocation());
 
-        ofNullable(loadWorkerModel.getParentStreamer())
+        ofNullable(parentStreamer)
             .filter(streamer -> PackStreamer.class.isAssignableFrom(streamer.getClass()))
             .map(PackStreamer.class::cast)
             .ifPresent(PackStreamer::finishLoading);

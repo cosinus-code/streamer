@@ -17,10 +17,12 @@
 package org.cosinus.streamer.ui.view.table;
 
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.value.Value;
 import org.cosinus.swing.format.FormatHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
+import java.util.List;
 import java.util.Objects;
 
 import static java.util.Optional.ofNullable;
@@ -58,38 +60,32 @@ public class StreamerViewItem implements ViewItem {
     }
 
     @Override
-    public String getValue()
-    {
+    public String getValue() {
         return streamer.getValue();
     }
 
     @Override
-    public String getType()
-    {
+    public String getType() {
         return streamer.getType();
     }
 
     @Override
-    public String getDescription()
-    {
+    public String getDescription() {
         return streamer.getDescription();
     }
 
     @Override
-    public long getSize()
-    {
+    public long getSize() {
         return streamer.getSize();
     }
 
     @Override
-    public long getLastModified()
-    {
+    public long getLastModified() {
         return streamer.lastModified();
     }
 
     @Override
-    public boolean isParent()
-    {
+    public boolean isParent() {
         return streamer.isParent();
     }
 
@@ -128,5 +124,13 @@ public class StreamerViewItem implements ViewItem {
     @Override
     public String toString() {
         return isTopItem() ? TOP_ITEM_NAME : streamer.getName();
+    }
+
+    public Object getDetail(int column) {
+        return ofNullable(streamer.detailNames())
+            .filter(detailNames -> column < detailNames.size())
+            .map(detailNames -> detailNames.get(column))
+            .map(streamer.details()::get)
+            .orElse(null);
     }
 }

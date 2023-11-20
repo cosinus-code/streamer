@@ -27,13 +27,16 @@ import org.cosinus.swing.action.ActionContext;
 //TODO: should be StreamerActionContext<S extends Streamer<?>, T  extends Streamer<?>>
 public class StreamerActionContext<T> implements ActionContext {
 
-    private final Streamer<T> currentStreamer;
+    private Streamer<T> currentStreamer;
 
-    private final StreamerView<T> currentView;
+    private StreamerView<T> currentView;
 
     private StreamerView<T> oppositeView;
 
     private String contentIdentifier;
+
+    public StreamerActionContext() {
+    }
 
     public StreamerActionContext(StreamerView<T> currentView) {
         this.currentView = currentView;

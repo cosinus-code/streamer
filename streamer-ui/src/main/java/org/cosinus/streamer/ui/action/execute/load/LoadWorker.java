@@ -35,7 +35,6 @@ public class LoadWorker<T> extends PipelineWorker<LoadWorkerModel<T>, T> {
         super(id, streamerView.getLoadWorkerModel());
         this.streamerToLoad = streamerToLoad;
         workerModel.setContentIdentifier(contentIdentifier);
-        workerModel.setParentStreamer(streamerToLoad);
     }
 
     @Override

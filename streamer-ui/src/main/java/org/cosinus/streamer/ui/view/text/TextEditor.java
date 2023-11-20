@@ -59,8 +59,6 @@ public class TextEditor extends TextArea implements LoadWorkerModel<String>
 
     private final SaveWorkerModel<String> saveWorkerModel;
 
-    private Streamer<String> parentStreamer;
-
     private boolean dirty;
 
     private boolean loading;
@@ -173,7 +171,7 @@ public class TextEditor extends TextArea implements LoadWorkerModel<String>
     @Override
     public long getTotalSizeToLoad()
     {
-        return parentStreamer.getSize();
+        return getParentStreamer().getSize();
     }
 
     @Override
@@ -182,16 +180,9 @@ public class TextEditor extends TextArea implements LoadWorkerModel<String>
         return getText().getBytes().length;
     }
 
-    @Override
     public Streamer<String> getParentStreamer()
     {
-        return parentStreamer;
-    }
-
-    @Override
-    public void setParentStreamer(Streamer<String> parentStreamer)
-    {
-        this.parentStreamer = parentStreamer;
+        return view.getParentStreamer();
     }
 
     @Override

@@ -81,14 +81,18 @@ public class StreamerViewHandler {
 
     public <V> StreamerView<V> resolveStreamerView(Streamer<V> streamer, PanelLocation location) {
         String viewName = streamer.isTextCompatible() ? TEXT_EDITOR : null;
-        return resolveStreamerView(viewName, location);
-    }
+//        StreamerView existingView = getView(location)
+//            .filter(view -> streamerViewName == null || view.getName().equals(streamerViewName))
+//            .orElse(null);
+//
+//        if (existingView != null) {
+//            return existingView;
+//        }
 
-    public StreamerView resolveStreamerView(String streamerViewName, PanelLocation location) {
-        StreamerView view = ofNullable(streamerViewName)
+        StreamerView view = ofNullable(viewName)
             .map(streamerViewCreatorsMap::get)
             .orElseGet(() -> getPreferredStreamerViewCreator(location))
-            .createStreamerView(location);
+            .createStreamerView(location, streamer);
         getPanel(location)
             .ifPresent(panel -> panel.setView(view));
         return view;
@@ -111,8 +115,8 @@ public class StreamerViewHandler {
 
     public StreamerPanel createStreamerPanel(PanelLocation location) {
         StreamerPanel panel = new StreamerPanel();
-        panel.initComponents();
         panelsMap.put(location, panel);
+        panel.initComponents();
         return panel;
     }
 

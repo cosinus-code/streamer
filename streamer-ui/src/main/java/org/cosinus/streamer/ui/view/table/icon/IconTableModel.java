@@ -15,6 +15,10 @@ public class IconTableModel<T extends Streamer<?>> extends DataTableModel<T> {
 
     private int columnCount = 0;
 
+    public IconTableModel(final Streamer<T> parentStreamer) {
+        super(parentStreamer);
+    }
+
     @Override
     public int getRowCount() {
         return getColumnCount() > 0 ? getRowForIndex(viewItems.size() - 1) + 1 : 0;

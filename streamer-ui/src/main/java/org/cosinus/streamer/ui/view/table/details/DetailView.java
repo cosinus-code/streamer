@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.ui.view.table.details;
 
+import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.table.DataTable;
 import org.cosinus.streamer.ui.view.table.TableStreamerView;
@@ -24,8 +25,8 @@ public class DetailView extends TableStreamerView {
 
     public static final String DETAIL_VIEW_NAME = "detail";
 
-    public DetailView(PanelLocation location) {
-        super(location);
+    public DetailView(PanelLocation location, Streamer<Streamer<?>> parentStreamer) {
+        super(location, parentStreamer);
     }
 
     @Override

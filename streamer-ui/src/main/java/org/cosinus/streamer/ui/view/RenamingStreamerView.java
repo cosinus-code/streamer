@@ -47,8 +47,8 @@ public abstract class RenamingStreamerView extends StreamerView<Streamer<?>> {
     @Autowired
     public ErrorHandler errorHandler;
 
-    public RenamingStreamerView(PanelLocation location) {
-        super(location);
+    public RenamingStreamerView(PanelLocation location, Streamer<Streamer<?>> parentStreamer) {
+        super(location, parentStreamer);
     }
 
     @Override

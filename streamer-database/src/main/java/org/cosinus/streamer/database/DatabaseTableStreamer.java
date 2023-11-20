@@ -16,8 +16,12 @@
 package org.cosinus.streamer.database;
 
 import org.cosinus.streamer.api.ParentStreamer;
+import org.cosinus.streamer.database.connection.DatabaseException;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.cosinus.streamer.database.connection.DatabaseConnection.*;
@@ -40,8 +44,34 @@ public class DatabaseTableStreamer extends DatabaseStreamer {
     }
 
     @Override
-    public Stream<ResultSet> stream() {
-        return Stream.empty();
+    public Stream<DatabaseRecord> stream() {
+        return getConnection()
+            .map(connection -> connection
+                .stream(getStreamQuery())
+                .map(this::createRecord)
+                .onClose(() -> returnConnection(connection)))
+            .orElseGet(Stream::empty);
+    }
+
+    private DatabaseRecord createRecord(ResultSet resultSet) {
+        DatabaseRecord databaseRecord = new DatabaseRecord();
+        try {
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            IntStream.rangeClosed(1, metaData.getColumnCount())
+                .forEach(index -> {
+                    try {
+                        String columnName = metaData.getColumnClassName(index);
+                        //int columnType = metaData.getColumnType(index);
+                        Object columnValue = resultSet.getObject(index);
+                        databaseRecord.put(columnName, columnValue);
+                    } catch (SQLException e) {
+                        throw new DatabaseException(e);
+                    }
+                });
+            return databaseRecord;
+        } catch (SQLException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     @Override

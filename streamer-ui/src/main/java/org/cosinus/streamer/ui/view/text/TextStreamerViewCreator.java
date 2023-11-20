@@ -15,6 +15,7 @@
  */
 package org.cosinus.streamer.ui.view.text;
 
+import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewCreator;
@@ -26,9 +27,9 @@ import static org.cosinus.streamer.ui.view.text.TextStreamerView.TEXT_EDITOR;
 public class TextStreamerViewCreator implements StreamerViewCreator<String>
 {
     @Override
-    public StreamerView<String> createStreamerView(PanelLocation location)
+    public StreamerView<String> createStreamerView(PanelLocation location, Streamer<String> parentStreamer)
     {
-        return new TextStreamerView(location);
+        return new TextStreamerView(location, parentStreamer);
     }
 
     @Override

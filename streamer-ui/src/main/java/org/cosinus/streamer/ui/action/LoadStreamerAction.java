@@ -47,7 +47,7 @@ public class LoadStreamerAction<T> extends StreamerAction<T> {
 
     @Override
     public void run(StreamerActionContext<T> context) {
-        actionExecutors.execute(new LoadActionModel(context.getCurrentView(),
+        actionExecutors.execute(new LoadActionModel(context.getCurrentLocation(),
                                                     context.getCurrentStreamer(),
                                                     context.getContentIdentifier()));
     }

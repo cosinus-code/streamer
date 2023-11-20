@@ -16,17 +16,27 @@
 
 package org.cosinus.streamer.file;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.error.StreamerException;
+import org.cosinus.streamer.api.value.DateValue;
+import org.cosinus.streamer.api.value.MemoryValue;
+import org.cosinus.streamer.api.value.TextValue;
+import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.swing.util.AutoRemovableTemporaryFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 
@@ -37,6 +47,10 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     protected final FileHandler fileHandler;
 
     protected final File file;
+
+    protected List<TranslatableName> detailNames;
+
+    protected Map<TranslatableName, Object> details;
 
     public FileStreamer(FileMainStreamer fileMainStreamer, FileHandler fileHandler, Path path) {
         this.fileMainStreamer = fileMainStreamer;
@@ -71,14 +85,12 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     }
 
     @Override
-    public BinaryStreamer createBinaryStreamer(Path path)
-    {
+    public BinaryStreamer createBinaryStreamer(Path path) {
         return new FileBinaryStreamer(fileMainStreamer, fileHandler, path);
     }
 
     @Override
-    public boolean rename(String newName)
-    {
+    public boolean rename(String newName) {
         File fileToRename = file;
         Path newPath = Paths.get(fileToRename.getParent(), newName);
         File newFile = newPath.toFile();
@@ -132,6 +144,38 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     @Override
     public String getProtocol() {
         return FileMainStreamer.FILE_PROTOCOL;
+    }
+
+    @Override
+    public List<TranslatableName> detailNames() {
+        if (detailNames == null) {
+            initDetails();
+        }
+        return detailNames;
+    }
+
+    @Override
+    public Map<TranslatableName, Object> details() {
+        if (details == null) {
+            initDetails();
+        }
+        return details;
+    }
+
+    protected void initDetails() {
+        this.detailNames = Stream.of(
+                "form-table-header-name",
+                "form-table-header-type",
+                "form-table-header-size",
+                "form-table-header-time")
+            .map(key -> new TranslatableName(key, null))
+            .collect(Collectors.toList());
+        this.details = Stream.of(
+                ImmutablePair.of(detailNames.get(0), new TextValue(getName())),
+                ImmutablePair.of(detailNames.get(1), new TextValue(getType())),
+                ImmutablePair.of(detailNames.get(2), new MemoryValue(getSize())),
+                ImmutablePair.of(detailNames.get(3), new DateValue(lastModified())))
+            .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }
 
     @Override

@@ -48,10 +48,8 @@ public class ExecuteStreamerAction extends StreamerAction<Streamer<?>> {
     @Override
     public void run(StreamerActionContext<Streamer<?>> context) {
         Streamer<?> streamerToExecute = context.getCurrentStreamer();
-//        LoadActionModel loadActionModel = loadActionExecutor.createLoadActionModel(context);
-//        actionExecutors.execute(loadActionModel);
         if (streamerToExecute == null || streamerToExecute.isParent()) {
-            actionExecutors.execute(new LoadActionModel(context.getCurrentView(), streamerToExecute));
+            actionExecutors.execute(new LoadActionModel(context.getCurrentLocation(), streamerToExecute));
             return;
         }
 

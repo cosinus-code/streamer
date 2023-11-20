@@ -17,7 +17,9 @@
 package org.cosinus.streamer.ui.app;
 
 import org.cosinus.streamer.api.meta.StreamerHandler;
+import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.view.*;
+import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.boot.SwingApplicationFrame;
 import org.cosinus.swing.preference.Preferences;
 import org.springframework.stereotype.Component;
@@ -46,16 +48,19 @@ public class StreamerFrame extends SwingApplicationFrame {
 
     private final AddressBar addressBar;
 
+    private final ActionExecutors actionExecutors;
+
     public StreamerFrame(StreamerHandler streamerHandler,
                          StreamerViewHandler streamerViewHandler,
                          StreamerViewStorage streamerViewStorage,
                          Preferences preferences,
-                         AddressBar addressBar) {
+                         AddressBar addressBar, ActionExecutors actionExecutors) {
         this.streamerHandler = streamerHandler;
         this.streamerViewHandler = streamerViewHandler;
         this.streamerViewStorage = streamerViewStorage;
         this.preferences = preferences;
         this.addressBar = addressBar;
+        this.actionExecutors = actionExecutors;
     }
 
     @Override
@@ -94,21 +99,25 @@ public class StreamerFrame extends SwingApplicationFrame {
     @Override
     public void loadContent() {
         stream(PanelLocation.values())
-            .map(this::createStreamerView)
-            .forEach(this::loadStreamerView);
+            .forEach(location -> actionExecutors.execute(new LoadActionModel(
+                location, null, null)));
+
+//        stream(PanelLocation.values())
+//            .map(this::createStreamerView)
+//            .forEach(this::loadStreamerView);
     }
 
-    protected StreamerView createStreamerView(PanelLocation location) {
-        String streamerViewName = streamerViewStorage.loadLastLoadedView(location)
-            .orElse(null);
-        StreamerView view = streamerViewHandler.resolveStreamerView(streamerViewName, location);
-        streamerViewStorage.saveLastLoadedView(view, location);
-        return view;
-    }
-
-    protected void loadStreamerView(StreamerView view) {
-        view.loadStreamer(null);
-    }
+//    protected StreamerView createStreamerView(PanelLocation location) {
+//        String streamerViewName = streamerViewStorage.loadLastLoadedView(location)
+//            .orElse(null);
+//        StreamerView view = streamerViewHandler.resolveStreamerView(streamerViewName, location);
+//        streamerViewStorage.saveLastLoadedView(view, location);
+//        return view;
+//    }
+//
+//    protected void loadStreamerView(StreamerView view) {
+//        view.loadStreamer(null);
+//    }
 
     public StreamerView getCurrentView() {
         return streamerViewHandler.getCurrentView();

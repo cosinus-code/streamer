@@ -39,13 +39,14 @@ public abstract class TableStreamerView extends RenamingStreamerView {
 
     private JScrollPane scroll;
 
-    protected TableStreamerView(PanelLocation location) {
-        super(location);
+    protected TableStreamerView(PanelLocation location, Streamer<Streamer<?>> parentStreamer) {
+        super(location, parentStreamer);
     }
 
     @Override
     public void initComponents() {
         this.table = createDataTable();
+        table.init(this);
         table.initComponents();
 
         scroll = new JScrollPane();
@@ -62,7 +63,6 @@ public abstract class TableStreamerView extends RenamingStreamerView {
             }
         });
         streamerViewMainPanel.add(scroll, CENTER);
-        table.init(this);
 
         addComponentListener(new ResizeListener());
 
@@ -134,7 +134,7 @@ public abstract class TableStreamerView extends RenamingStreamerView {
 
     @Override
     public Streamer<Streamer<?>> getLoadedStreamer() {
-        return table.getCurrentFolder();
+        return table.getParentStreamer();
     }
 
     @Override

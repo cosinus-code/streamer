@@ -1,5 +1,6 @@
 package org.cosinus.streamer.ui.view.table.icon;
 
+import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.table.TableStreamerView;
 
@@ -7,8 +8,8 @@ public class IconView extends TableStreamerView {
 
     public static final String ICON_VIEW_NAME = "icon";
 
-    public IconView(PanelLocation location) {
-        super(location);
+    public IconView(PanelLocation location, Streamer<Streamer<?>> parentStreamer) {
+        super(location, parentStreamer);
     }
 
     @Override

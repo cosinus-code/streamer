@@ -17,12 +17,14 @@
 package org.cosinus.streamer.ui.view.table.details;
 
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.streamer.ui.view.table.DataTable;
 import org.cosinus.streamer.ui.view.table.DataTableModel;
 import org.cosinus.swing.image.icon.IconHandler;
 import org.cosinus.swing.menu.CheckBoxMenuItem;
 import org.cosinus.swing.menu.PopupMenu;
 import org.cosinus.swing.preference.Preferences;
+import org.cosinus.swing.store.ApplicationStorage;
 import org.cosinus.swing.translate.Translator;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,23 +37,20 @@ import javax.swing.table.TableColumnModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.List;
+import java.util.stream.IntStream;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static java.util.Arrays.stream;
+import static java.lang.String.join;
+import static java.util.Optional.ofNullable;
 import static javax.swing.SwingUtilities.invokeLater;
-import static org.cosinus.streamer.ui.preference.StreamerPreferences.*;
+import static org.cosinus.streamer.ui.preference.StreamerPreferences.ROW_HEIGHT;
+import static org.cosinus.streamer.ui.view.table.details.DetailView.DETAIL_VIEW_NAME;
 
 public class DetailTable extends DataTable implements ActionListener {
 
     private static final int[] SIZE_COL = {200, 40, 50, 62, 110};
-
-    private static final String[] COL_PREFERENCES = {
-        COLUMN_VALUE,
-        COLUMN_TYPE,
-        COLUMN_SIZE,
-        COLUMN_TIME
-    };
 
     @Autowired
     public ApplicationUIHandler uiHandler;
@@ -64,6 +63,9 @@ public class DetailTable extends DataTable implements ActionListener {
 
     @Autowired
     public Translator translator;
+
+    @Autowired
+    public ApplicationStorage applicationStorage;
 
     //TODO
     private boolean keyboardArrow;
@@ -105,7 +107,7 @@ public class DetailTable extends DataTable implements ActionListener {
             tcm.getColumn(i).setPreferredWidth(SIZE_COL[i]);
             tcm.getColumn(i).setHeaderRenderer(new DetailHeaderCell());
             if (i > 0) {
-                setColVisible(i, preferences.booleanPreference(COL_PREFERENCES[i - 1]));
+                setColVisible(i, isColumnVisible(i));
             }
         }
         getTableHeader().setReorderingAllowed(false);
@@ -136,9 +138,9 @@ public class DetailTable extends DataTable implements ActionListener {
                     int start = min(oldRow, selectedRow);
                     int end = max(oldRow, selectedRow);
                     selectStreamers(start,
-                                    end,
-                                    true,
-                                    false);
+                        end,
+                        true,
+                        false);
                 } else if (ctrlDown && !keyboardArrow) {
                     selectStreamerAtIndex(selectedRow);
                 }
@@ -157,12 +159,25 @@ public class DetailTable extends DataTable implements ActionListener {
 
     private void setHeaderPopup() {
         popupHeader = new PopupMenu();
-        stream(DetailColumn.values())
-            .filter(column -> column.ordinal() > 0)
-            .map(column -> new CheckBoxMenuItem(this,
-                                                preferences.booleanPreference(COL_PREFERENCES[column.ordinal() - 1]),
-                                                column.key()))
-            .forEach(popupHeader::add);
+        ofNullable(getParentStreamer())
+            .ifPresent(parentStreamer -> {
+                List<TranslatableName> detailName = parentStreamer.detailNames();
+                IntStream.range(1, detailName.size())
+                    .mapToObj(index -> new CheckBoxMenuItem(
+                        this, isColumnVisible(index), columnKey(index)))
+                    .forEach(popupHeader::add);
+            });
+    }
+
+    private boolean isColumnVisible(int index) {
+        return applicationStorage.getBoolean(columnKey(index), true);
+    }
+
+    private String columnKey(int index) {
+        return ofNullable(getParentStreamer())
+            .map(Streamer::getId)
+            .map(id -> join("|", DETAIL_VIEW_NAME, id, Integer.toString(index)))
+            .orElseGet(() -> join("|", DETAIL_VIEW_NAME, Integer.toString(index)));
     }
 
     public void setColVisible(int index,
@@ -195,7 +210,7 @@ public class DetailTable extends DataTable implements ActionListener {
         super.updateForm();
 
         setRowHeight(preferences.findIntPreference(ROW_HEIGHT)
-                         .orElse(20));
+            .orElse(20));
     }
 
     @Override
@@ -212,14 +227,15 @@ public class DetailTable extends DataTable implements ActionListener {
 
     @Override
     protected DataTableModel<Streamer<?>> createDataTableModel() {
-        return new DetailTableModel<>();
+        return new DetailTableModel<>(view.getParentStreamer());
     }
 
     public void actionPerformed(ActionEvent e) {
         try {
             if (e.getSource() instanceof CheckBoxMenuItem menuItem) {
-                DetailColumn.findByKey(menuItem.getActionKey())
-                    .ifPresent(column -> setColVisible(column.ordinal(), menuItem.isSelected()));
+                String[] checkBoxKey = menuItem.getActionKey().split("\\|");
+                int columnIndex = Integer.parseInt(checkBoxKey[checkBoxKey.length - 1]);
+                setColVisible(columnIndex, menuItem.isSelected());
             }
         } catch (Exception ex) {
             errorHandler.handleError(this, ex);

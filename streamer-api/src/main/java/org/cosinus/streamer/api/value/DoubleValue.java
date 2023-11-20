@@ -13,30 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.cosinus.streamer.api.value;
 
-package org.cosinus.streamer.ui.view.table.details;
+public class DoubleValue extends Value {
 
-import java.util.Arrays;
-import java.util.Optional;
+    protected Double value;
 
-public enum DetailColumn {
-    NAME,
-    VALUE,
-    TYPE,
-    SIZE,
-    TIME;
-
-    public static DetailColumn getValueAt(int index) {
-        return values()[index];
+    public DoubleValue(Double value) {
+        this.value = value;
     }
 
-    public static Optional<DetailColumn> findByKey(String key) {
-        return Arrays.stream(values())
-                .filter(column -> column.key().equals(key))
-                .findFirst();
+    @Override
+    public boolean isNumeric() {
+        return true;
     }
 
-    public String key() {
-        return "form-table-header-" + name().toLowerCase();
+    @Override
+    public String toString() {
+        return value.toString();
     }
 }

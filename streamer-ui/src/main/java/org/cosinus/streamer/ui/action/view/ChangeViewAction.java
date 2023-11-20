@@ -35,7 +35,8 @@ public abstract class ChangeViewAction extends StreamerAction<Streamer<?>> {
 
     @Override
     public void run(StreamerActionContext<Streamer<?>> context) {
-        StreamerView<Streamer<?>> streamerView = getStreamerViewCreator().createStreamerView(context.getCurrentLocation());
+        StreamerView<Streamer<?>> streamerView = getStreamerViewCreator()
+            .createStreamerView(context.getCurrentLocation(), context.getCurrentStreamer());
         streamerViewHandler.getPanel(context.getCurrentLocation())
             .filter(panel -> !panel.getView().getClass().equals(streamerView.getClass()))
             .ifPresent(panel -> {

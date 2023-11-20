@@ -28,7 +28,6 @@ import javax.swing.*;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_UP;
-import static java.util.Optional.ofNullable;
 
 /**
  * Go to parent streamer action
@@ -54,8 +53,7 @@ public class GoToParentStreamerAction extends StreamerAction<Streamer<?>> {
         Optional.of(context.getCurrentView())
             .map(StreamerView::getLoadedStreamer)
             .map(Streamer::getParent)
-            .map(parent -> new LoadActionModel(context.getCurrentView(),
-                                               parent))
+            .map(parent -> new LoadActionModel(context.getCurrentLocation(), parent))
             .ifPresent(actionExecutors::execute);
     }
 

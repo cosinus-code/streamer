@@ -71,7 +71,7 @@ public class IconTable extends DataTable {
 
     @Override
     protected DataTableModel<Streamer<?>> createDataTableModel() {
-        return new IconTableModel();
+        return new IconTableModel(view.getParentStreamer());
     }
 
     @Override

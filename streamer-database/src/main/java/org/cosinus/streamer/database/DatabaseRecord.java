@@ -13,16 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.cosinus.streamer.database;
 
-package org.cosinus.streamer.ui.view;
+import java.util.HashMap;
 
-import org.cosinus.streamer.api.Streamer;
-import org.springframework.stereotype.Component;
-
-@Component
-public interface StreamerViewCreator<T> {
-
-    StreamerView<T> createStreamerView(PanelLocation location, Streamer<T> parentStreamer);
-
-    String getViewName();
+public class DatabaseRecord extends HashMap<String, Object> {
 }

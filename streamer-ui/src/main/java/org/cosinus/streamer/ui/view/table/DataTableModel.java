@@ -48,7 +48,7 @@ public abstract class DataTableModel<T extends Streamer<?>> extends TableModel i
 
     protected final Map<Integer, Boolean> selectionMap;
 
-    protected Streamer<T> parentStreamer;
+    protected final Streamer<T> parentStreamer;
 
     protected String contentIdentifier;
 
@@ -57,20 +57,11 @@ public abstract class DataTableModel<T extends Streamer<?>> extends TableModel i
     @Autowired
     public Preferences preferences;
 
-    public DataTableModel() {
+    public DataTableModel(final Streamer<T> parentStreamer) {
+        this.parentStreamer = parentStreamer;
         this.selectionMap = new ConcurrentHashMap<>();
         this.comparator = new ViewItemComparator();
         this.viewItems = new ArrayList<>();
-    }
-
-    @Override
-    public Streamer<T> getParentStreamer() {
-        return parentStreamer;
-    }
-
-    @Override
-    public void setParentStreamer(Streamer<T> parentStreamer) {
-        this.parentStreamer = parentStreamer;
     }
 
     @Override
