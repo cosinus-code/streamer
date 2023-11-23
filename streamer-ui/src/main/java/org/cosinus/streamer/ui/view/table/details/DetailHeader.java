@@ -104,13 +104,13 @@ public class DetailHeader extends JTableHeader {
     private boolean processMouseReleased(MouseEvent event) {
         try {
             if (clickedColumn >= 0 && event.getButton() != BUTTON3) {
-                int oldSortedCol = getTable().getCurrentSortColumn();
                 getTable().sort(clickedColumn);
-
-                getTable().getTableHeader().repaint(getTable().getTableHeader().getHeaderRect(clickedColumn));
-                if (clickedColumn != oldSortedCol) {
-                    getTable().getTableHeader().repaint(getTable().getTableHeader().getHeaderRect(oldSortedCol));
+                repaint(getHeaderRect(clickedColumn));
+                int sortedColumn = getTable().getTableModel().getSortedColumn();
+                if (clickedColumn != sortedColumn) {
+                    repaint(getHeaderRect(sortedColumn));
                 }
+                getTable().getTableModel().setSortedColumn(clickedColumn);
             }
             leftColIndex = -1;
             return true;
@@ -156,5 +156,9 @@ public class DetailHeader extends JTableHeader {
     @Override
     public DetailTable getTable() {
         return (DetailTable) super.getTable();
+    }
+
+    protected DetailTableModel getTableModel() {
+        return (DetailTableModel) getTable().getTableModel();
     }
 }

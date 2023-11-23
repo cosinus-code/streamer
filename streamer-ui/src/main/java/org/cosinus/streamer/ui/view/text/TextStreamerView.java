@@ -26,6 +26,7 @@ import org.cosinus.swing.error.ErrorHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.List;
 import java.util.Optional;
 
@@ -82,33 +83,48 @@ public class TextStreamerView extends StreamerView<String> {
     }
 
     @Override
-    public String getCurrentContent()
+    public String getCurrentItem()
     {
         return textEditor.getSelectedText();
     }
 
     @Override
-    public List<String> getSelectedContent()
+    public List<String> getSelectedItems()
     {
         return singletonList(textEditor.getSelectedText());
     }
 
     @Override
-    public Streamer<String> getLoadedStreamer()
+    public Streamer<String> getParentStreamer()
     {
         return parentStreamer;
     }
 
     @Override
-    public Optional<String> getSelectedContentIdentifier()
+    public String getCurrentItemIdentifier()
     {
-        return Optional.empty();
+        return null;
+    }
+
+    @Override
+    public String getNextItemIdentifier() {
+        return null;
     }
 
     @Override
     public LoadWorkerModel<String> getLoadWorkerModel()
     {
         return textEditor;
+    }
+
+    @Override
+    public Rectangle getCurrentRectangle() {
+        return null;
+    }
+
+    @Override
+    protected void validateInContainer(Container container) {
+
     }
 
     @Override

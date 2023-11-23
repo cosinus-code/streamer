@@ -15,6 +15,10 @@
  */
 package org.cosinus.streamer.api.value;
 
+import org.jetbrains.annotations.NotNull;
+
+import static org.apache.commons.lang3.ObjectUtils.compare;
+
 public class DoubleValue extends Value {
 
     protected Double value;
@@ -31,5 +35,13 @@ public class DoubleValue extends Value {
     @Override
     public String toString() {
         return value.toString();
+    }
+
+    @Override
+    public int compareTo(@NotNull Value other) {
+        if (other instanceof DoubleValue doubleValue) {
+            return Double.compare(value, doubleValue.value);
+        }
+        return compare(this, other);
     }
 }

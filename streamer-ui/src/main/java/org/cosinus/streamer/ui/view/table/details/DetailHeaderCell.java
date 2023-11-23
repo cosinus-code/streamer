@@ -94,9 +94,9 @@ public class DetailHeaderCell extends Label implements TableCellRenderer {
                                                    int rowIndex,
                                                    int colIndex) {
         try {
-            DataTable table = (DataTable) jtable;
+            DetailTable table = (DetailTable) jtable;
             if (table != null) {
-                sorted = table.getCurrentSortColumn() == colIndex;
+                sorted = table.getTableModel().getSortedColumn() == colIndex;
                 ascending = table.isSortAscending();
             }
             setBackground(uiHandler.getColor(BUTTON_BACKGROUND));

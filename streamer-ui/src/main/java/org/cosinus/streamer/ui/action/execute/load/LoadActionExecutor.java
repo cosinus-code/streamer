@@ -37,6 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
+import static org.cosinus.streamer.ui.view.text.TextStreamerView.TEXT_EDITOR;
 
 /**
  * Implementation of {@link ActionExecutor} based on {@link LoadWorker}
@@ -73,20 +74,28 @@ public class LoadActionExecutor implements ActionExecutor<LoadActionModel> {
 
     @Override
     public void execute(LoadActionModel actionModel) {
-        startLoadWorker(
-            actionModel.getActionId(),
-            actionModel.getStreamerToLoad(),
-            actionModel.getContentIdentifier(),
-            actionModel.getLocation());
+        startLoadWorker(actionModel);
     }
 
-    private <V> void startLoadWorker(String id, Streamer<?> streamer, String contentIdentifier, PanelLocation location) {
-        Streamer<V> streamerToLoad = prepareStreamerToLoad(streamer, location);
-        StreamerView<V> streamerViewToLoadTo = resolveStreamerToLoadTo(streamerToLoad, location);
+    private <V> void startLoadWorker(LoadActionModel actionModel) {
+        Streamer<V> streamerToLoad =
+            prepareStreamerToLoad(actionModel.getStreamerToLoad(), actionModel.getLocationToLoadTo());
+        if (streamerToLoad == null) {
+            return;
+        }
+
+        String streamerViewNameToOpen = ofNullable(actionModel.getStreamerViewNameToLoadIn())
+            .filter(viewName -> !streamerToLoad.isTextCompatible() || TEXT_EDITOR.equals(viewName))
+            .orElseGet(() -> streamerToLoad.isTextCompatible() ? TEXT_EDITOR : null);
+
+        StreamerView<V> streamerViewToLoadTo = streamerViewHandler
+            .loadStreamerView(actionModel.getLocationToLoadTo(), streamerViewNameToOpen, streamerToLoad);
         if (streamerViewToLoadTo == null) {
             return;
         }
-        LoadWorker<V> worker = new LoadWorker<>(id, streamerToLoad, streamerViewToLoadTo, contentIdentifier);
+        String itemToSelectAfterLoad = actionModel.getItemToSelectAfterLoad();
+        LoadWorker<V> worker = new LoadWorker<>(
+            actionModel.getActionId(), streamerToLoad, streamerViewToLoadTo, itemToSelectAfterLoad);
         workerListenerHandler.register(worker.getId(), streamerViewToLoadTo);
         registerWorker(worker);
         worker.start();
@@ -112,10 +121,6 @@ public class LoadActionExecutor implements ActionExecutor<LoadActionModel> {
     @Override
     public String getHandledAction() {
         return LoadActionModel.class.getName();
-    }
-
-    private <V> StreamerView<V> resolveStreamerToLoadTo(Streamer<V> streamerToLoad, PanelLocation location) {
-        return streamerViewHandler.resolveStreamerView(streamerToLoad, location);
     }
 
     private Streamer prepareStreamerToLoad(Streamer streamerToLoad, PanelLocation location) {

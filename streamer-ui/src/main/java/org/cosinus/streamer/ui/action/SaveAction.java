@@ -15,8 +15,10 @@
  */
 package org.cosinus.streamer.ui.action;
 
-import org.cosinus.streamer.ui.action.context.StreamerActionContext;
 import org.cosinus.streamer.ui.action.execute.save.SaveActionModel;
+import org.cosinus.streamer.ui.view.StreamerViewHandler;
+import org.cosinus.swing.action.ActionContext;
+import org.cosinus.swing.action.ActionInContext;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.stereotype.Component;
@@ -27,23 +29,28 @@ import java.util.Optional;
 import static java.awt.event.KeyEvent.VK_S;
 
 @Component
-//TODO: to eliminate T
-public class SaveAction<T> extends StreamerAction<T> {
+public class SaveAction implements ActionInContext {
     public static final String SAVE_ACTION_ID = "save-streamer";
 
     private final ActionExecutors actionExecutors;
 
     private final ApplicationUIHandler uiHandler;
 
-    public SaveAction(final ActionExecutors actionExecutors, final ApplicationUIHandler uiHandler) {
+    private final StreamerViewHandler streamerViewHandler;
+
+    public SaveAction(final ActionExecutors actionExecutors,
+                      final ApplicationUIHandler uiHandler,
+                      final StreamerViewHandler streamerViewHandler) {
         this.actionExecutors = actionExecutors;
         this.uiHandler = uiHandler;
+        this.streamerViewHandler = streamerViewHandler;
     }
 
     @Override
-    public void run(StreamerActionContext<T> context) {
-        actionExecutors.execute(new SaveActionModel<T>(
-            SAVE_ACTION_ID, context.getCurrentView().getLoadedStreamer(), context.getCurrentView()));
+    public void run(ActionContext context) {
+        actionExecutors.execute(new SaveActionModel(
+            streamerViewHandler.getCurrentView().getParentStreamer(),
+            streamerViewHandler.getCurrentView()));
     }
 
     @Override

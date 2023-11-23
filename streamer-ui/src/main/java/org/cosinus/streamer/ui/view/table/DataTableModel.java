@@ -18,37 +18,38 @@ package org.cosinus.streamer.ui.view.table;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.swing.form.TableModel;
 import org.cosinus.swing.preference.Preferences;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 import static java.util.stream.IntStream.range;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_HIDDEN;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.TOP_VISIBLE;
 
-public abstract class DataTableModel<T extends Streamer<?>> extends TableModel implements LoadWorkerModel<T> {
+public abstract class DataTableModel<T extends Streamable> extends TableModel implements LoadWorkerModel<T> {
 
     private static final Logger LOG = LogManager.getLogger(DataTableModel.class);
 
-    protected final List<StreamerViewItem> viewItems;
+    protected final List<ViewItem> viewItems;
 
     private final ViewItemComparator comparator;
 
     protected final Map<Integer, Boolean> selectionMap;
 
     protected final Streamer<T> parentStreamer;
+
+    protected final Map<String, T> streamableMap;
 
     protected String contentIdentifier;
 
@@ -62,6 +63,7 @@ public abstract class DataTableModel<T extends Streamer<?>> extends TableModel i
         this.selectionMap = new ConcurrentHashMap<>();
         this.comparator = new ViewItemComparator();
         this.viewItems = new ArrayList<>();
+        this.streamableMap = new HashMap<>();
     }
 
     @Override
@@ -82,19 +84,26 @@ public abstract class DataTableModel<T extends Streamer<?>> extends TableModel i
         this.currentIndex = currentIndex;
     }
 
-    public Streamer<?> getStreamerAt(int index) {
-        return getViewItemAt(getRowForIndex(index), getColumnForIndex(index)).getStreamer();
+    public T getItemAt(int index) {
+        return ofNullable(getViewItemAt(getRowForIndex(index), getColumnForIndex(index)))
+            .map(ViewItem::getId)
+            .map(streamableMap::get)
+            .orElse(null);
     }
 
-    private StreamerViewItem getViewItemAt(int rowIndex, int columnIndex) {
-        return (StreamerViewItem) getValueAt(rowIndex, columnIndex);
+    private ViewItem getCurrentViewItem() {
+        return getViewItemAt(getRowForIndex(currentIndex), getColumnForIndex(currentIndex));
+    }
+
+    private ViewItem getViewItemAt(int rowIndex, int columnIndex) {
+        return (ViewItem) getValueAt(rowIndex, columnIndex);
     }
 
     public int getItemsCount() {
         return viewItems.size();
     }
 
-    public List<StreamerViewItem> getAllViewItems() {
+    public List<ViewItem> getAllViewItems() {
         return viewItems;
     }
 
@@ -106,19 +115,12 @@ public abstract class DataTableModel<T extends Streamer<?>> extends TableModel i
             .orElse(false);
     }
 
-    public int getCurrentSortColumn() {
-        return comparator.getCurrentSortColumn();
-    }
-
     public boolean isSortAscending() {
         return comparator.isSortAscending();
     }
 
-    public void sort(int col) {
-        if (col < 0 || col >= getColumnCount()) {
-            return;
-        }
-        comparator.setSortType(col);
+    public void sort(int column) {
+        comparator.setSortType(column);
         sort();
     }
 
@@ -168,6 +170,7 @@ public abstract class DataTableModel<T extends Streamer<?>> extends TableModel i
     public void clear() {
         viewItems.clear();
         selectionMap.clear();
+        streamableMap.clear();
     }
 
     @Override
@@ -175,8 +178,8 @@ public abstract class DataTableModel<T extends Streamer<?>> extends TableModel i
         clear();
         if (isTopVisible()) {
             ofNullable(parentStreamer.getParent())
-                .map(parent -> new StreamerViewItem(parent, true))
-                .ifPresent(viewItems::add);
+                .map(parent -> new ViewItem(parent, true))
+                .ifPresent(this::addItem);
             fireTableDataChanged();
         }
     }
@@ -188,18 +191,41 @@ public abstract class DataTableModel<T extends Streamer<?>> extends TableModel i
             .stream()
             .filter(Objects::nonNull)
             .filter(streamer -> !streamer.isHidden() || showHidden)
-            .map(StreamerViewItem::new)
-            .forEach(viewItems::add);
+            .map(ViewItem::new)
+            .forEach(this::addItem);
 
         viewItems.sort(comparator);
     }
 
-    public List<Streamer<?>> getSelectedStreamers() {
+    private void addItem(ViewItem viewItem) {
+        viewItems.add(viewItem);
+        T streamer = (T) viewItem.getStreamer();
+        streamableMap.put(streamer.getId(), streamer);
+    }
+
+    public List<T> getSelectedItems() {
         return selectionMap.keySet()
             .stream()
             .map(viewItems::get)
-            .map(StreamerViewItem::getStreamer)
+            .map(ViewItem::getId)
+            .map(streamableMap::get)
             .collect(Collectors.toList());
+    }
+
+    public String getCurrentItemIdentifier() {
+        return ofNullable(getCurrentViewItem())
+            .filter(not(ViewItem::isTopItem))
+            .map(ViewItem::getName)
+            .orElseGet(parentStreamer::getName);
+    }
+
+    public String getNextItemIdentifier() {
+        int index = currentIndex < viewItems.size() - 1 ? currentIndex + 1 : currentIndex - 1;
+        return index < 0 ? null :
+            ofNullable(getViewItemAt(getRowForIndex(index), getColumnForIndex(index)))
+                .filter(not(ViewItem::isTopItem))
+                .map(ViewItem::getName)
+                .orElseGet(parentStreamer::getName);
     }
 
     public abstract int getRowForIndex(int index);

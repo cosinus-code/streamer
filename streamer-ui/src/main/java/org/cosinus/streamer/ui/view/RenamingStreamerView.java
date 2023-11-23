@@ -106,9 +106,9 @@ public abstract class RenamingStreamerView extends StreamerView<Streamer<?>> {
     public void showRename() {
         if (txtRename == null) return;
 
-        streamerToBeRenamed = getCurrentContent();
+        streamerToBeRenamed = getCurrentItem();
         if (streamerToBeRenamed == null) return;
-        if (streamerToBeRenamed.equals(getLoadedStreamer())) return;
+        if (streamerToBeRenamed.equals(this.getParentStreamer())) return;
 
 //        if (!streamerToBeRenamed.streamer().canWriteTo(streamerToBeRenamed)) {
 //            dialogHandler.showInfo(translator.translate("rename.info.no.rename"));

@@ -4,11 +4,11 @@ import org.jetbrains.annotations.NotNull;
 
 import static org.apache.commons.lang3.ObjectUtils.compare;
 
-public class IntegerValue extends Value {
+public class BooleanValue extends Value {
 
     protected final Integer value;
 
-    public IntegerValue(Integer value) {
+    public BooleanValue(Integer value) {
         this.value = value;
     }
 
@@ -19,12 +19,12 @@ public class IntegerValue extends Value {
 
     @Override
     public String toString() {
-        return Integer.toString(value);
+        return value.toString();
     }
 
     @Override
     public int compareTo(@NotNull Value other) {
-        if (other instanceof IntegerValue integerValue) {
+        if (other instanceof BooleanValue integerValue) {
             return Integer.compare(value, integerValue.value);
         }
         return compare(this, other);

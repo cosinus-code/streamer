@@ -27,7 +27,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
@@ -79,7 +81,7 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
                 .ifPresent(component::setForeground);
         }
 
-        if (component instanceof JLabel label && value instanceof StreamerViewItem item) {
+        if (component instanceof JLabel label && value instanceof ViewItem item) {
 
             label.setText(item.toString());
             if (item.isLink()) {
@@ -103,7 +105,7 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
 
     protected abstract Component getCellComponent(JLabel label,
                                                   T table,
-                                                  StreamerViewItem value,
+                                                  ViewItem value,
                                                   boolean isSelected,
                                                   boolean hasFocus,
                                                   int row,
@@ -114,29 +116,43 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
             .or(() -> iconHandler.findIconByName(ICON_FOLDER, X16));
     }
 
-    protected Optional<Icon> getIcon(IconSize size, StreamerViewItem item) {
+    protected Optional<Icon> getIcon(IconSize size, ViewItem item) {
         return getIcon(size, item, false);
     }
 
-    protected Optional<Icon> getIcon(IconSize size, StreamerViewItem item, boolean showPreview) {
+    protected Optional<Icon> getIcon(IconSize size, ViewItem item, boolean showPreview) {
+        File itemFile = createItemFile(item);
         return ofNullable(item.getIconName())
             .flatMap(iconName -> iconHandler.findIconByName(item.getIconName(), size))
             .or(() -> showPreview ?
-                findIconWithPreview(size, item) :
-                iconHandler.findIconByFile(item.toFile(), size));
+                findIconWithPreview(size, itemFile) :
+                iconHandler.findIconByFile(itemFile, size));
     }
 
-    private Optional<Icon> findIconWithPreview(IconSize size, StreamerViewItem item) {
-        return getPreviewIcon(item)
-            .or(() -> iconHandler.findIconByFile(item.toFile(), size));
+    private Optional<Icon> findIconWithPreview(IconSize size, File itemFile) {
+        return getPreviewIcon(itemFile)
+            .or(() -> iconHandler.findIconByFile(itemFile, size));
     }
 
-    private Optional<Icon> getPreviewIcon(StreamerViewItem item) {
+    private Optional<Icon> getPreviewIcon(File itemFile) {
         try {
-            return imageHandler.getPreviewImage(item.toFile(), PREVIEW_CELL_SIZE);
+            return imageHandler.getPreviewImage(itemFile, PREVIEW_CELL_SIZE);
         } catch (IOException e) {
-            LOG.error("Cannot create preview icon for item: " + item);
+            LOG.error("Cannot create preview icon for item: " + itemFile);
             return Optional.empty();
         }
     }
+
+    public File createItemFile(ViewItem item) {
+        String fileName = ofNullable(item.getPath())
+            .map(Objects::toString)
+            .orElseGet(item::getName);
+        return new File(fileName) {
+            @Override
+            public boolean isDirectory() {
+                return item.isParent();
+            }
+        };
+    }
+
 }

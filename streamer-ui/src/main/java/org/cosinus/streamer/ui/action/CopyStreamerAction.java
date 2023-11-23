@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.action.copy;
+package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.action.LoadStreamerAction;
-import org.cosinus.streamer.ui.action.context.StreamerActionContext;
-import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
+import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
+import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
+import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.preference.Preferences;
@@ -32,54 +32,51 @@ import javax.swing.*;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_F5;
-import static org.cosinus.streamer.ui.action.execute.copy.CopyActionModel.copy;
 
 /**
  * Copy streamers action
  */
 @Component
-public class CopyStreamerAction<A> extends AbstractCopyAction<A> {
+public class CopyStreamerAction extends AbstractCopyAction {
 
     public static final String COPY_STREAMER_ACTION_ID = "copy-streamer";
 
-    public CopyStreamerAction(Preferences preferences,
-                              Translator translator,
-                              DialogHandler dialogHandler,
-                              ActionExecutors actionExecutors,
-                              WorkerListenerHandler workerListenerHandler,
-                              LoadStreamerAction loadStreamerAction) {
+    public CopyStreamerAction(final Preferences preferences,
+                              final Translator translator,
+                              final DialogHandler dialogHandler,
+                              final ActionExecutors actionExecutors,
+                              final WorkerListenerHandler workerListenerHandler,
+                              final LoadActionExecutor loadActionExecutor,
+                              final StreamerViewHandler streamerViewHandler) {
         super(preferences,
-              translator,
-              dialogHandler,
-              actionExecutors,
+            translator,
+            dialogHandler,
+            actionExecutors,
             workerListenerHandler,
-              loadStreamerAction);
+            loadActionExecutor,
+            streamerViewHandler);
     }
 
     @Override
-    protected <S extends Streamer<?>, T extends Streamer<?>>
-    void execute(CopyActionModel<S, T> copyAction, StreamerActionContext actionContext) {
+    protected <S extends Streamer<S>, T extends Streamer<T>> void executeStreamerCopy(CopyActionModel<S, T> copyAction) {
         //TODO: to avoid cast
         ParentStreamer<T> destination =
             (ParentStreamer<T>) copyAction.getDestination().create(copyAction.getTargetPath(), true);
-        if (destination == null) {
+        if (destination == null || !destination.exists()) {
             dialogHandler.showInfo(translator.translate("act_copy_destination_not_found"));
             return;
         }
-        super.execute(copyAction.to(destination), actionContext);
-    }
-
-    @Override
-    protected <S extends Streamer<?>, T extends Streamer<?>>
-    CopyActionModel<S, T> copySpecifications(StreamerActionContext actionContext) {
-        return copy(actionContext.getCurrentView().getSelectedContent())
-            .from((ParentStreamer<S>) actionContext.getCurrentView().getLoadedStreamer())
-            .to((ParentStreamer<T>) actionContext.getOppositeView().getLoadedStreamer());
+        super.executeStreamerCopy(copyAction.to(destination));
     }
 
     @Override
     public String getId() {
         return COPY_STREAMER_ACTION_ID;
+    }
+
+    @Override
+    protected String getCopyActionName() {
+        return COPY_ACTION_NAME;
     }
 
     @Override

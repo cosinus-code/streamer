@@ -16,13 +16,13 @@
 
 package org.cosinus.streamer.ui.action;
 
-import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.pack.PackerHandler;
-import org.cosinus.streamer.ui.action.context.StreamerActionContext;
-import org.cosinus.streamer.ui.action.copy.AbstractCopyAction;
-import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
+import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
+import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
+import org.cosinus.streamer.ui.view.StreamerViewHandler;
+import org.cosinus.swing.action.ActionContext;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.preference.Preferences;
@@ -34,13 +34,12 @@ import javax.swing.*;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_F5;
-import static org.cosinus.streamer.ui.action.execute.copy.CopyActionModel.pack;
 
 /**
  * Copy streamers action
  */
 @Component
-public class PackStreamerAction<A> extends AbstractCopyAction<A> {
+public class PackStreamerAction extends AbstractCopyAction {
 
     public static final String PACK_STREAMER_ACTION_ID = "pack-streamer";
 
@@ -48,26 +47,28 @@ public class PackStreamerAction<A> extends AbstractCopyAction<A> {
 
     private final PackerHandler packerHandler;
 
-    public PackStreamerAction(Preferences preferences,
-                              Translator translator,
-                              DialogHandler dialogHandler,
-                              ActionExecutors actionExecutors,
-                              WorkerListenerHandler workerListenerHandler,
-                              LoadStreamerAction loadStreamerAction,
-                              ApplicationUIHandler uiHandler,
-                              PackerHandler packerHandler) {
+    public PackStreamerAction(final Preferences preferences,
+                              final Translator translator,
+                              final DialogHandler dialogHandler,
+                              final ActionExecutors actionExecutors,
+                              final WorkerListenerHandler workerListenerHandler,
+                              final LoadActionExecutor loadActionExecutor,
+                              final StreamerViewHandler streamerViewHandler,
+                              final ApplicationUIHandler uiHandler,
+                              final PackerHandler packerHandler) {
         super(preferences,
             translator,
             dialogHandler,
             actionExecutors,
             workerListenerHandler,
-            loadStreamerAction);
+            loadActionExecutor,
+            streamerViewHandler);
         this.uiHandler = uiHandler;
         this.packerHandler = packerHandler;
     }
 
     @Override
-    public void run(StreamerActionContext actionContext) {
+    public void run(ActionContext actionContext) {
         if (packerHandler.getPackersMap().isEmpty()) {
             dialogHandler.showInfo(translator.translate("act_pack_no_pack_system"));
             return;
@@ -77,9 +78,8 @@ public class PackStreamerAction<A> extends AbstractCopyAction<A> {
     }
 
     @Override
-    protected <S extends Streamer<?>, T extends Streamer<?>>
-    void execute(CopyActionModel<S, T> copyAction,
-                 StreamerActionContext actionContext) {
+    protected <S extends Streamer<S>, T extends Streamer<T>> void executeStreamerCopy(
+        CopyActionModel<S, T> copyAction) {
 
 //        Optional.ofNullable(copyAction.getPackType())
 //                .map(packerHandler.getPackers()::get)
@@ -104,16 +104,13 @@ public class PackStreamerAction<A> extends AbstractCopyAction<A> {
     }
 
     @Override
-    protected <S extends Streamer<?>, T extends Streamer<?>>
-    CopyActionModel<S, T> copySpecifications(StreamerActionContext actionContext) {
-        return pack(actionContext.getCurrentView().getSelectedContent())
-            .from((ParentStreamer<S>) actionContext.getCurrentView().getLoadedStreamer())
-            .to((ParentStreamer<T>) actionContext.getOppositeView().getLoadedStreamer());
+    public String getId() {
+        return PACK_STREAMER_ACTION_ID;
     }
 
     @Override
-    public String getId() {
-        return PACK_STREAMER_ACTION_ID;
+    protected String getCopyActionName() {
+        return PACK_ACTION_NAME;
     }
 
     @Override

@@ -16,9 +16,13 @@
 
 package org.cosinus.streamer.ui.action;
 
-import org.cosinus.streamer.ui.action.context.StreamerActionContext;
+import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
-import org.cosinus.swing.action.execute.ActionExecutors;
+import org.cosinus.streamer.ui.view.StreamerView;
+import org.cosinus.streamer.ui.view.StreamerViewHandler;
+import org.cosinus.swing.action.ActionContext;
+import org.cosinus.swing.action.ActionInContext;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.stereotype.Component;
 
@@ -26,30 +30,41 @@ import javax.swing.*;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_DOWN;
+import static java.util.Optional.ofNullable;
 
 /**
  * Load streamer action
  */
 @Component
-public class LoadStreamerAction<T> extends StreamerAction<T> {
+public class LoadStreamerAction implements ActionInContext {
 
     public static final String LOAD_STREAMER_ACTION_ID = "load-streamer";
 
-    private final ActionExecutors actionExecutors;
+    private final LoadActionExecutor loadActionExecutor;
 
     private final ApplicationUIHandler uiHandler;
 
-    public LoadStreamerAction(ActionExecutors actionExecutors,
-                              ApplicationUIHandler uiHandler) {
-        this.actionExecutors = actionExecutors;
+    private final StreamerViewHandler streamerViewHandler;
+
+    public LoadStreamerAction(final LoadActionExecutor loadActionExecutor,
+                              final ApplicationUIHandler uiHandler,
+                              final StreamerViewHandler streamerViewHandler) {
+        this.loadActionExecutor = loadActionExecutor;
         this.uiHandler = uiHandler;
+        this.streamerViewHandler = streamerViewHandler;
     }
 
     @Override
-    public void run(StreamerActionContext<T> context) {
-        actionExecutors.execute(new LoadActionModel(context.getCurrentLocation(),
-                                                    context.getCurrentStreamer(),
-                                                    context.getContentIdentifier()));
+    public void run(ActionContext context) {
+        StreamerView<?> currentStreamerView = streamerViewHandler.getCurrentView();
+        ofNullable(currentStreamerView.getCurrentItem())
+            .filter(item -> Streamer.class.isAssignableFrom(item.getClass()))
+            .map(Streamer.class::cast)
+            .ifPresent(currentStreamer -> loadActionExecutor
+                .execute(new LoadActionModel(
+                    currentStreamerView.getCurrentLocation(),
+                    currentStreamer,
+                    currentStreamerView.getCurrentItemIdentifier())));
     }
 
     @Override

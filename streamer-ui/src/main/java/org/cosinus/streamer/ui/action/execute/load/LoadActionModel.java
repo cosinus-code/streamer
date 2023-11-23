@@ -17,47 +17,54 @@
 package org.cosinus.streamer.ui.action.execute.load;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.action.LoadStreamerAction;
 import org.cosinus.streamer.ui.view.PanelLocation;
-import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.swing.action.execute.ActionModel;
 
-import static java.util.Optional.ofNullable;
+import static org.cosinus.streamer.ui.action.LoadStreamerAction.LOAD_STREAMER_ACTION_ID;
 
 /**
  * Encapsulates the model of the load streamer action
  */
 public class LoadActionModel extends ActionModel {
 
-    private final PanelLocation location;
+    private final PanelLocation locationToLoadTo;
 
     private final Streamer<?> streamerToLoad;
 
-    private final String contentIdentifier;
+    private final String itemToSelectAfterLoad;
 
-    public LoadActionModel(PanelLocation location, Streamer<?> streamerToLoad) {
-        this(location, streamerToLoad, streamerToLoad.getName());
+    private final String streamerViewNameToLoadIn;
+
+    public LoadActionModel(final PanelLocation locationToLoadTo,
+                           final Streamer<?> streamerToLoad,
+                           final String itemToSelectAfterLoad) {
+        this(locationToLoadTo, streamerToLoad, itemToSelectAfterLoad, null);
     }
 
-    public LoadActionModel(PanelLocation location,
-                           Streamer<?> streamerToLoad,
-                           String contentIdentifier) {
-        super(location.name(), LoadStreamerAction.LOAD_STREAMER_ACTION_ID);
-        this.location = location;
+    public LoadActionModel(final PanelLocation locationToLoadTo,
+                           final Streamer<?> streamerToLoad,
+                           final String itemToSelectAfterLoad,
+                           final String streamerViewNameToLoadIn) {
+        super(locationToLoadTo.name(), LOAD_STREAMER_ACTION_ID);
+        this.locationToLoadTo = locationToLoadTo;
         this.streamerToLoad = streamerToLoad;
-        this.contentIdentifier = contentIdentifier;
+        this.itemToSelectAfterLoad = itemToSelectAfterLoad;
+        this.streamerViewNameToLoadIn = streamerViewNameToLoadIn;
     }
 
-    public PanelLocation getLocation()
-    {
-        return location;
+    public PanelLocation getLocationToLoadTo() {
+        return locationToLoadTo;
     }
 
-    public Streamer<?>  getStreamerToLoad() {
+    public Streamer<?> getStreamerToLoad() {
         return streamerToLoad;
     }
 
-    public String getContentIdentifier() {
-        return contentIdentifier;
+    public String getItemToSelectAfterLoad() {
+        return itemToSelectAfterLoad;
+    }
+
+    public String getStreamerViewNameToLoadIn() {
+        return streamerViewNameToLoadIn;
     }
 }

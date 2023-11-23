@@ -6,7 +6,7 @@
 
 package org.cosinus.streamer.ui.view.table.icon;
 
-import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.ui.view.table.DataTable;
 import org.cosinus.streamer.ui.view.table.DataTableModel;
 import org.cosinus.swing.error.ErrorHandler;
@@ -31,7 +31,7 @@ import static org.cosinus.streamer.ui.preference.StreamerPreferences.*;
 import static org.cosinus.swing.image.icon.IconSize.X32;
 import static org.cosinus.swing.math.MoreMath.*;
 
-public class IconTable extends DataTable {
+public class IconTable<T extends Streamable> extends DataTable<T> {
 
     public static final int PREVIEW_CELL_SIZE = 100;
 
@@ -55,28 +55,14 @@ public class IconTable extends DataTable {
         am.put("selectNextColumnCell", new NextFocusHandler());
     }
 
-    public class PreviousFocusHandler extends AbstractAction {
-        public void actionPerformed(ActionEvent evt) {
-            KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-            manager.focusPreviousComponent();
-        }
-    }
-
-    public class NextFocusHandler extends AbstractAction {
-        public void actionPerformed(ActionEvent evt) {
-            KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-            manager.focusNextComponent();
-        }
+    @Override
+    protected DataTableModel<T> createDataTableModel() {
+        return new IconTableModel<>(view.getParentStreamer());
     }
 
     @Override
-    protected DataTableModel<Streamer<?>> createDataTableModel() {
-        return new IconTableModel(view.getParentStreamer());
-    }
-
-    @Override
-    protected IconTableModel getTableModel() {
-        return (IconTableModel) super.getTableModel();
+    public IconTableModel<T> getTableModel() {
+        return (IconTableModel<T>) super.getTableModel();
     }
 
     private void setHeader() {
@@ -215,6 +201,20 @@ public class IconTable extends DataTable {
             } catch (Exception ex) {
                 errorHandler.handleError(ex);
             }
+        }
+    }
+
+    public static class PreviousFocusHandler extends AbstractAction {
+        public void actionPerformed(ActionEvent evt) {
+            KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+            manager.focusPreviousComponent();
+        }
+    }
+
+    public static class NextFocusHandler extends AbstractAction {
+        public void actionPerformed(ActionEvent evt) {
+            KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+            manager.focusNextComponent();
         }
     }
 }

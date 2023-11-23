@@ -15,7 +15,74 @@
  */
 package org.cosinus.streamer.database;
 
-import java.util.HashMap;
+import org.cosinus.streamer.api.Streamable;
+import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.value.TranslatableName;
+import org.cosinus.streamer.api.value.Value;
 
-public class DatabaseRecord extends HashMap<String, Object> {
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+public class DatabaseRecord extends LinkedHashMap<TranslatableName, Value> implements Streamable {
+
+    private String name;
+
+    private List<TranslatableName> detailNames;
+
+    @Override
+    public String getId() {
+        return name;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public Streamer<?> getStreamer() {
+        return null;
+    }
+
+    @Override
+    public boolean isParent() {
+        return false;
+    }
+
+    @Override
+    public boolean isHidden() {
+        return false;
+    }
+
+    @Override
+    public boolean isLink() {
+        return false;
+    }
+
+    @Override
+    public String getIconName() {
+        return null;
+    }
+
+    @Override
+    public Path getPath() {
+        return null;
+    }
+
+    @Override
+    public List<TranslatableName> detailNames() {
+        return new ArrayList<>(keySet());
+    }
+
+    @Override
+    public Map<TranslatableName, Value> details() {
+        return this;
+    }
 }

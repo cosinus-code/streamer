@@ -16,8 +16,9 @@
 
 package org.cosinus.streamer.ui.action;
 
-import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.action.context.StreamerActionContext;
+import org.cosinus.streamer.ui.view.StreamerViewHandler;
+import org.cosinus.swing.action.ActionContext;
+import org.cosinus.swing.action.ActionInContext;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
@@ -29,13 +30,19 @@ import static java.awt.event.KeyEvent.VK_HOME;
  * Go to first streamer action
  */
 @Component
-public class GoToFirstStreamerAction extends StreamerAction<Streamer<?>> {
+public class GoToFirstStreamerAction implements ActionInContext {
 
     public static final String GO_TO_FIRST_STREAMER_ACTION = "go-to-first-streamer";
 
+    private final StreamerViewHandler streamerViewHandler;
+
+    public GoToFirstStreamerAction(final StreamerViewHandler streamerViewHandler) {
+        this.streamerViewHandler = streamerViewHandler;
+    }
+
     @Override
-    public void run(StreamerActionContext<Streamer<?>> context) {
-        context.getCurrentView().goHome();
+    public void run(ActionContext context) {
+        streamerViewHandler.getCurrentView().goHome();
     }
 
     @Override

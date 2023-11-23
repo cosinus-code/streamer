@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 import static java.lang.System.exit;
 
 @Component
-public class QuitAction implements ActionInContext<ActionContext> {
+public class QuitAction implements ActionInContext {
 
     private static final String MENU_STREAMER_QUIT = "menu-streamer-quit";
 

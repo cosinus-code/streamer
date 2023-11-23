@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.ui.view.table.details;
 
+import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.streamer.ui.view.table.DataTable;
@@ -48,7 +49,7 @@ import static javax.swing.SwingUtilities.invokeLater;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.ROW_HEIGHT;
 import static org.cosinus.streamer.ui.view.table.details.DetailView.DETAIL_VIEW_NAME;
 
-public class DetailTable extends DataTable implements ActionListener {
+public class DetailTable<T extends Streamable> extends DataTable<T> implements ActionListener {
 
     private static final int[] SIZE_COL = {200, 40, 50, 62, 110};
 
@@ -137,12 +138,12 @@ public class DetailTable extends DataTable implements ActionListener {
                 if (shiftDown) {
                     int start = min(oldRow, selectedRow);
                     int end = max(oldRow, selectedRow);
-                    selectStreamers(start,
+                    selectItems(start,
                         end,
                         true,
                         false);
                 } else if (ctrlDown && !keyboardArrow) {
-                    selectStreamerAtIndex(selectedRow);
+                    selectIndexAtIndex(selectedRow);
                 }
             } catch (Exception ex) {
                 errorHandler.handleError(DetailTable.this, ex);
@@ -226,7 +227,12 @@ public class DetailTable extends DataTable implements ActionListener {
     }
 
     @Override
-    protected DataTableModel<Streamer<?>> createDataTableModel() {
+    public DetailTableModel getTableModel() {
+        return (DetailTableModel) super.getTableModel();
+    }
+
+    @Override
+    protected DataTableModel<T> createDataTableModel() {
         return new DetailTableModel<>(view.getParentStreamer());
     }
 

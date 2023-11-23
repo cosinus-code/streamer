@@ -17,7 +17,10 @@
 package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.action.context.StreamerActionContext;
+import org.cosinus.streamer.ui.view.StreamerView;
+import org.cosinus.streamer.ui.view.StreamerViewHandler;
+import org.cosinus.swing.action.ActionContext;
+import org.cosinus.swing.action.ActionInContext;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.stereotype.Component;
@@ -34,7 +37,7 @@ import static org.cosinus.swing.dialog.OptionsDialog.PLAIN_MESSAGE;
  * Rename streamer action
  */
 @Component
-public class CreateStreamerAction extends StreamerAction<Streamer<?>> {
+public class CreateStreamerAction implements ActionInContext {
 
     public static final String CREATE_STREAMER_ACTION_ID = "create-streamer";
 
@@ -42,15 +45,20 @@ public class CreateStreamerAction extends StreamerAction<Streamer<?>> {
 
     private final Translator translator;
 
-    public CreateStreamerAction(DialogHandler dialogHandler,
-                                Translator translator) {
+    private final StreamerViewHandler streamerViewHandler;
+
+    public CreateStreamerAction(final DialogHandler dialogHandler,
+                                final Translator translator,
+                                final StreamerViewHandler streamerViewHandler) {
         this.dialogHandler = dialogHandler;
         this.translator = translator;
+        this.streamerViewHandler = streamerViewHandler;
     }
 
     @Override
-    public void run(StreamerActionContext<Streamer<?>> context) {
-        Streamer currentFolder = context.getCurrentView().getLoadedStreamer();
+    public void run(ActionContext context) {
+        StreamerView<?> currentView = streamerViewHandler.getCurrentView();
+        Streamer<?> currentFolder = currentView.getParentStreamer();
         if (!currentFolder.getParent().canWrite()) {
             return;
         }
@@ -64,7 +72,7 @@ public class CreateStreamerAction extends StreamerAction<Streamer<?>> {
                 .map(path -> parent.create(path, true)))
             .ifPresent(streamer -> {
                 streamer.save();
-                context.getCurrentView().reload(streamer.getName());
+                currentView.reload(streamer.getName());
             });
     }
 

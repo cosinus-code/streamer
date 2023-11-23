@@ -31,7 +31,6 @@ import static java.util.stream.Collectors.toMap;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.LEFT_VIEW;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.RIGHT_VIEW;
 import static org.cosinus.streamer.ui.view.PanelLocation.LEFT;
-import static org.cosinus.streamer.ui.view.text.TextStreamerView.TEXT_EDITOR;
 
 /**
  * Handler for data views
@@ -68,7 +67,7 @@ public class StreamerViewHandler {
         setActiveView(currentLocation);
     }
 
-    public StreamerView getCurrentView() {
+    public StreamerView<?> getCurrentView() {
         return getPanel(currentLocation)
             .map(StreamerPanel::getView)
             .orElse(null);
@@ -79,17 +78,8 @@ public class StreamerViewHandler {
             .ifPresent(view -> view.setActive(location == currentLocation)));
     }
 
-    public <V> StreamerView<V> resolveStreamerView(Streamer<V> streamer, PanelLocation location) {
-        String viewName = streamer.isTextCompatible() ? TEXT_EDITOR : null;
-//        StreamerView existingView = getView(location)
-//            .filter(view -> streamerViewName == null || view.getName().equals(streamerViewName))
-//            .orElse(null);
-//
-//        if (existingView != null) {
-//            return existingView;
-//        }
-
-        StreamerView view = ofNullable(viewName)
+    public <T> StreamerView<T> loadStreamerView(PanelLocation location, String streamerViewNameToLoadIn, Streamer<T> streamer) {
+        StreamerView<T> view = ofNullable(streamerViewNameToLoadIn)
             .map(streamerViewCreatorsMap::get)
             .orElseGet(() -> getPreferredStreamerViewCreator(location))
             .createStreamerView(location, streamer);

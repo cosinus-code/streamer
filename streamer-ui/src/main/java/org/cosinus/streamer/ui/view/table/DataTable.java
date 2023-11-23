@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.ui.view.table;
 
+import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
@@ -30,19 +31,19 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.List;
-import java.util.Optional;
 
 import static java.awt.event.KeyEvent.KEY_PRESSED;
 import static java.awt.event.MouseEvent.*;
 import static java.lang.Math.abs;
 import static java.util.Arrays.stream;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.concat;
 import static java.util.stream.IntStream.range;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static org.cosinus.streamer.ui.action.ExecuteStreamerAction.EXECUTE_STREAMER_ACTION_ID;
 
-public abstract class DataTable extends Table implements FocusListener {
+public abstract class DataTable<T extends Streamable> extends Table implements FocusListener {
 
     public static final int FIND_STREAMER_SPEED = 500;
 
@@ -55,7 +56,7 @@ public abstract class DataTable extends Table implements FocusListener {
     @Autowired
     public ActionController actionController;
 
-    protected StreamerView<Streamer<?>> view;
+    protected StreamerView<T> view;
 
     //TODO
     protected boolean ctrlDown, shiftDown, altDown;
@@ -66,7 +67,7 @@ public abstract class DataTable extends Table implements FocusListener {
 
     private int lastWidth, lastHeight;
 
-    private DataTableModel<Streamer<?>> model;
+    private DataTableModel<T> model;
 
     @Override
     public void initComponents() {
@@ -106,7 +107,7 @@ public abstract class DataTable extends Table implements FocusListener {
     public void focusLost(FocusEvent e) {
     }
 
-    public void init(StreamerView<Streamer<?>> view) {
+    public void init(StreamerView<T> view) {
         this.view = view;
     }
 
@@ -166,37 +167,37 @@ public abstract class DataTable extends Table implements FocusListener {
         return action;
     }
 
-    public void selectCurrentStreamer() {
-        selectStreamerAtIndex(getCurrentIndex());
-        if (getCurrentIndex() != getStreamersCount() - 1) {
+    public void selectCurrentItem() {
+        selectIndexAtIndex(getCurrentIndex());
+        if (getCurrentIndex() != getItemsCount() - 1) {
             setCurrentIndex(getCurrentIndex() + 1);
         }
     }
 
-    public void selectStreamerAtIndex(int index) {
+    public void selectIndexAtIndex(int index) {
         getTableModel().addToSelection(index);
         repaint();
     }
 
-    public void selectStreamers(int start, int end, boolean only, boolean deselect) {
+    public void selectItems(int start, int end, boolean only, boolean deselect) {
         getTableModel().addToSelection(start, end, only, deselect);
         repaint();
     }
 
-    public List<Streamer<?>> getSelectedStreamers() {
-        List<Streamer<?>> selectedStreamers = getTableModel().getSelectedStreamers();
-        if (!selectedStreamers.isEmpty()) {
-            return selectedStreamers;
+    public List<T> getSelectedItems() {
+        List<T> selectedItems = getTableModel().getSelectedItems();
+        if (!selectedItems.isEmpty()) {
+            return selectedItems;
         }
 
         return stream(getSelectedRows())
             .filter(index -> index >= getTableModel().getMinimumToSelect())
-            .mapToObj(this::getStreamerAt)
+            .mapToObj(this::getItemAt)
             .collect(toList());
     }
 
     public void movePositionByName(String name) {
-        List<StreamerViewItem> items = getAllItems();
+        List<ViewItem> items = getAllItems();
         if (!items.isEmpty()) {
             int min = model.isTopVisible() ? 1 : 0;
             int start = getSelectedRow() + (name.length() == 1 ? 1 : 0);
@@ -215,46 +216,42 @@ public abstract class DataTable extends Table implements FocusListener {
             col);
     }
 
-    public int getCurrentSortColumn() {
-        return getTableModel().getCurrentSortColumn();
-    }
-
     public boolean isSortAscending() {
         return getTableModel().isSortAscending();
     }
 
-    public void sort(int col) {
-        String name = getCurrentStreamerName();
-        getTableModel().sort(col);
+    public void sort(int column) {
+        String name = getCurrentItemName();
+        getTableModel().sort(column);
         findViewItem(name);
     }
 
-    public String getCurrentStreamerName() {
-        return Optional.ofNullable(getCurrentStreamer())
-            .map(Streamer::getName)
+    public String getCurrentItemName() {
+        return ofNullable(getCurrentItem())
+            .map(Streamable::getName)
             .orElse(null);
     }
 
-    public Streamer<?> getCurrentStreamer() {
-        return getStreamerAt(getCurrentIndex());
+    public T getCurrentItem() {
+        return getItemAt(getCurrentIndex());
     }
 
     public int getCurrentIndex() {
         return getTableModel().getCurrentIndex();
     }
 
-    public Streamer<?> getStreamerAt(int index) {
-        if (index < 0 || index >= getStreamersCount()) {
+    public T getItemAt(int index) {
+        if (index < 0 || index >= getItemsCount()) {
             return null;
         }
-        return getTableModel().getStreamerAt(index);
+        return getTableModel().getItemAt(index);
     }
 
-    public int getStreamersCount() {
+    public int getItemsCount() {
         return getTableModel().getItemsCount();
     }
 
-    public List<StreamerViewItem> getAllItems() {
+    public List<ViewItem> getAllItems() {
         return getTableModel().getAllViewItems();
     }
 
@@ -263,7 +260,7 @@ public abstract class DataTable extends Table implements FocusListener {
     }
 
     public void findViewItem(String name) {
-        List<StreamerViewItem> items = getAllItems();
+        List<ViewItem> items = getAllItems();
         range(0, items.size())
             .filter(i -> name.equals(items.get(i).getName()))
             .findFirst()
@@ -278,7 +275,7 @@ public abstract class DataTable extends Table implements FocusListener {
         lastActionTime = 0;
     }
 
-    public Streamer<Streamer<?>> getParentStreamer() {
+    public Streamer<T> getParentStreamer() {
         return view.getParentStreamer();
     }
 
@@ -291,8 +288,8 @@ public abstract class DataTable extends Table implements FocusListener {
         lastHeight = height;
     }
 
-    protected DataTableModel<Streamer<?>> getTableModel() {
-        return (DataTableModel<Streamer<?>>) getModel();
+    public DataTableModel<T> getTableModel() {
+        return (DataTableModel<T>) getModel();
     }
 
     @Override
@@ -303,11 +300,11 @@ public abstract class DataTable extends Table implements FocusListener {
     public void setCurrentIndex(int index, boolean silent) {
         setCurrentIndex(index);
         if (!silent) {
-            getTableModel().setContentIdentifier(getCurrentStreamerName());
+            getTableModel().setContentIdentifier(getCurrentItemName());
         }
     }
 
     public abstract void setCurrentIndex(int index);
 
-    protected abstract DataTableModel<Streamer<?>> createDataTableModel();
+    protected abstract DataTableModel<T> createDataTableModel();
 }

@@ -15,10 +15,14 @@
  */
 package org.cosinus.streamer.api.value;
 
+import org.apache.commons.lang3.ObjectUtils;
+import org.jetbrains.annotations.NotNull;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.ObjectUtils.compare;
 
 public class DateValue extends Value {
 
@@ -46,5 +50,13 @@ public class DateValue extends Value {
         return ofNullable(value)
             .map(DATE_FORMAT::format)
             .orElse("");
+    }
+
+    @Override
+    public int compareTo(@NotNull Value other) {
+        if (other instanceof DateValue dateValue) {
+            return compare(value, dateValue.value);
+        }
+        return compare(this, other);
     }
 }

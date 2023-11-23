@@ -17,10 +17,12 @@
 package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.action.context.StreamerActionContext;
+import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.view.StreamerView;
-import org.cosinus.swing.action.execute.ActionExecutors;
+import org.cosinus.streamer.ui.view.StreamerViewHandler;
+import org.cosinus.swing.action.ActionContext;
+import org.cosinus.swing.action.ActionInContext;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.stereotype.Component;
 
@@ -28,33 +30,41 @@ import javax.swing.*;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_UP;
+import static java.util.Optional.ofNullable;
 
 /**
  * Go to parent streamer action
  */
 @Component
-public class GoToParentStreamerAction extends StreamerAction<Streamer<?>> {
+public class GoToParentStreamerAction implements ActionInContext {
 
     public static final String GO_TO_UP_STREAMER_ACTION = "go-to-parent-streamer";
 
     private final ApplicationUIHandler uiHandler;
 
-    private final ActionExecutors actionExecutors;
+    private final LoadActionExecutor loadActionExecutor;
 
-    public GoToParentStreamerAction(ApplicationUIHandler uiHandler,
-                                    ActionExecutors actionExecutors) {
+    private final StreamerViewHandler streamerViewHandler;
+
+    public GoToParentStreamerAction(final ApplicationUIHandler uiHandler,
+                                    final LoadActionExecutor loadActionExecutor,
+                                    final StreamerViewHandler streamerViewHandler) {
         this.uiHandler = uiHandler;
-        this.actionExecutors = actionExecutors;
+        this.loadActionExecutor = loadActionExecutor;
+        this.streamerViewHandler = streamerViewHandler;
     }
 
     @Override
-    public void run(StreamerActionContext<Streamer<?>> context) {
-        context.getCurrentView().goHome();
-        Optional.of(context.getCurrentView())
-            .map(StreamerView::getLoadedStreamer)
+    public void run(ActionContext context) {
+        StreamerView<?> currentStreamerView = streamerViewHandler.getCurrentView();
+        currentStreamerView.goHome();
+        ofNullable(currentStreamerView.getParentStreamer())
             .map(Streamer::getParent)
-            .map(parent -> new LoadActionModel(context.getCurrentLocation(), parent))
-            .ifPresent(actionExecutors::execute);
+            .map(parent -> new LoadActionModel(
+                currentStreamerView.getCurrentLocation(),
+                parent,
+                currentStreamerView.getCurrentItemIdentifier()))
+            .ifPresent(loadActionExecutor::execute);
     }
 
     @Override

@@ -16,6 +16,8 @@
 package org.cosinus.streamer.database;
 
 import org.cosinus.streamer.api.ParentStreamer;
+import org.cosinus.streamer.api.value.TextValue;
+import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.streamer.database.connection.DatabaseException;
 
 import java.sql.ResultSet;
@@ -63,7 +65,10 @@ public class DatabaseTableStreamer extends DatabaseStreamer {
                         String columnName = metaData.getColumnClassName(index);
                         //int columnType = metaData.getColumnType(index);
                         Object columnValue = resultSet.getObject(index);
-                        databaseRecord.put(columnName, columnValue);
+                        databaseRecord.put(new TranslatableName(columnName), new TextValue(columnValue.toString()));
+                        if (index == 0) {
+                            databaseRecord.setName(columnValue.toString());
+                        }
                     } catch (SQLException e) {
                         throw new DatabaseException(e);
                     }

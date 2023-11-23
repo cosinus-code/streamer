@@ -19,12 +19,11 @@ package org.cosinus.streamer.ui.view;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.meta.StreamerHandler;
 import org.cosinus.streamer.api.pack.PackStreamer;
-import org.cosinus.streamer.ui.action.LoadStreamerAction;
-import org.cosinus.streamer.ui.action.context.StreamerActionContext;
 import org.cosinus.streamer.ui.action.execute.WorkerListener;
+import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
+import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.action.execute.save.SaveWorkerModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
-import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.form.Panel;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -58,7 +57,7 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
     public StreamerViewStorage streamerViewStorage;
 
     @Autowired
-    public ActionController actionController;
+    public LoadActionExecutor loadActionExecutor;
 
     @Autowired
     public AddressBar addressBar;
@@ -76,6 +75,10 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
 
     public String getId() {
         return id;
+    }
+
+    public Streamer<T> getParentStreamer() {
+        return parentStreamer;
     }
 
     public void updateForm() {
@@ -100,29 +103,23 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
     }
 
     public void loadStreamer(Streamer<T> streamer) {
-        loadStreamer(streamer, getSelectedContentIdentifier()
-            .orElse(null));
+        loadStreamer(streamer, getCurrentItemIdentifier());
     }
 
     public void loadStreamer(Streamer<T> streamer, String contentIdentifier) {
-        actionController.runAction(LoadStreamerAction.LOAD_STREAMER_ACTION_ID,
-                                   new StreamerActionContext<>(streamer, this, contentIdentifier));
+        loadActionExecutor.execute(new LoadActionModel(getCurrentLocation(), streamer, contentIdentifier));
     }
 
     public void reload() {
-        loadStreamer(getLoadedStreamer());
+        loadStreamer(this.getParentStreamer());
     }
 
     public void reload(String contentIdentifier) {
-        loadStreamer(getLoadedStreamer(), contentIdentifier);
+        loadStreamer(this.getParentStreamer(), contentIdentifier);
     }
 
     public PanelLocation getCurrentLocation() {
         return location;
-    }
-
-    public Streamer<T> getParentStreamer() {
-        return parentStreamer;
     }
 
     @Override
@@ -140,13 +137,13 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
 
     @Override
     public void workerFinished(LoadWorkerModel<T> loadWorkerModel) {
-        ofNullable(getLoadedStreamer())
+        ofNullable(this.getParentStreamer())
             .filter(streamer -> PackStreamer.class.isAssignableFrom(streamer.getClass()))
             .map(PackStreamer.class::cast)
             .ifPresent(PackStreamer::finishLoading);
         loadingIndicator.finishLoading();
 
-        streamerViewStorage.saveLastLoadedStreamer(getLoadedStreamer(), getCurrentLocation());
+        streamerViewStorage.saveLastLoadedStreamer(this.getParentStreamer(), getCurrentLocation());
 
         ofNullable(parentStreamer)
             .filter(streamer -> PackStreamer.class.isAssignableFrom(streamer.getClass()))
@@ -159,7 +156,7 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
             addressBar.setAddress(address);
             getPanel().ifPresent(panel -> {
                 panel.setAddress(address);
-                ofNullable(getLoadedStreamer())
+                ofNullable(this.getParentStreamer())
                     .map(Streamer::getParent)
                     .ifPresent(parent -> panel.setFreeSpace(
                         parent.getFreeSpace(),
@@ -169,7 +166,7 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
     }
 
     protected Optional<String> getStreamerAddress() {
-        return ofNullable(getLoadedStreamer())
+        return ofNullable(this.getParentStreamer())
             .map(Streamer::getUrlPath)
             .map(address -> address.split("://"))
             .map(address -> address[address.length - 1]);
@@ -211,15 +208,21 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
         return null;
     }
 
+    protected void validateInContainer(Container container) {
+    }
+
+
     public abstract String getName();
 
-    public abstract T getCurrentContent();
+    public abstract T getCurrentItem();
 
-    public abstract Streamer<T> getLoadedStreamer();
+    public abstract List<T> getSelectedItems();
 
-    public abstract List<T> getSelectedContent();
+    public abstract String getCurrentItemIdentifier();
 
-    public abstract Optional<String> getSelectedContentIdentifier();
+    public abstract String getNextItemIdentifier();
 
     public abstract LoadWorkerModel<T> getLoadWorkerModel();
+
+    public abstract Rectangle getCurrentRectangle();
 }

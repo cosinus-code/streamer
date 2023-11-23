@@ -17,12 +17,10 @@
 package org.cosinus.streamer.ui.view;
 
 import org.cosinus.streamer.api.Streamer;
-import org.springframework.stereotype.Component;
 
-@Component
-public interface StreamerViewCreator<T> {
+public interface StreamerViewCreator<T, P extends Streamer<T>> {
 
-    StreamerView<T> createStreamerView(PanelLocation location, Streamer<T> parentStreamer);
+    StreamerView<T> createStreamerView(PanelLocation location, P parentStreamer);
 
     String getViewName();
 }

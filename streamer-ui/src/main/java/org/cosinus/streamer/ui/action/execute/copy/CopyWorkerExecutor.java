@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
  * Implementation of {@link ActionExecutor} for copying streamers based on {@link CopyWorker}
  */
 @Component
-public class CopyWorkerExecutor<S extends Streamer<?>, T extends Streamer<?>>
+public class CopyWorkerExecutor<S extends Streamer<S>, T extends Streamer<T>>
     extends WorkerExecutor<CopyActionModel<S, T>, CopyProgressModel, CopyProgressModel> {
 
     public CopyWorkerExecutor(ProgressFormHandler progressFormHandler,

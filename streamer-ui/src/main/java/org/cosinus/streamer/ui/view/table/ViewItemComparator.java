@@ -62,18 +62,9 @@ public class ViewItemComparator implements Comparator<ViewItem> {
             return 1;
         }
 
-        int compare = switch (column) {
-            case 1 -> ObjectUtils.compare(item1.getValue(),
-                item2.getValue());
-            case 2 -> ObjectUtils.compare(item1.getType(),
-                item2.getType());
-            case 3 -> Long.compare(item1.getSize(),
-                item2.getSize());
-            case 4 -> Long.compare(item1.getLastModified(),
-                item2.getLastModified());
-            default -> ObjectUtils.compare(item1.getName(),
-                item2.getName());
-        };
+        int compare = ObjectUtils.compare(
+            item1.getDetail(column),
+            item2.getDetail(column));
 
         return ascending ? compare : -compare;
     }

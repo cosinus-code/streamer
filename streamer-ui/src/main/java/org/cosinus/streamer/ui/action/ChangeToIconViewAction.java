@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.action.view;
+package org.cosinus.streamer.ui.action;
 
-import org.cosinus.streamer.ui.view.StreamerViewCreator;
+import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.streamer.ui.view.table.icon.IconViewCreator;
 import org.springframework.stereotype.Component;
+
+import static org.cosinus.streamer.ui.view.table.icon.IconView.ICON_VIEW_NAME;
 
 @Component
 public class ChangeToIconViewAction extends ChangeViewAction {
 
-    private final IconViewCreator iconViewCreator;
-
-    public ChangeToIconViewAction(StreamerViewHandler streamerViewHandler,
-                                  IconViewCreator iconViewCreator) {
-        super(streamerViewHandler);
-        this.iconViewCreator = iconViewCreator;
+    public ChangeToIconViewAction(final StreamerViewHandler streamerViewHandler,
+                                  final LoadActionExecutor loadActionExecutor) {
+        super(streamerViewHandler, loadActionExecutor);
     }
 
     @Override
-    protected StreamerViewCreator getStreamerViewCreator() {
-        return iconViewCreator;
+    protected String getViewName() {
+        return ICON_VIEW_NAME;
     }
 
     @Override

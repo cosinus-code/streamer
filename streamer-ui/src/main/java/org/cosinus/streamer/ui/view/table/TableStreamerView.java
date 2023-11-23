@@ -16,10 +16,11 @@
 
 package org.cosinus.streamer.ui.view.table;
 
+import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.PanelLocation;
-import org.cosinus.streamer.ui.view.RenamingStreamerView;
+import org.cosinus.streamer.ui.view.ParentStreamerView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,18 +29,17 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
-import java.util.Optional;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.util.Optional.ofNullable;
 
-public abstract class TableStreamerView extends RenamingStreamerView {
+public abstract class TableStreamerView<T extends Streamer<T>> extends ParentStreamerView<T> {
 
-    protected DataTable table;
+    protected DataTable<T> table;
 
     private JScrollPane scroll;
 
-    protected TableStreamerView(PanelLocation location, Streamer<Streamer<?>> parentStreamer) {
+    protected TableStreamerView(PanelLocation location, ParentStreamer<T> parentStreamer) {
         super(location, parentStreamer);
     }
 
@@ -74,7 +74,7 @@ public abstract class TableStreamerView extends RenamingStreamerView {
     protected abstract DataTable createDataTable();
 
     @Override
-    public LoadWorkerModel<Streamer<?>> getLoadWorkerModel() {
+    public LoadWorkerModel<T> getLoadWorkerModel() {
         return getDataTableModel();
     }
 
@@ -89,21 +89,23 @@ public abstract class TableStreamerView extends RenamingStreamerView {
     }
 
     @Override
-    public Streamer<?> getCurrentContent() {
-        return table.getCurrentStreamer();
+    public T getCurrentItem() {
+        return table.getCurrentItem();
     }
 
     @Override
-    public List<Streamer<?>> getSelectedContent() {
-        return table.getSelectedStreamers();
+    public List<T> getSelectedItems() {
+        return table.getSelectedItems();
     }
 
     @Override
-    public Optional<String> getSelectedContentIdentifier() {
-        return getSelectedContent()
-            .stream()
-            .findFirst()
-            .map(Streamer::getName);
+    public String getCurrentItemIdentifier() {
+        return table.getTableModel().getCurrentItemIdentifier();
+    }
+
+    @Override
+    public String getNextItemIdentifier() {
+        return table.getTableModel().getNextItemIdentifier();
     }
 
     @Override
@@ -133,33 +135,28 @@ public abstract class TableStreamerView extends RenamingStreamerView {
     }
 
     @Override
-    public Streamer<Streamer<?>> getLoadedStreamer() {
-        return table.getParentStreamer();
-    }
-
-    @Override
     public void goHome() {
         table.setCurrentIndex(0);
     }
 
     @Override
     public void goEnd() {
-        table.setCurrentIndex(table.getStreamersCount() - 1);
+        table.setCurrentIndex(table.getItemsCount() - 1);
     }
 
     @Override
     public void selectCurrentContent() {
-        table.selectCurrentStreamer();
+        table.selectCurrentItem();
     }
 
     @Override
-    public void workerStarted(LoadWorkerModel<Streamer<?>> loadWorkerModel) {
+    public void workerStarted(LoadWorkerModel<T> loadWorkerModel) {
         super.workerStarted(loadWorkerModel);
         table.reset();
     }
 
     @Override
-    public void workerUpdated(LoadWorkerModel<Streamer<?>> loadWorkerModel) {
+    public void workerUpdated(LoadWorkerModel<T> loadWorkerModel) {
         ofNullable(loadWorkerModel.getContentIdentifier())
             .ifPresent(this::findContent);
         getDataTableModel().fireTableDataChanged();
@@ -168,19 +165,19 @@ public abstract class TableStreamerView extends RenamingStreamerView {
     }
 
     @Override
-    public void workerFinished(LoadWorkerModel<Streamer<?>> loadWorkerModel) {
+    public void workerFinished(LoadWorkerModel<T> loadWorkerModel) {
         super.workerFinished(loadWorkerModel);
         if (isActive()) {
             if (table.getCurrentIndex() < 0) {
                 table.setCurrentIndex(0, true);
-            } else if (table.getCurrentIndex() >= table.getStreamersCount()) {
-                table.setCurrentIndex(table.getStreamersCount() - 1, true);
+            } else if (table.getCurrentIndex() >= table.getItemsCount()) {
+                table.setCurrentIndex(table.getItemsCount() - 1, true);
             }
         }
     }
 
-    private DataTableModel<Streamer<?>> getDataTableModel() {
-        return (DataTableModel<Streamer<?>>) table.getModel();
+    private DataTableModel<T> getDataTableModel() {
+        return (DataTableModel<T>) table.getModel();
     }
 
     @Override

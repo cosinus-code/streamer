@@ -22,10 +22,7 @@ import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.error.StreamerException;
-import org.cosinus.streamer.api.value.DateValue;
-import org.cosinus.streamer.api.value.MemoryValue;
-import org.cosinus.streamer.api.value.TextValue;
-import org.cosinus.streamer.api.value.TranslatableName;
+import org.cosinus.streamer.api.value.*;
 import org.cosinus.swing.util.AutoRemovableTemporaryFile;
 
 import java.io.File;
@@ -50,7 +47,7 @@ public abstract class FileStreamer<T> implements Streamer<T> {
 
     protected List<TranslatableName> detailNames;
 
-    protected Map<TranslatableName, Object> details;
+    protected Map<TranslatableName, Value> details;
 
     public FileStreamer(FileMainStreamer fileMainStreamer, FileHandler fileHandler, Path path) {
         this.fileMainStreamer = fileMainStreamer;
@@ -155,7 +152,7 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     }
 
     @Override
-    public Map<TranslatableName, Object> details() {
+    public Map<TranslatableName, Value> details() {
         if (details == null) {
             initDetails();
         }

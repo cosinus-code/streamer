@@ -18,7 +18,7 @@ package org.cosinus.streamer.ui.view.table.details;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.streamer.ui.view.table.DataTableModel;
-import org.cosinus.streamer.ui.view.table.StreamerViewItem;
+import org.cosinus.streamer.ui.view.table.ViewItem;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -37,6 +37,8 @@ public class DetailTableModel<T extends Streamer<?>> extends DataTableModel<T> {
 
     private final List<TranslatableName> columnNames;
 
+    private int sortedColumn = -1;
+
     //TODO: to see if this is still needed
     private final Map<String, Long> mapComputedSize;
 
@@ -46,6 +48,14 @@ public class DetailTableModel<T extends Streamer<?>> extends DataTableModel<T> {
         this.columnNames = ofNullable(parentStreamer.detailNames())
             .filter(not(List::isEmpty))
             .orElseGet(() -> singletonList(getName()));
+    }
+
+    public int getSortedColumn() {
+        return sortedColumn;
+    }
+
+    public void setSortedColumn(int sortedColumn) {
+        this.sortedColumn = sortedColumn;
     }
 
     @Override
@@ -69,7 +79,7 @@ public class DetailTableModel<T extends Streamer<?>> extends DataTableModel<T> {
         if (row >= viewItems.size()) {
             return null;
         }
-        StreamerViewItem item = viewItems.get(row);
+        ViewItem item = viewItems.get(row);
         if (item.isTopItem() && column > 0) {
             return "";
         }

@@ -21,51 +21,36 @@ import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.ActionContext;
 import org.cosinus.swing.action.ActionInContext;
-import org.cosinus.swing.ui.ApplicationUIHandler;
-import org.springframework.stereotype.Component;
-
-import javax.swing.*;
-import java.util.Optional;
-
-import static java.awt.event.KeyEvent.VK_R;
 
 /**
- * Load streamer action
+ * Change the streamer view type (icon, detail, etc.) of the current panel location.
  */
-@Component
-public class ReloadStreamerAction implements ActionInContext {
-
-    public static final String RELOAD_STREAMER_ACTION_ID = "menu-view-refresh";
-
-    private final LoadActionExecutor loadActionExecutor;
-
-    private final ApplicationUIHandler uiHandler;
+public abstract class ChangeViewAction implements ActionInContext {
 
     private final StreamerViewHandler streamerViewHandler;
 
-    public ReloadStreamerAction(final LoadActionExecutor loadActionExecutor,
-                                final ApplicationUIHandler uiHandler,
-                                final StreamerViewHandler streamerViewHandler) {
-        this.loadActionExecutor = loadActionExecutor;
-        this.uiHandler = uiHandler;
+    public final LoadActionExecutor loadActionExecutor;
+
+    protected ChangeViewAction(final StreamerViewHandler streamerViewHandler,
+                               final LoadActionExecutor loadActionExecutor) {
         this.streamerViewHandler = streamerViewHandler;
+        this.loadActionExecutor = loadActionExecutor;
     }
 
     @Override
     public void run(ActionContext context) {
+        if (streamerViewHandler.getCurrentView().getName().equals(getViewName())) {
+            return;
+        }
+
+        //TODO: maybe this can be done without a load action, but only changing the view
+        // and recreating the corresponding view model
         loadActionExecutor.execute(new LoadActionModel(
             streamerViewHandler.getCurrentLocation(),
             streamerViewHandler.getCurrentView().getParentStreamer(),
-            streamerViewHandler.getCurrentView().getCurrentItemIdentifier()));
+            streamerViewHandler.getCurrentView().getCurrentItemIdentifier(),
+            getViewName()));
     }
 
-    @Override
-    public String getId() {
-        return RELOAD_STREAMER_ACTION_ID;
-    }
-
-    @Override
-    public Optional<KeyStroke> getKeyStroke() {
-        return Optional.of(uiHandler.getControlDownKeyStroke(VK_R));
-    }
+    protected abstract String getViewName();
 }

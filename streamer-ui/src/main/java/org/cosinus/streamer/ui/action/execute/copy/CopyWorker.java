@@ -43,7 +43,7 @@ import static java.util.function.Predicate.not;
 /**
  * {@link Worker} for copying streamers from a source parent streamer to target parent streamer
  */
-public class CopyWorker<S extends Streamer<?>, T extends Streamer<?>>
+public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
     extends SimpleWorker<CopyProgressModel>
     implements Pipeline<S, Stream<S>, StreamConsumer<S>, CopyStrategy> {
 

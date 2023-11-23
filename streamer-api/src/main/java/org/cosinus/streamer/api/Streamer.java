@@ -28,7 +28,7 @@ import static java.util.Collections.*;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 
-public interface Streamer<T> extends Editable {
+public interface Streamer<T> extends Streamable {
 
     Stream<T> stream();
 
@@ -132,11 +132,8 @@ public interface Streamer<T> extends Editable {
         return false;
     }
 
-    default List<TranslatableName> detailNames() {
-        return emptyList();
-    }
-
-    default Map<TranslatableName, Object> details() {
-        return emptyMap();
+    @Override
+    default Streamer<?> getStreamer() {
+        return this;
     }
 }

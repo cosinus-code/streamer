@@ -19,6 +19,7 @@ package org.cosinus.streamer.ui.action.execute.copy;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
+import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
 import org.cosinus.swing.action.execute.ActionModel;
 
 import java.nio.file.Path;
@@ -30,17 +31,11 @@ import static java.util.UUID.randomUUID;
 /**
  * Encapsulates the model of the copy streamers action
  */
-public class CopyActionModel<S extends Streamer<?>, T extends Streamer<?>> extends ActionModel {
-
-    private static final String COPY_ACTION_NAME = "act-copy";
-
-    private static final String MOVE_ACTION_NAME = "act-move";
-
-    private static final String PACK_ACTION_NAME = "act-pack";
+public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> extends ActionModel {
 
     private StreamerFilter sourceFilter = streamer -> true;
 
-    private List<Streamer<?>> streamersToCopy;
+    private List<Streamer<S>> streamersToCopy;
 
     private ParentStreamer<S> source;
 
@@ -56,23 +51,12 @@ public class CopyActionModel<S extends Streamer<?>, T extends Streamer<?>> exten
         super(randomUUID().toString(), actionName);
     }
 
-    public static <S extends Streamer<?>, T extends Streamer<?>>
-    CopyActionModel<S, T> copy(List<Streamer<?>> streamersToCopy) {
-        return new CopyActionModel<S, T>(COPY_ACTION_NAME)
-            .setStreamersToCopy(streamersToCopy);
-    }
-
-    public static <S extends Streamer<?>, T extends Streamer<?>>
-    CopyActionModel<S, T> move(List<Streamer<?>> streamersToCopy) {
-        return new CopyActionModel<S, T>(MOVE_ACTION_NAME)
-            .setStreamersToCopy(streamersToCopy);
-    }
-
-    public static <S extends Streamer<?>, T extends Streamer<?>>
-    CopyActionModel<S, T> pack(List<Streamer<?>> streamersToCopy) {
-        return new CopyActionModel<S, T>(PACK_ACTION_NAME)
-            .setStreamersToCopy(streamersToCopy)
-            .pack();
+    public static <S extends Streamer<S>, T extends Streamer<T>>
+    CopyActionModel<S, T> copy(String actionName, ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
+        return new CopyActionModel<S, T>(actionName)
+            .setStreamersToCopy(from.getSelectedItems())
+            .from(from.getParentStreamer())
+            .to(to.getParentStreamer());
     }
 
     public Path getTargetPath() {
@@ -105,18 +89,13 @@ public class CopyActionModel<S extends Streamer<?>, T extends Streamer<?>> exten
         return sourceFilter;
     }
 
-    public CopyActionModel<S, T> setSourceFilter(StreamerFilter sourceFilter) {
-        this.sourceFilter = sourceFilter;
-        return this;
-    }
-
-    public CopyActionModel<S, T> setStreamersToCopy(List<Streamer<?>> streamersToCopy) {
+    public CopyActionModel<S, T> setStreamersToCopy(List<Streamer<S>> streamersToCopy) {
         this.streamersToCopy = streamersToCopy;
         this.sourceFilter = this.streamersToCopy::contains;
         return this;
     }
 
-    public List<Streamer<?>> getStreamersToCopy() {
+    public List<Streamer<S>> getStreamersToCopy() {
         return streamersToCopy;
     }
 

@@ -16,23 +16,28 @@
 
 package org.cosinus.streamer.ui.action;
 
-import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.action.context.StreamerActionContext;
-import org.cosinus.streamer.ui.action.execute.WorkerModel;
-import org.cosinus.streamer.ui.action.execute.delete.DeleteActionModel;
 import org.cosinus.streamer.ui.action.execute.DefaultWorkerListener;
 import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
+import org.cosinus.streamer.ui.action.execute.WorkerModel;
+import org.cosinus.streamer.ui.action.execute.delete.DeleteActionModel;
+import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
+import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
+import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
+import org.cosinus.streamer.ui.view.StreamerView;
+import org.cosinus.streamer.ui.view.StreamerViewHandler;
+import org.cosinus.swing.action.ActionContext;
+import org.cosinus.swing.action.ActionInContext;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
-import java.util.ArrayList;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_DELETE;
+import static org.cosinus.streamer.ui.action.execute.delete.DeleteActionModel.delete;
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 import static org.cosinus.swing.dialog.OptionsDialog.YES_NO_CANCEL_OPTION;
 
@@ -40,7 +45,7 @@ import static org.cosinus.swing.dialog.OptionsDialog.YES_NO_CANCEL_OPTION;
  * Rename streamer action
  */
 @Component
-public class DeleteStreamerAction extends StreamerAction<Streamer<?>> {
+public class DeleteStreamerAction implements ActionInContext {
 
     public static final String DELETE_STREAMER_ACTION_ID = "delete-streamer";
 
@@ -52,27 +57,42 @@ public class DeleteStreamerAction extends StreamerAction<Streamer<?>> {
 
     private final WorkerListenerHandler workerListenerHandler;
 
-    private final LoadStreamerAction loadStreamerAction;
+    private final LoadActionExecutor loadActionExecutor;
 
-    public DeleteStreamerAction(DialogHandler dialogHandler,
-                                Translator translator,
-                                ActionExecutors actionExecutors,
-                                WorkerListenerHandler workerListenerHandler,
-                                LoadStreamerAction loadStreamerAction) {
+    private final StreamerViewHandler streamerViewHandler;
+
+    public DeleteStreamerAction(final DialogHandler dialogHandler,
+                                final Translator translator,
+                                final ActionExecutors actionExecutors,
+                                final WorkerListenerHandler workerListenerHandler,
+                                final LoadActionExecutor loadActionExecutor,
+                                final StreamerViewHandler streamerViewHandler) {
         this.dialogHandler = dialogHandler;
         this.translator = translator;
         this.actionExecutors = actionExecutors;
         this.workerListenerHandler = workerListenerHandler;
-        this.loadStreamerAction = loadStreamerAction;
+        this.loadActionExecutor = loadActionExecutor;
+        this.streamerViewHandler = streamerViewHandler;
     }
 
     @Override
-    public void run(StreamerActionContext<Streamer<?>> actionContext) {
-        DeleteActionModel deleteAction = createDeleteActionModel(actionContext);
-        if (!deleteAction.hasStreamersToDelete()) {
+    public void run(ActionContext context) {
+        Streamer<?> currentParentStreamer = streamerViewHandler.getCurrentView().getParentStreamer();
+        if (currentParentStreamer.isParent()) {
+            deleteFromParentStreamer();
+        }
+
+    }
+
+    private <S extends Streamer<S>> void deleteFromParentStreamer() {
+        final StreamerView<S> currentView = (StreamerView<S>) streamerViewHandler.getCurrentView();
+        ParentStreamerViewContext<S> streamerViewContext = new ParentStreamerViewContext<>(currentView);
+
+        if (streamerViewContext.getSelectedItems().isEmpty()) {
             return;
         }
 
+        DeleteActionModel<S> deleteAction = delete(getActionName(), streamerViewContext);
 //        //TODO: to clarify streamer permissions
 //        if (!deleteAction.getStreamer().canWriteTo(actionContext.getCurrentView().getLoadedStreamer())) {
 //            dialogHandler.showInfo(translator.translate("act_copy_delete_not_allowed"));
@@ -92,30 +112,21 @@ public class DeleteStreamerAction extends StreamerAction<Streamer<?>> {
 //        }
 
         if (dialogHandler.confirm(applicationFrame,
-                                  translator.translate("act-delete-are-you-sure-streamers"),
-                                  getActionName(),
-                                  YES_NO_CANCEL_OPTION)) {
+            translator.translate("act-delete-are-you-sure-streamers"),
+            getActionName(),
+            YES_NO_CANCEL_OPTION)) {
             workerListenerHandler.register(deleteAction.getActionId(), new DefaultWorkerListener() {
 
                 @Override
                 public void workerFinished(WorkerModel workerModel) {
-                    loadStreamerAction.run(new StreamerActionContext(actionContext.getCurrentView()));
+                    loadActionExecutor.execute(new LoadActionModel(
+                        currentView.getCurrentLocation(),
+                        currentView.getParentStreamer(),
+                        currentView.getNextItemIdentifier()));
                 }
             });
             actionExecutors.execute(deleteAction);
         }
-    }
-
-//    private boolean deleteApproved(Streamer streamerToDelete) {
-//        return dialogHandler.confirm(translator.translate("act-delete-are-you-sure",
-//                                                          streamerToDelete));
-//    }
-
-    private DeleteActionModel createDeleteActionModel(StreamerActionContext actionContext) {
-        return new DeleteActionModel(getActionName())
-            .deleteStreamers(new ArrayList<>(actionContext.getCurrentView().getSelectedContent()))
-            //to avoid cast
-            .from((ParentStreamer) actionContext.getCurrentView().getLoadedStreamer());
     }
 
     public String getActionName() {

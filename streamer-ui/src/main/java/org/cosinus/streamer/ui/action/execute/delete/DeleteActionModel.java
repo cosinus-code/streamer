@@ -19,34 +19,36 @@ package org.cosinus.streamer.ui.action.execute.delete;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
+import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
 import org.cosinus.swing.action.execute.ActionModel;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.springframework.util.CollectionUtils.isEmpty;
-
 /**
  * Encapsulates the model of the delete streamers action
  */
-public class DeleteActionModel extends ActionModel {
+public class DeleteActionModel<S extends Streamer<S>> extends ActionModel {
 
-    private List<Streamer<?>> streamersToDelete = new ArrayList<>();
+    private List<Streamer<S>> streamersToDelete = new ArrayList<>();
 
     private StreamerFilter streamerFilter;
 
-    private ParentStreamer<Streamer<?>> parentStreamer;
+    private ParentStreamer<S> parentStreamer;
 
     public DeleteActionModel(String actionName) {
         super(UUID.randomUUID().toString(), actionName);
     }
 
-    public List<Streamer<?>> getStreamersToDelete() {
-        return streamersToDelete;
+    public static <S extends Streamer<S>> DeleteActionModel<S>
+    delete(String actionName, final ParentStreamerViewContext<S> from) {
+        return new DeleteActionModel<S>(actionName)
+            .deleteStreamers(from.getSelectedItems())
+            .from(from.getParentStreamer());
     }
 
-    public DeleteActionModel deleteStreamers(List<Streamer<?>> streamersToDelete) {
+    public DeleteActionModel<S> deleteStreamers(List<Streamer<S>> streamersToDelete) {
         this.streamersToDelete = streamersToDelete;
         this.streamerFilter = streamersToDelete::contains;
         return this;
@@ -56,16 +58,12 @@ public class DeleteActionModel extends ActionModel {
         return streamerFilter;
     }
 
-    public ParentStreamer<Streamer<?>> getParentStreamer() {
+    public ParentStreamer<S> getParentStreamer() {
         return parentStreamer;
     }
 
-    public DeleteActionModel from(ParentStreamer<Streamer<?>> parentStreamer) {
+    public DeleteActionModel<S> from(ParentStreamer<S> parentStreamer) {
         this.parentStreamer = parentStreamer;
         return this;
-    }
-
-    public boolean hasStreamersToDelete() {
-        return !isEmpty(getStreamersToDelete());
     }
 }

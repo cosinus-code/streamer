@@ -17,39 +17,50 @@
 package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.action.context.StreamerActionContext;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
-import org.cosinus.swing.action.execute.ActionExecutors;
+import org.cosinus.streamer.ui.view.StreamerView;
+import org.cosinus.streamer.ui.view.StreamerViewHandler;
+import org.cosinus.swing.action.ActionContext;
+import org.cosinus.swing.action.ActionInContext;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_ENTER;
+import static java.util.Optional.ofNullable;
 
 /**
  * Load streamer action
  */
 @Component
-public class ExecuteStreamerAction extends StreamerAction<Streamer<?>> {
+public class ExecuteStreamerAction implements ActionInContext {
 
     public static final String EXECUTE_STREAMER_ACTION_ID = "execute-streamer";
 
-    private final ActionExecutors actionExecutors;
+    private final StreamerViewHandler streamerViewHandler;
 
     private final LoadActionExecutor loadActionExecutor;
 
-    public ExecuteStreamerAction(ActionExecutors actionExecutors, LoadActionExecutor loadActionExecutor) {
-        this.actionExecutors = actionExecutors;
+    public ExecuteStreamerAction(final StreamerViewHandler streamerViewHandler,
+                                 final LoadActionExecutor loadActionExecutor) {
+        this.streamerViewHandler = streamerViewHandler;
         this.loadActionExecutor = loadActionExecutor;
     }
 
     @Override
-    public void run(StreamerActionContext<Streamer<?>> context) {
-        Streamer<?> streamerToExecute = context.getCurrentStreamer();
+    public void run(ActionContext context) {
+        StreamerView<?> streamerView = streamerViewHandler.getCurrentView();
+        Streamer<?> streamerToExecute = ofNullable(streamerView.getCurrentItem())
+            .filter(item -> Streamer.class.isAssignableFrom(item.getClass()))
+            .map(Streamer.class::cast)
+            .orElse(null);
         if (streamerToExecute == null || streamerToExecute.isParent()) {
-            actionExecutors.execute(new LoadActionModel(context.getCurrentLocation(), streamerToExecute));
+            loadActionExecutor.execute(new LoadActionModel(
+                streamerView.getCurrentLocation(),
+                streamerToExecute,
+                streamerView.getCurrentItemIdentifier()));
             return;
         }
 

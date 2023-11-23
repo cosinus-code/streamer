@@ -18,7 +18,6 @@ package org.cosinus.streamer.file;
 
 import net.sf.jmimemagic.Magic;
 import net.sf.jmimemagic.MagicException;
-import net.sf.jmimemagic.MagicMatch;
 import net.sf.jmimemagic.MagicMatchNotFoundException;
 import net.sf.jmimemagic.MagicParseException;
 import org.apache.logging.log4j.LogManager;
@@ -113,7 +112,7 @@ public class FileHandler {
             .filter(not(File::isDirectory))
             .map(file -> {
                 try {
-                    return Magic.getMagicMatch(path.toFile(), false).getMimeType();
+                    return Magic.getMagicMatch(path.toFile(), true).getMimeType();
                 }
                 catch (MagicMatchNotFoundException | MagicException | MagicParseException e) {
                     throw new RuntimeException(e);

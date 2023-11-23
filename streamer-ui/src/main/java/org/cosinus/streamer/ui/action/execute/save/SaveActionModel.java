@@ -21,16 +21,17 @@ import org.cosinus.swing.action.execute.ActionModel;
 
 import java.util.UUID;
 
+import static org.cosinus.streamer.ui.action.SaveAction.SAVE_ACTION_ID;
+
 public class SaveActionModel<T> extends ActionModel {
 
     private final Streamer<T> streamerToSave;
 
     private final StreamerView<T> streamerView;
 
-    public SaveActionModel(String actionName,
-                           final Streamer<T> streamerToSave,
+    public SaveActionModel(final Streamer<T> streamerToSave,
                            final StreamerView<T> streamerView) {
-        super(UUID.randomUUID().toString(), actionName);
+        super(UUID.randomUUID().toString(), SAVE_ACTION_ID);
         this.streamerToSave = streamerToSave;
         this.streamerView = streamerView;
     }

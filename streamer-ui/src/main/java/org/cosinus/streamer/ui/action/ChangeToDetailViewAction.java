@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.action.view;
+package org.cosinus.streamer.ui.action;
 
-import org.cosinus.streamer.ui.view.StreamerViewCreator;
+import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.streamer.ui.view.table.details.DetailViewCreator;
 import org.springframework.stereotype.Component;
+
+import static org.cosinus.streamer.ui.view.table.details.DetailView.DETAIL_VIEW_NAME;
 
 @Component
 public class ChangeToDetailViewAction extends ChangeViewAction {
 
-    private final DetailViewCreator detailViewCreator;
-
-    public ChangeToDetailViewAction(StreamerViewHandler streamerViewHandler,
-                                    DetailViewCreator detailViewCreator) {
-        super(streamerViewHandler);
-        this.detailViewCreator = detailViewCreator;
+    public ChangeToDetailViewAction(final StreamerViewHandler streamerViewHandler,
+                                    final LoadActionExecutor loadActionExecutor) {
+        super(streamerViewHandler, loadActionExecutor);
     }
 
     @Override
-    protected StreamerViewCreator getStreamerViewCreator() {
-        return detailViewCreator;
+    protected String getViewName() {
+        return DETAIL_VIEW_NAME;
     }
 
     @Override
