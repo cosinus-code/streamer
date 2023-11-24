@@ -17,14 +17,11 @@
 package org.cosinus.streamer.ui.view.table;
 
 import org.cosinus.streamer.api.Streamable;
-import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.value.Value;
 import org.cosinus.swing.format.FormatHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.File;
 import java.nio.file.Path;
-import java.util.Objects;
 
 import static java.util.Optional.ofNullable;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
@@ -52,11 +49,12 @@ public class ViewItem {
         this.topItem = topItem;
     }
 
+    public Streamable getStreamable() {
+        return streamable;
+    }
+
     public String getId() {
         return streamable.getId();
-    }
-    public Streamer<?> getStreamer() {
-        return streamable.getStreamer();
     }
 
     public String getName() {

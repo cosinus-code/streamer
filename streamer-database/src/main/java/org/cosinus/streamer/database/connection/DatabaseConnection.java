@@ -35,7 +35,8 @@ public class DatabaseConnection implements Connection<ResultSet> {
     public static final String TABLE_SCHEMA = "TABLE_SCHEM";
     public static final String TABLE_CATALOG = "TABLE_CATALOG";
     public static final String TABLE_NAME = "TABLE_NAME";
-    public static final String TABLE_TYPE = "TABLE_TYPe";
+    public static final String TABLE_TYPE = "TABLE_TYPE";
+    public static final String COLUMN_NAME = "COLUMN_NAME";
 
     private static final Logger LOG = LogManager.getLogger(DatabaseConnection.class);
 
@@ -54,23 +55,33 @@ public class DatabaseConnection implements Connection<ResultSet> {
 
     @Override
     public Stream<ResultSet> stream(String query) {
-        return ofNullable(query)
+        ResultSet resultSet = ofNullable(query)
             .filter(currentSchema::equals)
             .map(this::getTables)
-            .map(DatabaseStream::of)
-            .orElseGet(Stream::empty);
+            .orElseGet(() -> resultSet(query));
+
+        return DatabaseStream.of(resultSet);
     }
 
     public ResultSet getTables(String schemaName) {
-        return getResultSet(() -> connection.getMetaData()
+        return resultSet(() -> connection.getMetaData()
             .getTables(null, schemaName, "%", toArray(TABLE.name())));
     }
 
-    public ResultSet getSchemas() {
-        return getResultSet(() -> connection.getMetaData().getSchemas());
+    public ResultSet getTableFields(String tableName) {
+        return resultSet(() -> connection.getMetaData()
+            .getColumns(null, currentSchema, tableName, null));
     }
 
-    private ResultSet getResultSet(final ResultSetSupplier resultSetSupplier) {
+    public ResultSet getSchemas() {
+        return resultSet(() -> connection.getMetaData().getSchemas());
+    }
+
+    public ResultSet resultSet(String query) {
+        return resultSet(() -> connection.createStatement().executeQuery(query));
+    }
+
+    private ResultSet resultSet(final ResultSetSupplier resultSetSupplier) {
         try {
             return resultSetSupplier.get();
         } catch (SQLException e) {
@@ -89,7 +100,7 @@ public class DatabaseConnection implements Connection<ResultSet> {
     }
 
     @Override
-    public boolean makeDirectory(String query) {
+    public boolean save(String query) {
         return false;
     }
 

@@ -1,15 +1,15 @@
 package org.cosinus.streamer.ui.view.table.icon;
 
-import org.cosinus.streamer.api.ParentStreamer;
+import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.table.TableStreamerView;
 
-public class IconView<S extends Streamer<S>> extends TableStreamerView<S> {
+public class IconView<T extends Streamable> extends TableStreamerView<T> {
 
     public static final String ICON_VIEW_NAME = "icon";
 
-    public IconView(PanelLocation location, ParentStreamer<S> parentStreamer) {
+    public IconView(PanelLocation location, Streamer<T> parentStreamer) {
         super(location, parentStreamer);
     }
 
@@ -19,7 +19,7 @@ public class IconView<S extends Streamer<S>> extends TableStreamerView<S> {
     }
 
     @Override
-    protected IconTable<S> createDataTable() {
+    protected IconTable<T> createDataTable() {
         return new IconTable<>();
     }
 

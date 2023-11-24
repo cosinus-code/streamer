@@ -35,4 +35,7 @@ public interface Streamable {
     default Map<TranslatableName, Value> details() {
         return emptyMap();
     }
+
+    default void initDetails() {
+    };
 }

@@ -21,16 +21,23 @@ import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.streamer.api.value.Value;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class DatabaseRecord extends LinkedHashMap<TranslatableName, Value> implements Streamable {
 
+    private final DatabaseTableStreamer parent;
+
     private String name;
 
-    private List<TranslatableName> detailNames;
+    public DatabaseRecord(final DatabaseTableStreamer parent) {
+        this.parent = parent;
+    }
+
+    public DatabaseTableStreamer getParent() {
+        return parent;
+    }
 
     @Override
     public String getId() {
@@ -78,7 +85,7 @@ public class DatabaseRecord extends LinkedHashMap<TranslatableName, Value> imple
 
     @Override
     public List<TranslatableName> detailNames() {
-        return new ArrayList<>(keySet());
+        return parent.detailNames();
     }
 
     @Override

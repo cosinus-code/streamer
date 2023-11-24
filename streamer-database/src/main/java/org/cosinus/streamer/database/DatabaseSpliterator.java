@@ -45,4 +45,14 @@ public class DatabaseSpliterator extends AbstractSpliterator<ResultSet> {
         return true;
     }
 
+    public void close() {
+        try {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
 }

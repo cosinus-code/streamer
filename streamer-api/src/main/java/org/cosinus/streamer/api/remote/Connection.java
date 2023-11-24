@@ -27,5 +27,5 @@ public interface Connection<R> extends AutoCloseable {
 
     OutputStream outputStream(String query, boolean append);
 
-    boolean makeDirectory(String query);
+    boolean save(String query);
 }

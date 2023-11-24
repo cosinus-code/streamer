@@ -70,7 +70,7 @@ public class FtpConnection extends FTPClient implements Connection<FTPFile> {
     }
 
     @Override
-    public boolean makeDirectory(String query) {
+    public boolean save(String query) {
         try {
             return super.makeDirectory(query);
         } catch (IOException e) {

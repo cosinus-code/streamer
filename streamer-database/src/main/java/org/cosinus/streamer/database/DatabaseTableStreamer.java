@@ -18,14 +18,18 @@ package org.cosinus.streamer.database;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.value.TextValue;
 import org.cosinus.streamer.api.value.TranslatableName;
+import org.cosinus.streamer.api.value.Value;
 import org.cosinus.streamer.database.connection.DatabaseException;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.database.connection.DatabaseConnection.*;
 
 
@@ -37,6 +41,8 @@ public class DatabaseTableStreamer extends DatabaseStreamer {
 
     private final DatabaseSchemaStreamer schemaStreamer;
 
+    private List<TranslatableName> detailNames;
+
     public DatabaseTableStreamer(ResultSet resultSet, String connectionName) {
         super(connectionName);
         this.tableName = getResultSetValue(resultSet, TABLE_NAME);
@@ -47,27 +53,27 @@ public class DatabaseTableStreamer extends DatabaseStreamer {
 
     @Override
     public Stream<DatabaseRecord> stream() {
-        return getConnection()
-            .map(connection -> connection
-                .stream(getStreamQuery())
-                .map(this::createRecord)
-                .onClose(() -> returnConnection(connection)))
-            .orElseGet(Stream::empty);
+        return streamFromRemote(connection -> connection.stream(getStreamQuery()))
+            .map(this::createRecord);
     }
 
     private DatabaseRecord createRecord(ResultSet resultSet) {
-        DatabaseRecord databaseRecord = new DatabaseRecord();
+        DatabaseRecord databaseRecord = new DatabaseRecord(this);
         try {
             ResultSetMetaData metaData = resultSet.getMetaData();
             IntStream.rangeClosed(1, metaData.getColumnCount())
                 .forEach(index -> {
                     try {
-                        String columnName = metaData.getColumnClassName(index);
+                        String columnName = metaData.getColumnName(index);
                         //int columnType = metaData.getColumnType(index);
-                        Object columnValue = resultSet.getObject(index);
-                        databaseRecord.put(new TranslatableName(columnName), new TextValue(columnValue.toString()));
-                        if (index == 0) {
-                            databaseRecord.setName(columnValue.toString());
+                        Value value = ofNullable(resultSet.getObject(index))
+                            .map(Object::toString)
+                            .map(TextValue::new)
+                            .orElse(null);
+
+                        databaseRecord.put(new TranslatableName(columnName), value);
+                        if (databaseRecord.getName() == null && value != null) {
+                            databaseRecord.setName(value.toString());
                         }
                     } catch (SQLException e) {
                         throw new DatabaseException(e);
@@ -92,5 +98,20 @@ public class DatabaseTableStreamer extends DatabaseStreamer {
     @Override
     public String getStreamQuery() {
         return "select * from " + tableName;
+    }
+
+    @Override
+    public List<TranslatableName> detailNames() {
+        return detailNames;
+    }
+
+    @Override
+    public void initDetails() {
+        try (Stream<ResultSet> fieldsStream = resultSetStream(connection -> connection.getTableFields(tableName))) {
+            detailNames = fieldsStream
+                .map(field -> getResultSetValue(field, COLUMN_NAME))
+                .map(TranslatableName::new)
+                .collect(Collectors.toList());
+        }
     }
 }

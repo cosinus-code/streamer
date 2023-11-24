@@ -34,15 +34,17 @@ public class DatabaseStream extends StreamDelegate<ResultSet> {
 
     public static Stream<ResultSet> of(ResultSet resultSet) {
         DatabaseSpliterator spliterator = new DatabaseSpliterator(resultSet);
-        return new DatabaseStream(stream(spliterator, false), resultSet);
+        return new DatabaseStream(stream(spliterator, false), resultSet)
+            .onClose(spliterator::close);
     }
 
     @Override
     public void close() {
         super.close();
-
         try {
-            resultSet.close();
+            if (resultSet != null) {
+                resultSet.close();
+            }
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }

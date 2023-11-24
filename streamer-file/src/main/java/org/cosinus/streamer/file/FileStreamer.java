@@ -29,9 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -153,26 +151,24 @@ public abstract class FileStreamer<T> implements Streamer<T> {
 
     @Override
     public Map<TranslatableName, Value> details() {
-        if (details == null) {
-            initDetails();
+        if (detailNames == null) {
+            details();
         }
         return details;
     }
 
-    protected void initDetails() {
-        this.detailNames = Stream.of(
-                "form-table-header-name",
-                "form-table-header-type",
-                "form-table-header-size",
-                "form-table-header-time")
-            .map(key -> new TranslatableName(key, null))
-            .collect(Collectors.toList());
+    public void initDetails() {
         this.details = Stream.of(
-                ImmutablePair.of(detailNames.get(0), new TextValue(getName())),
-                ImmutablePair.of(detailNames.get(1), new TextValue(getType())),
-                ImmutablePair.of(detailNames.get(2), new MemoryValue(getSize())),
-                ImmutablePair.of(detailNames.get(3), new DateValue(lastModified())))
-            .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+                ImmutablePair.of("form-table-header-name", new TextValue(getName())),
+                ImmutablePair.of("form-table-header-type", new TextValue(getType())),
+                ImmutablePair.of("form-table-header-size", new MemoryValue(getSize())),
+                ImmutablePair.of("form-table-header-time", new DateValue(lastModified())))
+            .collect(Collectors.toMap(pair ->
+                new TranslatableName(pair.getKey(), null),
+                Pair::getValue,
+                (key1, key2) -> key1,
+                LinkedHashMap::new));
+        detailNames = new ArrayList<>(details.keySet());
     }
 
     @Override

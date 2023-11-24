@@ -16,11 +16,11 @@
 
 package org.cosinus.streamer.ui.view.table;
 
-import org.cosinus.streamer.api.ParentStreamer;
+import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.PanelLocation;
-import org.cosinus.streamer.ui.view.ParentStreamerView;
+import org.cosinus.streamer.ui.view.StreamerView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,13 +33,13 @@ import java.util.List;
 import static java.awt.BorderLayout.CENTER;
 import static java.util.Optional.ofNullable;
 
-public abstract class TableStreamerView<T extends Streamer<T>> extends ParentStreamerView<T> {
+public abstract class TableStreamerView<T extends Streamable> extends StreamerView<T> {
 
     protected DataTable<T> table;
 
     private JScrollPane scroll;
 
-    protected TableStreamerView(PanelLocation location, ParentStreamer<T> parentStreamer) {
+    protected TableStreamerView(PanelLocation location, Streamer<T> parentStreamer) {
         super(location, parentStreamer);
     }
 

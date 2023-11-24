@@ -16,15 +16,9 @@
 
 package org.cosinus.streamer.api;
 
-import org.cosinus.streamer.api.value.TranslatableName;
-import org.cosinus.streamer.api.value.Value;
-
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
-import static java.util.Collections.*;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 

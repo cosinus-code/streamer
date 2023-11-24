@@ -16,7 +16,7 @@
 
 package org.cosinus.streamer.ui.view.table.details;
 
-import org.cosinus.streamer.api.ParentStreamer;
+import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
@@ -26,10 +26,11 @@ import org.springframework.stereotype.Component;
 import static org.cosinus.streamer.ui.view.table.details.DetailView.DETAIL_VIEW_NAME;
 
 @Component
-public class DetailViewCreator<S extends Streamer<S>> implements StreamerViewCreator<S, ParentStreamer<S>> {
+public class DetailViewCreator<T extends Streamable> implements StreamerViewCreator<T, Streamer<T>> {
 
     @Override
-    public StreamerView<S> createStreamerView(PanelLocation location, ParentStreamer<S> parentStreamer) {
+    public StreamerView<T> createStreamerView(PanelLocation location, Streamer<T> parentStreamer) {
+        parentStreamer.initDetails();
         return new DetailView<>(location, parentStreamer);
     }
 

@@ -51,8 +51,6 @@ import static org.cosinus.streamer.ui.view.table.details.DetailView.DETAIL_VIEW_
 
 public class DetailTable<T extends Streamable> extends DataTable<T> implements ActionListener {
 
-    private static final int[] SIZE_COL = {200, 40, 50, 62, 110};
-
     @Autowired
     public ApplicationUIHandler uiHandler;
 
@@ -105,7 +103,6 @@ public class DetailTable<T extends Streamable> extends DataTable<T> implements A
     private void setHeader() {
         TableColumnModel tcm = getColumnModel();
         for (int i = 0; i < tcm.getColumnCount(); i++) {
-            tcm.getColumn(i).setPreferredWidth(SIZE_COL[i]);
             tcm.getColumn(i).setHeaderRenderer(new DetailHeaderCell());
             if (i > 0) {
                 setColVisible(i, isColumnVisible(i));
@@ -163,9 +160,13 @@ public class DetailTable<T extends Streamable> extends DataTable<T> implements A
         ofNullable(getParentStreamer())
             .ifPresent(parentStreamer -> {
                 List<TranslatableName> detailName = parentStreamer.detailNames();
-                IntStream.range(1, detailName.size())
-                    .mapToObj(index -> new CheckBoxMenuItem(
-                        this, isColumnVisible(index), columnKey(index)))
+                IntStream.range(0, detailName.size())
+                    .mapToObj(index -> {
+                        CheckBoxMenuItem checkbox = new CheckBoxMenuItem(
+                            this, isColumnVisible(index), columnKey(index));
+                        checkbox.setText(detailName.get(index).name());
+                        return checkbox;
+                    })
                     .forEach(popupHeader::add);
             });
     }
@@ -189,8 +190,8 @@ public class DetailTable<T extends Streamable> extends DataTable<T> implements A
         if (visible) {
             col.setMaxWidth(10000);
             col.setMinWidth(5);
-            col.setPreferredWidth(SIZE_COL[index]);
-            col.setWidth(SIZE_COL[index]);
+            col.setPreferredWidth(100);
+            col.setWidth(100);
             col.setResizable(true);
         } else {
             col.setMaxWidth(0);

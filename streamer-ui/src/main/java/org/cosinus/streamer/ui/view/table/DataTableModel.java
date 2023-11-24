@@ -197,10 +197,10 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
         viewItems.sort(comparator);
     }
 
-    private void addItem(ViewItem viewItem) {
+    protected void addItem(ViewItem viewItem) {
         viewItems.add(viewItem);
-        T streamer = (T) viewItem.getStreamer();
-        streamableMap.put(streamer.getId(), streamer);
+        T streamer = (T) viewItem.getStreamable();
+        streamableMap.put(viewItem.getId(), streamer);
     }
 
     public List<T> getSelectedItems() {

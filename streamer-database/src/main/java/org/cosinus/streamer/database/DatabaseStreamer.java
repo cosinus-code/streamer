@@ -26,6 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.nio.file.Path;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
@@ -93,4 +95,9 @@ public abstract class DatabaseStreamer implements RemoteStreamer<DatabaseRecord,
             throw new DatabaseException(e);
         }
     }
+
+    protected Stream<ResultSet> resultSetStream(Function<DatabaseConnection, ResultSet> streamSupplier) {
+        return streamFromRemote(connection -> DatabaseStream.of(streamSupplier.apply(connection)));
+    }
+
 }

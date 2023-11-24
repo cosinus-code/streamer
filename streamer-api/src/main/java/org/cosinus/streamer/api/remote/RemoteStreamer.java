@@ -18,6 +18,9 @@ package org.cosinus.streamer.api.remote;
 import org.cosinus.streamer.api.Streamer;
 
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 
@@ -35,6 +38,21 @@ public interface RemoteStreamer<T, R, C extends Connection<R>> extends Streamer<
 
     default void returnConnection(C connection) {
         connectionPool().returnConnection(connectionName(), connection);
+    }
+
+
+    default Stream<R> streamFromRemote(Function<C, Stream<R>> streamSupplier) {
+        return getConnection()
+            .map(connection -> streamSupplier.apply(connection)
+                .onClose(() -> returnConnection(connection)))
+            .orElseGet(Stream::empty);
+    }
+
+    default void runRemote(Consumer<C> remoteRunner) {
+        getConnection().ifPresent(connection -> {
+            remoteRunner.accept(connection);
+            returnConnection(connection);
+        });
     }
 
     ConnectionPool<C, R> connectionPool();

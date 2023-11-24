@@ -23,23 +23,16 @@ import org.cosinus.streamer.api.stream.FlatStreamingSpliterator;
 import org.cosinus.streamer.api.stream.FlatStreamingStrategy;
 
 import java.nio.file.Path;
-import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
-import static java.util.Optional.ofNullable;
 
 public interface RemoteParentStreamer<S extends Streamer<?>, R, C extends Connection<R>>
     extends RemoteStreamer<S, R, C>, ParentStreamer<S> {
 
     @Override
     default Stream<S> stream() {
-        return getConnection()
-            .map(connection -> connection
-                .stream(getStreamQuery())
-                .map(this::createFromRemote)
-                .onClose(() -> returnConnection(connection)))
-            .orElseGet(Stream::empty);
+        return streamFromRemote(connection -> connection.stream(getStreamQuery()))
+            .map(this::createFromRemote);
     }
 
     @Override
@@ -60,13 +53,11 @@ public interface RemoteParentStreamer<S extends Streamer<?>, R, C extends Connec
 
     @Override
     default void save() {
-        getConnection()
-            .ifPresent(connection -> {
-                if (!connection.makeDirectory(getStreamQuery())) {
-                    throw new SaveStreamerException("Failed to create ftp directory:" + getPath().toString());
-                }
-                returnConnection(connection);
-            });
+        runRemote(connection -> {
+            if (!connection.save(getStreamQuery())) {
+                throw new SaveStreamerException("Failed to save streamer:" + getPath().toString());
+            }
+        });
     }
 
     @Override

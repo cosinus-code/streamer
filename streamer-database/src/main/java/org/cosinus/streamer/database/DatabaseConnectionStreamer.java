@@ -16,7 +16,6 @@
 package org.cosinus.streamer.database;
 
 import org.cosinus.streamer.api.ParentStreamer;
-import org.cosinus.streamer.database.connection.DatabaseConnection;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.file.Path;
@@ -24,6 +23,7 @@ import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.util.stream.Stream;
 
+import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.database.connection.DatabaseConnection.TABLE_SCHEMA;
 
 public class DatabaseConnectionStreamer extends DatabaseParentStreamer<DatabaseSchemaStreamer> {
@@ -38,9 +38,11 @@ public class DatabaseConnectionStreamer extends DatabaseParentStreamer<DatabaseS
     @Override
     public Stream<DatabaseSchemaStreamer> stream() {
         return getConnection()
-            .map(DatabaseConnection::getCurrentSchema)
-            .map(currentSchema -> new DatabaseSchemaStreamer(currentSchema, connectionName))
-            .stream();
+            .map(connection -> ofNullable(connection.getCurrentSchema())
+                .map(currentSchema -> new DatabaseSchemaStreamer(currentSchema, connectionName))
+                .stream()
+                .onClose(() -> returnConnection(connection)))
+            .orElseGet(Stream::empty);
     }
 
     @Override
