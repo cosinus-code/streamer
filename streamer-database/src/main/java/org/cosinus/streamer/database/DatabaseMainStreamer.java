@@ -23,15 +23,20 @@ import org.cosinus.streamer.database.model.DatabaseModelProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static org.cosinus.streamer.database.connection.DatabaseObjectType.TABLE;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_DATABASE;
 
 @RootStreamer("Database")
 @ConditionalOnProperty(name = "streamer.database.enabled", matchIfMissing = true)
 public class DatabaseMainStreamer extends MainStreamer<DatabaseConnectionStreamer> {
+
+    public static final String DATABASE_PROTOCOL = "db://";
 
     private final Map<String, DatabaseConnectionModel> databaseConnectionModelMap;
 
@@ -47,26 +52,37 @@ public class DatabaseMainStreamer extends MainStreamer<DatabaseConnectionStreame
     }
 
     @Override
+    public String getProtocol() {
+        return DATABASE_PROTOCOL;
+    }
+
+    @Override
+    public Optional<Streamer<?>> findByPath(Path path) {
+        List<String> names = IntStream.range(0, path.getNameCount())
+            .mapToObj(path::getName)
+            .map(Object::toString)
+            .toList();
+
+        String connectionName = !names.isEmpty() ? databaseConnectionModelMap.keySet()
+            .stream()
+            .filter(names.get(0)::equals)
+            .findFirst()
+            .orElse(null) : null;
+
+        String schemaName = names.size() > 1 ? names.get(1) : null;
+        String tableName = names.size() > 2 ? names.get(2) : null;
+
+        return connectionName != null ?
+            schemaName != null ?
+                tableName != null ?
+                    Optional.of(new DatabaseTableStreamer(tableName, TABLE.name(), schemaName, connectionName)) :
+                    Optional.of(new DatabaseSchemaStreamer(schemaName, connectionName)) :
+                Optional.of(new DatabaseConnectionStreamer(connectionName)) :
+            super.findByPath(path);
+    }
+
+    @Override
     public String getIconName() {
         return ICON_DATABASE;
-    }
-
-    @Override
-    public boolean isCompatible(String urlPath) {
-        return false;
-    }
-
-    @Override
-    public Optional<Streamer> findByUrlPath(String urlPath) {
-        return Optional.empty();
-    }
-
-    @Override
-    public void execute(Path path) {
-    }
-
-    @Override
-    public boolean exists() {
-        return true;
     }
 }

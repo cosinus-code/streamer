@@ -19,9 +19,6 @@ package org.cosinus.streamer.api;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-import static java.util.Optional.ofNullable;
-import static org.apache.commons.io.FilenameUtils.getExtension;
-
 public interface Streamer<T> extends Streamable {
 
     Stream<T> stream();
@@ -32,102 +29,22 @@ public interface Streamer<T> extends Streamable {
 
     ParentStreamer<?> getParent();
 
-    default void save()
-    {
+    default void save() {
     }
 
-    boolean delete();
-
-    String getProtocol();
-
-    Path getPath();
-
-    boolean exists();
-
-    long getSize();
-
-    long lastModified();
-
-    default boolean rename(String newName) {
+    default boolean delete() {
         return false;
     }
 
-    default boolean canRead() {
+    default boolean exists() {
         return true;
     }
 
-    default boolean canWrite() {
-        return true;
-    }
-
-    default String getName() {
-        return ofNullable(getPath().getFileName())
-            .map(Path::toString)
-            .orElseGet(() -> getPath().toString());
-    }
-
-    default String getType() {
-        return getExtension(getName());
-    }
-
-    default boolean isLink() {
-        return false;
-    }
-
-    default boolean isHidden() {
-        return false;
-    }
-
-    default String getIconName() {
+    default BinaryStreamer createBinaryStreamer(Path path) {
         return null;
     }
-
-    default String getValue() {
-        return null;
-    }
-
-    default String getDescription() {
-        return null;
-    }
-
-    default String getUrlPath() {
-        String pathText = ofNullable(getPath())
-            .map(Path::toString)
-            .orElse("");
-        return ofNullable(getProtocol())
-            .map(protocol -> protocol.concat(pathText))
-            .orElse(pathText);
-    }
-
-    default boolean isParent() {
-        return false;
-    }
-
-    default boolean isOlderThan(Streamer<?> streamerToCompareTo) {
-        return lastModified() < streamerToCompareTo.lastModified();
-    }
-
-    default String getId() {
-        return ofNullable(getPath())
-            .map(Path::toString)
-            .map(path -> ofNullable(getProtocol())
-                .map(protocol -> protocol.concat(path))
-                .orElse(path))
-            .orElseGet(() -> ofNullable(getName())
-                .map(name -> ofNullable(getProtocol())
-                    .map(protocol -> protocol.concat(name))
-                    .orElse(name))
-                .orElse(""));
-    }
-
-    BinaryStreamer createBinaryStreamer(Path path);
 
     default boolean isTextCompatible() {
         return false;
-    }
-
-    @Override
-    default Streamer<?> getStreamer() {
-        return this;
     }
 }

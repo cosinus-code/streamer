@@ -27,9 +27,4 @@ public class FtpBinaryStreamer extends FtpStreamer<byte[]>
     public FtpBinaryStreamer(final FTPFile ftpFile, Path path, String connectionName) {
         super(ftpFile, path, connectionName);
     }
-
-    @Override
-    public boolean delete() {
-        return false;
-    }
 }

@@ -50,6 +50,7 @@ public abstract class ChangeViewAction implements ActionInContext {
             streamerViewHandler.getCurrentView().getParentStreamer(),
             streamerViewHandler.getCurrentView().getCurrentItemIdentifier(),
             getViewName()));
+        streamerViewHandler.setPreferredViewName(getViewName());
     }
 
     protected abstract String getViewName();

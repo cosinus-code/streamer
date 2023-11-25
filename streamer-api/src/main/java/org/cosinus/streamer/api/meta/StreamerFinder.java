@@ -18,12 +18,17 @@ package org.cosinus.streamer.api.meta;
 
 import org.cosinus.streamer.api.Streamer;
 
+import java.nio.file.Path;
 import java.util.Optional;
 
 public interface StreamerFinder {
 
     boolean isCompatible(String urlPath);
 
-    Optional<Streamer> findByUrlPath(String urlPath);
+    Optional<Streamer<?>> findByUrlPath(String urlPath);
+
+    default Optional<Streamer<?>> findByPath(Path path) {
+        return Optional.empty();
+    }
 
 }

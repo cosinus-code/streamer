@@ -45,17 +45,6 @@ public class MetaStreamer implements ParentStreamer<MainStreamer>
     }
 
     @Override
-    public String getUrlPath() {
-        return null;
-    }
-
-    @Override
-    public BinaryStreamer createBinaryStreamer(Path path)
-    {
-        return null;
-    }
-
-    @Override
     public String getName() {
         return "";
     }
@@ -66,22 +55,12 @@ public class MetaStreamer implements ParentStreamer<MainStreamer>
     }
 
     @Override
-    public long getSize() {
-        return 0;
-    }
-
-    @Override
-    public long lastModified() {
-        return 0;
-    }
-
-    @Override
     public boolean canRead() {
         return false;
     }
 
     @Override
-    public boolean canWrite() {
+    public boolean canUpdate() {
         return false;
     }
 
@@ -93,15 +72,6 @@ public class MetaStreamer implements ParentStreamer<MainStreamer>
     @Override
     public ParentStreamer<?> getParent() {
         return null;
-    }
-
-    @Override
-    public void execute(Path path) {
-    }
-
-    @Override
-    public boolean delete() {
-        return false;
     }
 
     @Override

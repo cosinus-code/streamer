@@ -36,8 +36,7 @@ public abstract class ArchiveStreamer<T> implements Streamer<T> {
     }
 
     @Override
-    public BinaryStreamer createBinaryStreamer(Path path)
-    {
+    public BinaryStreamer createBinaryStreamer(Path path) {
         return archivePackStreamer.createBinaryStreamer(path);
     }
 
@@ -47,11 +46,6 @@ public abstract class ArchiveStreamer<T> implements Streamer<T> {
         return archiveEntry.getParentPath()
             .flatMap(archivePackStreamer::findDirectoryStreamer)
             .orElse(archivePackStreamer);
-    }
-
-    @Override
-    public boolean delete() {
-        return false;
     }
 
     @Override

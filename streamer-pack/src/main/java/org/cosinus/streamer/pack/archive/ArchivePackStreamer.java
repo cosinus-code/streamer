@@ -119,11 +119,6 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends PackStrea
     }
 
     @Override
-    public void execute(Path path) {
-
-    }
-
-    @Override
     public long getFreeSpace() {
         return getParent().getFreeSpace();
     }

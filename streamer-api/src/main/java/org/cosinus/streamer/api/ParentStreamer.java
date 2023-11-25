@@ -48,11 +48,17 @@ public interface ParentStreamer<S extends Streamer> extends Streamer<S> {
             new FlatStreamingSpliterator(strategy, stream().filter(streamerFilter)), false);
     }
 
-    void execute(Path path);
+    default void execute(Path path) {
 
-    long getFreeSpace();
+    }
 
-    long getTotalSpace();
+    default long getFreeSpace() {
+        return 0;
+    }
+
+    default long getTotalSpace() {
+        return 0;
+    }
 
     @Override
     default boolean isParent() {

@@ -48,6 +48,8 @@ public class StreamerViewHandler {
 
     private final StreamerViewCreator defaultStreamerViewCreator;
 
+    private String preferredViewName;
+
     public StreamerViewHandler(Preferences preferences,
                                Set<StreamerViewCreator> streamerViewCreators,
                                DetailViewCreator defaultStreamerViewCreator) {
@@ -88,6 +90,10 @@ public class StreamerViewHandler {
         return view;
     }
 
+    public void setPreferredViewName(String preferredViewName) {
+        this.preferredViewName = preferredViewName;
+    }
+
     public StreamerViewCreator getPreferredStreamerViewCreator(PanelLocation location) {
         return streamerViewCreatorsMap.values()
             .stream()
@@ -97,6 +103,9 @@ public class StreamerViewHandler {
     }
 
     protected <T> boolean isPreferredView(StreamerViewCreator streamerViewCreator, PanelLocation location) {
+        if (preferredViewName != null && streamerViewCreator.getViewName().equals(preferredViewName)) {
+            return true;
+        }
         return preferences.findPreference(LEFT == location ? LEFT_VIEW : RIGHT_VIEW)
             .map(Preference::getRealValue)
             .map(streamerViewCreator.getViewName()::equals)

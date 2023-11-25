@@ -53,17 +53,13 @@ public interface RemoteParentStreamer<S extends Streamer<?>, R, C extends Connec
 
     @Override
     default void save() {
+        //TODO
         runRemote(connection -> {
             if (!connection.save(getStreamQuery())) {
                 throw new SaveStreamerException("Failed to save streamer:" + getPath().toString());
             }
         });
     }
-
-    @Override
-    default void execute(Path path) {
-    }
-
 
     S createFromRemote(R remote);
 }

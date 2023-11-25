@@ -74,12 +74,6 @@ public class JsonStreamer implements ParentStreamer<JsonStreamer>
     }
 
     @Override
-    public boolean delete()
-    {
-        return false;
-    }
-
-    @Override
     public String getProtocol()
     {
         return null;
@@ -89,53 +83,5 @@ public class JsonStreamer implements ParentStreamer<JsonStreamer>
     public Path getPath()
     {
         return Paths.get(name);
-    }
-
-    @Override
-    public boolean exists()
-    {
-        return true;
-    }
-
-    @Override
-    public long getSize()
-    {
-        return 0;
-    }
-
-    @Override
-    public long lastModified()
-    {
-        return 0;
-    }
-
-    @Override
-    public BinaryStreamer createBinaryStreamer(Path path)
-    {
-        return null;
-    }
-
-    @Override
-    public JsonStreamer create(Path path, boolean parent)
-    {
-        return null;
-    }
-
-    @Override
-    public void execute(Path path)
-    {
-
-    }
-
-    @Override
-    public long getFreeSpace()
-    {
-        return 0;
-    }
-
-    @Override
-    public long getTotalSpace()
-    {
-        return 0;
     }
 }

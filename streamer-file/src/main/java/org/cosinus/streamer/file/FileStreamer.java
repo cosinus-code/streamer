@@ -34,8 +34,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
+import static org.cosinus.streamer.file.FileMainStreamer.FILE_PROTOCOL;
 
 public abstract class FileStreamer<T> implements Streamer<T> {
+
+    protected static final String DETAIL_KEY_NAME = "name";
+    protected static final String DETAIL_KEY_TYPE = "type";
+    protected static final String DETAIL_KEY_SIZE = "size";
+    protected static final String DETAIL_KEY_TIME = "time";
 
     protected final FileMainStreamer fileMainStreamer;
 
@@ -85,7 +92,20 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     }
 
     @Override
-    public boolean rename(String newName) {
+    public void save() {
+        if (exists()) {
+            ofNullable(details.get(new TranslatableName(DETAIL_KEY_NAME, null)))
+                .map(Value::toString)
+                .filter(not(getName()::equals))
+                .ifPresent(this::rename);
+        } else {
+            createAndSave();
+        }
+    }
+
+    protected abstract  void createAndSave();
+
+    protected boolean rename(String newName) {
         File fileToRename = file;
         Path newPath = Paths.get(fileToRename.getParent(), newName);
         File newFile = newPath.toFile();
@@ -117,7 +137,7 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     }
 
     @Override
-    public boolean canWrite() {
+    public boolean canUpdate() {
         return file.canWrite();
     }
 
@@ -138,7 +158,7 @@ public abstract class FileStreamer<T> implements Streamer<T> {
 
     @Override
     public String getProtocol() {
-        return FileMainStreamer.FILE_PROTOCOL;
+        return FILE_PROTOCOL;
     }
 
     @Override
@@ -159,10 +179,10 @@ public abstract class FileStreamer<T> implements Streamer<T> {
 
     public void initDetails() {
         this.details = Stream.of(
-                ImmutablePair.of("form-table-header-name", new TextValue(getName())),
-                ImmutablePair.of("form-table-header-type", new TextValue(getType())),
-                ImmutablePair.of("form-table-header-size", new MemoryValue(getSize())),
-                ImmutablePair.of("form-table-header-time", new DateValue(lastModified())))
+                ImmutablePair.of(DETAIL_KEY_NAME, new TextValue(getName())),
+                ImmutablePair.of(DETAIL_KEY_TYPE, new TextValue(getType())),
+                ImmutablePair.of(DETAIL_KEY_SIZE, new MemoryValue(getSize())),
+                ImmutablePair.of(DETAIL_KEY_TIME, new DateValue(lastModified())))
             .collect(Collectors.toMap(pair ->
                 new TranslatableName(pair.getKey(), null),
                 Pair::getValue,

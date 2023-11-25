@@ -29,6 +29,7 @@ import java.sql.SQLException;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static org.cosinus.streamer.database.DatabaseMainStreamer.DATABASE_PROTOCOL;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 public abstract class DatabaseStreamer implements RemoteStreamer<DatabaseRecord, ResultSet, DatabaseConnection> {
@@ -44,33 +45,8 @@ public abstract class DatabaseStreamer implements RemoteStreamer<DatabaseRecord,
     }
 
     @Override
-    public boolean delete() {
-        return false;
-    }
-
-    @Override
-    public boolean exists() {
-        return true;
-    }
-
-    @Override
     public String getProtocol() {
-        return null;
-    }
-
-    @Override
-    public long getSize() {
-        return 0;
-    }
-
-    @Override
-    public long lastModified() {
-        return 0;
-    }
-
-    @Override
-    public BinaryStreamer createBinaryStreamer(Path path) {
-        return null;
+        return DATABASE_PROTOCOL;
     }
 
     @Override

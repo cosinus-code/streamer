@@ -31,7 +31,6 @@ import org.cosinus.streamer.ui.error.ActionException;
 import org.cosinus.swing.format.FormatHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.awt.*;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;

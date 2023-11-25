@@ -28,6 +28,7 @@ import java.nio.file.Path;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import static org.cosinus.streamer.database.DatabaseMainStreamer.DATABASE_PROTOCOL;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 public abstract class DatabaseParentStreamer<D extends Streamer<?>>
@@ -44,49 +45,13 @@ public abstract class DatabaseParentStreamer<D extends Streamer<?>>
     }
 
     @Override
-    public long getFreeSpace() {
-        return 0;
-    }
-
-    @Override
-    public long getTotalSpace() {
-        return 0;
-    }
-
-    @Override
-    public boolean delete() {
-        return false;
-    }
-
-    @Override
     public String getProtocol() {
-        return null;
+        return DATABASE_PROTOCOL;
     }
 
     @Override
     public Path getPath() {
         return getParent().getPath().resolve(getName());
-    }
-
-    @Override
-    public boolean exists() {
-        return true;
-    }
-
-    @Override
-    public long getSize() {
-        return 0;
-    }
-
-    @Override
-    public long lastModified() {
-        return 0;
-    }
-
-
-    @Override
-    public BinaryStreamer createBinaryStreamer(Path path) {
-        return null;
     }
 
     @Override

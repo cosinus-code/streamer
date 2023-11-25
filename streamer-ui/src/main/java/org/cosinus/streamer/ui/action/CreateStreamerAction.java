@@ -59,7 +59,7 @@ public class CreateStreamerAction implements ActionInContext {
     public void run(ActionContext context) {
         StreamerView<?> currentView = streamerViewHandler.getCurrentView();
         Streamer<?> currentFolder = currentView.getParentStreamer();
-        if (!currentFolder.getParent().canWrite()) {
+        if (!currentFolder.getParent().canUpdate()) {
             return;
         }
 

@@ -26,16 +26,16 @@ import org.cosinus.streamer.api.error.StreamerException;
 import org.cosinus.streamer.api.pack.PackStreamer;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.*;
-import java.nio.file.Path;
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.apache.commons.io.FilenameUtils.removeExtension;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
-public class CompressPackStreamer extends PackStreamer<CompressStreamer> implements ParentStreamer<CompressStreamer>
-{
+public class CompressPackStreamer extends PackStreamer<CompressStreamer> implements ParentStreamer<CompressStreamer> {
 
     private static final Logger LOG = LogManager.getLogger(CompressPackStreamer.class);
 
@@ -53,19 +53,8 @@ public class CompressPackStreamer extends PackStreamer<CompressStreamer> impleme
     }
 
     @Override
-    public BinaryStreamer createBinaryStreamer(Path path)
-    {
-        return null;
-    }
-
-    @Override
     public Stream<CompressStreamer> flatStream(StreamerFilter streamerFilter) {
         return stream();
-    }
-
-    @Override
-    public void execute(Path path) {
-
     }
 
     @Override
@@ -111,9 +100,9 @@ public class CompressPackStreamer extends PackStreamer<CompressStreamer> impleme
 
     protected CompressorInputStream createCompressorInputStream() {
         return compressorInputStreamFactory.detectCompressorName(binaryStreamer.getType(),
-                                                                 binaryStreamer.inputStream())
+                binaryStreamer.inputStream())
             .map(compressorName -> compressorInputStreamFactory.createCompressorInputStream(compressorName,
-                                                                                            binaryStreamer.inputStream()))
+                binaryStreamer.inputStream()))
             .orElseThrow(() -> new StreamerException("Cannot find compressor for streamer of type: " + binaryStreamer.getType()));
     }
 

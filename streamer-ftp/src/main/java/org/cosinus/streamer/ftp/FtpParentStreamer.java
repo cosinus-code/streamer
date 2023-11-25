@@ -29,26 +29,6 @@ public class FtpParentStreamer extends FtpStreamer<FtpStreamer<?>>
     }
 
     @Override
-    public void execute(Path path) {
-
-    }
-
-    @Override
-    public long getFreeSpace() {
-        return 0;
-    }
-
-    @Override
-    public long getTotalSpace() {
-        return 0;
-    }
-
-    @Override
-    public boolean delete() {
-        return false;
-    }
-
-    @Override
     public FtpStreamer<?> createFromRemote(FTPFile ftpFile) {
         return ftpFile.isDirectory() ?
             new FtpParentStreamer(ftpFile, path.resolve(ftpFile.getName()), connectionName) :

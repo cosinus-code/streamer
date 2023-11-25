@@ -26,8 +26,8 @@ import oshi.software.os.OSFileStore;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -60,6 +60,11 @@ public class FileMainStreamer extends MainStreamer<FileStreamer<?>> {
         return Stream.empty();
     }
 
+    @Override
+    public String getProtocol() {
+        return FILE_PROTOCOL;
+    }
+
     public Optional<FileStreamer<?>> findRoot(Path path) {
         return getRoots()
             .stream()
@@ -78,12 +83,16 @@ public class FileMainStreamer extends MainStreamer<FileStreamer<?>> {
         return new FileRootStreamer(this, fileHandler, fileStore);
     }
 
-    public Optional<FileStreamer> find(Path path) {
+    public Optional<Streamer<?>> findByPath(Path path) {
+        if (Objects.equals(path, getPath())) {
+            return Optional.of(this);
+        }
+
         return findRoot(path)
-            .map(FileStreamer.class::cast)
             .or(() -> Optional.of(path)
                 .map(Path::toFile)
-                .map(file -> create(path, file.isDirectory())));
+                .map(file -> create(path, file.isDirectory())))
+            .map(Streamer.class::cast);
     }
 
     public FileStreamer<?> create(Path path) {
@@ -100,12 +109,6 @@ public class FileMainStreamer extends MainStreamer<FileStreamer<?>> {
     }
 
     @Override
-    public boolean exists() {
-        return true;
-    }
-
-
-    @Override
     public String getIconName() {
         return ICON_COMPUTER;
     }
@@ -116,22 +119,8 @@ public class FileMainStreamer extends MainStreamer<FileStreamer<?>> {
     }
 
     @Override
-    public boolean canWrite() {
+    public boolean canUpdate() {
         return false;
-    }
-
-    @Override
-    public boolean isCompatible(String urlPath) {
-        return urlPath.startsWith(FILE_PROTOCOL);
-    }
-
-    @Override
-    public Optional<Streamer> findByUrlPath(String urlPath) {
-        return Optional.ofNullable(urlPath)
-            .filter(path -> path.startsWith(FILE_PROTOCOL))
-            .map(path -> path.substring(FILE_PROTOCOL.length()))
-            .map(Paths::get)
-            .flatMap(this::find);
     }
 
     @Override

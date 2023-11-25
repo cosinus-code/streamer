@@ -16,14 +16,17 @@
 
 package org.cosinus.streamer.api.meta;
 
-import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
+import java.util.Optional;
 
-public abstract class MainStreamer<S extends Streamer> implements ParentStreamer<S>, StreamerFinder {
+import static java.util.Optional.ofNullable;
+
+public abstract class MainStreamer<S extends Streamer<?>> implements ParentStreamer<S>, StreamerFinder {
 
     private MetaStreamer parent;
 
@@ -53,38 +56,25 @@ public abstract class MainStreamer<S extends Streamer> implements ParentStreamer
     }
 
     @Override
-    public boolean exists() {
-        return false;
+    public Optional<Streamer<?>> findByPath(Path path) {
+        return Objects.equals(path, getPath()) ? Optional.of(this) : Optional.empty();
     }
 
     @Override
-    public long getSize() {
-        return 0;
+    public boolean isCompatible(String urlPath) {
+        return urlPath.startsWith(getProtocol());
     }
 
     @Override
-    public long lastModified() {
-        return 0;
+    public Optional<Streamer<?>> findByUrlPath(String urlPath) {
+        return urlToPath(urlPath)
+            .flatMap(this::findByPath);
     }
 
-    @Override
-    public long getFreeSpace() {
-        return 0;
-    }
-
-    @Override
-    public long getTotalSpace() {
-        return 0;
-    }
-
-    @Override
-    public boolean delete() {
-        return false;
-    }
-
-    @Override
-    public BinaryStreamer createBinaryStreamer(Path path)
-    {
-        return null;
+    public Optional<Path> urlToPath(String urlPath) {
+        return ofNullable(urlPath)
+            .filter(path -> path.startsWith(getProtocol()))
+            .map(path -> path.substring(getProtocol().length()))
+            .map(Paths::get);
     }
 }

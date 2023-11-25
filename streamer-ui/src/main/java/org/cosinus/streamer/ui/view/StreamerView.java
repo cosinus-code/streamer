@@ -19,16 +19,26 @@ package org.cosinus.streamer.ui.view;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.meta.StreamerHandler;
 import org.cosinus.streamer.api.pack.PackStreamer;
+import org.cosinus.streamer.api.value.TextValue;
+import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.streamer.ui.action.execute.WorkerListener;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.action.execute.save.SaveWorkerModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
+import org.cosinus.swing.dialog.DialogHandler;
+import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.form.Panel;
+import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -36,16 +46,9 @@ import java.util.UUID;
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.SOUTH;
 import static java.util.Optional.ofNullable;
+import static org.cosinus.swing.border.Borders.emptyInsets;
 
 public abstract class StreamerView<T> extends Panel implements WorkerListener<LoadWorkerModel<T>> {
-
-    protected final String id;
-
-    protected final PanelLocation location;
-
-    protected final JPanel streamerViewMainPanel;
-
-    protected LoadingProgress loadingIndicator;
 
     @Autowired
     protected StreamerViewHandler streamerViewHandler;
@@ -61,6 +64,27 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
 
     @Autowired
     public AddressBar addressBar;
+
+    @Autowired
+    public ErrorHandler errorHandler;
+
+    @Autowired
+    private DialogHandler dialogHandler;
+
+    @Autowired
+    private Translator translator;
+
+    protected final String id;
+
+    protected final PanelLocation location;
+
+    protected final JPanel streamerViewMainPanel;
+
+    protected LoadingProgress loadingIndicator;
+
+    protected JTextComponent txtRename;
+
+    private Streamer<?> streamerToBeRenamed;
 
     protected final Streamer<T> parentStreamer;
 
@@ -82,6 +106,9 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
     }
 
     public void updateForm() {
+        if (txtRename != null) {
+            txtRename.setMargin(emptyInsets());
+        }
     }
 
     protected LoadingProgress createLoadingIndicator() {
@@ -95,11 +122,78 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
     public void initComponents() {
         super.initComponents();
 
+        txtRename = getRenameComponent();
+        txtRename.setVisible(false);
+        txtRename.addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent e) {
+                txtRename.setVisible(false);
+            }
+        });
+
+        txtRename.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent e) {
+                try {
+                    switch (e.getKeyCode()) {
+                        case KeyEvent.VK_ENTER:
+                            renameStreamer();
+                        case KeyEvent.VK_ESCAPE:
+                            hideControl();
+                    }
+                } catch (Exception ex) {
+                    errorHandler.handleError(StreamerView.this, ex);
+                }
+            }
+        });
+
         this.loadingIndicator = createLoadingIndicator();
         add(streamerViewMainPanel, CENTER);
         add(loadingIndicator, SOUTH);
 
         updateForm();
+    }
+
+    protected void validateInContainer(Container container) {
+        container.add(txtRename);
+        txtRename.validate();
+    }
+
+    private void hideControl() {
+        txtRename.setVisible(false);
+        SwingUtilities.invokeLater(StreamerView.this::requestFocus);
+    }
+
+    private void renameStreamer() {
+        String newName = getRenameText();
+        streamerToBeRenamed.details().put(new TranslatableName("name", null), new TextValue(newName));
+        streamerToBeRenamed.save();
+        reload(newName);
+    }
+
+    public void showRename() {
+        if (txtRename == null) return;
+
+        //TODO:
+        streamerToBeRenamed = (Streamer<?>) getCurrentItem();
+        if (streamerToBeRenamed == null) return;
+        if (streamerToBeRenamed.equals(this.getParentStreamer())) return;
+
+        if (!streamerToBeRenamed.canUpdate()) {
+            dialogHandler.showInfo(translator.translate("rename.info.no.rename"));
+        }
+
+        txtRename.setText(streamerToBeRenamed.getName());
+        txtRename.setBounds(getCurrentRectangle());
+        txtRename.setVisible(true);
+        txtRename.requestFocus();
+        txtRename.selectAll();
+    }
+
+    protected String getRenameText() {
+        return txtRename.getText();
+    }
+
+    protected JTextComponent getRenameComponent() {
+        return new JTextField();
     }
 
     public void loadStreamer(Streamer<T> streamer) {
@@ -187,9 +281,6 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
     public void selectCurrentContent() {
     }
 
-    public void showRename() {
-    }
-
     public void goHome() {
     }
 
@@ -207,10 +298,6 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
     public WorkerListener<? extends SaveWorkerModel<T>> getSaveWorkerListener() {
         return null;
     }
-
-    protected void validateInContainer(Container container) {
-    }
-
 
     public abstract String getName();
 

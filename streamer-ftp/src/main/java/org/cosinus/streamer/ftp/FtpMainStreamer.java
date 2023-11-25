@@ -23,8 +23,11 @@ import org.cosinus.streamer.ftp.model.FtpConfigurationProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.cosinus.swing.image.icon.IconProvider.ICON_NETWORK;
@@ -42,39 +45,32 @@ public class FtpMainStreamer extends MainStreamer<FtpConnectionStreamer> {
     }
 
     @Override
-    public Stream<FtpConnectionStreamer> stream()
-    {
+    public Stream<FtpConnectionStreamer> stream() {
         return ftpConfigurationsMap.keySet()
             .stream()
             .map(FtpConnectionStreamer::new);
     }
 
     @Override
-    public boolean isCompatible(String urlPath)
-    {
-        return false;
+    public String getProtocol() {
+        return FTP_PROTOCOL;
     }
 
     @Override
-    public Optional<Streamer> findByUrlPath(String urlPath)
-    {
-        return Optional.empty();
-    }
+    public Optional<Streamer<?>> findByPath(Path path) {
+        String connectionName = ftpConfigurationsMap.keySet()
+            .stream()
+            .filter(getName()::equals)
+            .findFirst()
+            .orElse(null);
 
-    @Override
-    public void execute(Path path)
-    {
-
+        return connectionName != null ?
+            Optional.of(new FtpConnectionStreamer(connectionName)) :
+            super.findByPath(path);
     }
 
     @Override
     public String getIconName() {
         return ICON_NETWORK;
-    }
-
-    @Override
-    public boolean exists()
-    {
-        return true;
     }
 }

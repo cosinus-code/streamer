@@ -16,7 +16,6 @@
 
 package org.cosinus.streamer.ui.action;
 
-import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.WorkerModel;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
@@ -104,7 +103,7 @@ public abstract class AbstractCopyAction implements ActionInContext {
             return;
         }
 
-        if (!copyAction.getSource().canRead() || !copyAction.getDestination().canWrite()) {
+        if (!copyAction.getSource().canRead() || !copyAction.getDestination().canUpdate()) {
             dialogHandler.showInfo(translator.translate("act_copy_not_allowed"));
             return;
         }

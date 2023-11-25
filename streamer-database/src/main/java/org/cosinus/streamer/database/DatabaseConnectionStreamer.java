@@ -66,11 +66,6 @@ public class DatabaseConnectionStreamer extends DatabaseParentStreamer<DatabaseS
     }
 
     @Override
-    public String getUrlPath() {
-        return super.getUrlPath();
-    }
-
-    @Override
     public String getStreamQuery() {
         return TABLE_SCHEMA;
     }

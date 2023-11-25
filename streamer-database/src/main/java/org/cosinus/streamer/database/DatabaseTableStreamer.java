@@ -43,11 +43,10 @@ public class DatabaseTableStreamer extends DatabaseStreamer {
 
     private List<TranslatableName> detailNames;
 
-    public DatabaseTableStreamer(ResultSet resultSet, String connectionName) {
+    public DatabaseTableStreamer(String tableName, String tableType, String tableSchema, String connectionName) {
         super(connectionName);
-        this.tableName = getResultSetValue(resultSet, TABLE_NAME);
-        this.tableType = getResultSetValue(resultSet, TABLE_TYPE);
-        String tableSchema = getResultSetValue(resultSet, TABLE_SCHEMA);
+        this.tableName = tableName;
+        this.tableType = tableType;
         this.schemaStreamer = new DatabaseSchemaStreamer(tableSchema, connectionName);
     }
 

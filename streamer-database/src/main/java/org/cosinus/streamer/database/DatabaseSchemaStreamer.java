@@ -19,6 +19,8 @@ import org.cosinus.streamer.api.ParentStreamer;
 
 import java.sql.ResultSet;
 
+import static org.cosinus.streamer.database.connection.DatabaseConnection.*;
+
 public class DatabaseSchemaStreamer extends DatabaseParentStreamer<DatabaseTableStreamer> {
 
     private final DatabaseConnectionStreamer parent;
@@ -33,7 +35,10 @@ public class DatabaseSchemaStreamer extends DatabaseParentStreamer<DatabaseTable
 
     @Override
     public DatabaseTableStreamer createFromRemote(ResultSet resultSet) {
-        return new DatabaseTableStreamer(resultSet, connectionName);
+        String tableName = getResultSetValue(resultSet, TABLE_NAME);
+        String tableType = getResultSetValue(resultSet, TABLE_TYPE);
+        String tableSchema = getResultSetValue(resultSet, TABLE_SCHEMA);
+        return new DatabaseTableStreamer(tableName, tableType, tableSchema, connectionName);
     }
 
     @Override

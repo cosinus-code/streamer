@@ -25,6 +25,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.cosinus.streamer.database.DatabaseMainStreamer.DATABASE_PROTOCOL;
+
 public class DatabaseRecord extends LinkedHashMap<TranslatableName, Value> implements Streamable {
 
     private final DatabaseTableStreamer parent;
@@ -40,6 +42,11 @@ public class DatabaseRecord extends LinkedHashMap<TranslatableName, Value> imple
     }
 
     @Override
+    public String getProtocol() {
+        return DATABASE_PROTOCOL;
+    }
+
+    @Override
     public String getId() {
         return name;
     }
@@ -51,31 +58,6 @@ public class DatabaseRecord extends LinkedHashMap<TranslatableName, Value> imple
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    @Override
-    public Streamer<?> getStreamer() {
-        return null;
-    }
-
-    @Override
-    public boolean isParent() {
-        return false;
-    }
-
-    @Override
-    public boolean isHidden() {
-        return false;
-    }
-
-    @Override
-    public boolean isLink() {
-        return false;
-    }
-
-    @Override
-    public String getIconName() {
-        return null;
     }
 
     @Override

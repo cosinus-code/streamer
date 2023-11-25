@@ -67,11 +67,6 @@ public abstract class FtpStreamer<T> implements RemoteStreamer<T, FTPFile, FtpCo
     }
 
     @Override
-    public boolean exists() {
-        return true;
-    }
-
-    @Override
     public long getSize() {
         return ftpFile.getSize();
     }
@@ -86,16 +81,6 @@ public abstract class FtpStreamer<T> implements RemoteStreamer<T, FTPFile, FtpCo
     @Override
     public boolean isLink() {
         return ftpFile.isSymbolicLink();
-    }
-
-    @Override
-    public BinaryStreamer createBinaryStreamer(Path path) {
-        return null;
-    }
-
-    @Override
-    public boolean isTextCompatible() {
-        return false;
     }
 
     @Override

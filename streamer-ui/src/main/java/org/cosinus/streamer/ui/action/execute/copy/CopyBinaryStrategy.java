@@ -115,7 +115,11 @@ public class CopyBinaryStrategy implements BinaryPipelineStrategy {
     public boolean shouldSkipExistingTarget() {
         return shouldSkipCurrentTargets() ||
             shouldSkipAllExistingTargets() ||
-            (shouldOverwriteAllExistingTargetsIfOlder() && !target.isOlderThan(source));
+            (shouldOverwriteAllExistingTargetsIfOlder() && !isOlderThan(target, source));
+    }
+
+    private boolean isOlderThan(Streamer<?> streamerToCompare, Streamer<?> streamerToCompareTo) {
+        return streamerToCompare.lastModified() < streamerToCompareTo.lastModified();
     }
 
     public BinaryStreamer prepareTarget() {

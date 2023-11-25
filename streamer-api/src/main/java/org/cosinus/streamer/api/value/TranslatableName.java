@@ -59,11 +59,11 @@ public class TranslatableName {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof TranslatableName that)) return false;
-        return Objects.equals(name, that.name);
+        return key != null ? Objects.equals(key, that.key) : Objects.equals(name, that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return key != null ? Objects.hash(key) : Objects.hash(name);
     }
 }

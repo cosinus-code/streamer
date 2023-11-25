@@ -81,21 +81,15 @@ public abstract class StreamerDelegate<T, S extends Streamer<?>> implements Stre
     }
 
     @Override
-    public boolean rename(String newName)
-    {
-        return delegate.rename(newName);
-    }
-
-    @Override
     public boolean canRead()
     {
         return delegate.canRead();
     }
 
     @Override
-    public boolean canWrite()
+    public boolean canUpdate()
     {
-        return delegate.canWrite();
+        return delegate.canUpdate();
     }
 
     @Override
@@ -129,12 +123,6 @@ public abstract class StreamerDelegate<T, S extends Streamer<?>> implements Stre
     }
 
     @Override
-    public String getValue()
-    {
-        return delegate.getValue();
-    }
-
-    @Override
     public String getDescription()
     {
         return delegate.getDescription();
@@ -150,12 +138,6 @@ public abstract class StreamerDelegate<T, S extends Streamer<?>> implements Stre
     public boolean isParent()
     {
         return delegate.isParent();
-    }
-
-    @Override
-    public boolean isOlderThan(Streamer<?> streamerToCompareTo)
-    {
-        return delegate.isOlderThan(streamerToCompareTo);
     }
 
     @Override
