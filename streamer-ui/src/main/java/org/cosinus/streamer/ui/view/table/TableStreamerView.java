@@ -21,7 +21,6 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.DefaultStreamerView;
 import org.cosinus.streamer.ui.view.PanelLocation;
-import org.cosinus.streamer.ui.view.StreamerView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,8 +39,8 @@ public abstract class TableStreamerView<T extends Streamable> extends DefaultStr
 
     private JScrollPane scroll;
 
-    protected TableStreamerView(PanelLocation location, Streamer<T> parentStreamer) {
-        super(location, parentStreamer);
+    protected TableStreamerView(PanelLocation location) {
+        super(location);
     }
 
     @Override
@@ -154,12 +153,6 @@ public abstract class TableStreamerView<T extends Streamable> extends DefaultStr
     }
 
     @Override
-    public void workerStarted(LoadWorkerModel<T> loadWorkerModel) {
-        super.workerStarted(loadWorkerModel);
-        table.reset();
-    }
-
-    @Override
     public void workerUpdated(LoadWorkerModel<T> loadWorkerModel) {
         ofNullable(loadWorkerModel.getContentIdentifier())
             .ifPresent(this::findContent);
@@ -182,6 +175,13 @@ public abstract class TableStreamerView<T extends Streamable> extends DefaultStr
 
     private DataTableModel<T> getDataTableModel() {
         return (DataTableModel<T>) table.getModel();
+    }
+
+    @Override
+    public void reset(final Streamer<T> parentStreamer) {
+        this.parentStreamer = parentStreamer;
+        table.reset(parentStreamer);
+        super.reset(parentStreamer);
     }
 
     @Override

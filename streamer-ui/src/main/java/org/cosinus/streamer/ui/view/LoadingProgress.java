@@ -73,15 +73,15 @@ public class LoadingProgress extends ProgressBar {
         if (totalSizeToLoad != 0) {
             setVisible(true);
             if (totalSizeToLoad > 0) {
-                setIndeterminate(false);
                 setMaximum(100);
             }
         }
     }
 
     public void updateLoading(long loadedSize, long totalSizeToLoad) {
-        if (totalSizeToLoad > 0) {
+        if (totalSizeToLoad > 0 && loadedSize > 0) {
             int progress = (int) ((loadedSize * 100) / totalSizeToLoad);
+            setIndeterminate(false);
             setValue(progress);
         }
     }

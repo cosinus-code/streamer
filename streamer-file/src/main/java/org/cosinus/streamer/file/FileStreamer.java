@@ -164,7 +164,7 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     @Override
     public List<TranslatableName> detailNames() {
         if (detailNames == null) {
-            initDetails();
+            init();
         }
         return detailNames;
     }
@@ -172,12 +172,12 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     @Override
     public Map<TranslatableName, Value> details() {
         if (details == null) {
-            initDetails();
+            init();
         }
         return details;
     }
 
-    public void initDetails() {
+    public void init() {
         this.details = Stream.of(
                 ImmutablePair.of(DETAIL_KEY_NAME, new TextValue(getName())),
                 ImmutablePair.of(DETAIL_KEY_TYPE, new TextValue(getType())),

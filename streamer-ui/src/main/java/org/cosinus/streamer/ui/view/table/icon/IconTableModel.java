@@ -16,8 +16,8 @@ public class IconTableModel<T extends Streamable> extends DataTableModel<T> {
 
     private int columnCount = 0;
 
-    public IconTableModel(final Streamer<T> parentStreamer) {
-        super(parentStreamer);
+    public IconTableModel() {
+        super();
     }
 
     @Override

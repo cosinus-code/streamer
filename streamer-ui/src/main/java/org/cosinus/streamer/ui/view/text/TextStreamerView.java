@@ -45,8 +45,8 @@ public class TextStreamerView extends StreamerView<String> {
 
     private WorkerListener<SaveTextModel> saveListener;
 
-    public TextStreamerView(PanelLocation location, Streamer<String> parentStreamer) {
-        super(location, parentStreamer);
+    public TextStreamerView(PanelLocation location) {
+        super(location);
         this.textEditor = new TextEditor(this);
     }
 
@@ -162,5 +162,11 @@ public class TextStreamerView extends StreamerView<String> {
     public WorkerListener<SaveTextModel> getSaveWorkerListener()
     {
         return saveListener;
+    }
+
+    @Override
+    public void reset(final Streamer<String> parentStreamer) {
+        super.reset(parentStreamer);
+        textEditor.reset();;
     }
 }

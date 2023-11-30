@@ -47,9 +47,9 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
 
     protected final Map<Integer, Boolean> selectionMap;
 
-    protected final Streamer<T> parentStreamer;
-
     protected final Map<String, T> streamableMap;
+
+    protected Streamer<T> parentStreamer;
 
     protected String contentIdentifier;
 
@@ -58,12 +58,16 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
     @Autowired
     public Preferences preferences;
 
-    public DataTableModel(final Streamer<T> parentStreamer) {
-        this.parentStreamer = parentStreamer;
+    public DataTableModel() {
         this.selectionMap = new ConcurrentHashMap<>();
         this.comparator = new ViewItemComparator();
         this.viewItems = new ArrayList<>();
         this.streamableMap = new HashMap<>();
+    }
+
+    @Override
+    public Streamer<T> getParentStreamer() {
+        return parentStreamer;
     }
 
     @Override
@@ -173,8 +177,8 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
         streamableMap.clear();
     }
 
-    @Override
-    public void init() {
+    public void reset(final Streamer<T> parentStreamer) {
+        this.parentStreamer = parentStreamer;
         clear();
         if (isTopVisible()) {
             ofNullable(parentStreamer.getParent())
@@ -201,6 +205,11 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
         viewItems.add(viewItem);
         T streamer = (T) viewItem.getStreamable();
         streamableMap.put(viewItem.getId(), streamer);
+    }
+
+    @Override
+    public long getLoadedSize() {
+        return viewItems.size() - (isTopVisible() ? 1 : 0);
     }
 
     public List<T> getSelectedItems() {

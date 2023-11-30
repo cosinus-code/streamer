@@ -16,7 +16,6 @@
 
 package org.cosinus.streamer.ui.view;
 
-import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.view.table.details.DetailViewCreator;
 import org.cosinus.swing.preference.Preference;
 import org.cosinus.swing.preference.Preferences;
@@ -27,6 +26,7 @@ import java.util.function.Function;
 
 import static java.util.Arrays.stream;
 import static java.util.Optional.ofNullable;
+import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.LEFT_VIEW;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.RIGHT_VIEW;
@@ -48,6 +48,8 @@ public class StreamerViewHandler {
 
     private final StreamerViewCreator defaultStreamerViewCreator;
 
+    private final Map<PanelLocation, Map<String, StreamerView<?>>> streamerViewsMap;
+
     private String preferredViewName;
 
     public StreamerViewHandler(Preferences preferences,
@@ -56,8 +58,10 @@ public class StreamerViewHandler {
         this.preferences = preferences;
         this.streamerViewCreatorsMap = streamerViewCreators
             .stream()
-            .collect(toMap(StreamerViewCreator::getViewName, Function.identity()));
+            .collect(toMap(StreamerViewCreator::getViewName, identity()));
         this.defaultStreamerViewCreator = defaultStreamerViewCreator;
+        this.streamerViewsMap = stream(PanelLocation.values())
+            .collect(toMap(identity(), location -> new HashMap<>()));
     }
 
     public PanelLocation getCurrentLocation() {
@@ -80,36 +84,32 @@ public class StreamerViewHandler {
             .ifPresent(view -> view.setActive(location == currentLocation)));
     }
 
-    public <T> StreamerView<T> loadStreamerView(PanelLocation location, String streamerViewNameToLoadIn, Streamer<T> streamer) {
-        StreamerView<T> view = ofNullable(streamerViewNameToLoadIn)
-            .map(streamerViewCreatorsMap::get)
-            .orElseGet(() -> getPreferredStreamerViewCreator(location))
-            .createStreamerView(location, streamer);
+    public <T> StreamerView<T> getStreamerView(PanelLocation location, String streamerViewName) {
+        StreamerView<?> view = ofNullable(streamerViewName)
+            .or(() -> getPreferredViewName(location))
+            .flatMap(viewName -> findExistingStreamerView(location, viewName)
+                    .or(() -> ofNullable(streamerViewCreatorsMap.get(viewName))
+                        .map(streamerViewCreator -> streamerViewCreator.createStreamerView(location))))
+            .orElseGet(() -> defaultStreamerViewCreator.createStreamerView(location));
+
         getPanel(location)
             .ifPresent(panel -> panel.setView(view));
-        return view;
+        return (StreamerView<T>) view;
+    }
+
+    protected Optional<StreamerView<?>> findExistingStreamerView(PanelLocation location, String streamerViewName) {
+        return ofNullable(streamerViewsMap.get(location).get(streamerViewName));
+    }
+
+    protected Optional<String> getPreferredViewName(PanelLocation location) {
+        return ofNullable(preferredViewName)
+            .or(() -> preferences.findPreference(LEFT == location ? LEFT_VIEW : RIGHT_VIEW)
+                .map(Preference::getRealValue)
+                .map(Object::toString));
     }
 
     public void setPreferredViewName(String preferredViewName) {
         this.preferredViewName = preferredViewName;
-    }
-
-    public StreamerViewCreator getPreferredStreamerViewCreator(PanelLocation location) {
-        return streamerViewCreatorsMap.values()
-            .stream()
-            .filter(streamerViewCreator -> isPreferredView(streamerViewCreator, location))
-            .findFirst()
-            .orElse(defaultStreamerViewCreator);
-    }
-
-    protected <T> boolean isPreferredView(StreamerViewCreator streamerViewCreator, PanelLocation location) {
-        if (preferredViewName != null && streamerViewCreator.getViewName().equals(preferredViewName)) {
-            return true;
-        }
-        return preferences.findPreference(LEFT == location ? LEFT_VIEW : RIGHT_VIEW)
-            .map(Preference::getRealValue)
-            .map(streamerViewCreator.getViewName()::equals)
-            .orElse(false);
     }
 
     public StreamerPanel createStreamerPanel(PanelLocation location) {

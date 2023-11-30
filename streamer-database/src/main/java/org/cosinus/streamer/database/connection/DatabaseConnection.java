@@ -99,6 +99,12 @@ public class DatabaseConnection implements Connection<ResultSet> {
         return resultSet(() -> connection.createStatement().executeQuery(query));
     }
 
+    public long getLong(String query) {
+        try (ResultSet count = resultSet(query)) {
+            return count.next() ? count.getLong(1) : 0;
+        }
+    }
+
     public void runQuery(String query) {
         try {
             LOG.info("Execute query: " + query);

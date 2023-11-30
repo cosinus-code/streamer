@@ -88,11 +88,12 @@ public class LoadActionExecutor implements ActionExecutor<LoadActionModel> {
             .filter(viewName -> !streamerToLoad.isTextCompatible() || TEXT_EDITOR.equals(viewName))
             .orElseGet(() -> streamerToLoad.isTextCompatible() ? TEXT_EDITOR : null);
 
-        StreamerView<V> streamerViewToLoadTo = streamerViewHandler
-            .loadStreamerView(actionModel.getLocationToLoadTo(), streamerViewNameToOpen, streamerToLoad);
+        PanelLocation location = actionModel.getLocationToLoadTo();
+        StreamerView<V> streamerViewToLoadTo = streamerViewHandler.getStreamerView(location, streamerViewNameToOpen);
         if (streamerViewToLoadTo == null) {
             return;
         }
+
         String itemToSelectAfterLoad = actionModel.getItemToSelectAfterLoad();
         LoadWorker<V> worker = new LoadWorker<>(
             actionModel.getActionId(), streamerToLoad, streamerViewToLoadTo, itemToSelectAfterLoad);

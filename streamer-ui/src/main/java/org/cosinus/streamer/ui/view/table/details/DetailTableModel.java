@@ -15,6 +15,7 @@
  */
 package org.cosinus.streamer.ui.view.table.details;
 
+import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.streamer.ui.view.table.DataTableModel;
@@ -22,6 +23,7 @@ import org.cosinus.streamer.ui.view.table.ViewItem;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,31 +32,35 @@ import static java.util.Collections.singletonList;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 
-public class DetailTableModel<T extends Streamer<?>> extends DataTableModel<T> {
+public class DetailTableModel<T extends Streamable> extends DataTableModel<T> {
 
     @Autowired
     public Translator translator;
 
-    private final List<TranslatableName> columnNames;
+    private List<TranslatableName> columnNames = new ArrayList<>();
 
     private int sortedColumn = -1;
 
     //TODO: to see if this is still needed
     private final Map<String, Long> mapComputedSize;
 
-    public DetailTableModel(final Streamer<T> parentStreamer) {
-        super(parentStreamer);
+    public DetailTableModel() {
         this.mapComputedSize = new HashMap<>();
+    }
+
+    @Override
+    public void reset(final Streamer<T> parentStreamer) {
+        super.reset(parentStreamer);
+        resetHeader();
+    }
+
+    public void resetHeader() {
         this.columnNames = ofNullable(parentStreamer.detailNames())
             .filter(not(List::isEmpty))
             .orElseGet(() -> singletonList(getName()));
+        translate();
+        fireTableStructureChanged();
     }
-
-//    public void resetHeader() {
-//        this.columnNames = ofNullable(parentStreamer.detailNames())
-//            .filter(not(List::isEmpty))
-//            .orElseGet(() -> singletonList(getName()));
-//    }
 
     public int getSortedColumn() {
         return sortedColumn;

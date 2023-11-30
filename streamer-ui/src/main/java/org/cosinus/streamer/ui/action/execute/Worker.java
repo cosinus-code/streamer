@@ -70,7 +70,6 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
     }
 
     public void start() {
-        workerModel.init();
         workerListenerHandler.workerStarted(getId(), getWorkerModel());
         execute();
     }
@@ -82,15 +81,6 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
     public void setPaused(boolean paused) {
         this.paused = paused;
     }
-
-//    public void publishProgress(Runnable runnable) {
-//        runnable.run();
-//        publishProgress();
-//    }
-//
-//    public void publishProgress() {
-//        publish(workerModel);
-//    }
 
     protected void setError(ActionException error) {
         this.error = error;

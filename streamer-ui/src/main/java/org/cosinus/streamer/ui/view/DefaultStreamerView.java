@@ -25,14 +25,8 @@ public abstract class DefaultStreamerView<T extends Streamable> extends Streamer
 
     protected StreamerViewDetailsEditor<T> streamerViewDetailsEditor;
 
-    public DefaultStreamerView(PanelLocation location, Streamer<T> parentStreamer) {
-        super(location, parentStreamer);
-    }
-
-    @Override
-    public void initComponents() {
-        this.streamerViewDetailsEditor = new StreamerViewDetailsEditor<>(this);
-        super.initComponents();
+    public DefaultStreamerView(PanelLocation location) {
+        super(location);
     }
 
     @Override
@@ -46,5 +40,11 @@ public abstract class DefaultStreamerView<T extends Streamable> extends Streamer
                     streamerViewDetailsEditor.loadItemAndShow(currentStream);
                 }
             });
+    }
+
+    @Override
+    public void reset(final Streamer<T> parentStreamer) {
+        super.reset(parentStreamer);
+        this.streamerViewDetailsEditor = new StreamerViewDetailsEditor<>(this);
     }
 }

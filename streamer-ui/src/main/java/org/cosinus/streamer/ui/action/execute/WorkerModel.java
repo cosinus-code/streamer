@@ -23,9 +23,5 @@ import java.util.List;
  */
 public interface WorkerModel<T> {
 
-    default void init() {
-
-    }
-
     void update(List<T> items);
 }

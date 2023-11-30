@@ -9,8 +9,8 @@ public class IconView<T extends Streamable> extends TableStreamerView<T> {
 
     public static final String ICON_VIEW_NAME = "icon";
 
-    public IconView(PanelLocation location, Streamer<T> parentStreamer) {
-        super(location, parentStreamer);
+    public IconView(PanelLocation location) {
+        super(location);
     }
 
     @Override

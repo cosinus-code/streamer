@@ -26,8 +26,8 @@ public class DetailView<T extends Streamable> extends TableStreamerView<T> {
 
     public static final String DETAIL_VIEW_NAME = "detail";
 
-    public DetailView(PanelLocation location, Streamer<T> parentStreamer) {
-        super(location, parentStreamer);
+    public DetailView(PanelLocation location) {
+        super(location);
     }
 
     @Override

@@ -16,8 +16,8 @@
 package org.cosinus.streamer.ui.view.text;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.action.execute.save.SaveWorkerModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
+import org.cosinus.streamer.ui.action.execute.save.SaveWorkerModel;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.error.ErrorHandler;
@@ -34,17 +34,12 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.List;
 
-import static java.awt.event.KeyEvent.VK_BACK_SPACE;
-import static java.awt.event.KeyEvent.VK_DELETE;
-import static java.awt.event.KeyEvent.VK_ENTER;
-import static java.awt.event.KeyEvent.VK_ESCAPE;
-import static java.awt.event.KeyEvent.VK_TAB;
+import static java.awt.event.KeyEvent.*;
 import static java.lang.String.join;
 import static java.lang.System.lineSeparator;
 import static org.cosinus.streamer.ui.action.GoToParentStreamerAction.GO_TO_UP_STREAMER_ACTION;
 
-public class TextEditor extends TextArea implements LoadWorkerModel<String>
-{
+public class TextEditor extends TextArea implements LoadWorkerModel<String> {
 
     @Autowired
     private ErrorHandler errorHandler;
@@ -73,8 +68,7 @@ public class TextEditor extends TextArea implements LoadWorkerModel<String>
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent keyEvent) {
-                if (!isEditorKey(keyEvent))
-                {
+                if (!isEditorKey(keyEvent)) {
                     actionController.runActionByKeyStroke(keyEvent);
                 }
                 if (keyEvent.getKeyCode() == VK_ESCAPE) {
@@ -82,10 +76,9 @@ public class TextEditor extends TextArea implements LoadWorkerModel<String>
                 }
             }
         });
-        addFocusListener(new FocusAdapter(){
+        addFocusListener(new FocusAdapter() {
             @Override
-            public void focusGained(FocusEvent e)
-            {
+            public void focusGained(FocusEvent e) {
                 super.focusGained(e);
                 try {
                     streamerViewHandler.setCurrentLocation(view.getCurrentLocation());
@@ -104,8 +97,7 @@ public class TextEditor extends TextArea implements LoadWorkerModel<String>
     }
 
     protected String getLineAtIndex(int index) {
-        try
-        {
+        try {
             int start = getLineStartOffset(index);
             int end = getLineEndOffset(index);
             return getText(start, end - start);
@@ -122,12 +114,14 @@ public class TextEditor extends TextArea implements LoadWorkerModel<String>
                 }
                 super.insertString(offs, text, attributes);
             }
+
             protected void insertUpdate(DefaultDocumentEvent documentEvent, AttributeSet attributes) {
                 if (!isLoading()) {
                     setDirty(true);
                 }
                 super.insertUpdate(documentEvent, attributes);
             }
+
             protected void removeUpdate(DefaultDocumentEvent documentEvent) {
                 if (!isLoading()) {
                     setDirty(true);
@@ -137,8 +131,7 @@ public class TextEditor extends TextArea implements LoadWorkerModel<String>
         };
     }
 
-    public boolean isDirty()
-    {
+    public boolean isDirty() {
         return dirty;
     }
 
@@ -147,13 +140,11 @@ public class TextEditor extends TextArea implements LoadWorkerModel<String>
         view.updateAddressBarAndStreamerPanel();
     }
 
-    public boolean isLoading()
-    {
+    public boolean isLoading() {
         return loading;
     }
 
-    public void setLoading(boolean loading)
-    {
+    public void setLoading(boolean loading) {
         this.loading = loading;
     }
 
@@ -169,36 +160,30 @@ public class TextEditor extends TextArea implements LoadWorkerModel<String>
     }
 
     @Override
-    public long getTotalSizeToLoad()
-    {
-        return getParentStreamer().getSize();
-    }
-
-    @Override
-    public long getLoadedSize()
-    {
+    public long getLoadedSize() {
         return getText().getBytes().length;
     }
 
-    public Streamer<String> getParentStreamer()
-    {
+    @Override
+    public Streamer<String> getParentStreamer() {
         return view.getParentStreamer();
     }
 
     @Override
-    public String getContentIdentifier()
-    {
+    public String getContentIdentifier() {
         return null;
     }
 
     @Override
-    public void setContentIdentifier(String contentIdentifier)
-    {
+    public void setContentIdentifier(String contentIdentifier) {
 
     }
 
-    public SaveWorkerModel<String> getSaveWorkerModel()
-    {
+    public SaveWorkerModel<String> getSaveWorkerModel() {
         return saveWorkerModel;
+    }
+
+    public void reset() {
+        setText("");
     }
 }

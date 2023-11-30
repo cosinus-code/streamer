@@ -121,7 +121,7 @@ public interface Streamable {
         return singletonMap(new TranslatableName("name", null), new TextValue(getName()));
     }
 
-    default void initDetails() {
+    default void init() {
     }
 
     Streamable getParent();

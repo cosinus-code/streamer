@@ -24,11 +24,11 @@ import org.springframework.stereotype.Component;
 import static org.cosinus.streamer.ui.view.text.TextStreamerView.TEXT_EDITOR;
 
 @Component
-public class TextStreamerViewCreator implements StreamerViewCreator<String, Streamer<String>> {
+public class TextStreamerViewCreator implements StreamerViewCreator {
 
     @Override
-    public StreamerView<String> createStreamerView(PanelLocation location, Streamer<String> parentStreamer) {
-        return new TextStreamerView(location, parentStreamer);
+    public StreamerView<String> createStreamerView(PanelLocation location) {
+        return new TextStreamerView(location);
     }
 
     @Override

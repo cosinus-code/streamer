@@ -27,25 +27,40 @@ import java.util.stream.Stream;
 /**
  * {@link javax.swing.SwingWorker} for loading a streamer
  */
-public class LoadWorker<T> extends PipelineWorker<LoadWorkerModel<T>, T> {
+public class LoadWorker<T> extends PipelineWorker<LoadWorkerModel<T>, T> implements PipelineListener<T> {
 
     private final Streamer<T> streamerToLoad;
 
-    public LoadWorker(
-        String id, Streamer<T> streamerToLoad, StreamerView<T> streamerView, String contentIdentifier) {
-        super(id, streamerView.getLoadWorkerModel());
+    private final StreamerView<T> streamerViewToLoadTo;
+
+    public LoadWorker(String id,
+                      final Streamer<T> streamerToLoad,
+                      final StreamerView<T> streamerViewToLoadTo,
+                      String contentIdentifier) {
+        super(id, streamerViewToLoadTo.getLoadWorkerModel());
         this.streamerToLoad = streamerToLoad;
+        this.streamerViewToLoadTo = streamerViewToLoadTo;
         workerModel.setContentIdentifier(contentIdentifier);
     }
 
     @Override
     public void preparePipelineOpen(PipelineStrategy pipelineStrategy, PipelineListener<T> pipelineListener) {
-        streamerToLoad.initDetails();
+        streamerToLoad.init();
+    }
+
+    @Override
+    public void beforePipelineOpen() {
+        streamerViewToLoadTo.reset(streamerToLoad);
     }
 
     @Override
     public Stream<T> openPipelineInputStream(PipelineStrategy pipelineStrategy)
     {
         return streamerToLoad.stream();
+    }
+
+    @Override
+    public PipelineListener<T> getPipelineListener() {
+        return this;
     }
 }

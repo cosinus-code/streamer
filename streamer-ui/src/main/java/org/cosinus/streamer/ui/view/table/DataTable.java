@@ -67,12 +67,11 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
 
     private int lastWidth, lastHeight;
 
-    private DataTableModel<T> model;
+    protected DataTableModel<T> model;
 
     @Override
     public void initComponents() {
         this.model = createDataTableModel();
-        this.model.translate();
 
         setModel(model);
 
@@ -270,9 +269,10 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
     public void updateForm() {
     }
 
-    public void reset() {
+    public void reset(final Streamer<T> parentStreamer) {
         nameToFind = "";
         lastActionTime = 0;
+        model.reset(parentStreamer);
     }
 
     public Streamer<T> getParentStreamer() {

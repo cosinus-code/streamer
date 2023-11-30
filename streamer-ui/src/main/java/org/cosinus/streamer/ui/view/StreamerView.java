@@ -74,23 +74,26 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
 
     protected LoadingProgress loadingIndicator;
 
-    protected final Streamer<T> parentStreamer;
+    protected Streamer<T> parentStreamer;
 
-    public StreamerView(PanelLocation location, Streamer<T> parentStreamer) {
+    public StreamerView(PanelLocation location) {
         this.id = UUID.randomUUID().toString();
         this.location = location;
-        this.parentStreamer = parentStreamer;
 
         streamerViewMainPanel = new JPanel(new BorderLayout());
         setLayout(new BorderLayout());
     }
 
-    public String getId() {
-        return id;
-    }
-
     public Streamer<T> getParentStreamer() {
         return parentStreamer;
+    }
+
+    public void reset(final Streamer<T> parentStreamer) {
+        this.parentStreamer = parentStreamer;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public void updateForm() {
@@ -152,9 +155,6 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
     @Override
     public void workerUpdated(LoadWorkerModel<T> loadWorkerModel) {
         loadingIndicator.updateLoading(loadWorkerModel.getLoadedSize(), loadWorkerModel.getTotalSizeToLoad());
-        if (!streamerViewHandler.getCurrentView().hasFocus()) {
-            streamerViewHandler.getCurrentView().requestFocus();
-        }
     }
 
     @Override

@@ -45,14 +45,28 @@ public interface RemoteStreamer<T, R, C extends Connection<R>> extends Streamer<
         return getConnection()
             .map(connection -> streamSupplier.apply(connection)
                 .onClose(() -> returnConnection(connection)))
-            .orElseGet(Stream::empty);
+            .orElseThrow(this::noConnectionException);
     }
 
     default void runRemote(Consumer<C> remoteRunner) {
-        getConnection().ifPresent(connection -> {
+        getConnection().ifPresentOrElse(connection -> {
             remoteRunner.accept(connection);
             returnConnection(connection);
-        });
+        }, this::noConnectionException);
+    }
+
+    default <T> T getFromRemote(Function<C, T> remoteRunner) {
+        return getConnection()
+            .map(connection -> {
+                T result = remoteRunner.apply(connection);
+                returnConnection(connection);
+                return result;
+            })
+            .orElseThrow(this::noConnectionException);
+    }
+
+    private RuntimeException noConnectionException() {
+        return new RuntimeException("Cannot acquire connection: " + connectionName());
     }
 
     ConnectionPool<C, R> connectionPool();

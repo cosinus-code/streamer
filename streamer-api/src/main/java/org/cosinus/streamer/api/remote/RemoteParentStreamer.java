@@ -22,7 +22,6 @@ import org.cosinus.streamer.api.error.SaveStreamerException;
 import org.cosinus.streamer.api.stream.FlatStreamingSpliterator;
 import org.cosinus.streamer.api.stream.FlatStreamingStrategy;
 
-import java.nio.file.Path;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 

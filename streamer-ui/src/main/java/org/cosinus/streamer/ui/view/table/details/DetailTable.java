@@ -84,23 +84,28 @@ public class DetailTable<T extends Streamable> extends DataTable<T> implements A
     @Override
     public void initComponents() {
         super.initComponents();
-        setHeader();
         setSelectionType();
 
         setSelectionModel(new DefaultListSelectionModel() {
             public void setSelectionInterval(int row1, int row2) {
                 try {
                     super.setSelectionInterval(row1, row2);
-                    getTableModel().setCurrentIndex(row1);
+                    model.setCurrentIndex(row1);
                 } catch (Exception ex) {
                     errorHandler.handleError(DetailTable.this, ex);
                 }
             }
         });
+    }
+
+    @Override
+    public void reset(final Streamer<T> parentStreamer) {
+        super.reset(parentStreamer);
+        setHeaderRenders();
         setHeaderPopup();
     }
 
-    private void setHeader() {
+    private void setHeaderRenders() {
         TableColumnModel tcm = getColumnModel();
         for (int i = 0; i < tcm.getColumnCount(); i++) {
             tcm.getColumn(i).setHeaderRenderer(new DetailHeaderCell());
@@ -234,7 +239,7 @@ public class DetailTable<T extends Streamable> extends DataTable<T> implements A
 
     @Override
     protected DataTableModel<T> createDataTableModel() {
-        return new DetailTableModel<>(view.getParentStreamer());
+        return new DetailTableModel<>();
     }
 
     public void actionPerformed(ActionEvent e) {

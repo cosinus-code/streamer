@@ -23,7 +23,7 @@ import java.sql.SQLException;
 
 import static java.util.Optional.of;
 
-public class ResultSet {
+public class ResultSet implements AutoCloseable {
 
     private final java.sql.ResultSet resultSet;
 
@@ -44,6 +44,10 @@ public class ResultSet {
 
     public String getString(String columnLabel) {
         return get(resultSet -> resultSet.getString(columnLabel));
+    }
+
+    public Long getLong(int columnIndex) {
+        return get(resultSet -> resultSet.getLong(columnIndex));
     }
 
     private <T> T get(ResultSetValueSupplier<T> supplier) {

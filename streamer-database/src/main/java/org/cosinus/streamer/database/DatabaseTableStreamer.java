@@ -21,8 +21,13 @@ import org.cosinus.streamer.api.value.Value;
 import org.cosinus.streamer.database.connection.DatabaseException;
 import org.cosinus.streamer.database.resultset.ResultSet;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -45,6 +50,8 @@ public class DatabaseTableStreamer extends DatabaseStreamer {
     private Set<String> fields;
 
     private Set<String> primaryKeys;
+
+    private Long size;
 
     public DatabaseTableStreamer(String tableName, String tableType, String tableSchema, String connectionName) {
         super(connectionName);
@@ -101,6 +108,14 @@ public class DatabaseTableStreamer extends DatabaseStreamer {
     }
 
     @Override
+    public long getSize() {
+        if (size == null) {
+            size = getFromRemote(connection -> connection.getLong("select count(*) from " + tableName));
+        }
+        return size;
+    }
+
+    @Override
     public List<TranslatableName> detailNames() {
         return detailNames;
     }
@@ -110,7 +125,7 @@ public class DatabaseTableStreamer extends DatabaseStreamer {
     }
 
     @Override
-    public void initDetails() {
+    public void init() {
         runRemote(connection -> {
             try (Stream<ResultSet> fieldsStream = DatabaseStream.of(connection.getTableFields(tableName))) {
                 fields = fieldsStream
@@ -132,8 +147,8 @@ public class DatabaseTableStreamer extends DatabaseStreamer {
     @Override
     public void save() {
         runRemote(connection -> connection.createTable(tableName, Map.of(
-            "ID", INTEGER,
-            "CREATION", Types.DATE),
+                "ID", INTEGER,
+                "CREATION", Types.DATE),
             "ID"));
     }
 
@@ -158,10 +173,10 @@ public class DatabaseTableStreamer extends DatabaseStreamer {
 
     public void insertRecord(DatabaseRecord databaseRecord) {
         runRemote(connection -> connection.insertRecord(tableName, databaseRecord
-                .entrySet()
-                .stream()
-                .collect(toMap(
-                    entry -> entry.getKey().name(),
-                    entry -> entry.getValue().value()))));
+            .entrySet()
+            .stream()
+            .collect(toMap(
+                entry -> entry.getKey().name(),
+                entry -> entry.getValue().value()))));
     }
 }
