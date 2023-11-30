@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cosinus.streamer.database.connection;
+package org.cosinus.streamer.database.resultset;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @FunctionalInterface
-public interface ResultSetSupplier {
+public interface ResultSetValueSupplier<T> {
 
-    ResultSet get() throws SQLException;
-
+    T supply(java.sql.ResultSet resultSet) throws SQLException;
 }

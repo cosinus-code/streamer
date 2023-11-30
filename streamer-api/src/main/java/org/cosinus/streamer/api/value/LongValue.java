@@ -2,14 +2,20 @@ package org.cosinus.streamer.api.value;
 
 import org.jetbrains.annotations.NotNull;
 
+import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 import static org.apache.commons.lang3.ObjectUtils.compare;
 
 public class LongValue extends Value {
 
-    protected final Long value;
+    protected Long value;
 
     public LongValue(Long value) {
         this.value = value;
+    }
+
+    public LongValue(Object value) {
+        setValue(value);
     }
 
     @Override
@@ -18,8 +24,20 @@ public class LongValue extends Value {
     }
 
     @Override
-    public String toString() {
-        return Long.toString(value);
+    public void setValue(Object value) {
+        this.value = ofNullable(value)
+            .filter(Long.class::isInstance)
+            .map(Long.class::cast)
+            .or(() -> ofNullable(value)
+                .map(Object::toString)
+                .filter(not(String::isEmpty))
+                .map(Long::valueOf))
+            .orElse(null);
+    }
+
+    @Override
+    public Object value() {
+        return value;
     }
 
     @Override

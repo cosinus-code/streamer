@@ -16,9 +16,8 @@
 package org.cosinus.streamer.database;
 
 import org.cosinus.streamer.api.stream.StreamDelegate;
+import org.cosinus.streamer.database.resultset.ResultSet;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.stream.Stream;
 
 import static java.util.stream.StreamSupport.stream;
@@ -41,12 +40,6 @@ public class DatabaseStream extends StreamDelegate<ResultSet> {
     @Override
     public void close() {
         super.close();
-        try {
-            if (resultSet != null) {
-                resultSet.close();
-            }
-        } catch (SQLException ex) {
-            throw new RuntimeException(ex);
-        }
+        resultSet.close();
     }
 }

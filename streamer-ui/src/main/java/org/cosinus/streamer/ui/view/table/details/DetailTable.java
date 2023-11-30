@@ -155,7 +155,7 @@ public class DetailTable<T extends Streamable> extends DataTable<T> implements A
         invokeLater(() -> keyboardArrow = true);
     }
 
-    private void setHeaderPopup() {
+    public void setHeaderPopup() {
         popupHeader = new PopupMenu();
         ofNullable(getParentStreamer())
             .ifPresent(parentStreamer -> {

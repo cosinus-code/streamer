@@ -30,7 +30,6 @@ public class DetailViewCreator<T extends Streamable> implements StreamerViewCrea
 
     @Override
     public StreamerView<T> createStreamerView(PanelLocation location, Streamer<T> parentStreamer) {
-        parentStreamer.initDetails();
         return new DetailView<>(location, parentStreamer);
     }
 

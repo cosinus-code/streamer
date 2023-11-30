@@ -171,8 +171,8 @@ public abstract class FileStreamer<T> implements Streamer<T> {
 
     @Override
     public Map<TranslatableName, Value> details() {
-        if (detailNames == null) {
-            details();
+        if (details == null) {
+            initDetails();
         }
         return details;
     }

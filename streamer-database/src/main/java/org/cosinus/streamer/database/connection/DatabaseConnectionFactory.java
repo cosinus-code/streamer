@@ -48,7 +48,7 @@ public class DatabaseConnectionFactory extends BaseKeyedPooledObjectFactory<Stri
 
     @Override
     public DatabaseConnection create(String connectionName) throws Exception {
-        DriverManager.registerDriver(new OracleDriver());
+        //DriverManager.registerDriver(new OracleDriver());
         DatabaseConnectionModel databaseConnectionModel = getDatabaseConnectionModel(connectionName);
         Connection connection = getConnection(
             databaseConnectionModel.url(), databaseConnectionModel.username(), databaseConnectionModel.password());

@@ -27,18 +27,8 @@ public interface Streamer<T> extends Streamable {
         return null;
     }
 
+    @Override
     ParentStreamer<?> getParent();
-
-    default void save() {
-    }
-
-    default boolean delete() {
-        return false;
-    }
-
-    default boolean exists() {
-        return true;
-    }
 
     default BinaryStreamer createBinaryStreamer(Path path) {
         return null;

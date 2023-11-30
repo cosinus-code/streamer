@@ -16,21 +16,20 @@
 package org.cosinus.streamer.database;
 
 import org.cosinus.streamer.api.ParentStreamer;
-import org.cosinus.streamer.api.value.TextValue;
 import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.streamer.api.value.Value;
 import org.cosinus.streamer.database.connection.DatabaseException;
+import org.cosinus.streamer.database.resultset.ResultSet;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.sql.*;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static java.util.Optional.ofNullable;
-import static org.cosinus.streamer.database.connection.DatabaseConnection.*;
+import static java.sql.Types.INTEGER;
+import static java.util.stream.Collectors.*;
+import static org.cosinus.streamer.database.connection.DatabaseConnection.COLUMN_NAME;
 
 
 public class DatabaseTableStreamer extends DatabaseStreamer {
@@ -43,6 +42,10 @@ public class DatabaseTableStreamer extends DatabaseStreamer {
 
     private List<TranslatableName> detailNames;
 
+    private Set<String> fields;
+
+    private Set<String> primaryKeys;
+
     public DatabaseTableStreamer(String tableName, String tableType, String tableSchema, String connectionName) {
         super(connectionName);
         this.tableName = tableName;
@@ -52,27 +55,25 @@ public class DatabaseTableStreamer extends DatabaseStreamer {
 
     @Override
     public Stream<DatabaseRecord> stream() {
+        final AtomicInteger index = new AtomicInteger();
         return streamFromRemote(connection -> connection.stream(getStreamQuery()))
-            .map(this::createRecord);
+            .map(resultSet -> createRecord(resultSet, index.getAndIncrement()));
     }
 
-    private DatabaseRecord createRecord(ResultSet resultSet) {
-        DatabaseRecord databaseRecord = new DatabaseRecord(this);
+    private DatabaseRecord createRecord(ResultSet resultSet, int recordIndex) {
+        DatabaseRecord databaseRecord = new DatabaseRecord(this, Integer.toString(recordIndex));
         try {
             ResultSetMetaData metaData = resultSet.getMetaData();
             IntStream.rangeClosed(1, metaData.getColumnCount())
                 .forEach(index -> {
                     try {
                         String columnName = metaData.getColumnName(index);
-                        //int columnType = metaData.getColumnType(index);
-                        Value value = ofNullable(resultSet.getObject(index))
-                            .map(Object::toString)
-                            .map(TextValue::new)
-                            .orElse(null);
-
+                        Value value = resultSet.getValue(index);
                         databaseRecord.put(new TranslatableName(columnName), value);
-                        if (databaseRecord.getName() == null && value != null) {
+                        //TODO:
+                        if (columnName.equalsIgnoreCase("id") && value != null) {
                             databaseRecord.setName(value.toString());
+                            databaseRecord.setLeadDetailIndex(index - 1);
                         }
                     } catch (SQLException e) {
                         throw new DatabaseException(e);
@@ -104,13 +105,63 @@ public class DatabaseTableStreamer extends DatabaseStreamer {
         return detailNames;
     }
 
+    public Set<String> getPrimaryKeys() {
+        return primaryKeys;
+    }
+
     @Override
     public void initDetails() {
-        try (Stream<ResultSet> fieldsStream = resultSetStream(connection -> connection.getTableFields(tableName))) {
-            detailNames = fieldsStream
-                .map(field -> getResultSetValue(field, COLUMN_NAME))
-                .map(TranslatableName::new)
-                .collect(Collectors.toList());
-        }
+        runRemote(connection -> {
+            try (Stream<ResultSet> fieldsStream = DatabaseStream.of(connection.getTableFields(tableName))) {
+                fields = fieldsStream
+                    .map(field -> field.getString(COLUMN_NAME))
+                    .collect(toSet());
+            }
+            try (Stream<ResultSet> pkStream = DatabaseStream.of(connection.getTablePrimaryKeys(tableName))) {
+                primaryKeys = pkStream
+                    .map(field -> field.getString(COLUMN_NAME))
+                    .collect(toSet());
+            }
+        });
+        detailNames = fields
+            .stream()
+            .map(TranslatableName::new)
+            .collect(toList());
+    }
+
+    @Override
+    public void save() {
+        runRemote(connection -> connection.createTable(tableName, Map.of(
+            "ID", INTEGER,
+            "CREATION", Types.DATE),
+            "ID"));
+    }
+
+    @Override
+    public boolean delete() {
+        runRemote(connection -> connection.dropTable(tableName));
+        return true;
+    }
+
+    public void updateRecord(DatabaseRecord databaseRecord) {
+        Map<String, Object> fieldValuesToUpdate = new LinkedHashMap<>();
+        Map<String, Object> primaryKey = new LinkedHashMap<>();
+        databaseRecord.forEach((key, value) -> {
+            if (primaryKeys.contains(key.name())) {
+                primaryKey.put(key.name(), value.value());
+            } else {
+                fieldValuesToUpdate.put(key.name(), value.value());
+            }
+        });
+        runRemote(connection -> connection.updateRecord(tableName, primaryKey, fieldValuesToUpdate));
+    }
+
+    public void insertRecord(DatabaseRecord databaseRecord) {
+        runRemote(connection -> connection.insertRecord(tableName, databaseRecord
+                .entrySet()
+                .stream()
+                .collect(toMap(
+                    entry -> entry.getKey().name(),
+                    entry -> entry.getValue().value()))));
     }
 }

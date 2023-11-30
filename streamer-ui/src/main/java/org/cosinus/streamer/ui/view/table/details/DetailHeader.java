@@ -154,11 +154,7 @@ public class DetailHeader extends JTableHeader {
     }
 
     @Override
-    public DetailTable getTable() {
-        return (DetailTable) super.getTable();
-    }
-
-    protected DetailTableModel getTableModel() {
-        return (DetailTableModel) getTable().getTableModel();
+    public DetailTable<?> getTable() {
+        return (DetailTable<?>) super.getTable();
     }
 }

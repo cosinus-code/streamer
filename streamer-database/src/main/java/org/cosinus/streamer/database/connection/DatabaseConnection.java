@@ -19,16 +19,24 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.api.remote.Connection;
 import org.cosinus.streamer.database.DatabaseStream;
+import org.cosinus.streamer.database.resultset.ResultSet;
+import org.cosinus.streamer.database.resultset.ResultSetSupplier;
+import org.jooq.Condition;
+import org.jooq.DSLContext;
+import org.jooq.DataType;
+import org.jooq.impl.DefaultDataType;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ArrayUtils.toArray;
 import static org.cosinus.streamer.database.connection.DatabaseObjectType.TABLE;
+import static org.jooq.impl.DSL.*;
 
 public class DatabaseConnection implements Connection<ResultSet> {
 
@@ -42,11 +50,16 @@ public class DatabaseConnection implements Connection<ResultSet> {
 
     private final java.sql.Connection connection;
 
+    private final DSLContext context;
+
     private final String currentSchema;
 
-    public DatabaseConnection(java.sql.Connection connection, String currentSchema) {
+    public DatabaseConnection(final java.sql.Connection connection,
+                              String currentSchema) {
         this.connection = connection;
+        this.context = using(connection);
         this.currentSchema = currentSchema;
+
     }
 
     public String getCurrentSchema() {
@@ -73,6 +86,11 @@ public class DatabaseConnection implements Connection<ResultSet> {
             .getColumns(null, currentSchema, tableName, null));
     }
 
+    public ResultSet getTablePrimaryKeys(String tableName) {
+        return resultSet(() -> connection.getMetaData()
+            .getPrimaryKeys(null, currentSchema, tableName));
+    }
+
     public ResultSet getSchemas() {
         return resultSet(() -> connection.getMetaData().getSchemas());
     }
@@ -81,9 +99,18 @@ public class DatabaseConnection implements Connection<ResultSet> {
         return resultSet(() -> connection.createStatement().executeQuery(query));
     }
 
+    public void runQuery(String query) {
+        try {
+            LOG.info("Execute query: " + query);
+            connection.createStatement().execute(query);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private ResultSet resultSet(final ResultSetSupplier resultSetSupplier) {
         try {
-            return resultSetSupplier.get();
+            return new ResultSet(resultSetSupplier.get());
         } catch (SQLException e) {
             throw new DatabaseException(e);
         }
@@ -126,5 +153,59 @@ public class DatabaseConnection implements Connection<ResultSet> {
 
     public java.sql.Connection getConnection() {
         return connection;
+    }
+
+    public void insertRecord(String tableName, final Map<String, Object> fieldValues) {
+        runQuery(insertRecordQuery(tableName, fieldValues));
+    }
+
+    public String insertRecordQuery(String tableName, final Map<String, Object> fieldValues) {
+        return context.insertInto(table(name(tableName)))
+            .set(fieldValues)
+            .toString();
+    }
+
+    public void updateRecord(String tableName,
+                             final Map<String, Object> primaryKey,
+                             final Map<String, Object> fieldValuesToUpdate) {
+        runQuery(updateRecordQuery(tableName, primaryKey, fieldValuesToUpdate));
+    }
+
+    public String updateRecordQuery(String tableName,
+                                    final Map<String, Object> primaryKey,
+                                    final Map<String, Object> fieldValuesToUpdate) {
+        return context.update(table(name(tableName)))
+            .set(fieldValuesToUpdate)
+            .where(primaryKey
+                .keySet()
+                .stream()
+                .map(key -> field(name(key)).eq(primaryKey.get(key)))
+                .reduce(Condition::and)
+                .orElseThrow(() -> new DatabaseException("Cannot update record without primary key")))
+            .toString();
+    }
+
+    public void createTable(String tableName, Map<String, Integer> fields, String... primaryKey) {
+        runQuery(createTableQuery(tableName, fields, primaryKey));
+    }
+
+    public String createTableQuery(String tableName, Map<String, Integer> fields, String... primaryKey) {
+        return context.createTable(name(currentSchema, tableName))
+            .columns(fields.entrySet()
+                .stream()
+                .map(entry -> field(
+                    name(entry.getKey()),
+                    type(entry.getValue())))
+                .collect(Collectors.toList()))
+            .primaryKey(primaryKey)
+            .toString();
+    }
+
+    private DataType<?> type(int sqlType) {
+        return DefaultDataType.getDataType(context.dialect(), sqlType);
+    }
+
+    public void dropTable(String tableName) {
+        runQuery(context.dropTable(tableName).toString());
     }
 }

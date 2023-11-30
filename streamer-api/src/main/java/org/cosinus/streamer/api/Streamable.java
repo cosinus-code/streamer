@@ -1,5 +1,21 @@
+/*
+ * Copyright 2020 Cosinus Software
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.cosinus.streamer.api;
 
+import org.cosinus.streamer.api.value.TextValue;
 import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.streamer.api.value.Value;
 
@@ -7,8 +23,8 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 
@@ -74,6 +90,17 @@ public interface Streamable {
         return false;
     }
 
+    default boolean exists() {
+        return true;
+    }
+
+    default void save() {
+    }
+
+    default boolean delete() {
+        return false;
+    }
+
     default String getIconName() {
         return null;
     }
@@ -87,13 +114,38 @@ public interface Streamable {
     }
 
     default List<TranslatableName> detailNames() {
-        return emptyList();
+        return singletonList(new TranslatableName("name", null));
     }
 
     default Map<TranslatableName, Value> details() {
-        return emptyMap();
+        return singletonMap(new TranslatableName("name", null), new TextValue(getName()));
     }
 
     default void initDetails() {
-    };
+    }
+
+    Streamable getParent();
+
+    default Value getDetail(int detailIndex) {
+        return ofNullable(getParent())
+            .map(Streamable::detailNames)
+            .filter(detailNames -> detailIndex < detailNames.size())
+            .map(detailNames -> detailNames.get(detailIndex))
+            .map(detailName -> details().get(detailName))
+            .orElse(null);
+    }
+
+
+    default void updateDetail(int detailIndex, Object value) {
+        ofNullable(getDetail(detailIndex))
+            .ifPresent(detail -> detail.setValue(value));
+    }
+
+    default boolean canUpdateDetail(int detailIndex) {
+        return detailIndex == 0;
+    }
+
+    default int getLeadDetailIndex() {
+        return 0;
+    }
 }

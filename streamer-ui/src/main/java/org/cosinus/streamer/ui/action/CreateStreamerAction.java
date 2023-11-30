@@ -16,7 +16,7 @@
 
 package org.cosinus.streamer.ui.action;
 
-import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.ActionContext;
@@ -29,7 +29,6 @@ import javax.swing.*;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_F7;
-import static java.util.Optional.ofNullable;
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 import static org.cosinus.swing.dialog.OptionsDialog.PLAIN_MESSAGE;
 
@@ -58,22 +57,23 @@ public class CreateStreamerAction implements ActionInContext {
     @Override
     public void run(ActionContext context) {
         StreamerView<?> currentView = streamerViewHandler.getCurrentView();
-        Streamer<?> currentFolder = currentView.getParentStreamer();
-        if (!currentFolder.getParent().canUpdate()) {
-            return;
-        }
+        if (currentView.getParentStreamer() instanceof ParentStreamer<?> parent) {
+            if (!parent.getParent().canUpdate()) {
+                return;
+            }
 
-        ofNullable(currentFolder.getParent())
-            .flatMap(parent -> dialogHandler.showInputDialog(applicationFrame,
+            dialogHandler.showInputDialog(
+                    applicationFrame,
                     translator.translate("act-new-enter-name"),
                     translator.translate("act-new-new-streamer"),
                     PLAIN_MESSAGE)
-                .map(currentFolder.getPath()::resolve)
-                .map(path -> parent.create(path, true)))
-            .ifPresent(streamer -> {
-                streamer.save();
-                currentView.reload(streamer.getName());
-            });
+                .map(parent.getPath()::resolve)
+                .map(path -> parent.create(path, true))
+                .ifPresent(streamer -> {
+                    streamer.save();
+                    currentView.reload(streamer.getName());
+                });
+        }
     }
 
     @Override

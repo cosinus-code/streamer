@@ -7,20 +7,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.compare;
 
-public class MemoryValue extends Value {
+public class MemoryValue extends LongValue {
 
     @Autowired
     private FormatHandler formatHandler;
 
-    protected Long value;
-
     public MemoryValue(Long value) {
-        this.value = value;
+        super(value);
     }
 
-    @Override
-    public boolean isNumeric() {
-        return true;
+    public MemoryValue(Object value) {
+        super(value);
     }
 
     @Override

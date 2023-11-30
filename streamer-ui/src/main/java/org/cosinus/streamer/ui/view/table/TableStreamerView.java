@@ -19,6 +19,7 @@ package org.cosinus.streamer.ui.view.table;
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
+import org.cosinus.streamer.ui.view.DefaultStreamerView;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
 
@@ -33,7 +34,7 @@ import java.util.List;
 import static java.awt.BorderLayout.CENTER;
 import static java.util.Optional.ofNullable;
 
-public abstract class TableStreamerView<T extends Streamable> extends StreamerView<T> {
+public abstract class TableStreamerView<T extends Streamable> extends DefaultStreamerView<T> {
 
     protected DataTable<T> table;
 
@@ -67,11 +68,14 @@ public abstract class TableStreamerView<T extends Streamable> extends StreamerVi
         addComponentListener(new ResizeListener());
 
         super.initComponents();
-
-        validateInContainer(table);
     }
 
-    protected abstract DataTable createDataTable();
+    @Override
+    protected Container getContainer() {
+        return table;
+    }
+
+    protected abstract DataTable<T> createDataTable();
 
     @Override
     public LoadWorkerModel<T> getLoadWorkerModel() {
@@ -109,12 +113,12 @@ public abstract class TableStreamerView<T extends Streamable> extends StreamerVi
     }
 
     @Override
-    public Rectangle getCurrentRectangle() {
+    public Rectangle getCurrentDetailRectangle(int detailIndex) {
         int index = table.getCurrentIndex();
         int row = table.getTableModel().getRowForIndex(index);
-        int col = table.getTableModel().getColumnForIndex(index);
-        Rectangle rect = table.getCellRect(row, col, true);
-        return new Rectangle(rect.x + 21, rect.y, rect.width - 21, rect.height + 2);
+        Rectangle rect = table.getCellRect(row, detailIndex, true);
+        int offsetIcon = detailIndex == 0 ? 21 : -2;
+        return new Rectangle(rect.x + offsetIcon, rect.y, rect.width - offsetIcon + 4, rect.height);
     }
 
     @Override

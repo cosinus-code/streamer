@@ -42,7 +42,7 @@ public class RenameStreamerAction implements ActionInContext {
 
     @Override
     public void run(ActionContext context) {
-        streamerViewHandler.getCurrentView().showRename();
+        streamerViewHandler.getCurrentView().showDetailEditors();
     }
 
     @Override

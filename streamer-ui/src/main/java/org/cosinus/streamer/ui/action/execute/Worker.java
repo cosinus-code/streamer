@@ -71,8 +71,8 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
 
     public void start() {
         workerModel.init();
-        execute();
         workerListenerHandler.workerStarted(getId(), getWorkerModel());
+        execute();
     }
 
     public boolean isPaused() {

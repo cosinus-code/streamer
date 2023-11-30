@@ -50,6 +50,12 @@ public class DetailTableModel<T extends Streamer<?>> extends DataTableModel<T> {
             .orElseGet(() -> singletonList(getName()));
     }
 
+//    public void resetHeader() {
+//        this.columnNames = ofNullable(parentStreamer.detailNames())
+//            .filter(not(List::isEmpty))
+//            .orElseGet(() -> singletonList(getName()));
+//    }
+
     public int getSortedColumn() {
         return sortedColumn;
     }
@@ -74,8 +80,7 @@ public class DetailTableModel<T extends Streamer<?>> extends DataTableModel<T> {
     }
 
     @Override
-    public Object getValueAt(int row,
-                             int column) {
+    public Object getValueAt(int row, int column) {
         if (row >= viewItems.size()) {
             return null;
         }
@@ -84,27 +89,10 @@ public class DetailTableModel<T extends Streamer<?>> extends DataTableModel<T> {
             return "";
         }
 
-        return column > 0 ? item.getDetail(column) : item;
-
-//        DetailColumn col = DetailColumn.getValueAt(column);
-//        switch (col) {
-//            case VALUE:
-//                return item.getStreamer().getValue();
-//            case TYPE:
-//                return preferences.booleanPreference(FULL_TYPE_DESCRIPTION) ?
-//                    item.getStreamer().getDescription() :
-//                    item.getStreamer().getType();
-//            case SIZE:
-//                return isComputingSize(item.getStreamer().getPath().toString()) ?
-//                    "..." :
-//                    item.getFormattedSize();
-//            case TIME:
-//                return getFormattedDate(item.getStreamer().lastModified());
-//            default:
-//                return item;
-//        }
+        return item;
     }
 
+    //TODO
     private boolean isComputingSize(String path) {
         return mapComputedSize.containsKey(path);
     }

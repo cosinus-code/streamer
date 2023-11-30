@@ -95,7 +95,7 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
         return getViewItemAt(getRowForIndex(currentIndex), getColumnForIndex(currentIndex));
     }
 
-    private ViewItem getViewItemAt(int rowIndex, int columnIndex) {
+    public ViewItem getViewItemAt(int rowIndex, int columnIndex) {
         return (ViewItem) getValueAt(rowIndex, columnIndex);
     }
 

@@ -15,8 +15,8 @@
  */
 package org.cosinus.streamer.database;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import org.cosinus.streamer.database.resultset.ResultSet;
+
 import java.util.Spliterators.AbstractSpliterator;
 import java.util.function.Consumer;
 
@@ -33,12 +33,8 @@ public class DatabaseSpliterator extends AbstractSpliterator<ResultSet> {
 
     @Override
     public boolean tryAdvance(Consumer<? super ResultSet> action) {
-        try {
-            if (!resultSet.next()) {
-                return false;
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        if (!resultSet.next()) {
+            return false;
         }
 
         action.accept(resultSet);
@@ -46,13 +42,7 @@ public class DatabaseSpliterator extends AbstractSpliterator<ResultSet> {
     }
 
     public void close() {
-        try {
-            if (resultSet != null) {
-                resultSet.close();
-            }
-        } catch (SQLException ex) {
-            throw new RuntimeException(ex);
-        }
+        resultSet.close();
     }
 
 }

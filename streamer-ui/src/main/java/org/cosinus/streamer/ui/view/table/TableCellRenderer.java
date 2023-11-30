@@ -65,6 +65,7 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
                                                    boolean hasFocus,
                                                    int row,
                                                    int column) {
+
         Component component = super.getTableCellRendererComponent(table,
                                                                   value,
                                                                   isSelected,
@@ -82,8 +83,6 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
         }
 
         if (component instanceof JLabel label && value instanceof ViewItem item) {
-
-            label.setText(item.toString());
             if (item.isLink()) {
                 label.setFont(label.getFont().deriveFont(Font.ITALIC));
             }
@@ -92,12 +91,12 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
             }
 
             return getCellComponent((JLabel) component,
-                                    dataTable,
-                                    item,
-                                    isSelected,
-                                    hasFocus,
-                                    row,
-                                    column);
+                dataTable,
+                item,
+                isSelected,
+                hasFocus,
+                row,
+                column);
         }
 
         return component;
@@ -121,12 +120,11 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
     }
 
     protected Optional<Icon> getIcon(IconSize size, ViewItem item, boolean showPreview) {
-        File itemFile = createItemFile(item);
         return ofNullable(item.getIconName())
             .flatMap(iconName -> iconHandler.findIconByName(item.getIconName(), size))
             .or(() -> showPreview ?
-                findIconWithPreview(size, itemFile) :
-                iconHandler.findIconByFile(itemFile, size));
+                findIconWithPreview(size, createItemFile(item)) :
+                iconHandler.findIconByFile(createItemFile(item), size));
     }
 
     private Optional<Icon> findIconWithPreview(IconSize size, File itemFile) {
@@ -146,7 +144,8 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
     public File createItemFile(ViewItem item) {
         String fileName = ofNullable(item.getPath())
             .map(Objects::toString)
-            .orElseGet(item::getName);
+            .or(() -> ofNullable(item.getName()))
+            .orElse("tmp");
         return new File(fileName) {
             @Override
             public boolean isDirectory() {

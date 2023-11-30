@@ -41,17 +41,16 @@ public class DetailCellRenderer extends TableCellRenderer<DetailTable> {
 
         setBorder(emptyBorder(0, 3, 0, 3));
 
-        boolean isNumeric = ofNullable(item.getDetail(column))
-            .filter(value -> Value.class.isAssignableFrom(value.getClass()))
-            .map(Value.class::cast)
-            .map(Value::isNumeric)
-            .orElse(false);
-        label.setHorizontalAlignment(isNumeric ? RIGHT : LEFT);
+        label.setText(item.isTopItem() ? item.toString() : ofNullable(item.getDetail(column))
+            .map(Object::toString)
+            .orElse(""));
 
-        Optional<Icon> icon = item.isTopItem() ?
-            getUpIcon() :
-            getIcon(X16, item);
-        icon.ifPresent(label::setIcon);
+        if (column == 0) {
+            Optional<Icon> icon = item.isTopItem() ?
+                getUpIcon() :
+                getIcon(X16, item);
+            icon.ifPresent(label::setIcon);
+        }
 
         return label;
     }

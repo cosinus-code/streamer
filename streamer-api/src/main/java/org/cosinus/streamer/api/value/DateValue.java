@@ -15,25 +15,30 @@
  */
 package org.cosinus.streamer.api.value;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 import static org.apache.commons.lang3.ObjectUtils.compare;
 
 public class DateValue extends Value {
 
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 
-    protected final Date value;
+    protected Date value;
 
     public DateValue(Long value) {
         this(ofNullable(value)
             .map(Date::new)
             .orElse(null));
+    }
+
+    public DateValue(Object value) {
+        setValue(value);
     }
 
     public DateValue(Date date) {
@@ -43,6 +48,31 @@ public class DateValue extends Value {
     @Override
     public boolean isNumeric() {
         return false;
+    }
+
+    @Override
+    public void setValue(Object value) {
+        this.value = ofNullable(value)
+            .filter(Date.class::isInstance)
+            .map(Date.class::cast)
+            .or(() -> ofNullable(value)
+                .map(Object::toString)
+                .filter(not(String::isEmpty))
+                .map(this::parseDate))
+            .orElse(null);
+    }
+
+    @Override
+    public Object value() {
+        return value;
+    }
+
+    private Date parseDate(String text) {
+        try {
+            return DATE_FORMAT.parse(text);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

@@ -24,6 +24,11 @@
             <artifactId>ojdbc11</artifactId>
             <version>23.3.0.23.09</version>
         </dependency>
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq</artifactId>
+            <version>3.18.7</version>
+        </dependency>
     </dependencies>
 
 </project>

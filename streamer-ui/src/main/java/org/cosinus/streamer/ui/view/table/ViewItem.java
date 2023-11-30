@@ -18,13 +18,8 @@ package org.cosinus.streamer.ui.view.table;
 
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.value.Value;
-import org.cosinus.swing.format.FormatHandler;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.file.Path;
-
-import static java.util.Optional.ofNullable;
-import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 /**
  * View item used in the view model
@@ -33,8 +28,6 @@ public class ViewItem {
 
     private static final String TOP_ITEM_NAME = "..";
 
-    @Autowired
-    private FormatHandler formatHandler;
     private final boolean topItem;
 
     private final Streamable streamable;
@@ -44,7 +37,6 @@ public class ViewItem {
     }
 
     public ViewItem(Streamable streamable, boolean topItem) {
-        injectContext(this);
         this.streamable = streamable;
         this.topItem = topItem;
     }
@@ -90,11 +82,7 @@ public class ViewItem {
         return isTopItem() ? TOP_ITEM_NAME : streamable.getName();
     }
 
-    public Value getDetail(int column) {
-        return ofNullable(streamable.detailNames())
-            .filter(detailNames -> column < detailNames.size())
-            .map(detailNames -> detailNames.get(column))
-            .map(streamable.details()::get)
-            .orElse(null);
+    public Value getDetail(int detailIndex) {
+        return streamable.getDetail(detailIndex);
     }
 }

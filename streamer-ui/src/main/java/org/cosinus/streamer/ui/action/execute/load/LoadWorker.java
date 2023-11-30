@@ -17,6 +17,7 @@
 package org.cosinus.streamer.ui.action.execute.load;
 
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.stream.pipeline.PipelineListener;
 import org.cosinus.streamer.api.stream.pipeline.PipelineStrategy;
 import org.cosinus.streamer.ui.action.execute.PipelineWorker;
 import org.cosinus.streamer.ui.view.StreamerView;
@@ -35,6 +36,11 @@ public class LoadWorker<T> extends PipelineWorker<LoadWorkerModel<T>, T> {
         super(id, streamerView.getLoadWorkerModel());
         this.streamerToLoad = streamerToLoad;
         workerModel.setContentIdentifier(contentIdentifier);
+    }
+
+    @Override
+    public void preparePipelineOpen(PipelineStrategy pipelineStrategy, PipelineListener<T> pipelineListener) {
+        streamerToLoad.initDetails();
     }
 
     @Override

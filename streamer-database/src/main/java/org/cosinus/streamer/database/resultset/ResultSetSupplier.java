@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cosinus.streamer.database.connection;
+package org.cosinus.streamer.database.resultset;
 
-import org.cosinus.streamer.api.remote.DefaultConnectionPool;
-import org.cosinus.streamer.database.resultset.ResultSet;
-import org.springframework.stereotype.Component;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-@Component
-public class DatabaseConnectionPool extends DefaultConnectionPool<DatabaseConnection, ResultSet> {
+@FunctionalInterface
+public interface ResultSetSupplier {
 
-    public DatabaseConnectionPool(final DatabaseConnectionFactory factory,
-                                  final DatabaseConnectionConfig config) {
-        super(factory, config);
-    }
+    ResultSet get() throws SQLException;
+
 }

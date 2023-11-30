@@ -15,19 +15,14 @@
  */
 package org.cosinus.streamer.database;
 
-import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.remote.ConnectionPool;
 import org.cosinus.streamer.api.remote.RemoteStreamer;
 import org.cosinus.streamer.database.connection.DatabaseConnection;
 import org.cosinus.streamer.database.connection.DatabaseConnectionPool;
-import org.cosinus.streamer.database.connection.DatabaseException;
+import org.cosinus.streamer.database.resultset.ResultSet;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.file.Path;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.function.Function;
-import java.util.stream.Stream;
 
 import static org.cosinus.streamer.database.DatabaseMainStreamer.DATABASE_PROTOCOL;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
@@ -63,17 +58,4 @@ public abstract class DatabaseStreamer implements RemoteStreamer<DatabaseRecord,
     public Path getPath() {
         return getParent().getPath().resolve(getName());
     }
-
-    public String getResultSetValue(final ResultSet resultSet, String fieldName) {
-        try {
-            return resultSet.getString(fieldName);
-        } catch (SQLException e) {
-            throw new DatabaseException(e);
-        }
-    }
-
-    protected Stream<ResultSet> resultSetStream(Function<DatabaseConnection, ResultSet> streamSupplier) {
-        return streamFromRemote(connection -> DatabaseStream.of(streamSupplier.apply(connection)));
-    }
-
 }

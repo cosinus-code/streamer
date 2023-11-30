@@ -16,11 +16,11 @@
 package org.cosinus.streamer.database;
 
 import org.cosinus.streamer.api.ParentStreamer;
+import org.cosinus.streamer.database.resultset.ResultSet;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.ResultSet;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
@@ -47,7 +47,7 @@ public class DatabaseConnectionStreamer extends DatabaseParentStreamer<DatabaseS
 
     @Override
     public DatabaseSchemaStreamer createFromRemote(ResultSet resultSet) {
-        return new DatabaseSchemaStreamer(getResultSetValue(resultSet, TABLE_SCHEMA), connectionName);
+        return new DatabaseSchemaStreamer(resultSet.getString(TABLE_SCHEMA), connectionName);
     }
 
     @Override

@@ -16,7 +16,6 @@
 package org.cosinus.streamer.database;
 
 import org.cosinus.streamer.api.Streamable;
-import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.streamer.api.value.Value;
 
@@ -31,12 +30,18 @@ public class DatabaseRecord extends LinkedHashMap<TranslatableName, Value> imple
 
     private final DatabaseTableStreamer parent;
 
-    private String name;
+    private final String id;
 
-    public DatabaseRecord(final DatabaseTableStreamer parent) {
+    private String primaryKeyFieldName;
+
+    private int leadDetailIndex;
+
+    public DatabaseRecord(final DatabaseTableStreamer parent, final String id) {
         this.parent = parent;
+        this.id = id;
     }
 
+    @Override
     public DatabaseTableStreamer getParent() {
         return parent;
     }
@@ -48,16 +53,20 @@ public class DatabaseRecord extends LinkedHashMap<TranslatableName, Value> imple
 
     @Override
     public String getId() {
-        return name;
+        return id;
     }
 
     @Override
     public String getName() {
-        return name;
+        return primaryKeyFieldName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String primaryKeyFieldName) {
+        this.primaryKeyFieldName = primaryKeyFieldName;
+    }
+
+    public void setLeadDetailIndex(int leadDetailIndex) {
+        this.leadDetailIndex = leadDetailIndex;
     }
 
     @Override
@@ -73,5 +82,24 @@ public class DatabaseRecord extends LinkedHashMap<TranslatableName, Value> imple
     @Override
     public Map<TranslatableName, Value> details() {
         return this;
+    }
+
+    @Override
+    public boolean canUpdateDetail(int detailIndex) {
+        return !parent.getPrimaryKeys().contains(parent.detailNames().get(detailIndex).name());
+    }
+
+    @Override
+    public int getLeadDetailIndex() {
+        return leadDetailIndex;
+    }
+
+    @Override
+    public void save() {
+        if (exists()) {
+            parent.updateRecord(this);
+        } else {
+            parent.insertRecord(this);
+        }
     }
 }

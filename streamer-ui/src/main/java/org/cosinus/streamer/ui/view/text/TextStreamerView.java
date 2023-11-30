@@ -118,13 +118,13 @@ public class TextStreamerView extends StreamerView<String> {
     }
 
     @Override
-    public Rectangle getCurrentRectangle() {
+    public Rectangle getCurrentDetailRectangle(int detailIndex) {
         return null;
     }
 
     @Override
-    protected void validateInContainer(Container container) {
-
+    protected Container getContainer() {
+        return textEditor;
     }
 
     @Override

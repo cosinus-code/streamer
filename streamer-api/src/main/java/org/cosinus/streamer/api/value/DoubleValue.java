@@ -17,6 +17,8 @@ package org.cosinus.streamer.api.value;
 
 import org.jetbrains.annotations.NotNull;
 
+import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 import static org.apache.commons.lang3.ObjectUtils.compare;
 
 public class DoubleValue extends Value {
@@ -27,14 +29,27 @@ public class DoubleValue extends Value {
         this.value = value;
     }
 
+    public DoubleValue(Object value) {
+        setValue(value);
+    }
+
     @Override
     public boolean isNumeric() {
         return true;
     }
 
     @Override
-    public String toString() {
-        return value.toString();
+    public void setValue(Object value) {
+        this.value = ofNullable(value)
+            .map(Object::toString)
+            .filter(not(String::isEmpty))
+            .map(Double::parseDouble)
+            .orElse(null);
+    }
+
+    @Override
+    public Object value() {
+        return value;
     }
 
     @Override

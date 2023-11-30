@@ -17,19 +17,21 @@ package org.cosinus.streamer.api.value;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigDecimal;
+
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 import static org.apache.commons.lang3.ObjectUtils.compare;
 
-public class BooleanValue extends Value {
+public class BigDecimalValue extends Value {
 
-    protected Boolean value;
+    private BigDecimal value;
 
-    public BooleanValue(Boolean value) {
+    public BigDecimalValue(BigDecimal value) {
         this.value = value;
     }
 
-    public BooleanValue(Object value) {
+    public BigDecimalValue(Object value) {
         setValue(value);
     }
 
@@ -41,12 +43,12 @@ public class BooleanValue extends Value {
     @Override
     public void setValue(Object value) {
         this.value = ofNullable(value)
-            .filter(Boolean.class::isInstance)
-            .map(Boolean.class::cast)
+            .filter(BigDecimal.class::isInstance)
+            .map(BigDecimal.class::cast)
             .or(() -> ofNullable(value)
                 .map(Object::toString)
                 .filter(not(String::isEmpty))
-                .map(Boolean::valueOf))
+                .map(BigDecimal::new))
             .orElse(null);
     }
 
@@ -57,8 +59,8 @@ public class BooleanValue extends Value {
 
     @Override
     public int compareTo(@NotNull Value other) {
-        if (other instanceof BooleanValue booleanValue) {
-            return Boolean.compare(value, booleanValue.value);
+        if (other instanceof BigDecimalValue decimalValue && value != null && decimalValue.value != null) {
+            return value.compareTo(decimalValue.value);
         }
         return compare(this, other);
     }
