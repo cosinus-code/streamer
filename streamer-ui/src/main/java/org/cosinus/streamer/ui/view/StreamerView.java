@@ -88,6 +88,10 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
         return parentStreamer;
     }
 
+    public void setParentStreamer(Streamer<T> parentStreamer) {
+        this.parentStreamer = parentStreamer;
+    }
+
     public void reset(final Streamer<T> parentStreamer) {
         this.parentStreamer = parentStreamer;
     }

@@ -26,8 +26,8 @@ import static java.util.Optional.ofNullable;
 
 public class FileBinaryStreamer extends FileStreamer<byte[]> implements BinaryStreamer {
 
-    public FileBinaryStreamer(FileMainStreamer fileMainStreamer, FileHandler fileHandler, Path path) {
-        super(fileMainStreamer, fileHandler, path);
+    public FileBinaryStreamer(Path path) {
+        super(path);
     }
 
     @Override

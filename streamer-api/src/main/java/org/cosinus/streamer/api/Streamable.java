@@ -21,10 +21,8 @@ import org.cosinus.streamer.api.value.Value;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
 
 import static java.util.Collections.singletonList;
-import static java.util.Collections.singletonMap;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 
@@ -117,8 +115,8 @@ public interface Streamable {
         return singletonList(new TranslatableName("name", null));
     }
 
-    default Map<TranslatableName, Value> details() {
-        return singletonMap(new TranslatableName("name", null), new TextValue(getName()));
+    default List<Value> details() {
+        return singletonList(new TextValue(getName()));
     }
 
     default void init() {
@@ -126,19 +124,9 @@ public interface Streamable {
 
     Streamable getParent();
 
-    default Value getDetail(int detailIndex) {
-        return ofNullable(getParent())
-            .map(Streamable::detailNames)
-            .filter(detailNames -> detailIndex < detailNames.size())
-            .map(detailNames -> detailNames.get(detailIndex))
-            .map(detailName -> details().get(detailName))
-            .orElse(null);
-    }
-
 
     default void updateDetail(int detailIndex, Object value) {
-        ofNullable(getDetail(detailIndex))
-            .ifPresent(detail -> detail.setValue(value));
+        details().get(detailIndex).setValue(value);
     }
 
     default boolean canUpdateDetail(int detailIndex) {

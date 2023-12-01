@@ -16,26 +16,26 @@
 
 package org.cosinus.streamer.file;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.error.StreamerException;
 import org.cosinus.streamer.api.value.*;
 import org.cosinus.swing.util.AutoRemovableTemporaryFile;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.Objects;
 
+import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 import static org.cosinus.streamer.file.FileMainStreamer.FILE_PROTOCOL;
+import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 public abstract class FileStreamer<T> implements Streamer<T> {
 
@@ -43,21 +43,28 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     protected static final String DETAIL_KEY_TYPE = "type";
     protected static final String DETAIL_KEY_SIZE = "size";
     protected static final String DETAIL_KEY_TIME = "time";
+    protected static final String DETAIL_KEY_FREE_MEMORY = "detail_free_memory";
 
-    protected final FileMainStreamer fileMainStreamer;
+    @Autowired
+    protected FileMainStreamer fileMainStreamer;
 
-    protected final FileHandler fileHandler;
+    @Autowired
+    protected FileHandler fileHandler;
 
     protected final File file;
 
-    protected List<TranslatableName> detailNames;
+    protected final List<TranslatableName> detailNames;
 
-    protected Map<TranslatableName, Value> details;
+    protected List<Value> details;
 
-    public FileStreamer(FileMainStreamer fileMainStreamer, FileHandler fileHandler, Path path) {
-        this.fileMainStreamer = fileMainStreamer;
-        this.fileHandler = fileHandler;
+    public FileStreamer(Path path) {
+        injectContext(this);
         this.file = path.toFile();
+        detailNames = asList(
+            new TranslatableName(DETAIL_KEY_NAME, null),
+            new TranslatableName(DETAIL_KEY_TYPE, null),
+            new TranslatableName(DETAIL_KEY_SIZE, null),
+            new TranslatableName(DETAIL_KEY_TIME, null));
     }
 
     public File getFile() {
@@ -77,7 +84,7 @@ public abstract class FileStreamer<T> implements Streamer<T> {
                 .filter(fileStreamer -> fileStreamer.getPath().equals(parentPath))
                 .findFirst()
                 .map(ParentStreamer.class::cast)
-                .orElseGet(() -> new FileParentStreamer(fileMainStreamer, fileHandler, parentPath)))
+                .orElseGet(() -> new FileParentStreamer(parentPath)))
             .orElse(fileMainStreamer);
     }
 
@@ -88,13 +95,13 @@ public abstract class FileStreamer<T> implements Streamer<T> {
 
     @Override
     public BinaryStreamer createBinaryStreamer(Path path) {
-        return new FileBinaryStreamer(fileMainStreamer, fileHandler, path);
+        return new FileBinaryStreamer(path);
     }
 
     @Override
     public void save() {
         if (exists()) {
-            ofNullable(details.get(new TranslatableName(DETAIL_KEY_NAME, null)))
+            ofNullable(details.get(0))
                 .map(Value::toString)
                 .filter(not(getName()::equals))
                 .ifPresent(this::rename);
@@ -103,7 +110,7 @@ public abstract class FileStreamer<T> implements Streamer<T> {
         }
     }
 
-    protected abstract  void createAndSave();
+    protected abstract void createAndSave();
 
     protected boolean rename(String newName) {
         File fileToRename = file;
@@ -163,32 +170,23 @@ public abstract class FileStreamer<T> implements Streamer<T> {
 
     @Override
     public List<TranslatableName> detailNames() {
-        if (detailNames == null) {
-            init();
-        }
         return detailNames;
     }
 
     @Override
-    public Map<TranslatableName, Value> details() {
-        if (details == null) {
-            init();
-        }
+    public List<Value> details() {
+        init();
         return details;
     }
 
     public void init() {
-        this.details = Stream.of(
-                ImmutablePair.of(DETAIL_KEY_NAME, new TextValue(getName())),
-                ImmutablePair.of(DETAIL_KEY_TYPE, new TextValue(getType())),
-                ImmutablePair.of(DETAIL_KEY_SIZE, new MemoryValue(getSize())),
-                ImmutablePair.of(DETAIL_KEY_TIME, new DateValue(lastModified())))
-            .collect(Collectors.toMap(pair ->
-                new TranslatableName(pair.getKey(), null),
-                Pair::getValue,
-                (key1, key2) -> key1,
-                LinkedHashMap::new));
-        detailNames = new ArrayList<>(details.keySet());
+        if (details == null) {
+            details = asList(
+                new TextValue(getName()),
+                new TextValue(getType()),
+                new MemoryValue(getSize()),
+                new DateValue(lastModified()));
+        }
     }
 
     @Override

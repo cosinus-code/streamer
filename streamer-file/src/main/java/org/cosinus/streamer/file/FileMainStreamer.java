@@ -20,6 +20,7 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.api.meta.MainStreamer;
 import org.cosinus.streamer.api.meta.RootStreamer;
+import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.swing.exec.ProcessExecutor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import oshi.software.os.OSFileStore;
@@ -32,6 +33,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
+import static org.cosinus.streamer.file.FileStreamer.DETAIL_KEY_FREE_MEMORY;
+import static org.cosinus.streamer.file.FileStreamer.DETAIL_KEY_NAME;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_COMPUTER;
 
 @RootStreamer("Filesystem")
@@ -43,6 +47,8 @@ public class FileMainStreamer extends MainStreamer<FileStreamer<?>> {
     private final FileHandler fileHandler;
 
     private final ProcessExecutor processExecutor;
+
+    private List<TranslatableName> detailNames;
 
     public FileMainStreamer(FileHandler fileHandler,
                             ProcessExecutor processExecutor) {
@@ -80,7 +86,7 @@ public class FileMainStreamer extends MainStreamer<FileStreamer<?>> {
     }
 
     protected FileRootStreamer createFileRootStreamer(OSFileStore fileStore) {
-        return new FileRootStreamer(this, fileHandler, fileStore);
+        return new FileRootStreamer(fileStore);
     }
 
     public Optional<Streamer<?>> findByPath(Path path) {
@@ -104,8 +110,8 @@ public class FileMainStreamer extends MainStreamer<FileStreamer<?>> {
     @Override
     public FileStreamer<?> create(Path path, boolean directory) {
         return directory ?
-            new FileParentStreamer(this, fileHandler, path) :
-            new FileBinaryStreamer(this, fileHandler, path);
+            new FileParentStreamer(path) :
+            new FileBinaryStreamer(path);
     }
 
     @Override
@@ -126,5 +132,18 @@ public class FileMainStreamer extends MainStreamer<FileStreamer<?>> {
     @Override
     public void execute(Path path) {
         processExecutor.executeFile(path.toFile());
+    }
+
+    @Override
+    public List<TranslatableName> detailNames() {
+        return detailNames;
+    }
+
+    @Override
+    public void init() {
+        detailNames = asList(
+            new TranslatableName(DETAIL_KEY_NAME, null),
+            new TranslatableName(DETAIL_KEY_FREE_MEMORY, null)
+        );
     }
 }

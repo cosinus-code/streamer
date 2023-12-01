@@ -27,8 +27,8 @@ import java.util.stream.Stream;
 public class FileParentStreamer extends FileStreamer<FileStreamer<?>> implements ParentStreamer<FileStreamer<?>>
 {
 
-    public FileParentStreamer(FileMainStreamer fileMainStreamer, FileHandler fileHandler, Path path) {
-        super(fileMainStreamer, fileHandler, path);
+    public FileParentStreamer(Path path) {
+        super(path);
     }
 
     @Override

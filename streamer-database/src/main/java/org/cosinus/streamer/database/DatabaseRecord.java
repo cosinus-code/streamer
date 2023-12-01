@@ -20,9 +20,9 @@ import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.streamer.api.value.Value;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.cosinus.streamer.database.DatabaseMainStreamer.DATABASE_PROTOCOL;
 
@@ -32,6 +32,8 @@ public class DatabaseRecord extends LinkedHashMap<TranslatableName, Value> imple
 
     private final String id;
 
+    private final List<Value> details;
+
     private String primaryKeyFieldName;
 
     private int leadDetailIndex;
@@ -39,6 +41,13 @@ public class DatabaseRecord extends LinkedHashMap<TranslatableName, Value> imple
     public DatabaseRecord(final DatabaseTableStreamer parent, final String id) {
         this.parent = parent;
         this.id = id;
+        this.details = new ArrayList<>();
+    }
+
+    @Override
+    public Value put(TranslatableName key, Value value) {
+        details.add(value);
+        return super.put(key, value);
     }
 
     @Override
@@ -80,8 +89,8 @@ public class DatabaseRecord extends LinkedHashMap<TranslatableName, Value> imple
     }
 
     @Override
-    public Map<TranslatableName, Value> details() {
-        return this;
+    public List<Value> details() {
+        return details;
     }
 
     @Override

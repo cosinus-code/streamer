@@ -60,7 +60,7 @@ public class StreamerViewDetailsEditor<T extends Streamable> {
 
     public void saveItem() {
         itemToBeEdited.save();
-        view.reload(ofNullable(itemToBeEdited.getDetail(itemToBeEdited.getLeadDetailIndex()))
+        view.reload(ofNullable(itemToBeEdited.details().get(itemToBeEdited.getLeadDetailIndex()))
             .map(Value::toString)
             .orElse(null));
     }

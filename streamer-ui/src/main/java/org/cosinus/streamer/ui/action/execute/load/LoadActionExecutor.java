@@ -16,8 +16,6 @@
 
 package org.cosinus.streamer.ui.action.execute.load;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.TextStreamer;
 import org.cosinus.streamer.api.meta.StreamerHandler;
@@ -44,8 +42,6 @@ import static org.cosinus.streamer.ui.view.text.TextStreamerView.TEXT_EDITOR;
  */
 @Component
 public class LoadActionExecutor implements ActionExecutor<LoadActionModel> {
-
-    private static final Logger LOG = LogManager.getLogger(LoadActionExecutor.class);
 
     private final StreamerViewStorage streamerViewStorage;
 
@@ -94,6 +90,7 @@ public class LoadActionExecutor implements ActionExecutor<LoadActionModel> {
             return;
         }
 
+        streamerViewToLoadTo.setParentStreamer(streamerToLoad);
         String itemToSelectAfterLoad = actionModel.getItemToSelectAfterLoad();
         LoadWorker<V> worker = new LoadWorker<>(
             actionModel.getActionId(), streamerToLoad, streamerViewToLoadTo, itemToSelectAfterLoad);
@@ -114,8 +111,7 @@ public class LoadActionExecutor implements ActionExecutor<LoadActionModel> {
     }
 
     @Override
-    public void remove(String workerId)
-    {
+    public void remove(String workerId) {
         workersMap.remove(workerId);
     }
 

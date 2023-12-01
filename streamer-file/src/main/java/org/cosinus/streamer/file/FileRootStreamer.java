@@ -17,6 +17,9 @@
 package org.cosinus.streamer.file;
 
 import org.cosinus.streamer.api.ParentStreamer;
+import org.cosinus.streamer.api.value.DateValue;
+import org.cosinus.streamer.api.value.MemoryValue;
+import org.cosinus.streamer.api.value.TextValue;
 import org.cosinus.swing.format.FormatHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import oshi.software.os.OSFileStore;
@@ -24,9 +27,9 @@ import oshi.software.os.OSFileStore;
 import java.nio.file.Paths;
 
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
-import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_STORAGE_INTERNAL;
 
 public class FileRootStreamer extends FileParentStreamer
@@ -37,11 +40,8 @@ public class FileRootStreamer extends FileParentStreamer
     @Autowired
     private FormatHandler formatHandler;
 
-    public FileRootStreamer(FileMainStreamer fileMainStreamer,
-                            FileHandler fileHandler,
-                            OSFileStore fileStore) {
-        super(fileMainStreamer, fileHandler, Paths.get(fileStore.getMount()));
-        injectContext(this);
+    public FileRootStreamer(OSFileStore fileStore) {
+        super(Paths.get(fileStore.getMount()));
         this.fileStore = fileStore;
     }
 
@@ -99,5 +99,15 @@ public class FileRootStreamer extends FileParentStreamer
     @Override
     public String getIconName() {
         return ICON_STORAGE_INTERNAL;
+    }
+
+    @Override
+    public void init() {
+        if (details == null) {
+            details = asList(
+                new TextValue(getName()),
+                new TextValue(formatHandler.formatMemorySize(getFreeSpace()) + "/" +
+                    formatHandler.formatMemorySize(getTotalSpace())));
+        }
     }
 }

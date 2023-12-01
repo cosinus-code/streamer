@@ -189,9 +189,9 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
     }
 
     @Override
-    public void update(List<T> streamers) {
+    public void update(List<T> items) {
         boolean showHidden = preferences.booleanPreference(SHOW_HIDDEN);
-        streamers
+        items
             .stream()
             .filter(Objects::nonNull)
             .filter(streamer -> !streamer.isHidden() || showHidden)

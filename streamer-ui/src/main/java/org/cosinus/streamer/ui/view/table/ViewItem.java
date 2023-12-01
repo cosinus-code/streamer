@@ -83,6 +83,6 @@ public class ViewItem {
     }
 
     public Value getDetail(int detailIndex) {
-        return streamable.getDetail(detailIndex);
+        return streamable.details().get(detailIndex);
     }
 }

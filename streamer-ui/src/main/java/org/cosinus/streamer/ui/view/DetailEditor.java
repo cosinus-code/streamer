@@ -67,7 +67,7 @@ public class DetailEditor<T extends Streamable> extends TextField implements Foc
     public void loadItem(final T itemToBeEdited) {
         this.itemToBeEdited = itemToBeEdited;
 
-        ofNullable(itemToBeEdited.getDetail(detailIndex))
+        ofNullable(itemToBeEdited.details().get(detailIndex))
             .map(Object::toString)
             .ifPresent(this::setText);
         setEnabled(itemToBeEdited.canUpdateDetail(detailIndex));
