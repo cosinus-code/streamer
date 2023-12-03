@@ -17,19 +17,12 @@ package org.cosinus.streamer.database;
 
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.value.TranslatableName;
-import org.cosinus.streamer.api.value.Value;
-import org.cosinus.streamer.database.connection.DatabaseException;
 import org.cosinus.streamer.database.resultset.ResultSet;
 
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.sql.Types.INTEGER;
@@ -45,8 +38,6 @@ public class DatabaseTableStreamer extends DatabaseStreamer {
 
     private final DatabaseSchemaStreamer schemaStreamer;
 
-    private List<TranslatableName> detailNames;
-
     private Set<String> fields;
 
     private Set<String> primaryKeys;
@@ -58,38 +49,6 @@ public class DatabaseTableStreamer extends DatabaseStreamer {
         this.tableName = tableName;
         this.tableType = tableType;
         this.schemaStreamer = new DatabaseSchemaStreamer(tableSchema, connectionName);
-    }
-
-    @Override
-    public Stream<DatabaseRecord> stream() {
-        final AtomicInteger index = new AtomicInteger();
-        return streamFromRemote(connection -> connection.stream(getStreamQuery()))
-            .map(resultSet -> createRecord(resultSet, index.getAndIncrement()));
-    }
-
-    private DatabaseRecord createRecord(ResultSet resultSet, int recordIndex) {
-        DatabaseRecord databaseRecord = new DatabaseRecord(this, Integer.toString(recordIndex));
-        try {
-            ResultSetMetaData metaData = resultSet.getMetaData();
-            IntStream.rangeClosed(1, metaData.getColumnCount())
-                .forEach(index -> {
-                    try {
-                        String columnName = metaData.getColumnName(index);
-                        Value value = resultSet.getValue(index);
-                        databaseRecord.put(new TranslatableName(columnName), value);
-                        //TODO:
-                        if (columnName.equalsIgnoreCase("id") && value != null) {
-                            databaseRecord.setName(value.toString());
-                            databaseRecord.setLeadDetailIndex(index - 1);
-                        }
-                    } catch (SQLException e) {
-                        throw new DatabaseException(e);
-                    }
-                });
-            return databaseRecord;
-        } catch (SQLException e) {
-            throw new DatabaseException(e);
-        }
     }
 
     @Override
@@ -113,11 +72,6 @@ public class DatabaseTableStreamer extends DatabaseStreamer {
             size = getFromRemote(connection -> connection.getLong("select count(*) from " + tableName));
         }
         return size;
-    }
-
-    @Override
-    public List<TranslatableName> detailNames() {
-        return detailNames;
     }
 
     public Set<String> getPrimaryKeys() {
@@ -156,6 +110,16 @@ public class DatabaseTableStreamer extends DatabaseStreamer {
     public boolean delete() {
         runRemote(connection -> connection.dropTable(tableName));
         return true;
+    }
+
+    @Override
+    public boolean canUpdateRecords() {
+        return true;
+    }
+
+    @Override
+    public boolean canUpdateRecordDetail(int detailIndex) {
+        return !getPrimaryKeys().contains(detailNames.get(detailIndex).name());
     }
 
     public void updateRecord(DatabaseRecord databaseRecord) {

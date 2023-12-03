@@ -74,15 +74,17 @@ public class LoadActionExecutor implements ActionExecutor<LoadActionModel> {
     }
 
     private <V> void startLoadWorker(LoadActionModel actionModel) {
-        Streamer<V> streamerToLoad =
-            prepareStreamerToLoad(actionModel.getStreamerToLoad(), actionModel.getLocationToLoadTo());
-        if (streamerToLoad == null) {
+        Streamer<V> streamer =
+            findStreamerToLoad(actionModel.getStreamerToLoad(), actionModel.getLocationToLoadTo());
+        if (streamer == null) {
             return;
         }
 
+        Streamer<V> streamerToLoad = actionModel.isLoadInside() ? loadInside(streamer) : streamer;
+
         String streamerViewNameToOpen = ofNullable(actionModel.getStreamerViewNameToLoadIn())
             .filter(viewName -> !streamerToLoad.isTextCompatible() || TEXT_EDITOR.equals(viewName))
-            .orElseGet(() -> streamerToLoad.isTextCompatible() ? TEXT_EDITOR : null);
+            .orElseGet(() -> !streamerToLoad.isParent() && streamerToLoad.isTextCompatible() ? TEXT_EDITOR : null);
 
         PanelLocation location = actionModel.getLocationToLoadTo();
         StreamerView<V> streamerViewToLoadTo = streamerViewHandler.getStreamerView(location, streamerViewNameToOpen);
@@ -120,13 +122,11 @@ public class LoadActionExecutor implements ActionExecutor<LoadActionModel> {
         return LoadActionModel.class.getName();
     }
 
-    private Streamer prepareStreamerToLoad(Streamer streamerToLoad, PanelLocation location) {
+    private Streamer findStreamerToLoad(Streamer streamerToLoad, PanelLocation location) {
         return ofNullable(streamerToLoad)
             .or(() -> loadLastStreamer(location))
             .or(() -> ofNullable(streamerHandler.getDefaultStreamer()))
             .map(this::checkIfStreamerExist)
-            .map(this::checkIfStreamerIsPacked)
-            .map(this::checkIfStreamerIsText)
             .orElse(null);
     }
 
@@ -135,11 +135,8 @@ public class LoadActionExecutor implements ActionExecutor<LoadActionModel> {
             .map(urlPath -> streamerHandler.getStreamer(urlPath));
     }
 
-    private Streamer<?> checkIfStreamerExist(Streamer streamerToCheck) {
-        return ofNullable(streamerToCheck)
-            .filter(not(Streamer::exists))
-            .map(this::getFirstAncestorAlive)
-            .orElse(streamerToCheck);
+    private Streamer<?> checkIfStreamerExist(Streamer<?> streamerToCheck) {
+        return !streamerToCheck.exists() ? getFirstAncestorAlive(streamerToCheck) : streamerToCheck;
     }
 
     private Streamer<?> getFirstAncestorAlive(Streamer streamer) {
@@ -149,8 +146,16 @@ public class LoadActionExecutor implements ActionExecutor<LoadActionModel> {
             .orElse(streamer.getParent());
     }
 
+    private Streamer loadInside(Streamer streamerToLoad) {
+        return ofNullable(streamerToLoad)
+            .map(this::checkIfStreamerIsPacked)
+            .map(this::checkIfStreamerIsText)
+            .orElse(null);
+    }
+
     private Streamer<?> checkIfStreamerIsPacked(Streamer<?> streamerToCheck) {
-        return ofNullable(streamerToCheck.binaryStreamer())
+        return ofNullable(streamerToCheck)
+            .map(Streamer::binaryStreamer)
             .<Streamer>flatMap(binaryStream -> packerHandler
                 .findPacker(binaryStream.getType())
                 .map(packer -> packer.pack(binaryStream)))
@@ -158,8 +163,10 @@ public class LoadActionExecutor implements ActionExecutor<LoadActionModel> {
     }
 
     private Streamer<?> checkIfStreamerIsText(Streamer<?> streamerToCheck) {
-        return streamerToCheck.binaryStreamer() != null && streamerToCheck.isTextCompatible() ?
-            new TextStreamer(streamerToCheck.binaryStreamer()) :
-            streamerToCheck;
+        return ofNullable(streamerToCheck)
+            .filter(Streamer::isTextCompatible)
+            .map(Streamer::binaryStreamer)
+            .<Streamer<?>>map(TextStreamer::new)
+            .orElse(streamerToCheck);
     }
 }

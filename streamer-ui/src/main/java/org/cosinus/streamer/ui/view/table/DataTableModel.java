@@ -225,7 +225,8 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
         return ofNullable(getCurrentViewItem())
             .filter(not(ViewItem::isTopItem))
             .map(ViewItem::getName)
-            .orElseGet(parentStreamer::getName);
+            .or(() -> ofNullable(parentStreamer).map(Streamer::getName))
+            .orElse(null);
     }
 
     public String getNextItemIdentifier() {

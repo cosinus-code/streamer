@@ -175,8 +175,9 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
             .filter(streamer -> PackStreamer.class.isAssignableFrom(streamer.getClass()))
             .map(PackStreamer.class::cast)
             .ifPresent(PackStreamer::finishLoading);
-        if (!streamerViewHandler.getCurrentView().hasFocus()) {
-            streamerViewHandler.getCurrentView().requestFocus();
+        StreamerView<?> currentView = streamerViewHandler.getCurrentView();
+        if (currentView != null && !currentView.hasFocus()) {
+            currentView.requestFocus();
         }
     }
 

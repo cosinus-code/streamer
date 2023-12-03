@@ -33,9 +33,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ArrayUtils.toArray;
-import static org.cosinus.streamer.database.connection.DatabaseObjectType.TABLE;
 import static org.jooq.impl.DSL.*;
 
 public class DatabaseConnection implements Connection<ResultSet> {
@@ -68,17 +66,12 @@ public class DatabaseConnection implements Connection<ResultSet> {
 
     @Override
     public Stream<ResultSet> stream(String query) {
-        ResultSet resultSet = ofNullable(query)
-            .filter(currentSchema::equals)
-            .map(this::getTables)
-            .orElseGet(() -> resultSet(query));
-
-        return DatabaseStream.of(resultSet);
+        return DatabaseStream.of(resultSet(query));
     }
 
-    public ResultSet getTables(String schemaName) {
+    public ResultSet getTables(String schemaName, DatabaseObjectType objectType) {
         return resultSet(() -> connection.getMetaData()
-            .getTables(null, schemaName, "%", toArray(TABLE.name())));
+            .getTables(null, schemaName, "%", toArray(objectType.name())));
     }
 
     public ResultSet getTableFields(String tableName) {
@@ -97,6 +90,12 @@ public class DatabaseConnection implements Connection<ResultSet> {
 
     public ResultSet resultSet(String query) {
         return resultSet(() -> connection.createStatement().executeQuery(query));
+    }
+
+    public Stream<String> getFieldNames(String query) {
+        ResultSet resultSet = resultSet(query);
+        return resultSet.getFieldNames()
+            .onClose(resultSet::close);
     }
 
     public long getLong(String query) {

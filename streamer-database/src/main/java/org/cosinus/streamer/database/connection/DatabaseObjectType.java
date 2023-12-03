@@ -15,7 +15,31 @@
  */
 package org.cosinus.streamer.database.connection;
 
+import org.cosinus.streamer.database.DatabaseSchemaObjectStreamer;
+import org.cosinus.streamer.database.DatabaseSchemaObjectStreamerSupplier;
+import org.cosinus.streamer.database.DatabaseSchemaQueriesStreamer;
+import org.cosinus.streamer.database.DatabaseSchemaTablesStreamer;
+
 public enum DatabaseObjectType {
-    TABLE,
-    VIEW
+    TABLE("database-type-table", DatabaseSchemaTablesStreamer::new),
+    VIEW("database-type-view", DatabaseSchemaTablesStreamer::new),
+    SEQUENCE("database-type-sequence", DatabaseSchemaTablesStreamer::new),
+    QUERY("database-type-query", DatabaseSchemaQueriesStreamer::new);
+
+    private final String key;
+
+    private final DatabaseSchemaObjectStreamerSupplier streamerSupplier;
+
+    DatabaseObjectType(String key, DatabaseSchemaObjectStreamerSupplier streamerSupplier) {
+        this.key = key;
+        this.streamerSupplier = streamerSupplier;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public DatabaseSchemaObjectStreamer<?> getDatabaseSchemaObjectStreamer(String schemaName, String connectionName) {
+        return streamerSupplier.get(this, schemaName, connectionName);
+    }
 }

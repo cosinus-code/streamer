@@ -17,14 +17,27 @@ package org.cosinus.streamer.database;
 
 import org.cosinus.streamer.api.remote.ConnectionPool;
 import org.cosinus.streamer.api.remote.RemoteStreamer;
+import org.cosinus.streamer.api.value.TranslatableName;
+import org.cosinus.streamer.api.value.Value;
 import org.cosinus.streamer.database.connection.DatabaseConnection;
 import org.cosinus.streamer.database.connection.DatabaseConnectionPool;
+import org.cosinus.streamer.database.connection.DatabaseException;
 import org.cosinus.streamer.database.resultset.ResultSet;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.file.Path;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.cosinus.streamer.database.DatabaseMainStreamer.DATABASE_PROTOCOL;
+import static org.cosinus.streamer.database.connection.DatabaseConnection.COLUMN_NAME;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 public abstract class DatabaseStreamer implements RemoteStreamer<DatabaseRecord, ResultSet, DatabaseConnection> {
@@ -34,9 +47,43 @@ public abstract class DatabaseStreamer implements RemoteStreamer<DatabaseRecord,
 
     protected final String connectionName;
 
+    protected List<TranslatableName> detailNames;
+
     public DatabaseStreamer(String connectionName) {
         injectContext(this);
         this.connectionName = connectionName;
+    }
+
+    @Override
+    public Stream<DatabaseRecord> stream() {
+        final AtomicInteger index = new AtomicInteger();
+        return streamFromRemote(connection -> connection.stream(getStreamQuery()))
+            .map(resultSet -> createRecord(resultSet, index.getAndIncrement()));
+    }
+
+    private DatabaseRecord createRecord(ResultSet resultSet, int recordIndex) {
+        DatabaseRecord databaseRecord = new DatabaseRecord(this, Integer.toString(recordIndex));
+        try {
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            IntStream.rangeClosed(1, metaData.getColumnCount())
+                .forEach(index -> {
+                    try {
+                        String columnName = metaData.getColumnName(index);
+                        Value value = resultSet.getValue(index);
+                        databaseRecord.put(new TranslatableName(columnName), value);
+                        //TODO:
+                        if (columnName.equalsIgnoreCase("id") && value != null) {
+                            databaseRecord.setName(value.toString());
+                            databaseRecord.setLeadDetailIndex(index - 1);
+                        }
+                    } catch (SQLException e) {
+                        throw new DatabaseException(e);
+                    }
+                });
+            return databaseRecord;
+        } catch (SQLException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     @Override
@@ -58,4 +105,22 @@ public abstract class DatabaseStreamer implements RemoteStreamer<DatabaseRecord,
     public Path getPath() {
         return getParent().getPath().resolve(getName());
     }
+
+    @Override
+    public List<TranslatableName> detailNames() {
+        return detailNames;
+    }
+
+    @Override
+    public boolean isParent() {
+        return true;
+    }
+
+    public abstract boolean canUpdateRecords();
+
+    public abstract boolean canUpdateRecordDetail(int detailIndex);
+
+    public abstract void updateRecord(DatabaseRecord databaseRecord);
+
+    public abstract void insertRecord(DatabaseRecord databaseRecord);
 }

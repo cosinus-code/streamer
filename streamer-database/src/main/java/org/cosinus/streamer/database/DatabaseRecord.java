@@ -28,7 +28,7 @@ import static org.cosinus.streamer.database.DatabaseMainStreamer.DATABASE_PROTOC
 
 public class DatabaseRecord extends LinkedHashMap<TranslatableName, Value> implements Streamable {
 
-    private final DatabaseTableStreamer parent;
+    private final DatabaseStreamer parent;
 
     private final String id;
 
@@ -38,7 +38,7 @@ public class DatabaseRecord extends LinkedHashMap<TranslatableName, Value> imple
 
     private int leadDetailIndex;
 
-    public DatabaseRecord(final DatabaseTableStreamer parent, final String id) {
+    public DatabaseRecord(final DatabaseStreamer parent, final String id) {
         this.parent = parent;
         this.id = id;
         this.details = new ArrayList<>();
@@ -51,7 +51,7 @@ public class DatabaseRecord extends LinkedHashMap<TranslatableName, Value> imple
     }
 
     @Override
-    public DatabaseTableStreamer getParent() {
+    public DatabaseStreamer getParent() {
         return parent;
     }
 
@@ -94,13 +94,18 @@ public class DatabaseRecord extends LinkedHashMap<TranslatableName, Value> imple
     }
 
     @Override
-    public boolean canUpdateDetail(int detailIndex) {
-        return !parent.getPrimaryKeys().contains(parent.detailNames().get(detailIndex).name());
+    public int getLeadDetailIndex() {
+        return leadDetailIndex;
     }
 
     @Override
-    public int getLeadDetailIndex() {
-        return leadDetailIndex;
+    public boolean canUpdateDetail(int detailIndex) {
+        return parent.canUpdateRecordDetail(detailIndex);
+    }
+
+    @Override
+    public boolean canUpdate() {
+        return parent.canUpdateRecords();
     }
 
     @Override

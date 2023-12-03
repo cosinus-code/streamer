@@ -34,6 +34,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import static javax.swing.SwingUtilities.invokeLater;
 import static org.cosinus.swing.border.Borders.emptyBorder;
 import static java.awt.BorderLayout.SOUTH;
 
@@ -150,7 +151,7 @@ public abstract class ProgressDialog<M extends WorkerModel> extends Dialog<Void>
 
     @Override
     public void workerStarted(M workerModel) {
-        setVisible(true);
+        invokeLater(() -> setVisible(true));
     }
 
     @Override

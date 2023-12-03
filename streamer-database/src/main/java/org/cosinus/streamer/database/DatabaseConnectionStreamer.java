@@ -16,6 +16,7 @@
 package org.cosinus.streamer.database;
 
 import org.cosinus.streamer.api.ParentStreamer;
+import org.cosinus.streamer.database.connection.DatabaseConnection;
 import org.cosinus.streamer.database.resultset.ResultSet;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -23,10 +24,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
-import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.database.connection.DatabaseConnection.TABLE_SCHEMA;
 
-public class DatabaseConnectionStreamer extends DatabaseParentStreamer<DatabaseSchemaStreamer> {
+public class DatabaseConnectionStreamer extends DatabaseParentStreamer<ParentStreamer<?>> {
 
     @Autowired
     private DatabaseMainStreamer parent;
@@ -36,17 +36,13 @@ public class DatabaseConnectionStreamer extends DatabaseParentStreamer<DatabaseS
     }
 
     @Override
-    public Stream<DatabaseSchemaStreamer> stream() {
-        return getConnection()
-            .map(connection -> ofNullable(connection.getCurrentSchema())
-                .map(currentSchema -> new DatabaseSchemaStreamer(currentSchema, connectionName))
-                .stream()
-                .onClose(() -> returnConnection(connection)))
-            .orElseGet(Stream::empty);
+    public Stream<ParentStreamer<?>> stream() {
+        String currentSchema = getFromRemote(DatabaseConnection::getCurrentSchema);
+        return Stream.of(new DatabaseSchemaStreamer(currentSchema, connectionName));
     }
 
     @Override
-    public DatabaseSchemaStreamer createFromRemote(ResultSet resultSet) {
+    public ParentStreamer<?> createFromRemote(ResultSet resultSet) {
         return new DatabaseSchemaStreamer(resultSet.getString(TABLE_SCHEMA), connectionName);
     }
 

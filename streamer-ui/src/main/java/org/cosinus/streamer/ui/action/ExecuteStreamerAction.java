@@ -52,19 +52,20 @@ public class ExecuteStreamerAction implements ActionInContext {
     @Override
     public void run(ActionContext context) {
         StreamerView<?> streamerView = streamerViewHandler.getCurrentView();
-        Streamer<?> streamerToExecute = ofNullable(streamerView.getCurrentItem())
+        ofNullable(streamerView.getCurrentItem())
             .filter(item -> Streamer.class.isAssignableFrom(item.getClass()))
             .map(Streamer.class::cast)
-            .orElse(null);
-        if (streamerToExecute == null || streamerToExecute.isParent()) {
-            loadActionExecutor.execute(new LoadActionModel(
-                streamerView.getCurrentLocation(),
-                streamerToExecute,
-                streamerView.getCurrentItemIdentifier()));
-            return;
-        }
+            .ifPresent(streamerToExecute -> {
+                if (streamerToExecute.isParent()) {
+                    loadActionExecutor.execute(new LoadActionModel(
+                        streamerView.getCurrentLocation(),
+                        streamerToExecute,
+                        streamerView.getCurrentItemIdentifier(), false));
+                    return;
+                }
 
-        streamerToExecute.getParent().execute(streamerToExecute.getPath());
+                streamerToExecute.getParent().execute(streamerToExecute.getPath());
+            });
     }
 
     @Override

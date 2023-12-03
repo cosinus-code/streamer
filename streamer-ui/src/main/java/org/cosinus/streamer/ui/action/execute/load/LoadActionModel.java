@@ -35,21 +35,39 @@ public class LoadActionModel extends ActionModel {
 
     private final String streamerViewNameToLoadIn;
 
+    private final boolean loadInside;
+
     public LoadActionModel(final PanelLocation locationToLoadTo,
                            final Streamer<?> streamerToLoad,
                            final String itemToSelectAfterLoad) {
-        this(locationToLoadTo, streamerToLoad, itemToSelectAfterLoad, null);
+        this(locationToLoadTo, streamerToLoad, itemToSelectAfterLoad, null, true);
+    }
+
+    public LoadActionModel(final PanelLocation locationToLoadTo,
+                           final Streamer<?> streamerToLoad,
+                           final String itemToSelectAfterLoad,
+                           boolean loadInside) {
+        this(locationToLoadTo, streamerToLoad, itemToSelectAfterLoad, null, loadInside);
     }
 
     public LoadActionModel(final PanelLocation locationToLoadTo,
                            final Streamer<?> streamerToLoad,
                            final String itemToSelectAfterLoad,
                            final String streamerViewNameToLoadIn) {
+        this(locationToLoadTo, streamerToLoad, itemToSelectAfterLoad, streamerViewNameToLoadIn, true);
+    }
+
+    public LoadActionModel(final PanelLocation locationToLoadTo,
+                           final Streamer<?> streamerToLoad,
+                           final String itemToSelectAfterLoad,
+                           final String streamerViewNameToLoadIn,
+                           boolean loadInside) {
         super(locationToLoadTo.name(), LOAD_STREAMER_ACTION_ID);
         this.locationToLoadTo = locationToLoadTo;
         this.streamerToLoad = streamerToLoad;
         this.itemToSelectAfterLoad = itemToSelectAfterLoad;
         this.streamerViewNameToLoadIn = streamerViewNameToLoadIn;
+        this.loadInside = loadInside;
     }
 
     public PanelLocation getLocationToLoadTo() {
@@ -66,5 +84,9 @@ public class LoadActionModel extends ActionModel {
 
     public String getStreamerViewNameToLoadIn() {
         return streamerViewNameToLoadIn;
+    }
+
+    public boolean isLoadInside() {
+        return loadInside;
     }
 }

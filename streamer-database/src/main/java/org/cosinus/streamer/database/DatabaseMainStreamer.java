@@ -18,18 +18,23 @@ package org.cosinus.streamer.database;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.meta.MainStreamer;
 import org.cosinus.streamer.api.meta.RootStreamer;
+import org.cosinus.streamer.database.connection.DatabaseObjectType;
 import org.cosinus.streamer.database.model.DatabaseConnectionModel;
 import org.cosinus.streamer.database.model.DatabaseModelProvider;
+import org.cosinus.swing.translate.Translator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static org.cosinus.streamer.database.connection.DatabaseObjectType.TABLE;
+import static java.util.Arrays.stream;
+import static java.util.Optional.ofNullable;
+import static org.cosinus.streamer.database.connection.DatabaseObjectType.QUERY;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_DATABASE;
 
 @RootStreamer("Database")
@@ -40,7 +45,10 @@ public class DatabaseMainStreamer extends MainStreamer<DatabaseConnectionStreame
 
     private final Map<String, DatabaseConnectionModel> databaseConnectionModelMap;
 
-    public DatabaseMainStreamer(final DatabaseModelProvider databaseModelProvider) {
+    private final Translator translator;
+
+    public DatabaseMainStreamer(final Translator translator, final DatabaseModelProvider databaseModelProvider) {
+        this.translator = translator;
         this.databaseConnectionModelMap = databaseModelProvider.getConnectionModelsMap();
     }
 
@@ -70,15 +78,31 @@ public class DatabaseMainStreamer extends MainStreamer<DatabaseConnectionStreame
             .orElse(null) : null;
 
         String schemaName = names.size() > 1 ? names.get(1) : null;
-        String tableName = names.size() > 2 ? names.get(2) : null;
+        DatabaseObjectType databaseObjectType = names.size() > 2 ? getDatabaseObjectType(names.get(2)) : null;
+        String databaseObjectName = names.size() > 3 ? names.get(3) : null;
 
-        return connectionName != null ?
+        Streamer<?> streamer = connectionName != null ?
             schemaName != null ?
-                tableName != null ?
-                    Optional.of(new DatabaseTableStreamer(tableName, TABLE.name(), schemaName, connectionName)) :
-                    Optional.of(new DatabaseSchemaStreamer(schemaName, connectionName)) :
-                Optional.of(new DatabaseConnectionStreamer(connectionName)) :
-            super.findByPath(path);
+                databaseObjectType != null ?
+                    databaseObjectName != null ?
+                        databaseObjectType == QUERY ?
+                            new DatabaseSchemaQueriesStreamer(QUERY, schemaName, connectionName)
+                                .createDatabaseQueryStreamer(databaseObjectName) :
+                            new DatabaseTableStreamer(
+                                databaseObjectName, databaseObjectType.name(), schemaName, connectionName) :
+                        databaseObjectType.getDatabaseSchemaObjectStreamer(schemaName, connectionName) :
+                    new DatabaseSchemaStreamer(schemaName, connectionName) :
+                new DatabaseConnectionStreamer(connectionName) :
+            null;
+        return ofNullable(streamer);
+    }
+
+    private DatabaseObjectType getDatabaseObjectType(String pathName) {
+        return Arrays.stream(DatabaseObjectType.values())
+            .filter(objectType -> translator.translate(objectType.getKey()).equals(pathName))
+            .findFirst()
+            .orElse(null);
+
     }
 
     @Override

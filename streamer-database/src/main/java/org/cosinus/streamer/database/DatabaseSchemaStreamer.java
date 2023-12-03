@@ -16,31 +16,32 @@
 package org.cosinus.streamer.database;
 
 import org.cosinus.streamer.api.ParentStreamer;
-import org.cosinus.streamer.database.resultset.ResultSet;
+import org.cosinus.streamer.database.connection.DatabaseObjectType;
 
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
-import static org.cosinus.streamer.database.connection.DatabaseConnection.*;
-import static org.cosinus.streamer.database.connection.DatabaseObjectType.TABLE;
+import static org.cosinus.streamer.database.DatabaseMainStreamer.DATABASE_PROTOCOL;
 
-public class DatabaseSchemaStreamer extends DatabaseParentStreamer<DatabaseTableStreamer> {
+public class DatabaseSchemaStreamer implements ParentStreamer<DatabaseSchemaObjectStreamer<?>> {
 
     private final DatabaseConnectionStreamer parent;
 
     private final String schemaName;
 
+    private final String connectionName;
+
     public DatabaseSchemaStreamer(String schemaName, String connectionName) {
-        super(connectionName);
         this.schemaName = schemaName;
+        this.connectionName = connectionName;
         parent = new DatabaseConnectionStreamer(connectionName);
     }
 
     @Override
-    public DatabaseTableStreamer createFromRemote(ResultSet resultSet) {
-        String tableName = resultSet.getString(TABLE_NAME);
-        String tableType = resultSet.getString(TABLE_TYPE);
-        String tableSchema = resultSet.getString(TABLE_SCHEMA);
-        return new DatabaseTableStreamer(tableName, tableType, tableSchema, connectionName);
+    public Stream<DatabaseSchemaObjectStreamer<?>> stream() {
+        return Arrays.stream(DatabaseObjectType.values())
+            .map(databaseObjectType -> databaseObjectType.getDatabaseSchemaObjectStreamer(schemaName, connectionName));
     }
 
     @Override
@@ -49,18 +50,22 @@ public class DatabaseSchemaStreamer extends DatabaseParentStreamer<DatabaseTable
     }
 
     @Override
+    public Path getPath() {
+        return getParent().getPath().resolve(getName());
+    }
+
+    @Override
+    public String getProtocol() {
+        return DATABASE_PROTOCOL;
+    }
+
+    @Override
     public String getName() {
         return schemaName;
     }
 
     @Override
-    public String getStreamQuery() {
-        return schemaName;
-    }
-
-    @Override
-    public DatabaseTableStreamer create(Path path, boolean parent) {
-        String tableName = path.getFileName().toString();
-        return new DatabaseTableStreamer(tableName, TABLE.name(), schemaName, connectionName);
+    public boolean canUpdate() {
+        return false;
     }
 }

@@ -51,7 +51,7 @@ public class MetaStreamer implements ParentStreamer<MainStreamer>
 
     @Override
     public boolean exists() {
-        return false;
+        return true;
     }
 
     @Override

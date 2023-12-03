@@ -20,6 +20,8 @@ import org.cosinus.streamer.database.connection.DatabaseException;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static java.util.Optional.of;
 
@@ -70,6 +72,24 @@ public class ResultSet implements AutoCloseable {
     public ResultSetMetaData getMetaData() {
         try {
             return resultSet.getMetaData();
+        } catch (SQLException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    public Stream<String> getFieldNames() {
+        try {
+            ResultSetMetaData metaData = getMetaData();
+            return IntStream.rangeClosed(1, metaData.getColumnCount())
+                .mapToObj(index -> getColumnLabel(metaData, index));
+        } catch (SQLException e) {
+            throw new DatabaseException(e);
+        }
+    }
+
+    private String getColumnLabel(final ResultSetMetaData metaData, int index) {
+        try {
+            return metaData.getColumnLabel(index);
         } catch (SQLException e) {
             throw new DatabaseException(e);
         }
