@@ -34,13 +34,8 @@ import java.util.stream.IntStream;
 
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
-import static javax.swing.JOptionPane.DEFAULT_OPTION;
-import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
-import static javax.swing.JOptionPane.YES_NO_CANCEL_OPTION;
-import static javax.swing.JOptionPane.YES_OPTION;
-import static org.cosinus.streamer.ui.action.execute.copy.CopyOverwriteOption.CANCEL;
-import static org.cosinus.streamer.ui.action.execute.copy.CopyOverwriteOption.RENAME;
-import static org.cosinus.streamer.ui.action.execute.copy.CopyOverwriteOption.values;
+import static javax.swing.JOptionPane.*;
+import static org.cosinus.streamer.ui.action.execute.copy.CopyOverwriteOption.*;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 public class CopyBinaryStrategy implements BinaryPipelineStrategy {
@@ -201,7 +196,8 @@ public class CopyBinaryStrategy implements BinaryPipelineStrategy {
     private BinaryStreamer createRenamedStreamer(BinaryStreamer streamerToRename, String newName) {
         return ofNullable(streamerToRename)
             .map(Streamer::getParent)
-            .map(parent -> streamerToRename.createBinaryStreamer(parent.getPath().resolve(newName)))
+            .map(parent -> parent.create(parent.getPath().resolve(newName), false))
+            .map(Streamer::binaryStreamer)
             .orElse(null);
     }
 

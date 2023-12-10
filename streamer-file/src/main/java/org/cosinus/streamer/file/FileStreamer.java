@@ -16,7 +16,6 @@
 
 package org.cosinus.streamer.file;
 
-import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.error.StreamerException;
@@ -91,11 +90,6 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     @Override
     public boolean exists() {
         return file.exists();
-    }
-
-    @Override
-    public BinaryStreamer createBinaryStreamer(Path path) {
-        return new FileBinaryStreamer(path);
     }
 
     @Override

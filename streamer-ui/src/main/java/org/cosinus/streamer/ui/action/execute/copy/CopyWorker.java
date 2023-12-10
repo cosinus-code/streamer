@@ -115,36 +115,25 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
 
     @Override
     public StreamConsumer<S> openPipelineOutputStream(CopyStrategy pipelineStrategy) {
-        return streamerToCopy -> ofNullable(streamerToCopy.binaryStreamer())
-            .ifPresentOrElse(
-                this::copyBinaryStreamer,
-                () -> createTargetStreamer(streamerToCopy));
+        return this::copyStreamer;
     }
 
-    private void createTargetStreamer(Streamer<?> sourceStreamer) {
-        Path targetPath = buildTargetPath(sourceStreamer);
-        T target = destination.create(targetPath, sourceStreamer.isParent());
-        if (!target.exists()) {
+    public void copyStreamer(S streamerToCopy) {
+        Path relativePath = getRelativePath(streamerToCopy);
+        Path targetPath = destination.getPath().resolve(relativePath);
+        T target = destination.create(targetPath, streamerToCopy.isParent());
+        BinaryStreamer binarySource = streamerToCopy.binaryStreamer();
+        BinaryStreamer binaryTarget = target.binaryStreamer();
+        if (binarySource != null && binaryTarget != null) {
+            try {
+                new CopyBinaryPipeline(binarySource, binaryTarget, copyStrategy, this)
+                    .openPipeline();
+            } catch (IOException | UncheckedIOException ex) {
+                throw new ActionException(ex, "act_copy_error", binarySource.getPath(), binaryTarget.getPath());
+            }
+        } else if (!target.exists()) {
             target.save();
         }
-    }
-
-    private void copyBinaryStreamer(BinaryStreamer binarySource) {
-        Path targetPath = buildTargetPath(binarySource);
-        BinaryStreamer binaryTarget = destination.createBinaryStreamer(targetPath);
-        CopyBinaryPipeline copyBinaryPipeline =
-            new CopyBinaryPipeline(binarySource, binaryTarget, copyStrategy, this);
-
-        try {
-            copyBinaryPipeline.openPipeline();
-        } catch (IOException | UncheckedIOException ex) {
-            throw new ActionException(ex, "act_copy_error", binarySource.getPath(), binaryTarget.getPath());
-        }
-    }
-
-    private Path buildTargetPath(Streamer<?> streamerToCopy) {
-        Path relativePath = getRelativePath(streamerToCopy);
-        return destination.getPath().resolve(relativePath);
     }
 
     private Path getRelativePath(Streamer<?> streamer) {

@@ -16,7 +16,6 @@
 
 package org.cosinus.streamer.api;
 
-import java.nio.file.Path;
 import java.util.stream.Stream;
 
 public interface Streamer<T> extends Streamable {
@@ -29,10 +28,6 @@ public interface Streamer<T> extends Streamable {
 
     @Override
     ParentStreamer<?> getParent();
-
-    default BinaryStreamer createBinaryStreamer(Path path) {
-        return null;
-    }
 
     default boolean isTextCompatible() {
         return false;

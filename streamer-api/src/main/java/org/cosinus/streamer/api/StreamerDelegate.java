@@ -147,12 +147,6 @@ public abstract class StreamerDelegate<T, S extends Streamer<?>> implements Stre
     }
 
     @Override
-    public BinaryStreamer createBinaryStreamer(Path path)
-    {
-        return delegate.createBinaryStreamer(path);
-    }
-
-    @Override
     public boolean isTextCompatible()
     {
         return delegate.isTextCompatible();
