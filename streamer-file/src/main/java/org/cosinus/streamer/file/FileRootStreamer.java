@@ -16,9 +16,6 @@
 
 package org.cosinus.streamer.file;
 
-import org.cosinus.streamer.api.ParentStreamer;
-import org.cosinus.streamer.api.value.DateValue;
-import org.cosinus.streamer.api.value.MemoryValue;
 import org.cosinus.streamer.api.value.TextValue;
 import org.cosinus.swing.format.FormatHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +27,10 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_STORAGE_EXTERNAL;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_STORAGE_INTERNAL;
 
-public class FileRootStreamer extends FileParentStreamer
-{
+public class FileRootStreamer extends FileParentStreamer {
 
     private final OSFileStore fileStore;
 
@@ -78,7 +75,7 @@ public class FileRootStreamer extends FileParentStreamer
 
     @Override
     public boolean isHidden() {
-        return false;
+        return fileStore.getMount().startsWith("/System/Volumes/");
     }
 
     @Override
@@ -98,7 +95,11 @@ public class FileRootStreamer extends FileParentStreamer
 
     @Override
     public String getIconName() {
-        return ICON_STORAGE_INTERNAL;
+        return isInternal() ? ICON_STORAGE_INTERNAL : ICON_STORAGE_EXTERNAL;
+    }
+
+    public boolean isInternal() {
+        return !fileStore.getMount().startsWith("/Volumes/");
     }
 
     @Override

@@ -52,7 +52,7 @@ public class IconCellRenderer extends TableCellRenderer<IconTable> {
 
         boolean showPreview = preferences.booleanPreference(PREVIEW);
         Optional<Icon> icon = item.isTopItem() ?
-            getUpIcon() :
+            getUpIcon(table.getIconSize()) :
             getIcon(table.getIconSize(), item, showPreview);
 
         JLabel iconLabel = new JLabel(icon.orElse(null));

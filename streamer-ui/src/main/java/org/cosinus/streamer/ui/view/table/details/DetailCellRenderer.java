@@ -47,7 +47,7 @@ public class DetailCellRenderer extends TableCellRenderer<DetailTable> {
 
         if (column == 0) {
             Optional<Icon> icon = item.isTopItem() ?
-                getUpIcon() :
+                getUpIcon(X16) :
                 getIcon(X16, item);
             icon.ifPresent(label::setIcon);
         }

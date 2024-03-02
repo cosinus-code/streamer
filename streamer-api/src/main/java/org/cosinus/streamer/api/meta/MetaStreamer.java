@@ -16,7 +16,6 @@
 
 package org.cosinus.streamer.api.meta;
 
-import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
@@ -27,8 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class MetaStreamer implements ParentStreamer<MainStreamer>
-{
+public class MetaStreamer implements ParentStreamer<MainStreamer> {
 
     public static final String META_PROTOCOL = "meta://";
 

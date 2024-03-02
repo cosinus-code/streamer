@@ -16,6 +16,9 @@
     "menu-view-left-view": "",
     "menu-view-hidden": ""
   },
+  "menu-go": {
+    "menu-go-parent": "control UP"
+  },
   "menu-help": {
     "menu-help-index": "F1"
   }

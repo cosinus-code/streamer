@@ -99,9 +99,9 @@
                 <configuration>
                     <mainClass>org.cosinus.streamer.ui.app.StreamerApplication</mainClass>
                     <bundleName>Streamer</bundleName>
-<!--                    <iconFile>image/streamer.icns</iconFile>-->
-                    <jvmVersion>8+</jvmVersion>
-                    <jvmOptions>-splash:image/about.gif</jvmOptions>
+                    <iconFile>image/streamer.icns</iconFile>
+                    <jvmVersion>17+</jvmVersion>
+                    <jvmOptions>-splash:image/splash.png</jvmOptions>
                     <generateDiskImageFile>true</generateDiskImageFile>
                     <workingDirectory>$APP_ROOT/../</workingDirectory>
                     <additionalResources>
@@ -122,12 +122,12 @@
                     <dependency>
                         <groupId>org.codehaus.plexus</groupId>
                         <artifactId>plexus-archiver</artifactId>
-                        <version>4.1.0</version>
+                        <version>RELEASE</version>
                     </dependency>
                     <dependency>
-                        <groupId>org.codehaus.plexus</groupId>
-                        <artifactId>plexus-velocity</artifactId>
-                        <version>1.2</version>
+                        <groupId>org.apache.velocity</groupId>
+                        <artifactId>velocity-tools</artifactId>
+                        <version>2.0</version>
                     </dependency>
                 </dependencies>
             </plugin>

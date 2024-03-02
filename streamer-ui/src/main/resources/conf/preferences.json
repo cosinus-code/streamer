@@ -44,7 +44,8 @@
       "values": [
         "small",
         "normal",
-        "large"
+        "large",
+        "extra-large"
       ]
     },
     "left-view": {

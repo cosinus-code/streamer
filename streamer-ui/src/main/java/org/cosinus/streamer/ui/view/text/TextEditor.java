@@ -37,7 +37,7 @@ import java.util.List;
 import static java.awt.event.KeyEvent.*;
 import static java.lang.String.join;
 import static java.lang.System.lineSeparator;
-import static org.cosinus.streamer.ui.action.GoToParentStreamerAction.GO_TO_UP_STREAMER_ACTION;
+import static org.cosinus.streamer.ui.action.GoToParentStreamerAction.GO_TO_PARENT_ACTION;
 
 public class TextEditor extends TextArea implements LoadWorkerModel<String> {
 
@@ -72,7 +72,7 @@ public class TextEditor extends TextArea implements LoadWorkerModel<String> {
                     actionController.runActionByKeyStroke(keyEvent);
                 }
                 if (keyEvent.getKeyCode() == VK_ESCAPE) {
-                    actionController.runAction(GO_TO_UP_STREAMER_ACTION);
+                    actionController.runAction(GO_TO_PARENT_ACTION);
                 }
             }
         });

@@ -199,7 +199,7 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
         return ofNullable(this.getParentStreamer())
             .map(Streamer::getUrlPath)
             .map(address -> address.split("://"))
-            .map(address -> address[address.length - 1]);
+            .map(address -> address.length > 1 ? address[address.length - 1] : "");
     }
 
     public Optional<StreamerPanel> getPanel() {

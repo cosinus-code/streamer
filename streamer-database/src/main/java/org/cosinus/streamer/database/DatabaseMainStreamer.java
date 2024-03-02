@@ -32,10 +32,9 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.stream;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.database.connection.DatabaseObjectType.QUERY;
-import static org.cosinus.swing.image.icon.IconProvider.ICON_DATABASE;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_FILE_SERVER;
 
 @RootStreamer("Database")
 @ConditionalOnProperty(name = "streamer.database.enabled", matchIfMissing = true)
@@ -107,6 +106,6 @@ public class DatabaseMainStreamer extends MainStreamer<DatabaseConnectionStreame
 
     @Override
     public String getIconName() {
-        return ICON_DATABASE;
+        return ICON_FILE_SERVER;
     }
 }

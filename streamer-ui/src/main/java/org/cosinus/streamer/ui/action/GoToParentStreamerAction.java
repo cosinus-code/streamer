@@ -38,7 +38,7 @@ import static java.util.Optional.ofNullable;
 @Component
 public class GoToParentStreamerAction implements ActionInContext {
 
-    public static final String GO_TO_UP_STREAMER_ACTION = "go-to-parent-streamer";
+    public static final String GO_TO_PARENT_ACTION = "menu-go-parent";
 
     private final ApplicationUIHandler uiHandler;
 
@@ -69,7 +69,7 @@ public class GoToParentStreamerAction implements ActionInContext {
 
     @Override
     public String getId() {
-        return GO_TO_UP_STREAMER_ACTION;
+        return GO_TO_PARENT_ACTION;
     }
 
     @Override

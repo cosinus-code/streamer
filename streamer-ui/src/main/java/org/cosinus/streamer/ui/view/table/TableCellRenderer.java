@@ -110,9 +110,9 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
                                                   int row,
                                                   int column);
 
-    protected Optional<Icon> getUpIcon() {
-        return iconHandler.findIconByName(ICON_UP, X16)
-            .or(() -> iconHandler.findIconByName(ICON_FOLDER, X16));
+    protected Optional<Icon> getUpIcon(IconSize size) {
+        return iconHandler.findIconByName(ICON_UP, size)
+            .or(() -> iconHandler.findIconByName(ICON_FOLDER, size));
     }
 
     protected Optional<Icon> getIcon(IconSize size, ViewItem item) {
