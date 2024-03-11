@@ -95,10 +95,7 @@ public abstract class AbstractCopyAction implements ActionInContext {
 
     protected <S extends Streamer<S>, T extends Streamer<T>> void copyParentStreamer() {
 
-        CopyActionModel<S, T> copyAction = copy(getCopyActionName(),
-            new ParentStreamerViewContext<>((StreamerView<S>) streamerViewHandler.getCurrentView()),
-            new ParentStreamerViewContext<>((StreamerView<T>) streamerViewHandler.getOppositeView()));
-
+        CopyActionModel<S, T> copyAction = actionModel();
         if (isEmpty(copyAction.getStreamersToCopy())) {
             return;
         }
@@ -118,10 +115,16 @@ public abstract class AbstractCopyAction implements ActionInContext {
         workerListenerHandler.register(copyAction.getActionId(), new DefaultWorkerListener() {
             @Override
             public void workerFinished(WorkerModel workerModel) {
+                final StreamerView<?> currentView = streamerViewHandler.getCurrentView();
+                final StreamerView<?> oppositeView = streamerViewHandler.getOppositeView();
                 loadActionExecutor.execute(new LoadActionModel(
-                    streamerViewHandler.getOppositeView().getCurrentLocation(),
-                    streamerViewHandler.getOppositeView().getParentStreamer(),
+                    oppositeView.getCurrentLocation(),
+                    oppositeView.getParentStreamer(),
                     null));
+                loadActionExecutor.execute(new LoadActionModel(
+                    currentView.getCurrentLocation(),
+                    currentView.getParentStreamer(),
+                    currentView.getNextItemIdentifier()));
             }
         });
         actionExecutors.execute(copyAction);
@@ -131,6 +134,8 @@ public abstract class AbstractCopyAction implements ActionInContext {
         CopyActionModel<S, T> copyAction) {
         return new CopyConfirmationDialog(copyAction);
     }
+
+    protected abstract <S extends Streamer<S>, T extends Streamer<T>> CopyActionModel<S, T> actionModel();
 
     protected abstract String getCopyActionName();
 }

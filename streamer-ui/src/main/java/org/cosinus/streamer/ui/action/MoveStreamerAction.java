@@ -16,49 +16,42 @@
 
 package org.cosinus.streamer.ui.action;
 
+import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.pack.PackerHandler;
 import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.swing.action.ActionContext;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.translate.Translator;
-import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.util.Optional;
 
-import static java.awt.event.KeyEvent.VK_F5;
+import static java.awt.event.KeyEvent.VK_F6;
 import static org.cosinus.streamer.ui.action.execute.copy.CopyActionModel.copy;
+import static org.cosinus.streamer.ui.action.execute.copy.CopyActionModel.move;
 
 /**
  * Copy streamers action
  */
 @Component
-public class PackStreamerAction extends AbstractCopyAction {
+public class MoveStreamerAction extends AbstractCopyAction {
 
-    public static final String PACK_STREAMER_ACTION_ID = "pack-streamer";
+    public static final String MOVE_STREAMER_ACTION_ID = "move-streamer";
 
-    private final ApplicationUIHandler uiHandler;
-
-    private final PackerHandler packerHandler;
-
-    public PackStreamerAction(final Preferences preferences,
+    public MoveStreamerAction(final Preferences preferences,
                               final Translator translator,
                               final DialogHandler dialogHandler,
                               final ActionExecutors actionExecutors,
                               final WorkerListenerHandler workerListenerHandler,
                               final LoadActionExecutor loadActionExecutor,
-                              final StreamerViewHandler streamerViewHandler,
-                              final ApplicationUIHandler uiHandler,
-                              final PackerHandler packerHandler) {
+                              final StreamerViewHandler streamerViewHandler) {
         super(preferences,
             translator,
             dialogHandler,
@@ -66,65 +59,39 @@ public class PackStreamerAction extends AbstractCopyAction {
             workerListenerHandler,
             loadActionExecutor,
             streamerViewHandler);
-        this.uiHandler = uiHandler;
-        this.packerHandler = packerHandler;
     }
 
     @Override
-    public void run(ActionContext actionContext) {
-        if (packerHandler.getPackersMap().isEmpty()) {
-            dialogHandler.showInfo(translator.translate("act_pack_no_pack_system"));
+    protected <S extends Streamer<S>, T extends Streamer<T>> void executeStreamerCopy(CopyActionModel<S, T> copyAction) {
+        //TODO: to avoid cast
+        ParentStreamer<T> destination =
+            (ParentStreamer<T>) copyAction.getDestination().create(copyAction.getTargetPath(), true);
+        if (destination == null || !destination.exists()) {
+            dialogHandler.showInfo(translator.translate("act_move_destination_not_found"));
             return;
         }
-
-        super.run(actionContext);
-    }
-
-    @Override
-    protected <S extends Streamer<S>, T extends Streamer<T>> void executeStreamerCopy(
-        CopyActionModel<S, T> copyAction) {
-
-//        Optional.ofNullable(copyAction.getPackType())
-//                .map(packerHandler.getPackers()::get)
-//                .ifPresent(packer -> {
-//                    DataView<S> currentView = actionContext.getCurrentView();
-//                    List<S> streamersToCopy = copyAction.getStreamersToCopy();
-//                    String name = streamersToCopy.size() == 1 ?
-//                            streamersToCopy.get(0).getName() :
-//                            currentView.getCurrentStreamer().getName();
-//                    String packName = setExtension(name, copyAction.getPackType());
-//                    Path packStreamerPath = copyAction.getTargetPath().resolve(packName);
-//
-//                    Streamer destination = copyAction.getDestination().create(packStreamerPath);
-//
-//                    super.execute(copy(streamersToCopy)
-//                                          .from(currentView.getLoadedStreamer())
-//                                          .to(packer.pack(destination))
-//                                            //TODO: to avoid setting target path to null
-//                                          .toTargetPath((Path) null),
-//                                  actionContext);
-//                });
+        super.executeStreamerCopy(copyAction.to(destination));
     }
 
     @Override
     protected <S extends Streamer<S>, T extends Streamer<T>> CopyActionModel<S, T> actionModel() {
-        return copy(getCopyActionName(),
+        return move(getCopyActionName(),
             new ParentStreamerViewContext<>((StreamerView<S>) streamerViewHandler.getCurrentView()),
             new ParentStreamerViewContext<>((StreamerView<T>) streamerViewHandler.getOppositeView()));
     }
 
     @Override
     public String getId() {
-        return PACK_STREAMER_ACTION_ID;
+        return MOVE_STREAMER_ACTION_ID;
     }
 
     @Override
     protected String getCopyActionName() {
-        return PACK_ACTION_NAME;
+        return MOVE_ACTION_NAME;
     }
 
     @Override
     public Optional<KeyStroke> getKeyStroke() {
-        return Optional.of(uiHandler.getAltDownKeyStroke(VK_F5));
+        return Optional.of(KeyStroke.getKeyStroke(VK_F6, 0));
     }
 }

@@ -21,6 +21,8 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
+import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
+import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.dialog.DialogHandler;
@@ -32,6 +34,7 @@ import javax.swing.*;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_F5;
+import static org.cosinus.streamer.ui.action.execute.copy.CopyActionModel.copy;
 
 /**
  * Copy streamers action
@@ -67,6 +70,13 @@ public class CopyStreamerAction extends AbstractCopyAction {
             return;
         }
         super.executeStreamerCopy(copyAction.to(destination));
+    }
+
+    @Override
+    protected <S extends Streamer<S>, T extends Streamer<T>> CopyActionModel<S, T> actionModel() {
+        return copy(getCopyActionName(),
+            new ParentStreamerViewContext<>((StreamerView<S>) streamerViewHandler.getCurrentView()),
+            new ParentStreamerViewContext<>((StreamerView<T>) streamerViewHandler.getOppositeView()));
     }
 
     @Override

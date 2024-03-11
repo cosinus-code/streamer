@@ -49,11 +49,11 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
     @Autowired
     protected FormatHandler formatHandler;
 
-    private final ParentStreamer<S> source;
+    protected final ParentStreamer<S> source;
 
-    private final ParentStreamer<T> destination;
+    protected final ParentStreamer<T> destination;
 
-    private final StreamerFilter streamerFilter;
+    protected final StreamerFilter streamerFilter;
 
     private final CopyStrategy copyStrategy;
 
@@ -68,6 +68,10 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
         this.streamerFilter = copyModel.getSourceFilter();
         this.copyStrategy = new CopyStrategy();
         this.overallCopyProgress = new OverallCopyListener();
+    }
+
+    public StreamerFilter getStreamerFilter() {
+        return streamerFilter;
     }
 
     @Override
@@ -94,7 +98,7 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
     @Override
     public void preparePipelineOpen(CopyStrategy pipelineStrategy,
                                     PipelineListener<S> pipelineListener) {
-        try (Stream<? extends Streamer<?>> flatStreamers = source.flatStream(streamerFilter)) {
+        try (Stream<? extends Streamer<?>> flatStreamers = source.flatStream(getStreamerFilter())) {
             this.totalSize = flatStreamers
                 .filter(not(Streamer::isParent))
                 .mapToLong(Streamer::getSize)
@@ -110,7 +114,7 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
 
     @Override
     public Stream<S> openPipelineInputStream(CopyStrategy pipelineStrategy) {
-        return source.flatStream(streamerFilter);
+        return source.flatStream(getStreamerFilter());
     }
 
     @Override
@@ -118,12 +122,13 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
         return this::copyStreamer;
     }
 
-    public void copyStreamer(S streamerToCopy) {
-        Path relativePath = getRelativePath(streamerToCopy);
-        Path targetPath = destination.getPath().resolve(relativePath);
-        T target = destination.create(targetPath, streamerToCopy.isParent());
+    protected void copyStreamer(S streamerToCopy) {
+        copyStreamer(streamerToCopy, targetStreamer(streamerToCopy));
+    }
+
+    protected void copyStreamer(S streamerToCopy, T streamerToCopyTo) {
         BinaryStreamer binarySource = streamerToCopy.binaryStreamer();
-        BinaryStreamer binaryTarget = target.binaryStreamer();
+        BinaryStreamer binaryTarget = streamerToCopyTo.binaryStreamer();
         if (binarySource != null && binaryTarget != null) {
             try {
                 new CopyBinaryPipeline(binarySource, binaryTarget, copyStrategy, this)
@@ -131,9 +136,15 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
             } catch (IOException | UncheckedIOException ex) {
                 throw new ActionException(ex, "act_copy_error", binarySource.getPath(), binaryTarget.getPath());
             }
-        } else if (!target.exists()) {
-            target.save();
+        } else if (!streamerToCopyTo.exists()) {
+            streamerToCopyTo.save();
         }
+    }
+
+    protected T targetStreamer(S streamerToCopy) {
+        Path relativePath = getRelativePath(streamerToCopy);
+        Path targetPath = destination.getPath().resolve(relativePath);
+        return destination.create(targetPath, streamerToCopy.isParent());
     }
 
     private Path getRelativePath(Streamer<?> streamer) {

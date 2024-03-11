@@ -109,22 +109,26 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     protected boolean rename(String newName) {
         File fileToRename = file;
         Path newPath = Paths.get(fileToRename.getParent(), newName);
-        File newFile = newPath.toFile();
         boolean samePath = fileToRename.toPath().equals(newPath);
-        if (newFile.exists() && !samePath) {
-            throw new StreamerException("rename.error.already.exist", newPath);
-        }
-
         if (!samePath) {
-            return fileToRename.renameTo(newFile);
+            return rename(newPath);
         }
 
         try (AutoRemovableTemporaryFile tmpFile = new AutoRemovableTemporaryFile(fileToRename)) {
             return fileToRename.renameTo(tmpFile.getFile()) &&
-                tmpFile.getFile().renameTo(newFile);
+                tmpFile.getFile().renameTo(newPath.toFile());
         } catch (IOException ex) {
             throw new StreamerException("rename.error.cannot.create.temporary.file", fileToRename, ex);
         }
+    }
+
+    @Override
+    public boolean rename(Path newPath) {
+        File newFile = newPath.toFile();
+        if (newFile.exists()) {
+            throw new StreamerException("rename.error.already.exist", newPath);
+        }
+        return file.renameTo(newPath.toFile());
     }
 
     @Override

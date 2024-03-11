@@ -99,7 +99,7 @@
                 <configuration>
                     <mainClass>org.cosinus.streamer.ui.app.StreamerApplication</mainClass>
                     <bundleName>Streamer</bundleName>
-                    <iconFile>image/streamer.icns</iconFile>
+<!--                    <iconFile>image/streamer.icns</iconFile>-->
                     <jvmVersion>17+</jvmVersion>
                     <jvmOptions>-splash:image/splash.png</jvmOptions>
                     <generateDiskImageFile>true</generateDiskImageFile>

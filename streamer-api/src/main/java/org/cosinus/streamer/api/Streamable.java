@@ -95,6 +95,10 @@ public interface Streamable {
     default void save() {
     }
 
+    default boolean rename(Path newPath) {
+        return false;
+    }
+
     default boolean delete() {
         return false;
     }
