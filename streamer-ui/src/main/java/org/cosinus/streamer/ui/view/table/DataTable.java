@@ -41,6 +41,8 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.concat;
 import static java.util.stream.IntStream.range;
 import static javax.swing.KeyStroke.getKeyStroke;
+import static javax.swing.SwingUtilities.isLeftMouseButton;
+import static javax.swing.SwingUtilities.isRightMouseButton;
 import static org.cosinus.streamer.ui.action.ExecuteStreamerAction.EXECUTE_STREAMER_ACTION_ID;
 
 public abstract class DataTable<T extends Streamable> extends Table implements FocusListener {
@@ -114,24 +116,18 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
     public void processMouseEvent(MouseEvent event) {
         try {
             if (event.getID() == MOUSE_RELEASED) {
-//                Maestro.setDragged(false);
+//                setDragged(false);
             } else if (event.getID() == MOUSE_EXITED) {
-//                Maestro.setDragItself(false);
+//                setDragItself(false);
             } else if (event.getID() == MOUSE_ENTERED) {
-//                Maestro.setDragItself(true);
-            } else if (event.getID() == MOUSE_PRESSED) {
-                int index = getIndexForItemAtPoint(event.getPoint());
-                setCurrentIndex(index);
-                requestFocus();
+//                setDragItself(true);
             } else if (event.getID() == MOUSE_CLICKED) {
-                if (event.getButton() == BUTTON1) {
+                if (isLeftMouseButton(event)) {
                     if (event.getClickCount() == 2) {
                         actionController.runAction(EXECUTE_STREAMER_ACTION_ID);
                     }
-                } else if (event.getButton() == MouseEvent.BUTTON3) {
-//                        Streamer streamer = getStreamerAt(index);
-//                        JPopupMenu popup = Maestro.getMainFrame().getPopupMenuStreamer(streamer);
-//                        if(popup != null) popup.show(jcTable.this, e.getX(), e.getY());
+                } else if (isRightMouseButton(event)) {
+                    //TODO: show context popup
                 }
             }
             super.processMouseEvent(event);
@@ -185,6 +181,10 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
 
     public List<T> getSelectedItems() {
         List<T> selectedItems = getTableModel().getSelectedItems();
+//        List<T> selectedItems = stream(getSelectionModel().getSelectedIndices())
+//            .mapToObj(this::getItemAt)
+//            .collect(toList());
+
         if (!selectedItems.isEmpty()) {
             return selectedItems;
         }

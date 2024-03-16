@@ -117,7 +117,7 @@ public class DetailTable<T extends Streamable> extends DataTable<T> implements A
     }
 
     private void setSelectionType() {
-        setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         ListSelectionModel selectionModel = getSelectionModel();
         selectionModel.addListSelectionListener(event -> {
             try {

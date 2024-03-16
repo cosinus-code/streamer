@@ -74,6 +74,7 @@ public class IconTable<T extends Streamable> extends DataTable<T> {
         setRowSelectionAllowed(false);
         setColumnSelectionAllowed(false);
         setCellSelectionEnabled(true);
+        setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         ListSelectionListener listSelectionListener = new IconListSelectionListener();
         getColumnModel().getSelectionModel().addListSelectionListener(listSelectionListener);
