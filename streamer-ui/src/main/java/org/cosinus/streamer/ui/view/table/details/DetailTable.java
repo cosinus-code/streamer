@@ -41,8 +41,6 @@ import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
 import static java.lang.String.join;
 import static java.util.Optional.ofNullable;
 import static javax.swing.SwingUtilities.invokeLater;
@@ -118,39 +116,6 @@ public class DetailTable<T extends Streamable> extends DataTable<T> implements A
 
     private void setSelectionType() {
         setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        ListSelectionModel selectionModel = getSelectionModel();
-        selectionModel.addListSelectionListener(event -> {
-            try {
-                ListSelectionModel lsm = (ListSelectionModel) event.getSource();
-                if (lsm.isSelectionEmpty()) {
-                    return;
-                }
-                if (event.getValueIsAdjusting()) {
-                    return;
-                }
-
-                int first = event.getFirstIndex();
-                int last = event.getLastIndex();
-                if (first == last) {
-                    return;
-                }
-
-                int selectedRow = lsm.getMinSelectionIndex();
-                int oldRow = selectedRow == first ? last : first;
-                if (shiftDown) {
-                    int start = min(oldRow, selectedRow);
-                    int end = max(oldRow, selectedRow);
-                    selectItems(start,
-                        end,
-                        true,
-                        false);
-                } else if (ctrlDown && !keyboardArrow) {
-                    selectIndexAtIndex(selectedRow);
-                }
-            } catch (Exception ex) {
-                errorHandler.handleError(DetailTable.this, ex);
-            }
-        });
     }
 
     @Override
@@ -227,7 +192,8 @@ public class DetailTable<T extends Streamable> extends DataTable<T> implements A
 
     @Override
     public void setCurrentIndex(int index) {
-        getSelectionModel().setSelectionInterval(index, index);
+        getSelectionModel().addSelectionInterval(index, index);
+        getTableModel().setCurrentIndex(index);
         scrollRectToVisible(getCellRect(index, 0, false));
         repaint();
     }

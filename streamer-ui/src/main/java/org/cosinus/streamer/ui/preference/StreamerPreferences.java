@@ -20,8 +20,6 @@ public interface StreamerPreferences {
 
     String THEME = "theme";
     String ROW_HEIGHT = "row-height";
-    String SELECT_BACKGROUND = "sel-background";
-    String SELECT_FOREGROUND = "sel-foreground";
     String ADDRESS_BAR = "address-bar";
     String ADDRESS_TOP = "address-top";
     String ROOT_COMBO = "root-combo";

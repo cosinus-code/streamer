@@ -26,14 +26,9 @@ import org.cosinus.swing.preference.Preferences;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
-import static java.util.stream.IntStream.range;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_HIDDEN;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.TOP_VISIBLE;
 
@@ -44,8 +39,6 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
     protected final List<ViewItem> viewItems;
 
     private final ViewItemComparator comparator;
-
-    protected final Map<Integer, Boolean> selectionMap;
 
     protected final Map<String, T> streamableMap;
 
@@ -59,7 +52,6 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
     public Preferences preferences;
 
     public DataTableModel() {
-        this.selectionMap = new ConcurrentHashMap<>();
         this.comparator = new ViewItemComparator();
         this.viewItems = new ArrayList<>();
         this.streamableMap = new HashMap<>();
@@ -111,14 +103,6 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
         return viewItems;
     }
 
-    public boolean isIndexSelected(int index) {
-        if (index < 0 || index >= viewItems.size()) {
-            return false;
-        }
-        return ofNullable(selectionMap.get(index))
-            .orElse(false);
-    }
-
     public boolean isSortAscending() {
         return comparator.isSortAscending();
     }
@@ -137,31 +121,6 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
         }
     }
 
-    public void addToSelection(int index) {
-        if (index < getMinimumToSelect() || index >= viewItems.size()) {
-            return;
-        }
-        selectionMap.put(index, ofNullable(selectionMap.get(index))
-            .map(selected -> !selected)
-            .orElse(true));
-    }
-
-    public void addToSelection(int start,
-                               int end,
-                               boolean only,
-                               boolean deselect) {
-        if (only) {
-            clearSelection();
-        }
-        range(max(start, getMinimumToSelect()),
-            min(viewItems.size(), end + 1))
-            .forEach(i -> selectionMap.put(i, !deselect));
-    }
-
-    public void clearSelection() {
-        selectionMap.clear();
-    }
-
     public boolean isTopVisible() {
         return preferences.findBooleanPreference(TOP_VISIBLE)
             .orElse(true);
@@ -173,7 +132,6 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
 
     public void clear() {
         viewItems.clear();
-        selectionMap.clear();
         streamableMap.clear();
     }
 
@@ -210,15 +168,6 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
     @Override
     public long getLoadedSize() {
         return viewItems.size() - (isTopVisible() ? 1 : 0);
-    }
-
-    public List<T> getSelectedItems() {
-        return selectionMap.keySet()
-            .stream()
-            .map(viewItems::get)
-            .map(ViewItem::getId)
-            .map(streamableMap::get)
-            .collect(Collectors.toList());
     }
 
     public String getCurrentItemIdentifier() {

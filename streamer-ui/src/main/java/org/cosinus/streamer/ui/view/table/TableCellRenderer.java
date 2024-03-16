@@ -33,13 +33,10 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
-import static org.cosinus.streamer.ui.preference.StreamerPreferences.SELECT_BACKGROUND;
-import static org.cosinus.streamer.ui.preference.StreamerPreferences.SELECT_FOREGROUND;
 import static org.cosinus.streamer.ui.view.table.icon.IconTable.PREVIEW_CELL_SIZE;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_FOLDER;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_UP;
-import static org.cosinus.swing.image.icon.IconSize.X16;
 
 public abstract class TableCellRenderer<T extends DataTable> extends DefaultTableCellRenderer {
 
@@ -67,21 +64,13 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
                                                    int column) {
 
         Component component = super.getTableCellRendererComponent(table,
-                                                                  value,
-                                                                  isSelected,
-                                                                  hasFocus,
-                                                                  row,
-                                                                  column);
+            value,
+            isSelected,
+            hasFocus,
+            row,
+            column);
 
         T dataTable = (T) table;
-        int index = dataTable.getTableModel().getIndex(row, column);
-        if (dataTable.isIndexSelected(index)) {
-            preferences.findColorPreference(SELECT_BACKGROUND)
-                .ifPresent(component::setBackground);
-            preferences.findColorPreference(SELECT_FOREGROUND)
-                .ifPresent(component::setForeground);
-        }
-
         if (component instanceof JLabel label && value instanceof ViewItem item) {
             if (item.isLink()) {
                 label.setFont(label.getFont().deriveFont(Font.ITALIC));

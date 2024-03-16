@@ -163,32 +163,12 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
     }
 
     public void selectCurrentItem() {
-        selectIndexAtIndex(getCurrentIndex());
         if (getCurrentIndex() != getItemsCount() - 1) {
             setCurrentIndex(getCurrentIndex() + 1);
         }
     }
 
-    public void selectIndexAtIndex(int index) {
-        getTableModel().addToSelection(index);
-        repaint();
-    }
-
-    public void selectItems(int start, int end, boolean only, boolean deselect) {
-        getTableModel().addToSelection(start, end, only, deselect);
-        repaint();
-    }
-
     public List<T> getSelectedItems() {
-        List<T> selectedItems = getTableModel().getSelectedItems();
-//        List<T> selectedItems = stream(getSelectionModel().getSelectedIndices())
-//            .mapToObj(this::getItemAt)
-//            .collect(toList());
-
-        if (!selectedItems.isEmpty()) {
-            return selectedItems;
-        }
-
         return stream(getSelectedRows())
             .filter(index -> index >= getTableModel().getMinimumToSelect())
             .mapToObj(this::getItemAt)
@@ -252,10 +232,6 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
 
     public List<ViewItem> getAllItems() {
         return getTableModel().getAllViewItems();
-    }
-
-    public boolean isIndexSelected(int index) {
-        return getTableModel().isIndexSelected(index);
     }
 
     public void findViewItem(String name) {
