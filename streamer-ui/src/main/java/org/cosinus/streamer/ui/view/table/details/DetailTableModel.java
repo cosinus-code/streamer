@@ -41,13 +41,6 @@ public class DetailTableModel<T extends Streamable> extends DataTableModel<T> {
 
     private int sortedColumn = -1;
 
-    //TODO: to see if this is still needed
-    private final Map<String, Long> mapComputedSize;
-
-    public DetailTableModel() {
-        this.mapComputedSize = new HashMap<>();
-    }
-
     @Override
     public void reset(final Streamer<T> parentStreamer) {
         super.reset(parentStreamer);
@@ -96,11 +89,6 @@ public class DetailTableModel<T extends Streamable> extends DataTableModel<T> {
         }
 
         return item;
-    }
-
-    //TODO
-    private boolean isComputingSize(String path) {
-        return mapComputedSize.containsKey(path);
     }
 
     @Override

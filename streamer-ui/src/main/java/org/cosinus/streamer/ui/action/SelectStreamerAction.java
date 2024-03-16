@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 import javax.swing.*;
 import java.util.Optional;
 
-import static java.awt.event.KeyEvent.VK_SPACE;
+import static java.awt.event.KeyEvent.VK_HELP;
 
 /**
  * Select streamer action
@@ -52,6 +52,6 @@ public class SelectStreamerAction implements ActionInContext {
 
     @Override
     public Optional<KeyStroke> getKeyStroke() {
-        return Optional.of(KeyStroke.getKeyStroke(VK_SPACE, 0));
+        return Optional.of(KeyStroke.getKeyStroke(VK_HELP, 0));
     }
 }
