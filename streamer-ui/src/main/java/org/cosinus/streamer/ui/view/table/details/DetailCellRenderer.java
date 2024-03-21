@@ -16,9 +16,8 @@
 
 package org.cosinus.streamer.ui.view.table.details;
 
-import org.cosinus.streamer.api.value.Value;
-import org.cosinus.streamer.ui.view.table.ViewItem;
 import org.cosinus.streamer.ui.view.table.TableCellRenderer;
+import org.cosinus.streamer.ui.view.table.ViewItem;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,15 +34,16 @@ public class DetailCellRenderer extends TableCellRenderer<DetailTable> {
                                       DetailTable table,
                                       ViewItem item,
                                       boolean isSelected,
-                                      boolean hasFocus,
                                       int row,
                                       int column) {
 
         setBorder(emptyBorder(0, 3, 0, 3));
 
-        label.setText(item.isTopItem() ? item.toString() : ofNullable(item.getDetail(column))
-            .map(Object::toString)
-            .orElse(""));
+        label.setText(item.isTopItem() ?
+            item.toString() :
+            ofNullable(item.getDetail(column))
+                .map(Object::toString)
+                .orElse(""));
 
         if (column == 0) {
             Optional<Icon> icon = item.isTopItem() ?

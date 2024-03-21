@@ -28,9 +28,9 @@ import static java.util.Arrays.stream;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
-import static org.cosinus.streamer.ui.preference.StreamerPreferences.LEFT_VIEW;
-import static org.cosinus.streamer.ui.preference.StreamerPreferences.RIGHT_VIEW;
+import static org.cosinus.streamer.ui.preference.StreamerPreferences.*;
 import static org.cosinus.streamer.ui.view.PanelLocation.LEFT;
+import static org.cosinus.streamer.ui.view.PanelLocation.RIGHT;
 
 /**
  * Handler for data views
@@ -38,7 +38,7 @@ import static org.cosinus.streamer.ui.view.PanelLocation.LEFT;
 @Component
 public class StreamerViewHandler {
 
-    private PanelLocation currentLocation = LEFT;
+    private PanelLocation currentLocation;
 
     private final Map<PanelLocation, StreamerPanel> panelsMap = new HashMap<>();
 
@@ -62,6 +62,7 @@ public class StreamerViewHandler {
         this.defaultStreamerViewCreator = defaultStreamerViewCreator;
         this.streamerViewsMap = stream(PanelLocation.values())
             .collect(toMap(identity(), location -> new HashMap<>()));
+        this.currentLocation = preferences.booleanPreference(SHOW_LEFT_VIEW) ? LEFT : RIGHT;
     }
 
     public PanelLocation getCurrentLocation() {

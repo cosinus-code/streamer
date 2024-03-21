@@ -13,35 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cosinus.streamer.ui.view;
+package org.cosinus.streamer.ui.view.table.details;
 
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.value.Value;
+import org.cosinus.streamer.ui.view.DetailEditor;
+import org.cosinus.streamer.ui.view.StreamerView;
+import org.cosinus.streamer.ui.view.StreamerEditor;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.IntStream;
 
 import static java.util.Optional.ofNullable;
+import static javax.swing.SwingUtilities.invokeLater;
 
-public class StreamerViewDetailsEditor<T extends Streamable> {
+public class DetailStreamerEditor<T extends Streamable> implements StreamerEditor<T> {
 
-    private final StreamerView<T> view;
+    private final DetailView<T> view;
 
     private List<DetailEditor<T>> detailEditors;
 
     private T itemToBeEdited;
 
-    public StreamerViewDetailsEditor(final StreamerView<T> view) {
+    public DetailStreamerEditor(final DetailView<T> view) {
         this.view = view;
         this.detailEditors = IntStream.range(0, view.getParentStreamer().detailNames().size())
             .mapToObj(detailIndex -> new DetailEditor<>(this, detailIndex))
             .toList();
     }
 
-    public void loadItemAndShow(final T itemToBeEdited) {
+    @Override
+    public void loadAndShow(final T itemToBeEdited) {
         this.itemToBeEdited = itemToBeEdited;
         final AtomicBoolean focused = new AtomicBoolean();
         detailEditors.forEach(detailEditor -> {
@@ -57,23 +61,23 @@ public class StreamerViewDetailsEditor<T extends Streamable> {
         });
     }
 
-
-    public void saveItem() {
+    @Override
+    public void save() {
         itemToBeEdited.save();
         view.reload(ofNullable(itemToBeEdited.details().get(itemToBeEdited.getLeadDetailIndex()))
             .map(Value::toString)
             .orElse(null));
     }
 
-    public void hideEditor() {
-        setVisible(false);
-        SwingUtilities.invokeLater(view::requestFocus);
-    }
-
+    @Override
     public void setVisible(boolean visible) {
         detailEditors.forEach(detailEditor -> detailEditor.setVisible(visible));
+        if (!visible) {
+            invokeLater(view::requestFocus);
+        }
     }
 
+    @Override
     public StreamerView<T> getView() {
         return view;
     }

@@ -20,7 +20,10 @@ import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.form.control.TextField;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.awt.event.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import static java.awt.event.KeyEvent.VK_ENTER;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
@@ -34,11 +37,11 @@ public class DetailEditor<T extends Streamable> extends TextField implements Foc
 
     private T itemToBeEdited;
 
-    private final StreamerViewDetailsEditor<T> editor;
+    private final StreamerEditor<T> editor;
 
     private final int detailIndex;
 
-    public DetailEditor(final StreamerViewDetailsEditor<T> editor, int detailIndex) {
+    public DetailEditor(final StreamerEditor<T> editor, int detailIndex) {
         this.editor = editor;
         this.detailIndex = detailIndex;
 
@@ -48,10 +51,10 @@ public class DetailEditor<T extends Streamable> extends TextField implements Foc
                 try {
                     if (e.getKeyCode() == VK_ENTER) {
                         itemToBeEdited.updateDetail(detailIndex, getText());
-                        editor.saveItem();
-                        editor.hideEditor();
+                        editor.save();
+                        editor.setVisible(false);
                     } else if (e.getKeyCode() == VK_ESCAPE) {
-                        editor.hideEditor();
+                        editor.setVisible(false);
                     }
                 } catch (Exception ex) {
                     errorHandler.handleError(editor.getView(), ex);

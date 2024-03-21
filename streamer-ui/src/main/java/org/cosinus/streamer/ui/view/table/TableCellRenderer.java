@@ -83,7 +83,6 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
                 dataTable,
                 item,
                 isSelected,
-                hasFocus,
                 row,
                 column);
         }
@@ -95,7 +94,6 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
                                                   T table,
                                                   ViewItem value,
                                                   boolean isSelected,
-                                                  boolean hasFocus,
                                                   int row,
                                                   int column);
 

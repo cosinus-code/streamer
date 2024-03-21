@@ -121,6 +121,8 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
 //                setDragItself(false);
             } else if (event.getID() == MOUSE_ENTERED) {
 //                setDragItself(true);
+            } else if (event.getID() == MOUSE_PRESSED) {
+                setCurrentIndex(getIndexForItemAtPoint(event.getPoint()));
             } else if (event.getID() == MOUSE_CLICKED) {
                 if (isLeftMouseButton(event)) {
                     if (event.getClickCount() == 2) {
@@ -164,7 +166,7 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
 
     public void selectCurrentItem() {
         if (getCurrentIndex() != getItemsCount() - 1) {
-            setCurrentIndex(getCurrentIndex() + 1);
+            selectCurrentIndex(getCurrentIndex() + 1);
         }
     }
 
@@ -281,6 +283,8 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
     }
 
     public abstract void setCurrentIndex(int index);
+
+    public abstract void selectCurrentIndex(int index);
 
     protected abstract DataTableModel<T> createDataTableModel();
 }

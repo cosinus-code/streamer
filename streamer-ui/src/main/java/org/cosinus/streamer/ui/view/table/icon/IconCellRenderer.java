@@ -8,13 +8,16 @@ package org.cosinus.streamer.ui.view.table.icon;
 
 import org.cosinus.streamer.ui.view.table.TableCellRenderer;
 import org.cosinus.streamer.ui.view.table.ViewItem;
-import org.cosinus.swing.text.WrappedText;
-import org.cosinus.swing.text.WrappedTextBuilder;
 
 import javax.swing.*;
+import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.util.Optional;
 
+import static java.util.Optional.ofNullable;
+import static javax.swing.text.StyleConstants.*;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.PREVIEW;
 import static org.cosinus.swing.border.Borders.emptyBorder;
 
@@ -22,6 +25,12 @@ import static org.cosinus.swing.border.Borders.emptyBorder;
  * @author costaxus
  */
 public class IconCellRenderer extends TableCellRenderer<IconTable> {
+
+    private final IconTable table;
+
+    public IconCellRenderer(final IconTable table) {
+        this.table = table;
+    }
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -37,52 +46,55 @@ public class IconCellRenderer extends TableCellRenderer<IconTable> {
                                       IconTable table,
                                       ViewItem item,
                                       boolean isSelected,
-                                      boolean hasFocus,
                                       int row,
                                       int column) {
-        int margin = 3;
-        int maxWidth = table.getCellWidth() - 4 * margin;
-        WrappedText wrappedText = new WrappedTextBuilder(maxWidth, label)
-            .wrapOnSeparators(item.toString(), " .-_)(,")
-            .toWrappedText(true);
 
-        label.setText(wrappedText.text());
-        label.setOpaque(isSelected);
-        label.setHorizontalAlignment(JLabel.CENTER);
+        Icon icon = getCellIcon(item);
+        IconCellPanel cellPanel = new IconCellPanel(label, item, icon, table.getCellWidth(), isSelected);
 
+        boolean showPreview = preferences.booleanPreference(PREVIEW);
+        ofNullable(icon)
+            .map(Icon::getIconHeight)
+            .map(iconHeight -> showPreview ? table.getIconDimension() : iconHeight)
+            .map(iconHeight -> iconHeight + cellPanel.getTextBound().height)
+            .filter(panelHeight -> table.getRowHeight(row) < panelHeight)
+            .ifPresent(panelHeight -> table.setRowHeight(row, panelHeight));
+
+        return cellPanel;
+    }
+
+    private Icon getCellIcon(ViewItem item) {
         boolean showPreview = preferences.booleanPreference(PREVIEW);
         Optional<Icon> icon = item.isTopItem() ?
             getUpIcon(table.getIconSize()) :
             getIcon(table.getIconSize(), item, showPreview);
-
-        JLabel iconLabel = new JLabel(icon.orElse(null));
-        int iconLabelSize = showPreview ? IconTable.PREVIEW_CELL_SIZE : table.getIconSize().getSize();
-        iconLabel.setPreferredSize(new Dimension(iconLabelSize, iconLabelSize));
-
-        JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-        labelPanel.add(label);
-
-        JPanel panel = new JPanel(new BorderLayout());
-        JPanel textPanel = new JPanel(new BorderLayout());
-        textPanel.add(labelPanel, BorderLayout.NORTH);
-
-        panel.setBorder(emptyBorder(margin));
-        label.setBorder(emptyBorder(margin));
-
-        labelPanel.setOpaque(false);
-        textPanel.setOpaque(false);
-        panel.setOpaque(false);
-
-        panel.add(iconLabel, BorderLayout.NORTH);
-        panel.add(textPanel, BorderLayout.CENTER);
-
-        icon.map(Icon::getIconHeight)
-            .map(iconHeight -> showPreview ? table.getIconDimension() : iconHeight)
-            .map(iconHeight -> iconHeight + wrappedText.height() + 4 * margin)
-            .filter(panelHeight -> table.getRowHeight(row) < panelHeight)
-            .ifPresent(panelHeight -> table.setRowHeight(row, panelHeight));
-
-        return panel;
+        return icon.orElse(null);
     }
 
+    public JTextPane resetCellEditor(JTextPane cellEditor, int row, int column) {
+        IconCellPanel iconCellPanel = (IconCellPanel) table.prepareRenderer(this, row, column);
+
+        Font font = iconCellPanel.getTextFont();
+        MutableAttributeSet standard = new SimpleAttributeSet();
+        setAlignment(standard, ALIGN_CENTER);
+        setFontFamily(standard, font.getFamily());
+        setFontSize(standard, font.getSize());
+
+        StyledDocument doc = cellEditor.getStyledDocument();
+        doc.setParagraphAttributes(0, 0, standard, true);
+
+        Rectangle cellRectangle = table.getCellRect(row, column, true);
+        Rectangle textRectangle = iconCellPanel.getTextBound();
+        int margin = textRectangle.x;
+        cellEditor.setBounds(
+            cellRectangle.x + textRectangle.x,
+            cellRectangle.y + textRectangle.y,
+            textRectangle.width + margin,
+            textRectangle.height - 2 * margin);
+
+        cellEditor.setBorder(emptyBorder(margin));
+        cellEditor.setText(iconCellPanel.getWrappedText());
+
+        return cellEditor;
+    }
 }

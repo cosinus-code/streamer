@@ -18,18 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
 import static java.util.stream.IntStream.range;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.*;
 import static org.cosinus.swing.image.icon.IconSize.X32;
-import static org.cosinus.swing.math.MoreMath.*;
+import static org.cosinus.swing.math.MoreMath.divideAndFloor;
 
 public class IconTable<T extends Streamable> extends DataTable<T> {
 
@@ -49,10 +43,6 @@ public class IconTable<T extends Streamable> extends DataTable<T> {
         super.initComponents();
         setHeader();
         setSelectionType();
-
-        ActionMap am = getActionMap();
-        am.put("selectPreviousColumnCell", new PreviousFocusHandler());
-        am.put("selectNextColumnCell", new NextFocusHandler());
     }
 
     @Override
@@ -81,16 +71,25 @@ public class IconTable<T extends Streamable> extends DataTable<T> {
         getSelectionModel().addListSelectionListener(listSelectionListener);
     }
 
-    public TableCellRenderer getCellRenderer(int row, int column) {
-        return new IconCellRenderer();
+    @Override
+    public IconCellRenderer getCellRenderer(int row, int column) {
+        return new IconCellRenderer(this);
     }
 
+    @Override
     public void setCurrentIndex(int index) {
         int row = getTableModel().getRowForIndex(index);
         int column = getTableModel().getColumnForIndex(index);
         changeSelection(row, column, false, false);
         scrollRectToVisible(getCellRect(row, column, false));
         repaint();
+    }
+
+
+    @Override
+    public void selectCurrentIndex(int index) {
+        //TODO: to add to selection
+        setCurrentIndex(index);
     }
 
     public void onResize(int width, int height) {
@@ -131,60 +130,18 @@ public class IconTable<T extends Streamable> extends DataTable<T> {
             int rowHeight = preferences.intPreference(ROW_HEIGHT);
             return getIconDimension() + rowHeight + (uiHandler.isLookAndFeelWindows() ? 21 : 14);
         }
-        if (uiHandler.isLookAndFeelWindows()) {
-            return getIconDimension();
-        }
-        if (uiHandler.isLookAndFeelGTK()) {
-            return getIconDimension() - 8;
-        }
 
         return getIconDimension();
     }
 
     public int getIconDimension() {
-        return (preferences.booleanPreference(PREVIEW) ? PREVIEW_CELL_SIZE : getIconSize().getSize()) + 30;
+        return preferences.booleanPreference(PREVIEW) ? PREVIEW_CELL_SIZE : getIconSize().getSize();
     }
 
     public IconSize getIconSize() {
         return preferences.findStringPreference(ICON_SIZE)
             .flatMap(IconSize::forText)
             .orElse(X32);
-    }
-
-    public ArrayList<Integer> getIndexesInRect(Point pointStart, Point pointEnd) {
-        Rectangle rect = getVisibleRect();
-        int minx = min(pointStart.x, pointEnd.x) + rect.x;
-        int maxx = max(pointStart.x, pointEnd.x) + rect.x;
-        int miny = min(pointStart.y, pointEnd.y) + rect.y;
-        int maxy = max(pointStart.y, pointEnd.y) + rect.y;
-
-        int colStart = divideAndCeil(minx, getCellWidth());
-        int colEnd = divideAndCeil(maxx, getCellWidth());
-        int rowStart = divideAndCeil(miny, getCellHeight());
-        int rowEnd = divideAndCeil(maxy, getCellHeight());
-
-        int rows = getTableModel().getRowCount();
-        if (rowEnd >= rows) rowEnd = rows - 1;
-
-        int cols = getTableModel().getColumnCount();
-        if (colEnd >= cols) colEnd = cols - 1;
-
-        ArrayList<Integer> indexes = new ArrayList<>();
-        for (int row = rowStart; row <= rowEnd; row++) {
-            for (int col = colStart; col <= colEnd; col++) {
-                indexes.add(getTableModel().getIndex(row, col));
-            }
-        }
-        return indexes;
-    }
-
-    public int getClosestIndex(Point point) {
-        Rectangle rect = getVisibleRect();
-        int col = divideAndCeil(point.x + rect.x, getCellWidth());
-        int row = divideAndCeil(point.y + rect.y, getCellHeight());
-
-        return getTableModel().getIndex(fitInRange(row, 0, getTableModel().getRowCount()),
-                                        fitInRange(col, 0, getTableModel().getColumnCount()));
     }
 
     private class IconListSelectionListener implements ListSelectionListener {
@@ -202,20 +159,6 @@ public class IconTable<T extends Streamable> extends DataTable<T> {
             } catch (Exception ex) {
                 errorHandler.handleError(ex);
             }
-        }
-    }
-
-    public static class PreviousFocusHandler extends AbstractAction {
-        public void actionPerformed(ActionEvent evt) {
-            KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-            manager.focusPreviousComponent();
-        }
-    }
-
-    public static class NextFocusHandler extends AbstractAction {
-        public void actionPerformed(ActionEvent evt) {
-            KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-            manager.focusNextComponent();
         }
     }
 }

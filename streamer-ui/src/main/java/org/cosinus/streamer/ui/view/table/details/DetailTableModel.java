@@ -24,9 +24,7 @@ import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static java.util.Collections.singletonList;
 import static java.util.Optional.ofNullable;
@@ -98,7 +96,7 @@ public class DetailTableModel<T extends Streamable> extends DataTableModel<T> {
 
     @Override
     public int getColumnForIndex(int index) {
-        return 0;
+        return -1;
     }
 
     @Override

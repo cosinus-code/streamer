@@ -17,10 +17,12 @@
 package org.cosinus.streamer.ui.view.table.details;
 
 import org.cosinus.streamer.api.Streamable;
-import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.view.PanelLocation;
+import org.cosinus.streamer.ui.view.StreamerEditor;
 import org.cosinus.streamer.ui.view.table.DataTable;
 import org.cosinus.streamer.ui.view.table.TableStreamerView;
+
+import java.awt.*;
 
 public class DetailView<T extends Streamable> extends TableStreamerView<T> {
 
@@ -39,4 +41,20 @@ public class DetailView<T extends Streamable> extends TableStreamerView<T> {
     protected DataTable<T> createDataTable() {
         return new DetailTable<>(this);
     }
+
+    @Override
+    protected StreamerEditor createStreamerEditor() {
+        return new DetailStreamerEditor<>(this);
+    }
+
+    public Rectangle getCurrentDetailRectangle(int detailIndex) {
+        int index = table.getCurrentIndex();
+        int row = table.getTableModel().getRowForIndex(index);
+        int column = table.getTableModel().getColumnForIndex(index);
+
+        Rectangle rect = table.getCellRect(row, detailIndex, true);
+        int offsetIcon = column == 0 ? 21 : -2;
+        return new Rectangle(rect.x + offsetIcon, rect.y, rect.width - offsetIcon + 4, rect.height);
+    }
+
 }

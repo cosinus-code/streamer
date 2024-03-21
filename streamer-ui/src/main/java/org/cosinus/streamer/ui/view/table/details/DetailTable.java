@@ -192,6 +192,15 @@ public class DetailTable<T extends Streamable> extends DataTable<T> implements A
 
     @Override
     public void setCurrentIndex(int index) {
+        getSelectionModel().setSelectionInterval(index, index);
+        getTableModel().setCurrentIndex(index);
+        scrollRectToVisible(getCellRect(index, 0, false));
+        repaint();
+    }
+
+
+    @Override
+    public void selectCurrentIndex(int index) {
         getSelectionModel().addSelectionInterval(index, index);
         getTableModel().setCurrentIndex(index);
         scrollRectToVisible(getCellRect(index, 0, false));

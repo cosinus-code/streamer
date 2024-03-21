@@ -58,7 +58,7 @@ public abstract class TableStreamerView<T extends Streamable> extends DefaultStr
             .map(Color::new)
             .ifPresent(scroll.getViewport()::setBackground);
         scroll.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
                 table.requestFocus();
             }
         });
@@ -109,15 +109,6 @@ public abstract class TableStreamerView<T extends Streamable> extends DefaultStr
     @Override
     public String getNextItemIdentifier() {
         return table.getTableModel().getNextItemIdentifier();
-    }
-
-    @Override
-    public Rectangle getCurrentDetailRectangle(int detailIndex) {
-        int index = table.getCurrentIndex();
-        int row = table.getTableModel().getRowForIndex(index);
-        Rectangle rect = table.getCellRect(row, detailIndex, true);
-        int offsetIcon = detailIndex == 0 ? 21 : -2;
-        return new Rectangle(rect.x + offsetIcon, rect.y, rect.width - offsetIcon + 4, rect.height);
     }
 
     @Override

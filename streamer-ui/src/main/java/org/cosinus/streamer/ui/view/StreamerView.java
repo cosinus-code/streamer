@@ -247,7 +247,5 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
 
     public abstract LoadWorkerModel<T> getLoadWorkerModel();
 
-    public abstract Rectangle getCurrentDetailRectangle(int detailIndex);
-
     protected abstract Container getContainer();
 }

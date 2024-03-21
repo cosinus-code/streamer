@@ -101,23 +101,7 @@ public class StreamerFrame extends SwingApplicationFrame {
         stream(PanelLocation.values())
             .forEach(location -> actionExecutors.execute(new LoadActionModel(
                 location, null, null)));
-
-//        stream(PanelLocation.values())
-//            .map(this::createStreamerView)
-//            .forEach(this::loadStreamerView);
     }
-
-//    protected StreamerView createStreamerView(PanelLocation location) {
-//        String streamerViewName = streamerViewStorage.loadLastLoadedView(location)
-//            .orElse(null);
-//        StreamerView view = streamerViewHandler.resolveStreamerView(streamerViewName, location);
-//        streamerViewStorage.saveLastLoadedView(view, location);
-//        return view;
-//    }
-//
-//    protected void loadStreamerView(StreamerView view) {
-//        view.loadStreamer(null);
-//    }
 
     public StreamerView getCurrentView() {
         return streamerViewHandler.getCurrentView();

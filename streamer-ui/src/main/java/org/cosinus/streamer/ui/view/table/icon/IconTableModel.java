@@ -7,7 +7,6 @@
 package org.cosinus.streamer.ui.view.table.icon;
 
 import org.cosinus.streamer.api.Streamable;
-import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.view.table.DataTableModel;
 
 import static org.cosinus.swing.math.MoreMath.divideAndFloor;
@@ -15,10 +14,6 @@ import static org.cosinus.swing.math.MoreMath.divideAndFloor;
 public class IconTableModel<T extends Streamable> extends DataTableModel<T> {
 
     private int columnCount = 0;
-
-    public IconTableModel() {
-        super();
-    }
 
     @Override
     public int getRowCount() {
