@@ -104,9 +104,9 @@ public class DetailTable<T extends Streamable> extends DataTable<T> implements A
     }
 
     private void setHeaderRenders() {
-        TableColumnModel tcm = getColumnModel();
-        for (int i = 0; i < tcm.getColumnCount(); i++) {
-            tcm.getColumn(i).setHeaderRenderer(new DetailHeaderCell());
+        TableColumnModel model = getColumnModel();
+        for (int i = 0; i < model.getColumnCount(); i++) {
+            model.getColumn(i).setHeaderRenderer(new DetailHeaderCell());
             if (i > 0) {
                 setColVisible(i, isColumnVisible(i));
             }
@@ -146,10 +146,11 @@ public class DetailTable<T extends Streamable> extends DataTable<T> implements A
     }
 
     private String columnKey(int index) {
+        String location = view.getCurrentLocation().toString();
         return ofNullable(getParentStreamer())
-            .map(Streamer::getId)
-            .map(id -> join("|", DETAIL_VIEW_NAME, id, Integer.toString(index)))
-            .orElseGet(() -> join("|", DETAIL_VIEW_NAME, Integer.toString(index)));
+            .map(Streamer::getProtocol)
+            .map(id -> join("|", DETAIL_VIEW_NAME, location, id, Integer.toString(index)))
+            .orElseGet(() -> join("|", DETAIL_VIEW_NAME, location, Integer.toString(index)));
     }
 
     public void setColVisible(int index,
@@ -221,8 +222,9 @@ public class DetailTable<T extends Streamable> extends DataTable<T> implements A
         try {
             if (e.getSource() instanceof CheckBoxMenuItem menuItem) {
                 String[] checkBoxKey = menuItem.getActionKey().split("\\|");
-                int columnIndex = Integer.parseInt(checkBoxKey[checkBoxKey.length - 1]);
-                setColVisible(columnIndex, menuItem.isSelected());
+                int index = Integer.parseInt(checkBoxKey[checkBoxKey.length - 1]);
+                setColVisible(index, menuItem.isSelected());
+                applicationStorage.saveBoolean(columnKey(index), menuItem.isSelected());
             }
         } catch (Exception ex) {
             errorHandler.handleError(this, ex);

@@ -104,14 +104,6 @@ public class DetailTableModel<T extends Streamable> extends DataTableModel<T> {
         return row;
     }
 
-//    @Override
-//    protected void addItem(ViewItem viewItem) {
-//        super.addItem(viewItem);
-//        ofNullable(viewItem.getId())
-//            .map(streamableMap::get)
-//            .ifPresent(Streamable::initDetails);
-//    }
-
     private TranslatableName getName() {
         return new TranslatableName("form-table-header-name", null);
     }
