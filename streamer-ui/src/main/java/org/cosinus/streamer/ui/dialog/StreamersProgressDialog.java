@@ -66,7 +66,7 @@ public class StreamersProgressDialog extends ProgressDialog<StreamersProgressMod
 
         mainPanel.add(northPanel, NORTH);
 
-        setSize(new Dimension(463, 193));
+        setSize(new Dimension(463, 150));
     }
 
     @Override
