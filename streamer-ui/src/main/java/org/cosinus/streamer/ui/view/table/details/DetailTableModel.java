@@ -37,8 +37,6 @@ public class DetailTableModel<T extends Streamable> extends DataTableModel<T> {
 
     private List<TranslatableName> columnNames = new ArrayList<>();
 
-    private int sortedColumn = -1;
-
     @Override
     public void reset(final Streamer<T> parentStreamer) {
         super.reset(parentStreamer);
@@ -51,14 +49,6 @@ public class DetailTableModel<T extends Streamable> extends DataTableModel<T> {
             .orElseGet(() -> singletonList(getName()));
         translate();
         fireTableStructureChanged();
-    }
-
-    public int getSortedColumn() {
-        return sortedColumn;
-    }
-
-    public void setSortedColumn(int sortedColumn) {
-        this.sortedColumn = sortedColumn;
     }
 
     @Override

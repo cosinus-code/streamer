@@ -66,7 +66,7 @@ public class StreamerPanel extends Panel {
     public void initComponents() {
         super.initComponents();
 
-        addressLabel.setBorder(emptyBorder(2));
+        addressLabel.setBorder(emptyBorder(2, 5, 2, 5));
         addressLabel.setEditable(false);
         addressLabel.setFont(uiHandler.getLabelFont());
         uiHandler.getInactiveBackgroundColor()

@@ -23,6 +23,7 @@ import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.form.Table;
+import org.cosinus.swing.store.ApplicationStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
@@ -31,6 +32,9 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.awt.event.KeyEvent.KEY_PRESSED;
 import static java.awt.event.MouseEvent.*;
@@ -53,10 +57,13 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
     private StreamerViewHandler streamerViewHandler;
 
     @Autowired
-    public ErrorHandler errorHandler;
+    protected ErrorHandler errorHandler;
 
     @Autowired
-    public ActionController actionController;
+    protected ActionController actionController;
+
+    @Autowired
+    protected ApplicationStorage applicationStorage;
 
     protected StreamerView<T> view;
 
@@ -197,14 +204,35 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
             col);
     }
 
-    public boolean isSortAscending() {
-        return getTableModel().isSortAscending();
-    }
-
     public void sort(int column) {
         String name = getCurrentItemName();
         getTableModel().sort(column);
         findViewItem(name);
+
+        int sortedColumn = getTableModel().getSortedColumn();
+        boolean ascendingSorted = getTableModel().isSortAscending();
+        applicationStorage.saveInt(sortingColumnKey(), sortedColumn);
+        applicationStorage.saveBoolean(sortingAscendingKey(), ascendingSorted);
+    }
+
+    private String sortingColumnKey() {
+        return storageKey("sorting", "column");
+    }
+
+    private String sortingAscendingKey() {
+        return storageKey("sorting", "ascending");
+    }
+
+    protected String storageKey(String... key) {
+        String location = view.getCurrentLocation().toString();
+        String viewName = view.getName();
+        String streamerKey = ofNullable(getParentStreamer())
+            .map(Streamer::getProtocol)
+            .orElse(null);
+
+        return Stream.concat(Stream.of(location, viewName, streamerKey), stream(key))
+            .filter(Objects::nonNull)
+            .collect(Collectors.joining("|"));
     }
 
     public String getCurrentItemName() {
@@ -251,6 +279,10 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
         nameToFind = "";
         lastActionTime = 0;
         model.reset(parentStreamer);
+
+        int sortedColumn = applicationStorage.getInt(sortingColumnKey(), 0);
+        boolean isAscendingSorted = applicationStorage.getBoolean(sortingAscendingKey(), false);
+        model.setSortColumn(sortedColumn, isAscendingSorted);
     }
 
     public Streamer<T> getParentStreamer() {

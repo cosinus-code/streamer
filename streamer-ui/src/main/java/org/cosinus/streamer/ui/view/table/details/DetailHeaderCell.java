@@ -18,7 +18,6 @@ package org.cosinus.streamer.ui.view.table.details;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cosinus.streamer.ui.view.table.DataTable;
 import org.cosinus.swing.form.control.Label;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +27,6 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
-import static java.awt.Cursor.HAND_CURSOR;
-import static java.awt.Cursor.getPredefinedCursor;
 import static java.awt.RenderingHints.KEY_ANTIALIASING;
 import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
 import static java.util.Optional.ofNullable;
@@ -97,10 +94,8 @@ public class DetailHeaderCell extends Label implements TableCellRenderer {
             DetailTable table = (DetailTable) jtable;
             if (table != null) {
                 sorted = table.getTableModel().getSortedColumn() == colIndex;
-                ascending = table.isSortAscending();
+                ascending = table.getTableModel().isSortAscending();
             }
-            setBackground(uiHandler.getColor(BUTTON_BACKGROUND));
-            setCursor(getPredefinedCursor(HAND_CURSOR));
             customizeCellRenderer(colIndex);
 
             ofNullable(value)
@@ -115,6 +110,8 @@ public class DetailHeaderCell extends Label implements TableCellRenderer {
     }
 
     protected void customizeCellRenderer(int colIndex) {
+        setBackground(uiHandler.getColor(BUTTON_BACKGROUND));
+        setCursor(uiHandler.getHandCursor());
         setBorder(new CompoundBorder(
             lineBorder(uiHandler.getInactiveCaptionColor(), 0, colIndex > 0 ? 1 : 0, 2, 0),
             emptyBorder(2)));

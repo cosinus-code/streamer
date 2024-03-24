@@ -25,7 +25,6 @@ import org.cosinus.swing.image.icon.IconHandler;
 import org.cosinus.swing.menu.CheckBoxMenuItem;
 import org.cosinus.swing.menu.PopupMenu;
 import org.cosinus.swing.preference.Preferences;
-import org.cosinus.swing.store.ApplicationStorage;
 import org.cosinus.swing.translate.Translator;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,11 +40,9 @@ import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static java.lang.String.join;
 import static java.util.Optional.ofNullable;
 import static javax.swing.SwingUtilities.invokeLater;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.ROW_HEIGHT;
-import static org.cosinus.streamer.ui.view.table.details.DetailView.DETAIL_VIEW_NAME;
 
 public class DetailTable<T extends Streamable> extends DataTable<T> implements ActionListener {
 
@@ -60,9 +57,6 @@ public class DetailTable<T extends Streamable> extends DataTable<T> implements A
 
     @Autowired
     public Translator translator;
-
-    @Autowired
-    public ApplicationStorage applicationStorage;
 
     //TODO
     private boolean keyboardArrow;
@@ -105,12 +99,13 @@ public class DetailTable<T extends Streamable> extends DataTable<T> implements A
 
     private void setHeaderRenders() {
         TableColumnModel model = getColumnModel();
-        for (int i = 0; i < model.getColumnCount(); i++) {
-            model.getColumn(i).setHeaderRenderer(new DetailHeaderCell());
-            if (i > 0) {
-                setColVisible(i, isColumnVisible(i));
-            }
-        }
+        IntStream.range(0, model.getColumnCount())
+            .forEach(index -> {
+                model.getColumn(index).setHeaderRenderer(new DetailHeaderCell());
+                if (index > 0) {
+                    setColVisible(index, isColumnVisible(index));
+                }
+            });
         getTableHeader().setReorderingAllowed(false);
     }
 
@@ -129,12 +124,12 @@ public class DetailTable<T extends Streamable> extends DataTable<T> implements A
         popupHeader = new PopupMenu();
         ofNullable(getParentStreamer())
             .ifPresent(parentStreamer -> {
-                List<TranslatableName> detailName = parentStreamer.detailNames();
-                IntStream.range(0, detailName.size())
+                List<TranslatableName> detailNames = parentStreamer.detailNames();
+                IntStream.range(0, detailNames.size())
                     .mapToObj(index -> {
                         CheckBoxMenuItem checkbox = new CheckBoxMenuItem(
                             this, isColumnVisible(index), columnKey(index));
-                        checkbox.setText(detailName.get(index).name());
+                        checkbox.setText(detailNames.get(index).name());
                         return checkbox;
                     })
                     .forEach(popupHeader::add);
@@ -145,31 +140,21 @@ public class DetailTable<T extends Streamable> extends DataTable<T> implements A
         return applicationStorage.getBoolean(columnKey(index), true);
     }
 
-    private String columnKey(int index) {
-        String location = view.getCurrentLocation().toString();
-        return ofNullable(getParentStreamer())
-            .map(Streamer::getProtocol)
-            .map(id -> join("|", DETAIL_VIEW_NAME, location, id, Integer.toString(index)))
-            .orElseGet(() -> join("|", DETAIL_VIEW_NAME, location, Integer.toString(index)));
-    }
-
     public void setColVisible(int index,
                               boolean visible) {
-        TableColumnModel tcm = getColumnModel();
-        TableColumn col = tcm.getColumn(index);
-
+        TableColumn column = getColumnModel().getColumn(index);
         if (visible) {
-            col.setMaxWidth(10000);
-            col.setMinWidth(5);
-            col.setPreferredWidth(100);
-            col.setWidth(100);
-            col.setResizable(true);
+            column.setMaxWidth(10000);
+            column.setMinWidth(5);
+            column.setPreferredWidth(100);
+            column.setWidth(100);
+            column.setResizable(true);
         } else {
-            col.setMaxWidth(0);
-            col.setMinWidth(0);
-            col.setPreferredWidth(0);
-            col.setWidth(0);
-            col.setResizable(false);
+            column.setMaxWidth(0);
+            column.setMinWidth(0);
+            column.setPreferredWidth(0);
+            column.setWidth(0);
+            column.setResizable(false);
         }
     }
 
@@ -230,6 +215,10 @@ public class DetailTable<T extends Streamable> extends DataTable<T> implements A
             errorHandler.handleError(this, ex);
         }
 
+    }
+
+    private String columnKey(int index) {
+        return storageKey("detail", "visible", Integer.toString(index));
     }
 
     public PopupMenu getPopupHeader() {

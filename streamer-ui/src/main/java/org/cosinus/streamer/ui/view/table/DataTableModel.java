@@ -107,9 +107,17 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
         return comparator.isSortAscending();
     }
 
+    public int getSortedColumn() {
+        return comparator.getSortColumn();
+    }
+
     public void sort(int column) {
-        comparator.setSortType(column);
+        comparator.sort(column);
         sort();
+    }
+
+    public void setSortColumn(int column, boolean ascending) {
+        comparator.sort(column, ascending);
     }
 
     public void sort() {

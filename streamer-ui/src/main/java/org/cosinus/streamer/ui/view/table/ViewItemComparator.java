@@ -26,16 +26,16 @@ public class ViewItemComparator implements Comparator<ViewItem> {
 
     private boolean ascending = true;
 
-    public void setSortType(int column) {
-        setSortType(column, this.column != column || !ascending);
+    public void sort(int column) {
+        sort(column, this.column != column || !ascending);
     }
 
-    public void setSortType(int column, boolean ascending) {
+    public void sort(int column, boolean ascending) {
         this.column = column;
         this.ascending = ascending;
     }
 
-    public int getCurrentSortColumn() {
+    public int getSortColumn() {
         return column;
     }
 

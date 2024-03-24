@@ -20,6 +20,8 @@ import org.cosinus.swing.form.ProgressBar;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static org.cosinus.swing.border.Borders.emptyBorder;
+
 public class LoadingProgress extends ProgressBar {
 
     @Autowired
@@ -28,6 +30,7 @@ public class LoadingProgress extends ProgressBar {
     public LoadingProgress() {
         if (uiHandler.isLookAndFeelMac()) {
             setUI(new CustomProgressBarUI());
+            setBorder(emptyBorder(0));
         }
     }
 
