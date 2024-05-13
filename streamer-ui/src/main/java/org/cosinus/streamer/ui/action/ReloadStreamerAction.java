@@ -53,6 +53,7 @@ public class ReloadStreamerAction implements ActionInContext {
 
     @Override
     public void run(ActionContext context) {
+        streamerViewHandler.getCurrentView().getParentStreamer().reset();
         loadActionExecutor.execute(new LoadActionModel(
             streamerViewHandler.getCurrentLocation(),
             streamerViewHandler.getCurrentView().getParentStreamer(),

@@ -146,4 +146,9 @@ public class FileMainStreamer extends MainStreamer<FileStreamer<?>> {
             new TranslatableName(DETAIL_KEY_FREE_MEMORY, null)
         );
     }
+
+    @Override
+    public void reset() {
+        fileHandler.reset();
+    }
 }

@@ -140,4 +140,8 @@ public class FileHandler {
                 }
             });
     }
+
+    public void reset() {
+        fileStores = null;
+    }
 }

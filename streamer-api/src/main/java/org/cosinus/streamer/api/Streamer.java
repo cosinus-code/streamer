@@ -32,4 +32,7 @@ public interface Streamer<T> extends Streamable {
     default boolean isTextCompatible() {
         return false;
     }
+
+    default void reset() {
+    }
 }
