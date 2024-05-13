@@ -14,7 +14,7 @@
     <name>Streamer Files</name>
 
     <properties>
-        <oshi.version>5.7.1</oshi.version>
+        <oshi.version>6.6.0</oshi.version>
     </properties>
 
     <dependencies>

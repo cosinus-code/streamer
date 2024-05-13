@@ -22,6 +22,7 @@ import net.sf.jmimemagic.MagicMatchNotFoundException;
 import net.sf.jmimemagic.MagicParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cosinus.streamer.file.system.FileSystem;
 import org.springframework.stereotype.Component;
 import oshi.SystemInfo;
 import oshi.software.os.OSFileStore;
@@ -47,6 +48,14 @@ public class FileHandler {
 
     private static final Logger LOG = LogManager.getLogger(FileHandler.class);
 
+    private final FileSystem fileSystem;
+
+    private List<OSFileStore> fileStores;
+
+    public FileHandler(FileSystem fileSystem) {
+        this.fileSystem = fileSystem;
+    }
+
     public Stream<Path> walk(Path path) {
         try {
             return Files.walk(path);
@@ -69,7 +78,7 @@ public class FileHandler {
                 path2.toFile().exists() &&
                 Files.isSameFile(path1, path2);
         } catch (IOException ex) {
-            LOG.error("Failed to compare files: " + path1 + " and " + path2, ex);
+            LOG.error("Failed to compare files: {} and {}", path1, path2, ex);
             return false;
         }
     }
@@ -95,8 +104,20 @@ public class FileHandler {
             .map(File::toPath);
     }
 
-    public List<OSFileStore> getFileStores() {
-        return new SystemInfo().getOperatingSystem().getFileSystem().getFileStores();
+    public synchronized List<OSFileStore> getFileStores() {
+        if (fileStores == null) {
+            try {
+                fileStores = new SystemInfo().getOperatingSystem().getFileSystem().getFileStores();
+            } catch (Exception ex) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.error("Failed to get file stores. Will fallback to command line.", ex);
+                } else {
+                    LOG.warn("Failed to get file stores. Will fallback to command line: {}", ex.getMessage());
+                }
+                fileStores = fileSystem.getFileSystemRoots();
+            }
+        }
+        return fileStores;
     }
 
     public boolean isTextCompatible(Path path) {
