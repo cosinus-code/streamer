@@ -23,7 +23,7 @@ import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.api.error.StreamerException;
-import org.cosinus.streamer.api.pack.PackStreamer;
+import org.cosinus.streamer.api.expand.ExpandedStreamer;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
@@ -35,7 +35,7 @@ import java.util.stream.Stream;
 import static org.apache.commons.io.FilenameUtils.removeExtension;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
-public class CompressPackStreamer extends PackStreamer<CompressStreamer> implements ParentStreamer<CompressStreamer> {
+public class CompressPackStreamer extends ExpandedStreamer<CompressStreamer> implements ParentStreamer<CompressStreamer> {
 
     private static final Logger LOG = LogManager.getLogger(CompressPackStreamer.class);
 

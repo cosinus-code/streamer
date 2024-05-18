@@ -14,29 +14,16 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.api;
+package org.cosinus.streamer.api.expand;
 
-import java.util.stream.Stream;
+import org.cosinus.streamer.api.BinaryStreamer;
+import org.cosinus.streamer.api.Streamable;
 
-public interface Streamer<T> extends Streamable {
+/**
+ * Streamer packer interface
+ */
+public interface BinaryExpander<T extends Streamable> {
 
-    Stream<T> stream();
+    ExpandedStreamer<T> expand(BinaryStreamer binaryStreamer);
 
-    default BinaryStreamer binaryStreamer() {
-        return null;
-    }
-
-    @Override
-    ParentStreamer<?> getParent();
-
-    default boolean isTextCompatible() {
-        return false;
-    }
-
-    default void reset() {
-    }
-
-    default String getPreferredViewName() {
-        return null;
-    }
 }

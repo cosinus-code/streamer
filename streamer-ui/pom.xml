@@ -53,6 +53,11 @@
         </dependency>
         <dependency>
             <groupId>org.cosinuscode.streamer</groupId>
+            <artifactId>streamer-geo</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.cosinuscode.streamer</groupId>
             <artifactId>streamer-database</artifactId>
             <version>${project.version}</version>
         </dependency>

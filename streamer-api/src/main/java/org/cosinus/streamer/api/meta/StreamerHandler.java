@@ -18,7 +18,7 @@ package org.cosinus.streamer.api.meta;
 
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.pack.PackerHandler;
+import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -34,16 +34,16 @@ public class StreamerHandler {
 
     private final MetaStreamer metaStreamer;
 
-    private final PackerHandler packerHandler;
+    private final BinaryExpanderHandler binaryExpanderHandler;
 
     private final Streamer<?> defaultStreamer;
 
     public StreamerHandler(List<MainStreamer> mainStreamers,
-                           PackerHandler packerHandler,
+                           BinaryExpanderHandler binaryExpanderHandler,
                            @Value("streamer.default") String defaultStreamerName) {
         mainStreamers.forEach(this::setStreamerName);
         this.metaStreamer = new MetaStreamer(mainStreamers);
-        this.packerHandler = packerHandler;
+        this.binaryExpanderHandler = binaryExpanderHandler;
 
         this.defaultStreamer = mainStreamers
             .stream()
@@ -78,13 +78,13 @@ public class StreamerHandler {
                 .or(() -> findStreamer(urlPath));
         }
 
-        String packerUrl = paths[0];
-        String packPath = paths[1];
-        return metaStreamer.findByUrlPath(packerUrl)
-            .or(() -> findStreamer(packerUrl))
+        String mainUrlPath = paths[0];
+        String pathInsideExpandedStreamer = paths[1];
+        return metaStreamer.findByUrlPath(mainUrlPath)
+            .or(() -> findStreamer(mainUrlPath))
             .filter(streamer -> BinaryStreamer.class.isAssignableFrom(streamer.getClass()))
             .map(BinaryStreamer.class::cast)
-            .flatMap(packerStreamer -> findPackedStreamer(packerStreamer, packPath));
+            .flatMap(binaryStreamer -> findExpandedStreamer(binaryStreamer, pathInsideExpandedStreamer));
     }
 
     private Optional<Streamer> findStreamer(String urlPath) {
@@ -94,9 +94,9 @@ public class StreamerHandler {
             .flatMap(streamer -> streamer.findByUrlPath(urlPath));
     }
 
-    private Optional<Streamer> findPackedStreamer(BinaryStreamer streamerToPack, String packPath) {
-        return packerHandler.findPacker(streamerToPack.getType())
-            .map(packer -> packer.pack(streamerToPack))
-            .flatMap(packStreamer -> packStreamer.find(packPath));
+    private Optional<Streamer> findExpandedStreamer(BinaryStreamer binaryStreamer, String pathInsideExpandedStreamer) {
+        return binaryExpanderHandler.findStreamExpander(binaryStreamer.getType())
+            .map(binaryExpander -> binaryExpander.expand(binaryStreamer))
+            .flatMap(expandedStreamer -> expandedStreamer.find(pathInsideExpandedStreamer));
     }
 }

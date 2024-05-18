@@ -140,4 +140,8 @@ public interface Streamable {
     default int getLeadDetailIndex() {
         return 0;
     }
+
+    default boolean isFile() {
+        return false;
+    }
 }

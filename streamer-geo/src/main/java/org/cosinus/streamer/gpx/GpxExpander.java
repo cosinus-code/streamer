@@ -13,33 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.cosinus.streamer.gpx;
 
-package org.cosinus.streamer.api.pack;
+import org.cosinus.streamer.api.BinaryStreamer;
+import org.cosinus.streamer.api.expand.BinaryExpander;
+import org.cosinus.streamer.api.expand.ExpandedStreamer;
+import org.cosinus.streamer.api.expand.Expander;
 
-import org.springframework.core.annotation.AliasFor;
-import org.springframework.stereotype.Component;
+@Expander("gpx")
+public class GpxExpander implements BinaryExpander<GpxPoint> {
 
-import java.lang.annotation.*;
+    public static final String GPX_PROTOCOL = "gpx://";
 
-/**
- * This mark a {@link MainPacker} streamer
- */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Inherited
-@Component
-public @interface Packer {
-
-    /**
-     * Alias for {@link #type}.
-     */
-    @AliasFor("type")
-    String[] value() default {};
-
-    /**
-     * The extension which is handled by this system.
-     */
-    @AliasFor("value")
-    String[] type() default {};
+    @Override
+    public ExpandedStreamer<GpxPoint> expand(BinaryStreamer binaryStreamer) {
+        return new GpxStreamer(binaryStreamer);
+    }
 }

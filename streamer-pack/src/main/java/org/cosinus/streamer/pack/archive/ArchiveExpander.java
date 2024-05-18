@@ -17,16 +17,16 @@
 package org.cosinus.streamer.pack.archive;
 
 import org.cosinus.streamer.api.BinaryStreamer;
-import org.cosinus.streamer.api.pack.MainPacker;
-import org.cosinus.streamer.api.pack.PackStreamer;
-import org.cosinus.streamer.api.pack.Packer;
+import org.cosinus.streamer.api.expand.BinaryExpander;
+import org.cosinus.streamer.api.expand.ExpandedStreamer;
+import org.cosinus.streamer.api.expand.Expander;
 
-@Packer({"tar", "zip", "jar", "war", "ear", "7z"})
-public class ArchivePacker implements MainPacker<ArchiveStreamer> {
+@Expander({"tar", "zip", "jar", "war", "ear", "7z"})
+public class ArchiveExpander implements BinaryExpander<ArchiveStreamer> {
 
     @Override
-    public PackStreamer<ArchiveStreamer> pack(BinaryStreamer streamerToPack) {
-        return new ArchivePackStreamer<>(streamerToPack);
+    public ExpandedStreamer<ArchiveStreamer> expand(BinaryStreamer binaryStreamer) {
+        return new ArchivePackStreamer<>(binaryStreamer);
     }
 
 }

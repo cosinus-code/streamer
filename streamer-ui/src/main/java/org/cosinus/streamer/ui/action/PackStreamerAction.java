@@ -17,7 +17,7 @@
 package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.pack.PackerHandler;
+import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
 import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
@@ -48,7 +48,7 @@ public class PackStreamerAction extends AbstractCopyAction {
 
     private final ApplicationUIHandler uiHandler;
 
-    private final PackerHandler packerHandler;
+    private final BinaryExpanderHandler binaryExpanderHandler;
 
     public PackStreamerAction(final Preferences preferences,
                               final Translator translator,
@@ -58,7 +58,7 @@ public class PackStreamerAction extends AbstractCopyAction {
                               final LoadActionExecutor loadActionExecutor,
                               final StreamerViewHandler streamerViewHandler,
                               final ApplicationUIHandler uiHandler,
-                              final PackerHandler packerHandler) {
+                              final BinaryExpanderHandler binaryExpanderHandler) {
         super(preferences,
             translator,
             dialogHandler,
@@ -67,12 +67,12 @@ public class PackStreamerAction extends AbstractCopyAction {
             loadActionExecutor,
             streamerViewHandler);
         this.uiHandler = uiHandler;
-        this.packerHandler = packerHandler;
+        this.binaryExpanderHandler = binaryExpanderHandler;
     }
 
     @Override
     public void run(ActionContext actionContext) {
-        if (packerHandler.getPackersMap().isEmpty()) {
+        if (binaryExpanderHandler.getBinaryExpandersMap().isEmpty()) {
             dialogHandler.showInfo(translator.translate("act_pack_no_pack_system"));
             return;
         }

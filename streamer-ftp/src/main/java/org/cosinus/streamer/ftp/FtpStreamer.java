@@ -16,7 +16,6 @@
 package org.cosinus.streamer.ftp;
 
 import org.apache.commons.net.ftp.FTPFile;
-import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.remote.RemoteStreamer;
 import org.cosinus.streamer.ftp.connection.FtpConnection;
@@ -100,6 +99,11 @@ public abstract class FtpStreamer<T> implements RemoteStreamer<T, FTPFile, FtpCo
     @Override
     public FtpConnectionPool connectionPool() {
         return ftpConnectionPool;
+    }
+
+    @Override
+    public boolean isFile() {
+        return true;
     }
 
     @Override

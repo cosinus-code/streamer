@@ -188,6 +188,11 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     }
 
     @Override
+    public boolean isFile() {
+        return true;
+    }
+
+    @Override
     public boolean equals(Object other) {
         if (this == other) {
             return true;

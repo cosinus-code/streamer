@@ -14,25 +14,19 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.api.pack;
+package org.cosinus.streamer.pack.compress;
 
 import org.cosinus.streamer.api.BinaryStreamer;
-import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.expand.BinaryExpander;
+import org.cosinus.streamer.api.expand.ExpandedStreamer;
+import org.cosinus.streamer.api.expand.Expander;
 
-import java.util.Optional;
+@Expander({"gz", "gzip", "bz2", "bzip2"})
+public class CompressExpander implements BinaryExpander<CompressStreamer> {
 
-import static java.util.Optional.ofNullable;
-
-/**
- * Streamer packer interface
- */
-public interface MainPacker<T extends Streamer> {
-
-    PackStreamer<T> pack(BinaryStreamer streamerToPack);
-
-    default Optional<T> findPackedStreamer(BinaryStreamer mainStreamer, String path) {
-        return ofNullable(mainStreamer)
-            .map(this::pack)
-            .flatMap(packStreamer -> packStreamer.find(path));
+    @Override
+    public ExpandedStreamer expand(BinaryStreamer binaryStreamer) {
+        return new CompressPackStreamer(binaryStreamer);
     }
+
 }

@@ -85,4 +85,8 @@ public class ViewItem {
     public Value getDetail(int detailIndex) {
         return streamable.details().get(detailIndex);
     }
+
+    public boolean isFile() {
+        return streamable.isFile();
+    }
 }

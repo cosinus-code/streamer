@@ -23,11 +23,8 @@ import org.cosinus.streamer.ftp.model.FtpConfigurationProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.cosinus.swing.image.icon.IconProvider.ICON_NETWORK;

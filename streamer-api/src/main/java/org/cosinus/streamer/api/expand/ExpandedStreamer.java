@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.api.pack;
+package org.cosinus.streamer.api.expand;
 
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.ParentStreamer;
@@ -26,11 +26,11 @@ import java.util.Optional;
 /**
  * Pack streamer interface
  */
-public abstract class PackStreamer<T> implements Streamer<T> {
+public abstract class ExpandedStreamer<T> implements Streamer<T> {
 
     protected final BinaryStreamer binaryStreamer;
 
-    public PackStreamer(BinaryStreamer binaryStreamer) {
+    public ExpandedStreamer(BinaryStreamer binaryStreamer) {
         this.binaryStreamer = binaryStreamer;
     }
 

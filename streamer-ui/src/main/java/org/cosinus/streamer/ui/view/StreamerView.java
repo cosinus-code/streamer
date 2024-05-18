@@ -18,7 +18,7 @@ package org.cosinus.streamer.ui.view;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.meta.StreamerHandler;
-import org.cosinus.streamer.api.pack.PackStreamer;
+import org.cosinus.streamer.api.expand.ExpandedStreamer;
 import org.cosinus.streamer.ui.action.execute.WorkerListener;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
@@ -164,17 +164,17 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
     @Override
     public void workerFinished(LoadWorkerModel<T> loadWorkerModel) {
         ofNullable(this.getParentStreamer())
-            .filter(streamer -> PackStreamer.class.isAssignableFrom(streamer.getClass()))
-            .map(PackStreamer.class::cast)
-            .ifPresent(PackStreamer::finishLoading);
+            .filter(streamer -> ExpandedStreamer.class.isAssignableFrom(streamer.getClass()))
+            .map(ExpandedStreamer.class::cast)
+            .ifPresent(ExpandedStreamer::finishLoading);
         loadingIndicator.finishLoading();
 
         streamerViewStorage.saveLastLoadedStreamer(this.getParentStreamer(), getCurrentLocation());
 
         ofNullable(parentStreamer)
-            .filter(streamer -> PackStreamer.class.isAssignableFrom(streamer.getClass()))
-            .map(PackStreamer.class::cast)
-            .ifPresent(PackStreamer::finishLoading);
+            .filter(streamer -> ExpandedStreamer.class.isAssignableFrom(streamer.getClass()))
+            .map(ExpandedStreamer.class::cast)
+            .ifPresent(ExpandedStreamer::finishLoading);
         StreamerView<?> currentView = streamerViewHandler.getCurrentView();
         if (currentView != null && !currentView.hasFocus()) {
             currentView.requestFocus();

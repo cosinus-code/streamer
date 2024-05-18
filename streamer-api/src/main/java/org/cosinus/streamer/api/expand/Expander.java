@@ -14,19 +14,32 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.pack.compress;
+package org.cosinus.streamer.api.expand;
 
-import org.cosinus.streamer.api.BinaryStreamer;
-import org.cosinus.streamer.api.pack.MainPacker;
-import org.cosinus.streamer.api.pack.PackStreamer;
-import org.cosinus.streamer.api.pack.Packer;
+import org.springframework.core.annotation.AliasFor;
+import org.springframework.stereotype.Component;
 
-@Packer({"gz", "gzip", "bz2", "bzip2"})
-public class CompressPacker implements MainPacker<CompressStreamer> {
+import java.lang.annotation.*;
 
-    @Override
-    public PackStreamer pack(BinaryStreamer streamerToPack) {
-        return new CompressPackStreamer(streamerToPack);
-    }
+/**
+ * This mark a {@link BinaryExpander} streamer
+ */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
+@Component
+public @interface Expander {
 
+    /**
+     * Alias for {@link #type}.
+     */
+    @AliasFor("type")
+    String[] value() default {};
+
+    /**
+     * The extension which is handled by this system.
+     */
+    @AliasFor("value")
+    String[] type() default {};
 }

@@ -22,7 +22,7 @@ import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.api.error.StreamerException;
-import org.cosinus.streamer.api.pack.PackStreamer;
+import org.cosinus.streamer.api.expand.ExpandedStreamer;
 import org.cosinus.streamer.pack.archive.stream.ArchiveStream;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -35,7 +35,7 @@ import java.util.stream.Stream;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
-public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends PackStreamer<A> implements ParentStreamer<A>
+public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedStreamer<A> implements ParentStreamer<A>
 {
 
     @Autowired

@@ -22,6 +22,7 @@ import org.cosinus.swing.image.ImageHandler;
 import org.cosinus.swing.image.icon.IconHandler;
 import org.cosinus.swing.image.icon.IconSize;
 import org.cosinus.swing.preference.Preferences;
+import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
@@ -47,6 +48,9 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
 
     @Autowired
     protected IconHandler iconHandler;
+
+    @Autowired
+    protected ApplicationUIHandler uiHandler;
 
     @Autowired
     private ImageHandler imageHandler;
@@ -109,9 +113,11 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
     protected Optional<Icon> getIcon(IconSize size, ViewItem item, boolean showPreview) {
         return ofNullable(item.getIconName())
             .flatMap(iconName -> iconHandler.findIconByName(item.getIconName(), size))
-            .or(() -> showPreview ?
-                findIconWithPreview(size, createItemFile(item)) :
-                iconHandler.findIconByFile(createItemFile(item), size));
+            .or(() -> item.isFile() ?
+                showPreview ?
+                    findIconWithPreview(size, createItemFile(item)) :
+                    iconHandler.findIconByFile(createItemFile(item), size) :
+                uiHandler.getDefaultFileIcon());
     }
 
     private Optional<Icon> findIconWithPreview(IconSize size, File itemFile) {

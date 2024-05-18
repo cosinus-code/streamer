@@ -14,6 +14,7 @@
         <module>streamer-ftp</module>
         <module>streamer-pack</module>
         <module>streamer-database</module>
+        <module>streamer-geo</module>
     </modules>
     <packaging>pom</packaging>
     <name>Streamer Parent</name>

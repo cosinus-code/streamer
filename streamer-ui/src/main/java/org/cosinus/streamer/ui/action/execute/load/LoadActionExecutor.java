@@ -19,7 +19,7 @@ package org.cosinus.streamer.ui.action.execute.load;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.TextStreamer;
 import org.cosinus.streamer.api.meta.StreamerHandler;
-import org.cosinus.streamer.api.pack.PackerHandler;
+import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
 import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
@@ -49,7 +49,7 @@ public class LoadActionExecutor implements ActionExecutor<LoadActionModel> {
 
     private final StreamerHandler streamerHandler;
 
-    private final PackerHandler packerHandler;
+    private final BinaryExpanderHandler binaryExpanderHandler;
 
     protected final WorkerListenerHandler workerListenerHandler;
 
@@ -58,12 +58,12 @@ public class LoadActionExecutor implements ActionExecutor<LoadActionModel> {
     public LoadActionExecutor(StreamerViewStorage streamerViewStorage,
                               StreamerViewHandler streamerViewHandler,
                               StreamerHandler streamerHandler,
-                              PackerHandler packerHandler,
+                              BinaryExpanderHandler binaryExpanderHandler,
                               WorkerListenerHandler workerListenerHandler) {
         this.streamerViewStorage = streamerViewStorage;
         this.streamerViewHandler = streamerViewHandler;
         this.streamerHandler = streamerHandler;
-        this.packerHandler = packerHandler;
+        this.binaryExpanderHandler = binaryExpanderHandler;
         this.workerListenerHandler = workerListenerHandler;
         this.workersMap = new ConcurrentHashMap<>();
     }
@@ -136,29 +136,29 @@ public class LoadActionExecutor implements ActionExecutor<LoadActionModel> {
     }
 
     private Streamer<?> checkIfStreamerExist(Streamer<?> streamerToCheck) {
-        return !streamerToCheck.exists() ? getFirstAncestorAlive(streamerToCheck) : streamerToCheck;
+        return !streamerToCheck.exists() ? findFirstAncestorAlive(streamerToCheck) : streamerToCheck;
     }
 
-    private Streamer<?> getFirstAncestorAlive(Streamer streamer) {
+    private Streamer<?> findFirstAncestorAlive(Streamer streamer) {
         return ofNullable(streamer.getParent())
             .filter(not(Streamer::exists))
-            .map(this::getFirstAncestorAlive)
+            .map(this::findFirstAncestorAlive)
             .orElse(streamer.getParent());
     }
 
     private Streamer loadInside(Streamer streamerToLoad) {
         return ofNullable(streamerToLoad)
-            .map(this::checkIfStreamerIsPacked)
+            .map(this::checkIfStreamerIsExpandable)
             .map(this::checkIfStreamerIsText)
             .orElse(null);
     }
 
-    private Streamer<?> checkIfStreamerIsPacked(Streamer<?> streamerToCheck) {
+    private Streamer<?> checkIfStreamerIsExpandable(Streamer<?> streamerToCheck) {
         return ofNullable(streamerToCheck)
             .map(Streamer::binaryStreamer)
-            .<Streamer>flatMap(binaryStream -> packerHandler
-                .findPacker(binaryStream.getType())
-                .map(packer -> packer.pack(binaryStream)))
+            .<Streamer>flatMap(binaryStream -> binaryExpanderHandler
+                .findStreamExpander(binaryStream.getType())
+                .map(binaryExpander -> binaryExpander.expand(binaryStream)))
             .orElse(streamerToCheck);
     }
 
