@@ -11,4 +11,6 @@ public interface StreamerEditor<T extends Streamable> {
     void setVisible(boolean visible);
 
     StreamerView<T> getView();
+
+    boolean isDirty();
 }

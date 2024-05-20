@@ -23,7 +23,7 @@ import static java.util.function.Predicate.not;
 
 public abstract class DefaultStreamerView<T extends Streamable> extends StreamerView<T> {
 
-    protected StreamerEditor<T> streamerDetailsEditor;
+    protected StreamerEditor<T> streamerEditor;
 
     public DefaultStreamerView(PanelLocation location) {
         super(location);
@@ -37,7 +37,7 @@ public abstract class DefaultStreamerView<T extends Streamable> extends Streamer
                 if (!currentStream.canUpdate()) {
                     dialogHandler.showInfo(translator.translate("act-new-cannot-update", currentStream.getPath()));
                 } else {
-                    streamerDetailsEditor.loadAndShow(currentStream);
+                    streamerEditor.loadAndShow(currentStream);
                 }
             });
     }
@@ -45,7 +45,7 @@ public abstract class DefaultStreamerView<T extends Streamable> extends Streamer
     @Override
     public void reset(final Streamer<T> parentStreamer) {
         super.reset(parentStreamer);
-        this.streamerDetailsEditor = createStreamerEditor();
+        this.streamerEditor = createStreamerEditor();
     }
 
     protected abstract StreamerEditor<T> createStreamerEditor();

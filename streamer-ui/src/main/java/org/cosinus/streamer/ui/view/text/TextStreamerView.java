@@ -154,7 +154,7 @@ public class TextStreamerView extends StreamerView<String> {
     }
 
     @Override
-    public WorkerListener<SaveTextModel> getSaveWorkerListener()
+    public WorkerListener<SaveTextModel> getSaveListener()
     {
         return saveListener;
     }
@@ -162,6 +162,6 @@ public class TextStreamerView extends StreamerView<String> {
     @Override
     public void reset(final Streamer<String> parentStreamer) {
         super.reset(parentStreamer);
-        textEditor.reset();;
+        textEditor.reset();
     }
 }

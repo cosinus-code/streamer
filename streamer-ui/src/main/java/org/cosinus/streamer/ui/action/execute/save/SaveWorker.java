@@ -35,6 +35,6 @@ public class SaveWorker<T> extends PipelineWorker<SaveWorkerModel<T>, T>
     @Override
     protected StreamConsumer<T> streamConsumer()
     {
-        return workerModel.saveConsumer();
+        return workerModel.streamConsumer();
     }
 }

@@ -26,6 +26,7 @@ import org.cosinus.swing.preference.Preferences;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
@@ -101,6 +102,14 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
 
     public List<ViewItem> getAllViewItems() {
         return viewItems;
+    }
+
+    public Stream<T> getAllItems() {
+        return viewItems
+            .stream()
+            .filter(not(ViewItem::isTopItem))
+            .map(ViewItem::getId)
+            .map(streamableMap::get);
     }
 
     public boolean isSortAscending() {

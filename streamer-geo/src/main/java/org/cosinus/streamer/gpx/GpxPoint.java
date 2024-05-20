@@ -15,28 +15,53 @@
  */
 package org.cosinus.streamer.gpx;
 
+import io.jenetics.jpx.Length;
 import io.jenetics.jpx.WayPoint;
 import org.cosinus.streamer.api.Streamable;
+import org.cosinus.streamer.api.value.DateValue;
+import org.cosinus.streamer.api.value.DoubleValue;
+import org.cosinus.streamer.api.value.Value;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
+import java.util.List;
 
+import static java.util.Arrays.asList;
 import static org.cosinus.streamer.gpx.GpxExpander.GPX_PROTOCOL;
 
 public class GpxPoint implements Streamable {
 
     private final GpxStreamer gpxStreamer;
 
-    private final WayPoint point;
+    private final String id;
 
-    public GpxPoint(final GpxStreamer gpxStreamer, final WayPoint point) {
+    private WayPoint point;
+
+    protected List<Value> details;
+
+    private final String name;
+
+    private final long lastModified;
+
+    public GpxPoint(final GpxStreamer gpxStreamer, String id, final WayPoint point) {
         this.gpxStreamer = gpxStreamer;
+        this.id = id;
         this.point = point;
+        this.name = point.getName().orElseGet(point::toString);
+        this.lastModified = point.getTime()
+            .map(Instant::toEpochMilli)
+            .orElse(0L);
+    }
+
+    @Override
+    public String getId() {
+        return id;
     }
 
     @Override
     public String getName() {
-        return point.toString();
+        return name;
     }
 
     @Override
@@ -52,5 +77,44 @@ public class GpxPoint implements Streamable {
     @Override
     public Streamable getParent() {
         return gpxStreamer;
+    }
+
+    @Override
+    public long lastModified() {
+        return lastModified;
+    }
+
+    @Override
+    public List<Value> details() {
+        init();
+        return details;
+    }
+
+    @Override
+    public void init() {
+        if (details == null) {
+            details = asList(
+                new DateValue(point.getTime()
+                    .map(Instant::toEpochMilli)
+                    .orElse(null)),
+                new DoubleValue(point.getLatitude().doubleValue()),
+                new DoubleValue(point.getLongitude().doubleValue()),
+                new DoubleValue(point.getElevation()
+                    .map(Length::doubleValue)
+                    .orElse(null)));
+        }
+    }
+
+    @Override
+    public boolean canUpdateDetail(int detailIndex) {
+        return detailIndex > 0;
+    }
+
+    @Override
+    public void save() {
+    }
+
+    public WayPoint getPoint() {
+        return point;
     }
 }

@@ -17,19 +17,51 @@
 package org.cosinus.streamer.ui.view.table.details;
 
 import org.cosinus.streamer.api.Streamable;
+import org.cosinus.streamer.ui.action.execute.DefaultWorkerListener;
+import org.cosinus.streamer.ui.action.execute.WorkerListener;
+import org.cosinus.streamer.ui.action.execute.save.SaveWorkerModel;
 import org.cosinus.streamer.ui.view.PanelLocation;
-import org.cosinus.streamer.ui.view.StreamerEditor;
 import org.cosinus.streamer.ui.view.table.DataTable;
 import org.cosinus.streamer.ui.view.table.TableStreamerView;
 
 import java.awt.*;
+import java.util.Optional;
+
+import static org.cosinus.streamer.ui.view.text.TextStreamerView.DIRTY_TEXT_MARKER;
 
 public class DetailView<T extends Streamable> extends TableStreamerView<T> {
 
     public static final String DETAIL_VIEW_NAME = "detail";
 
+    private WorkerListener<DetailStreamerEditor<T>> saveListener;
+
     public DetailView(PanelLocation location) {
         super(location);
+    }
+
+    @Override
+    public void initComponents() {
+        super.initComponents();
+        this.saveListener = new DefaultWorkerListener<>() {
+            @Override
+            public void workerStarted(DetailStreamerEditor<T> detailStreamerEditor) {
+                loadingIndicator.startLoading(detailStreamerEditor.totalItemsToSave());
+            }
+
+            @Override
+            public void workerUpdated(DetailStreamerEditor<T> detailStreamerEditor) {
+                loadingIndicator.updateLoading(
+                    detailStreamerEditor.getSavedItemsCount(),
+                    detailStreamerEditor.totalItemsToSave());
+            }
+
+            @Override
+            public void workerFinished(DetailStreamerEditor<T> detailStreamerEditor) {
+                detailStreamerEditor.setDirty(false);
+                loadingIndicator.finishLoading();
+            }
+        };
+
     }
 
     @Override
@@ -43,8 +75,24 @@ public class DetailView<T extends Streamable> extends TableStreamerView<T> {
     }
 
     @Override
-    protected StreamerEditor createStreamerEditor() {
+    protected DetailStreamerEditor<T> createStreamerEditor() {
         return new DetailStreamerEditor<>(this);
+    }
+
+    @Override
+    public WorkerListener<? extends SaveWorkerModel<T>> getSaveListener() {
+        return saveListener;
+    }
+
+    @Override
+    public SaveWorkerModel<T> getSaveModel() {
+        return (DetailStreamerEditor<T>) streamerEditor;
+    }
+
+    @Override
+    protected Optional<String> getStreamerAddress() {
+        return super.getStreamerAddress()
+            .map(address -> streamerEditor != null && streamerEditor.isDirty() ? DIRTY_TEXT_MARKER + address : address);
     }
 
     public Rectangle getCurrentDetailRectangle(int detailIndex) {

@@ -16,10 +16,13 @@
 package org.cosinus.streamer.ui.view;
 
 import org.cosinus.streamer.api.Streamable;
+import org.cosinus.streamer.ui.view.table.details.DetailStreamerEditor;
 import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.form.control.TextField;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
@@ -37,16 +40,19 @@ public class DetailEditor<T extends Streamable> extends TextField implements Foc
 
     private T itemToBeEdited;
 
-    private final StreamerEditor<T> editor;
+    private final DetailStreamerEditor<T> editor;
 
     private final int detailIndex;
 
-    public DetailEditor(final StreamerEditor<T> editor, int detailIndex) {
+    private boolean loading;
+
+    public DetailEditor(final DetailStreamerEditor<T> editor, int detailIndex) {
         this.editor = editor;
         this.detailIndex = detailIndex;
 
         addFocusListener(this);
         addKeyListener(new KeyAdapter() {
+            @Override
             public void keyReleased(KeyEvent e) {
                 try {
                     if (e.getKeyCode() == VK_ENTER) {
@@ -61,6 +67,30 @@ public class DetailEditor<T extends Streamable> extends TextField implements Foc
                 }
             }
         });
+
+        getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                if (!isLoading()) {
+                    editor.setDirty(true);
+                }
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                if (!isLoading()) {
+                    editor.setDirty(true);
+                }
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                if (!isLoading()) {
+                    editor.setDirty(true);
+                }
+            }
+        });
+
         editor.getView().getContainer().add(this);
         validate();
 
@@ -93,5 +123,13 @@ public class DetailEditor<T extends Streamable> extends TextField implements Foc
     @Override
     public void focusLost(FocusEvent e) {
         setVisible(false);
+    }
+
+    public boolean isLoading() {
+        return loading;
+    }
+
+    public void setLoading(boolean loading) {
+        this.loading = loading;
     }
 }

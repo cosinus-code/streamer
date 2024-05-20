@@ -40,13 +40,15 @@ public class SaveWorkerExecutor implements ActionExecutor<SaveActionModel<?>> {
 
     private <T> void executeSave(SaveActionModel<T> actionModel) {
         Streamer<T> streamerToSave = actionModel.getStreamerToSave();
-        StreamerView<T> streamerView = actionModel.getStreamerView();
-        SaveWorkerModel<T> saveModel = streamerView.getSaveModel();
-        if (!streamerToSave.isParent() && saveModel != null) {
-            SaveWorker<T> saveWorker = new SaveWorker<>(actionModel, saveModel);
-            ofNullable(streamerView.getSaveWorkerListener())
-                .ifPresent(listener -> workerListenerHandler.register(saveWorker.getId(), listener));
-            saveWorker.start();
+        if (!streamerToSave.isParent()) {
+            StreamerView<T> streamerView = actionModel.getStreamerView();
+            SaveWorkerModel<T> saveModel = streamerView.getSaveModel();
+            if (saveModel != null) {
+                SaveWorker<T> saveWorker = new SaveWorker<>(actionModel, saveModel);
+                ofNullable(streamerView.getSaveListener())
+                    .ifPresent(listener -> workerListenerHandler.register(saveWorker.getId(), listener));
+                saveWorker.start();
+            }
         }
     }
 

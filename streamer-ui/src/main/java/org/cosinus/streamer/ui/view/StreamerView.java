@@ -231,7 +231,7 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
         return null;
     }
 
-    public WorkerListener<? extends SaveWorkerModel<T>> getSaveWorkerListener() {
+    public WorkerListener<? extends SaveWorkerModel<T>> getSaveListener() {
         return null;
     }
 

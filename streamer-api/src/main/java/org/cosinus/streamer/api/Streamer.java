@@ -16,11 +16,17 @@
 
 package org.cosinus.streamer.api;
 
+import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
+
 import java.util.stream.Stream;
 
 public interface Streamer<T> extends Streamable {
 
     Stream<T> stream();
+
+    default StreamConsumer<T> streamConsumer() {
+        return null;
+    }
 
     default BinaryStreamer binaryStreamer() {
         return null;

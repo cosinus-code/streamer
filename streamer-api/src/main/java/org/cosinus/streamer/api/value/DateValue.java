@@ -63,7 +63,7 @@ public class DateValue extends Value {
     }
 
     @Override
-    public Object value() {
+    public Date value() {
         return value;
     }
 

@@ -164,7 +164,7 @@ public abstract class TableStreamerView<T extends Streamable> extends DefaultStr
         }
     }
 
-    private DataTableModel<T> getDataTableModel() {
+    public DataTableModel<T> getDataTableModel() {
         return (DataTableModel<T>) table.getModel();
     }
 

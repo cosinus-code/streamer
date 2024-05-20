@@ -16,26 +16,33 @@
 package org.cosinus.streamer.ui.view.table.details;
 
 import org.cosinus.streamer.api.Streamable;
+import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
 import org.cosinus.streamer.api.value.Value;
+import org.cosinus.streamer.ui.action.execute.save.SaveWorkerModel;
 import org.cosinus.streamer.ui.view.DetailEditor;
-import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerEditor;
+import org.cosinus.streamer.ui.view.StreamerView;
 
 import java.awt.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 import static javax.swing.SwingUtilities.invokeLater;
 
-public class DetailStreamerEditor<T extends Streamable> implements StreamerEditor<T> {
+public class DetailStreamerEditor<T extends Streamable> implements StreamerEditor<T>, SaveWorkerModel<T> {
 
     private final DetailView<T> view;
 
     private List<DetailEditor<T>> detailEditors;
 
     private T itemToBeEdited;
+
+    private int savedItemsCount;
+
+    private boolean dirty;
 
     public DetailStreamerEditor(final DetailView<T> view) {
         this.view = view;
@@ -51,12 +58,14 @@ public class DetailStreamerEditor<T extends Streamable> implements StreamerEdito
         detailEditors.forEach(detailEditor -> {
             Rectangle detailRectangle = view.getCurrentDetailRectangle(detailEditor.getDetailIndex());
             if (detailRectangle != null) {
+                detailEditor.setLoading(true);
                 detailEditor.loadItem(itemToBeEdited);
                 detailEditor.setBounds(detailRectangle);
                 detailEditor.setVisible(true);
                 if (detailEditor.isEnabled() && !focused.getAndSet(true)) {
                     detailEditor.requestFocus();
                 }
+                detailEditor.setLoading(false);
             }
         });
     }
@@ -64,9 +73,11 @@ public class DetailStreamerEditor<T extends Streamable> implements StreamerEdito
     @Override
     public void save() {
         itemToBeEdited.save();
-        view.reload(ofNullable(itemToBeEdited.details().get(itemToBeEdited.getLeadDetailIndex()))
-            .map(Value::toString)
-            .orElse(null));
+        if (itemToBeEdited.getParent().isParent()) {
+            view.reload(ofNullable(itemToBeEdited.details().get(itemToBeEdited.getLeadDetailIndex()))
+                .map(Value::toString)
+                .orElse(null));
+        }
     }
 
     @Override
@@ -80,5 +91,41 @@ public class DetailStreamerEditor<T extends Streamable> implements StreamerEdito
     @Override
     public StreamerView<T> getView() {
         return view;
+    }
+
+    @Override
+    public Stream<T> streamToSave() {
+        savedItemsCount = 0;
+        return view.getDataTableModel().getAllItems();
+    }
+
+    @Override
+    public StreamConsumer<T> streamConsumer() {
+        return view.getParentStreamer().streamConsumer();
+    }
+
+    @Override
+    public int totalItemsToSave() {
+        return view.getDataTableModel().getAllItems().toList().size();
+    }
+
+    @Override
+    public void update(List<T> items) {
+        savedItemsCount += items.size();
+    }
+
+    public int getSavedItemsCount()
+    {
+        return savedItemsCount;
+    }
+
+    @Override
+    public boolean isDirty() {
+        return dirty;
+    }
+
+    public void setDirty(boolean dirty) {
+        this.dirty = dirty;
+        view.updateAddressBarAndStreamerPanel();
     }
 }

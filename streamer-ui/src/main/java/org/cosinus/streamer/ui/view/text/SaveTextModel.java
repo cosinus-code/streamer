@@ -15,10 +15,8 @@
  */
 package org.cosinus.streamer.ui.view.text;
 
-import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
-import org.cosinus.streamer.api.stream.text.TextStreamConsumer;
 import org.cosinus.streamer.ui.action.execute.save.SaveWorkerModel;
 
 import java.util.List;
@@ -45,11 +43,9 @@ public class SaveTextModel implements SaveWorkerModel<String> {
     }
 
     @Override
-    public StreamConsumer<String> saveConsumer() {
+    public StreamConsumer<String> streamConsumer() {
         return ofNullable(textEditor.getParentStreamer())
-            .map(Streamer::binaryStreamer)
-            .map(binaryStreamer -> binaryStreamer.outputStream(false))
-            .map(TextStreamConsumer::new)
+            .map(Streamer::streamConsumer)
             .orElse(null);
     }
 
@@ -59,13 +55,11 @@ public class SaveTextModel implements SaveWorkerModel<String> {
     }
 
     @Override
-    public void update(List<String> items)
-    {
+    public void update(List<String> items) {
         savedItemsCount += items.size();
     }
 
-    public int getSavedItemsCount()
-    {
+    public int getSavedItemsCount() {
         return savedItemsCount;
     }
 }

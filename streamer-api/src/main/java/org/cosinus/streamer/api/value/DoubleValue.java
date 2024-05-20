@@ -48,7 +48,7 @@ public class DoubleValue extends Value {
     }
 
     @Override
-    public Object value() {
+    public Double value() {
         return value;
     }
 

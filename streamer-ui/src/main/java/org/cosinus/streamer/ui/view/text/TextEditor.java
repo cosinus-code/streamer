@@ -52,7 +52,7 @@ public class TextEditor extends TextArea implements LoadWorkerModel<String> {
 
     private final TextStreamerView view;
 
-    private final SaveWorkerModel<String> saveWorkerModel;
+    private final SaveTextModel saveWorkerModel;
 
     private boolean dirty;
 

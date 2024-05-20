@@ -89,6 +89,12 @@ public class IconCellEditor<T extends Streamable> implements StreamerEditor<T>, 
     }
 
     @Override
+    public boolean isDirty() {
+        //TODO
+        return false;
+    }
+
+    @Override
     public void focusGained(FocusEvent e) {
         setVisible(true);
         nameEditor.selectAll();
