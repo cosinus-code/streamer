@@ -163,18 +163,10 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
 
     @Override
     public void workerFinished(LoadWorkerModel<T> loadWorkerModel) {
-        ofNullable(this.getParentStreamer())
-            .filter(streamer -> ExpandedStreamer.class.isAssignableFrom(streamer.getClass()))
-            .map(ExpandedStreamer.class::cast)
-            .ifPresent(ExpandedStreamer::finishLoading);
         loadingIndicator.finishLoading();
 
         streamerViewStorage.saveLastLoadedStreamer(this.getParentStreamer(), getCurrentLocation());
 
-        ofNullable(parentStreamer)
-            .filter(streamer -> ExpandedStreamer.class.isAssignableFrom(streamer.getClass()))
-            .map(ExpandedStreamer.class::cast)
-            .ifPresent(ExpandedStreamer::finishLoading);
         StreamerView<?> currentView = streamerViewHandler.getCurrentView();
         if (currentView != null && !currentView.hasFocus()) {
             currentView.requestFocus();

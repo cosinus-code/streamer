@@ -65,7 +65,8 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedS
             return createStream()
                 .peek(archiveHolder::add)
                 .filter(entry -> entry.getParentPath().isEmpty())
-                .map(this::createArchiveStreamer);
+                .map(this::createArchiveStreamer)
+                .onClose(() -> archiveHolder.setLoaded(true));
         }
 
         return archiveHolder.rootEntries()
@@ -128,13 +129,6 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedS
         return getParent().getTotalSpace();
     }
 
-    @Override
-    public void finishLoading() {
-        if (archiveHolder != null) {
-            archiveHolder.setLoaded(true);
-        }
-    }
-
     public boolean exists(Path path) {
         return archiveHolder.get(path).isPresent();
     }
@@ -173,5 +167,10 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedS
                                                                                     streamerToPack.getPath(),
                                                                                     streamerToPack.inputStream()))
             .orElseThrow(() -> new StreamerException("Cannot find a archiver for streamer: " + streamerToPack.getPath()));
+    }
+
+    @Override
+    public long getSize() {
+        return -1;
     }
 }

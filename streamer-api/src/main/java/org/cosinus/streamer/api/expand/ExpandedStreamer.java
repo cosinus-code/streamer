@@ -81,6 +81,4 @@ public abstract class ExpandedStreamer<T> implements Streamer<T> {
     }
 
     public abstract Optional<T> find(String path);
-
-    public abstract void finishLoading();
 }

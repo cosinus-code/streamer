@@ -72,11 +72,6 @@ public class CompressPackStreamer extends ExpandedStreamer<CompressStreamer> imp
         return Optional.of(createCompressStreamer());
     }
 
-    @Override
-    public void finishLoading() {
-
-    }
-
     protected String getDefaultCompressedStreamerName() {
         return removeExtension(getName());
     }
@@ -121,5 +116,10 @@ public class CompressPackStreamer extends ExpandedStreamer<CompressStreamer> imp
             }
         }
         return Optional.empty();
+    }
+
+    @Override
+    public long getSize() {
+        return -1;
     }
 }

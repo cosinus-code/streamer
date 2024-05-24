@@ -36,7 +36,7 @@ public class DetailStreamerEditor<T extends Streamable> implements StreamerEdito
 
     private final DetailView<T> view;
 
-    private List<DetailEditor<T>> detailEditors;
+    private final List<DetailEditor<T>> detailEditors;
 
     private T itemToBeEdited;
 

@@ -92,11 +92,6 @@ public class GpxStreamer extends ExpandedStreamer<GpxPoint> implements Streamer<
     }
 
     @Override
-    public void finishLoading() {
-
-    }
-
-    @Override
     public String getProtocol() {
         return GPX_PROTOCOL;
     }

@@ -18,6 +18,7 @@ package org.cosinus.streamer.ui.action.execute.load;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.TextStreamer;
+import org.cosinus.streamer.api.expand.ExpandedStreamer;
 import org.cosinus.streamer.api.meta.StreamerHandler;
 import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
 import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
@@ -80,7 +81,7 @@ public class LoadActionExecutor implements ActionExecutor<LoadActionModel> {
             return;
         }
 
-        Streamer<V> streamerToLoad = actionModel.isLoadInside() ? loadInside(streamer) : streamer;
+        Streamer<V> streamerToLoad = actionModel.isExpanding() ? expandStreamer(streamer) : streamer;
 
         String streamerViewNameToOpen = ofNullable(actionModel.getStreamerViewNameToLoadIn())
             .filter(viewName -> !streamerToLoad.isTextCompatible() || TEXT_EDITOR.equals(viewName))
@@ -146,8 +147,8 @@ public class LoadActionExecutor implements ActionExecutor<LoadActionModel> {
             .orElse(streamer.getParent());
     }
 
-    private Streamer loadInside(Streamer streamerToLoad) {
-        return ofNullable(streamerToLoad)
+    private Streamer expandStreamer(Streamer streamerToExpand) {
+        return ofNullable(streamerToExpand)
             .map(this::checkIfStreamerIsExpandable)
             .map(this::checkIfStreamerIsText)
             .orElse(null);
@@ -155,6 +156,7 @@ public class LoadActionExecutor implements ActionExecutor<LoadActionModel> {
 
     private Streamer<?> checkIfStreamerIsExpandable(Streamer<?> streamerToCheck) {
         return ofNullable(streamerToCheck)
+            .filter(stream -> !ExpandedStreamer.class.isAssignableFrom(stream.getClass()))
             .map(Streamer::binaryStreamer)
             .<Streamer>flatMap(binaryStream -> binaryExpanderHandler
                 .findStreamExpander(binaryStream.getType())

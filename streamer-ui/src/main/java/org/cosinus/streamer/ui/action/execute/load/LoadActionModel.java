@@ -35,7 +35,7 @@ public class LoadActionModel extends ActionModel {
 
     private final String streamerViewNameToLoadIn;
 
-    private final boolean loadInside;
+    private final boolean expanding;
 
     public LoadActionModel(final PanelLocation locationToLoadTo,
                            final Streamer<?> streamerToLoad,
@@ -46,8 +46,8 @@ public class LoadActionModel extends ActionModel {
     public LoadActionModel(final PanelLocation locationToLoadTo,
                            final Streamer<?> streamerToLoad,
                            final String itemToSelectAfterLoad,
-                           boolean loadInside) {
-        this(locationToLoadTo, streamerToLoad, itemToSelectAfterLoad, null, loadInside);
+                           boolean expanding) {
+        this(locationToLoadTo, streamerToLoad, itemToSelectAfterLoad, null, expanding);
     }
 
     public LoadActionModel(final PanelLocation locationToLoadTo,
@@ -61,13 +61,13 @@ public class LoadActionModel extends ActionModel {
                            final Streamer<?> streamerToLoad,
                            final String itemToSelectAfterLoad,
                            final String streamerViewNameToLoadIn,
-                           boolean loadInside) {
+                           boolean expanding) {
         super(locationToLoadTo.name(), LOAD_STREAMER_ACTION_ID);
         this.locationToLoadTo = locationToLoadTo;
         this.streamerToLoad = streamerToLoad;
         this.itemToSelectAfterLoad = itemToSelectAfterLoad;
         this.streamerViewNameToLoadIn = streamerViewNameToLoadIn;
-        this.loadInside = loadInside;
+        this.expanding = expanding;
     }
 
     public PanelLocation getLocationToLoadTo() {
@@ -86,7 +86,7 @@ public class LoadActionModel extends ActionModel {
         return streamerViewNameToLoadIn;
     }
 
-    public boolean isLoadInside() {
-        return loadInside;
+    public boolean isExpanding() {
+        return expanding;
     }
 }
