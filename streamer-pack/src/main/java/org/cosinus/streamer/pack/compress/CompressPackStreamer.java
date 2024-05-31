@@ -106,11 +106,11 @@ public class CompressPackStreamer extends ExpandedStreamer<CompressStreamer> imp
         if (file.exists()) {
             try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r")) {
                 randomAccessFile.seek(randomAccessFile.length() - 4);
-                int b4 = randomAccessFile.read();
-                int b3 = randomAccessFile.read();
-                int b2 = randomAccessFile.read();
-                int b1 = randomAccessFile.read();
-                return Optional.of((long) ((b1 << 24) | (b2 << 16) + (b3 << 8) + b4));
+                long b4 = randomAccessFile.read();
+                long b3 = randomAccessFile.read();
+                long b2 = randomAccessFile.read();
+                long b1 = randomAccessFile.read();
+                return Optional.of((b1 << 24) | (b2 << 16) + (b3 << 8) + b4);
             } catch (IOException e) {
                 LOG.error("Failed to read compressed file size", e);
             }

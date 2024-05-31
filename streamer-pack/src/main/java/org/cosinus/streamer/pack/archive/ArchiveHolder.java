@@ -16,6 +16,8 @@
 
 package org.cosinus.streamer.pack.archive;
 
+import org.cosinus.streamer.pack.archive.stream.ArchiveCache;
+
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Stream;
@@ -26,7 +28,7 @@ import static org.apache.commons.io.FilenameUtils.separatorsToUnix;
 /**
  * Archive content holder
  */
-public class ArchiveHolder {
+public class ArchiveHolder implements ArchiveCache {
 
     private static final String UNIX_SEPARATOR = "/";
 
@@ -43,6 +45,7 @@ public class ArchiveHolder {
         this.entriesGroupedByParentMap = new TreeMap<>();
     }
 
+    @Override
     public void add(ArchiveStreamEntry archiveEntry) {
         entriesMap.put(key(archiveEntry.toPath()), archiveEntry);
 
@@ -75,11 +78,11 @@ public class ArchiveHolder {
         }
     }
 
-    private String key(Path path) {
+    public String key(Path path) {
         return key(path.toString());
     }
 
-    private String key(String path) {
+    public String key(String path) {
         return separatorsToUnix(path);
     }
 
@@ -91,6 +94,10 @@ public class ArchiveHolder {
         return ofNullable(entriesGroupedByParentMap.get(key(path)))
             .stream()
             .flatMap(Collection::stream);
+    }
+
+    public Stream<ArchiveStreamEntry> listEntries() {
+        return entriesMap.values().stream();
     }
 
     public Stream<ArchiveStreamEntry> rootEntries() {
@@ -107,6 +114,7 @@ public class ArchiveHolder {
         return ofNullable(entriesMap.get(key(path)));
     }
 
+    @Override
     public boolean isLoaded() {
         return loaded;
     }

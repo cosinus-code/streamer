@@ -32,13 +32,23 @@ public class ArchiveSpliterator implements Spliterator<ArchiveStreamEntry> {
 
     private final EntryInputStream archiveInputStream;
 
-    public ArchiveSpliterator(EntryInputStream archiveInputStream) {
+    private ArchiveCache archiveCache;
+
+    public ArchiveSpliterator(final EntryInputStream archiveInputStream) {
         this.archiveInputStream = archiveInputStream;
     }
 
+    public ArchiveSpliterator(final EntryInputStream archiveInputStream, final ArchiveCache archiveCache) {
+        this.archiveInputStream = archiveInputStream;
+        this.archiveCache = archiveCache;
+    }
+
     @Override
-    public boolean tryAdvance(Consumer<? super ArchiveStreamEntry> action) {
+    public boolean tryAdvance(final Consumer<? super ArchiveStreamEntry> action) {
         Optional<ArchiveStreamEntry> entry = nextEntry();
+        if (archiveCache != null && !archiveCache.isLoaded()) {
+            entry.ifPresent(archiveCache::add);
+        }
         entry.ifPresent(action);
         return entry.isPresent();
     }

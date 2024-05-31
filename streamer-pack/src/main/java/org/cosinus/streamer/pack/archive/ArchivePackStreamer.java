@@ -41,32 +41,20 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedS
     @Autowired
     private ArchiveInputStreamFactory archiveInputStreamFactory;
 
-    private ArchiveHolder archiveHolder;
+    private final ArchiveHolder archiveHolder;
 
     protected ArchivePackStreamer(BinaryStreamer binaryStreamer) {
         super(binaryStreamer);
         injectContext(this);
-    }
-
-    public ArchiveHolder getArchiveHolder() {
-        if (archiveHolder == null || !archiveHolder.isLoaded()) {
-            archiveHolder = new ArchiveHolder();
-            createStream()
-                .forEach(archiveHolder::add);
-            archiveHolder.setLoaded(true);
-        }
-        return archiveHolder;
+        archiveHolder = new ArchiveHolder();
     }
 
     @Override
     public Stream<A> stream() {
-        if (archiveHolder == null || !archiveHolder.isLoaded()) {
-            archiveHolder = new ArchiveHolder();
-            return createStream()
-                .peek(archiveHolder::add)
+        if (!archiveHolder.isLoaded()) {
+            return ArchiveStream.stream(createArchiveInputStream(binaryStreamer), archiveHolder)
                 .filter(entry -> entry.getParentPath().isEmpty())
-                .map(this::createArchiveStreamer)
-                .onClose(() -> archiveHolder.setLoaded(true));
+                .map(this::createArchiveStreamer);
         }
 
         return archiveHolder.rootEntries()
@@ -88,7 +76,7 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedS
             .map(Path::toString)
             .collect(Collectors.toSet());
 
-        return createStream()
+        return ArchiveStream.stream(createArchiveInputStream(binaryStreamer))
             .filter(entry -> basePaths
                 .stream()
                 .anyMatch(bsePath -> entry.getName().startsWith(bsePath)))
@@ -107,8 +95,16 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedS
 
     @Override
     public Optional<A> find(String path) {
-        return getArchiveHolder().get(path)
+        fillArchiveHolder();
+        return archiveHolder.get(path)
             .map(this::createArchiveStreamer);
+    }
+
+    private void fillArchiveHolder() {
+        if (!archiveHolder.isLoaded()) {
+            ArchiveStream.stream(createArchiveInputStream(binaryStreamer), archiveHolder)
+                .collect(Collectors.toList());
+        }
     }
 
     public Optional<ParentStreamer> findDirectoryStreamer(Path path) {
@@ -131,10 +127,6 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedS
 
     public boolean exists(Path path) {
         return archiveHolder.get(path).isPresent();
-    }
-
-    protected Stream<ArchiveStreamEntry> createStream() {
-        return ArchiveStream.stream(createArchiveInputStream(binaryStreamer));
     }
 
     public A createArchiveStreamer(ArchiveStreamEntry archiveEntry) {

@@ -26,17 +26,30 @@ import java.util.stream.StreamSupport;
 
 public class ArchiveStream {
 
-    public static Stream<ArchiveStreamEntry> stream(EntryInputStream archiveInputStream) {
-        return StreamSupport
-            .stream(new ArchiveSpliterator(archiveInputStream), false)
-            .onClose(() -> close(archiveInputStream));
+    public static Stream<ArchiveStreamEntry> stream(final EntryInputStream archiveInputStream) {
+        return stream(archiveInputStream, null);
     }
 
-    protected static void close(EntryInputStream archiveInputStream) {
+    public static Stream<ArchiveStreamEntry> stream(final EntryInputStream archiveInputStream,
+                                                    final ArchiveCache archiveCache) {
+        return StreamSupport
+            .stream(new ArchiveSpliterator(archiveInputStream, archiveCache), false)
+            .onClose(() -> {
+                if (archiveCache != null) {
+                    archiveCache.setLoaded(true);
+                }
+                close(archiveInputStream);
+            });
+    }
+
+    protected static void close(final EntryInputStream archiveInputStream) {
         try {
             archiveInputStream.closeStream();
         } catch (IOException ex) {
             throw new UncheckedIOException(ex);
         }
+    }
+
+    private ArchiveStream() {
     }
 }
