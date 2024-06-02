@@ -27,4 +27,6 @@ public interface ArchiveCache {
     boolean isLoaded();
 
     void setLoaded(boolean loaded);
+
+    void evict();
 }

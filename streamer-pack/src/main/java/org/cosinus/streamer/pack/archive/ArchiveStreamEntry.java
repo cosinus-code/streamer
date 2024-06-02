@@ -18,6 +18,7 @@ package org.cosinus.streamer.pack.archive;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -27,8 +28,12 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
+import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 public class ArchiveStreamEntry implements Comparable<ArchiveStreamEntry> {
+
+    @Autowired
+    private ArchiveInputStreamFactory archiveInputStreamFactory;
 
     private final Path path;
 
@@ -40,8 +45,9 @@ public class ArchiveStreamEntry implements Comparable<ArchiveStreamEntry> {
         this(archiveEntry, null);
     }
 
-    public ArchiveStreamEntry(ArchiveEntry archiveEntry,
-                              EntryInputStream archiveInputStream) {
+    public ArchiveStreamEntry(final ArchiveEntry archiveEntry,
+                              final EntryInputStream archiveInputStream) {
+        injectContext(this);
         this.archiveEntry = archiveEntry;
         this.archiveInputStream = archiveInputStream;
         this.path = Paths.get(archiveEntry.getName());
@@ -83,7 +89,9 @@ public class ArchiveStreamEntry implements Comparable<ArchiveStreamEntry> {
     }
 
     public InputStream getArchiveInputStream() {
-        return archiveInputStream.getInputStream(archiveEntry);
+        return archiveInputStream != null && !archiveInputStream.isClosed() ?
+            archiveInputStream.getInputStream(archiveEntry) :
+            null;
     }
 
     @Override

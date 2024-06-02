@@ -21,9 +21,7 @@ import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
-import org.cosinus.streamer.api.error.StreamerException;
 import org.cosinus.streamer.api.expand.ExpandedStreamer;
-import org.cosinus.streamer.pack.archive.stream.ArchiveStream;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.file.Path;
@@ -35,11 +33,10 @@ import java.util.stream.Stream;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
-public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedStreamer<A> implements ParentStreamer<A>
-{
+public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedStreamer<A> implements ParentStreamer<A> {
 
     @Autowired
-    private ArchiveInputStreamFactory archiveInputStreamFactory;
+    protected ArchiveInputStreamFactory archiveInputStreamFactory;
 
     private final ArchiveHolder archiveHolder;
 
@@ -52,7 +49,7 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedS
     @Override
     public Stream<A> stream() {
         if (!archiveHolder.isLoaded()) {
-            return ArchiveStream.stream(createArchiveInputStream(binaryStreamer), archiveHolder)
+            return archiveInputStreamFactory.stream(binaryStreamer, archiveHolder)
                 .filter(entry -> entry.getParentPath().isEmpty())
                 .map(this::createArchiveStreamer);
         }
@@ -76,7 +73,7 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedS
             .map(Path::toString)
             .collect(Collectors.toSet());
 
-        return ArchiveStream.stream(createArchiveInputStream(binaryStreamer))
+        return archiveInputStreamFactory.stream(binaryStreamer)
             .filter(entry -> basePaths
                 .stream()
                 .anyMatch(bsePath -> entry.getName().startsWith(bsePath)))
@@ -95,16 +92,13 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedS
 
     @Override
     public Optional<A> find(String path) {
-        fillArchiveHolder();
+        if (!archiveHolder.isLoaded()) {
+            try (Stream<ArchiveStreamEntry> input = archiveInputStreamFactory.stream(binaryStreamer, archiveHolder)) {
+                input.toList();
+            }
+        }
         return archiveHolder.get(path)
             .map(this::createArchiveStreamer);
-    }
-
-    private void fillArchiveHolder() {
-        if (!archiveHolder.isLoaded()) {
-            ArchiveStream.stream(createArchiveInputStream(binaryStreamer), archiveHolder)
-                .collect(Collectors.toList());
-        }
     }
 
     public Optional<ParentStreamer> findDirectoryStreamer(Path path) {
@@ -152,17 +146,13 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedS
         return null;
     }
 
-    private EntryInputStream createArchiveInputStream(BinaryStreamer streamerToPack) {
-        return archiveInputStreamFactory.detectArchiverName(streamerToPack.getName(),
-                                                            streamerToPack.inputStream())
-            .map(archiverName -> archiveInputStreamFactory.createArchiveInputStream(archiverName,
-                                                                                    streamerToPack.getPath(),
-                                                                                    streamerToPack.inputStream()))
-            .orElseThrow(() -> new StreamerException("Cannot find a archiver for streamer: " + streamerToPack.getPath()));
-    }
-
     @Override
     public long getSize() {
         return -1;
+    }
+
+    @Override
+    public void reset() {
+        archiveHolder.evict();
     }
 }

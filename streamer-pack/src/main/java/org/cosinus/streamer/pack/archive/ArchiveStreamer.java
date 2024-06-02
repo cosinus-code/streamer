@@ -88,4 +88,10 @@ public abstract class ArchiveStreamer<T> implements Streamer<T> {
     public int hashCode() {
         return Objects.hash(archiveEntry);
     }
+
+    @Override
+    public boolean isFile() {
+        return true;
+    }
+
 }

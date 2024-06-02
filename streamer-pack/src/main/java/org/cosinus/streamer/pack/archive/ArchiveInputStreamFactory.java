@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.pack.archive;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
@@ -23,14 +24,17 @@ import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cosinus.streamer.api.BinaryStreamer;
+import org.cosinus.streamer.api.error.StreamerException;
+import org.cosinus.streamer.pack.archive.stream.ArchiveCache;
+import org.cosinus.streamer.pack.archive.stream.ArchiveSpliterator;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
@@ -71,8 +75,7 @@ public class ArchiveInputStreamFactory extends ArchiveStreamFactory {
                 .orElse(null);
         }
 
-        ArchiveInputStream archiveInputStream = createArchiveInputStream(archiverName,
-                                                                         inputStream);
+        ArchiveInputStream archiveInputStream = createArchiveInputStream(archiverName, inputStream);
         return new ArchiveEntryInputStream(archiveInputStream);
     }
 
@@ -100,4 +103,51 @@ public class ArchiveInputStreamFactory extends ArchiveStreamFactory {
                 }
             });
     }
+
+    public Stream<ArchiveStreamEntry> stream(final BinaryStreamer binaryStreamer) {
+        return stream(binaryStreamer, null);
+    }
+
+    public Stream<ArchiveStreamEntry> stream(final BinaryStreamer binaryStreamer, final ArchiveCache archiveCache) {
+        EntryInputStream entryInputStream = createArchiveInputStream(binaryStreamer);
+        return StreamSupport
+            .stream(new ArchiveSpliterator(entryInputStream, archiveCache), false)
+            .onClose(() -> {
+                if (archiveCache != null) {
+                    archiveCache.setLoaded(true);
+                }
+                try {
+                    entryInputStream.closeStream();
+                } catch (IOException ex) {
+                    throw new UncheckedIOException(ex);
+                }
+            });
+    }
+
+    private EntryInputStream createArchiveInputStream(final BinaryStreamer binaryStreamer) {
+        return detectArchiverName(binaryStreamer.getName(), binaryStreamer.inputStream())
+            .map(archiverName -> createArchiveInputStream(archiverName,
+                binaryStreamer.getPath(),
+                binaryStreamer.inputStream()))
+            .orElseThrow(() -> new StreamerException("Cannot find a archiver for streamer: " + binaryStreamer.getPath()));
+    }
+
+    /**
+     * Get the input stream corresponding to an archive entry by opening the archive the searching for the entry.
+     *
+     * @param binaryStreamer the archive binary streamer
+     * @param archiveEntry the archive entry to open input stream for
+     * @return the input stream
+     */
+    public InputStream inputStream(final BinaryStreamer binaryStreamer, final ArchiveStreamEntry archiveEntry) {
+        EntryInputStream entryInputStream = createArchiveInputStream(binaryStreamer);
+        return StreamSupport
+            .stream(new ArchiveSpliterator(entryInputStream, null), false)
+            .filter(archiveEntry::equals)
+            .findFirst()
+            .map(ArchiveStreamEntry::getArchiveEntry)
+            .map(entryInputStream::getInputStream)
+            .orElse(null);
+    }
+
 }

@@ -17,25 +17,41 @@
 package org.cosinus.streamer.pack.archive;
 
 import org.cosinus.streamer.api.BinaryStreamer;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import static java.util.Optional.ofNullable;
+import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
+
 public class ArchiveBinaryStreamer extends ArchiveStreamer<byte[]> implements BinaryStreamer {
+
+    @Autowired
+    private ArchiveInputStreamFactory archiveInputStreamFactory;
 
     public ArchiveBinaryStreamer(ArchivePackStreamer archivePackStreamer,
                                  ArchiveStreamEntry archiveEntry) {
         super(archivePackStreamer, archiveEntry);
+        injectContext(this);
     }
 
     @Override
     public InputStream inputStream() {
-        return archiveEntry.getArchiveInputStream();
+        return ofNullable(archiveEntry.getArchiveInputStream())
+            .orElseGet(() -> archiveInputStreamFactory
+                .inputStream(archivePackStreamer.binaryStreamer(), archiveEntry));
     }
 
     @Override
     public OutputStream outputStream(boolean append) {
         //TODO:
         return null;
+    }
+
+    @Override
+    public boolean isTextCompatible() {
+        //TODO: to use Magic.getMagicMatch
+        return true;
     }
 }

@@ -30,6 +30,8 @@ public class SevenZEntryInputStream implements EntryInputStream {
 
     private final SevenZFile sevenZFile;
 
+    private boolean closed;
+
     public SevenZEntryInputStream(SevenZFile sevenZFile) {
         this.sevenZFile = sevenZFile;
     }
@@ -59,5 +61,11 @@ public class SevenZEntryInputStream implements EntryInputStream {
     @Override
     public void closeStream() throws IOException {
         sevenZFile.close();
+        closed = true;
+    }
+
+    @Override
+    public boolean isClosed() {
+        return closed;
     }
 }

@@ -21,9 +21,10 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 
 import java.io.FilterInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 public class ArchiveEntryInputStream extends FilterInputStream implements EntryInputStream {
+
+    private boolean closed;
 
     public ArchiveEntryInputStream(ArchiveInputStream archiveInputStream) {
         super(archiveInputStream);
@@ -35,7 +36,7 @@ public class ArchiveEntryInputStream extends FilterInputStream implements EntryI
     }
 
     @Override
-    public InputStream getInputStream(ArchiveEntry archiveEntry) {
+    public ArchiveEntryInputStream getInputStream(ArchiveEntry archiveEntry) {
         return this;
     }
 
@@ -46,5 +47,11 @@ public class ArchiveEntryInputStream extends FilterInputStream implements EntryI
     @Override
     public void closeStream() throws IOException {
         super.close();
+        closed = true;
+    }
+
+    @Override
+    public boolean isClosed() {
+        return closed;
     }
 }

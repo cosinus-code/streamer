@@ -22,6 +22,7 @@ import net.sf.jmimemagic.MagicMatchNotFoundException;
 import net.sf.jmimemagic.MagicParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cosinus.streamer.api.error.StreamerException;
 import org.cosinus.streamer.file.system.FileSystem;
 import org.springframework.stereotype.Component;
 import oshi.SystemInfo;
@@ -83,27 +84,6 @@ public class FileHandler {
         }
     }
 
-    public Stream<String> lines(Path path) {
-        try {
-            return Files.lines(path);
-        } catch (IOException ex) {
-            throw new UncheckedIOException(ex);
-        }
-    }
-
-    public OutputStream outputStream(Path path, boolean append) {
-        try {
-            return new FileOutputStream(path.toFile(), append);
-        } catch (IOException ex) {
-            throw new UncheckedIOException(ex);
-        }
-    }
-
-    public Stream<Path> roots() {
-        return Arrays.stream(File.listRoots())
-            .map(File::toPath);
-    }
-
     public synchronized List<OSFileStore> getFileStores() {
         if (fileStores == null) {
             try {
@@ -136,7 +116,8 @@ public class FileHandler {
                     return Magic.getMagicMatch(path.toFile(), true).getMimeType();
                 }
                 catch (MagicMatchNotFoundException | MagicException | MagicParseException e) {
-                    throw new RuntimeException(e);
+                    LOG.error("Failed to match a mime type for path: {}", path);
+                    return null;
                 }
             });
     }

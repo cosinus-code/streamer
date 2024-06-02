@@ -28,4 +28,6 @@ public interface EntryInputStream {
     InputStream getInputStream(ArchiveEntry archiveEntry);
 
     void closeStream() throws IOException;
+
+    boolean isClosed();
 }

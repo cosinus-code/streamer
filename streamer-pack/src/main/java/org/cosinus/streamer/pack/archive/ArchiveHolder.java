@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.pack.archive;
 
+import org.cosinus.streamer.api.error.StreamerException;
 import org.cosinus.streamer.pack.archive.stream.ArchiveCache;
 
 import java.nio.file.Path;
@@ -24,6 +25,7 @@ import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.io.FilenameUtils.separatorsToUnix;
+import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 /**
  * Archive content holder
@@ -41,6 +43,7 @@ public class ArchiveHolder implements ArchiveCache {
     private boolean loaded;
 
     public ArchiveHolder() {
+        injectContext(this);
         this.entriesMap = new TreeMap<>();
         this.entriesGroupedByParentMap = new TreeMap<>();
     }
@@ -49,16 +52,11 @@ public class ArchiveHolder implements ArchiveCache {
     public void add(ArchiveStreamEntry archiveEntry) {
         entriesMap.put(key(archiveEntry.toPath()), archiveEntry);
 
-        String parentPath = archiveEntry.getParentPath()
-            .map(this::key)
-            .orElse(ARCHIVE_ROOT);
+        String parentPath = archiveEntry.getParentPath().map(this::key).orElse(ARCHIVE_ROOT);
 
-        entriesGroupedByParentMap
-            .computeIfAbsent(parentPath, key -> new TreeSet<>())
-            .add(archiveEntry);
+        entriesGroupedByParentMap.computeIfAbsent(parentPath, key -> new TreeSet<>()).add(archiveEntry);
 
-        archiveEntry.getParentPath()
-            .ifPresent(this::checkPath);
+        archiveEntry.getParentPath().ifPresent(this::checkPath);
     }
 
     private void checkPath(Path path) {
@@ -70,9 +68,7 @@ public class ArchiveHolder implements ArchiveCache {
             Path parentPath = path.getParent();
             if (parentPath != null && !parentPath.toString().equals(ARCHIVE_ROOT)) {
                 String parentKey = key(parentPath.toString());
-                entriesGroupedByParentMap
-                    .computeIfAbsent(parentKey, key -> new TreeSet<>())
-                    .add(missingEntry);
+                entriesGroupedByParentMap.computeIfAbsent(parentKey, key -> new TreeSet<>()).add(missingEntry);
                 checkPath(parentPath);
             }
         }
@@ -91,9 +87,7 @@ public class ArchiveHolder implements ArchiveCache {
     }
 
     public Stream<ArchiveStreamEntry> listEntries(String path) {
-        return ofNullable(entriesGroupedByParentMap.get(key(path)))
-            .stream()
-            .flatMap(Collection::stream);
+        return ofNullable(entriesGroupedByParentMap.get(key(path))).stream().flatMap(Collection::stream);
     }
 
     public Stream<ArchiveStreamEntry> listEntries() {
@@ -105,9 +99,7 @@ public class ArchiveHolder implements ArchiveCache {
     }
 
     public Optional<ArchiveStreamEntry> get(Path path) {
-        return ofNullable(path)
-            .map(this::key)
-            .map(entriesMap::get);
+        return ofNullable(path).map(this::key).map(entriesMap::get);
     }
 
     public Optional<ArchiveStreamEntry> get(String path) {
@@ -121,5 +113,15 @@ public class ArchiveHolder implements ArchiveCache {
 
     public void setLoaded(boolean loaded) {
         this.loaded = loaded;
+    }
+
+    @Override
+    public void evict() {
+        if (!loaded) {
+            throw new StreamerException("Cannot reset still loading archive stremer");
+        }
+        entriesMap.clear();
+        entriesGroupedByParentMap.clear();
+        loaded = false;
     }
 }
