@@ -17,6 +17,8 @@
 package org.cosinus.streamer.api.expand;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.TextStreamer;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -53,5 +55,29 @@ public class BinaryExpanderHandler {
 
     public Map<String, BinaryExpander> getBinaryExpandersMap() {
         return binaryExpandersMap;
+    }
+
+    public Streamer expandStreamer(Streamer streamerToExpand) {
+        return ofNullable(streamerToExpand)
+            .map(this::checkIfStreamerIsExpandable)
+            .map(this::checkIfStreamerIsText)
+            .orElse(null);
+    }
+
+    private Streamer<?> checkIfStreamerIsExpandable(Streamer<?> streamerToCheck) {
+        return ofNullable(streamerToCheck)
+            .filter(stream -> !ExpandedStreamer.class.isAssignableFrom(stream.getClass()))
+            .map(Streamer::binaryStreamer)
+            .<Streamer>flatMap(binaryStream -> findStreamExpander(binaryStream.getType())
+                .map(binaryExpander -> binaryExpander.expand(binaryStream)))
+            .orElse(streamerToCheck);
+    }
+
+    private Streamer<?> checkIfStreamerIsText(Streamer<?> streamerToCheck) {
+        return ofNullable(streamerToCheck)
+            .filter(Streamer::isTextCompatible)
+            .map(Streamer::binaryStreamer)
+            .<Streamer<?>>map(TextStreamer::new)
+            .orElse(streamerToCheck);
     }
 }

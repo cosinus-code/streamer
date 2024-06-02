@@ -18,6 +18,7 @@ package org.cosinus.streamer.ui.action.execute.load;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.view.PanelLocation;
+import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.swing.action.execute.ActionModel;
 
 import static org.cosinus.streamer.ui.action.LoadStreamerAction.LOAD_STREAMER_ACTION_ID;
@@ -25,11 +26,11 @@ import static org.cosinus.streamer.ui.action.LoadStreamerAction.LOAD_STREAMER_AC
 /**
  * Encapsulates the model of the load streamer action
  */
-public class LoadActionModel extends ActionModel {
+public class LoadActionModel<T> extends ActionModel {
 
     private final PanelLocation locationToLoadTo;
 
-    private final Streamer<?> streamerToLoad;
+    private final Streamer<?> initialStreamerToLoad;
 
     private final String itemToSelectAfterLoad;
 
@@ -37,34 +38,38 @@ public class LoadActionModel extends ActionModel {
 
     private final boolean expanding;
 
+    private Streamer<T> streamerToLoad;
+
+    private StreamerView<T> streamerViewToLoadTo;
+
     public LoadActionModel(final PanelLocation locationToLoadTo,
-                           final Streamer<?> streamerToLoad,
+                           final Streamer<?> initialStreamerToLoad,
                            final String itemToSelectAfterLoad) {
-        this(locationToLoadTo, streamerToLoad, itemToSelectAfterLoad, null, true);
+        this(locationToLoadTo, initialStreamerToLoad, itemToSelectAfterLoad, null, true);
     }
 
     public LoadActionModel(final PanelLocation locationToLoadTo,
-                           final Streamer<?> streamerToLoad,
+                           final Streamer<?> initialStreamerToLoad,
                            final String itemToSelectAfterLoad,
                            boolean expanding) {
-        this(locationToLoadTo, streamerToLoad, itemToSelectAfterLoad, null, expanding);
+        this(locationToLoadTo, initialStreamerToLoad, itemToSelectAfterLoad, null, expanding);
     }
 
     public LoadActionModel(final PanelLocation locationToLoadTo,
-                           final Streamer<?> streamerToLoad,
+                           final Streamer<?> initialStreamerToLoad,
                            final String itemToSelectAfterLoad,
                            final String streamerViewNameToLoadIn) {
-        this(locationToLoadTo, streamerToLoad, itemToSelectAfterLoad, streamerViewNameToLoadIn, true);
+        this(locationToLoadTo, initialStreamerToLoad, itemToSelectAfterLoad, streamerViewNameToLoadIn, true);
     }
 
     public LoadActionModel(final PanelLocation locationToLoadTo,
-                           final Streamer<?> streamerToLoad,
+                           final Streamer<?> initialStreamerToLoad,
                            final String itemToSelectAfterLoad,
                            final String streamerViewNameToLoadIn,
                            boolean expanding) {
         super(locationToLoadTo.name(), LOAD_STREAMER_ACTION_ID);
         this.locationToLoadTo = locationToLoadTo;
-        this.streamerToLoad = streamerToLoad;
+        this.initialStreamerToLoad = initialStreamerToLoad;
         this.itemToSelectAfterLoad = itemToSelectAfterLoad;
         this.streamerViewNameToLoadIn = streamerViewNameToLoadIn;
         this.expanding = expanding;
@@ -74,8 +79,8 @@ public class LoadActionModel extends ActionModel {
         return locationToLoadTo;
     }
 
-    public Streamer<?> getStreamerToLoad() {
-        return streamerToLoad;
+    public Streamer<?> getInitialStreamerToLoad() {
+        return initialStreamerToLoad;
     }
 
     public String getItemToSelectAfterLoad() {
@@ -88,5 +93,21 @@ public class LoadActionModel extends ActionModel {
 
     public boolean isExpanding() {
         return expanding;
+    }
+
+    public StreamerView<T> getStreamerViewToLoadTo() {
+        return streamerViewToLoadTo;
+    }
+
+    public void setStreamerViewToLoadTo(StreamerView<T> streamerViewToLoadTo) {
+        this.streamerViewToLoadTo = streamerViewToLoadTo;
+    }
+
+    public Streamer<T> getStreamerToLoad() {
+        return streamerToLoad;
+    }
+
+    public void setStreamerToLoad(Streamer<T> streamerToLoad) {
+        this.streamerToLoad = streamerToLoad;
     }
 }

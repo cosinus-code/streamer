@@ -17,15 +17,16 @@
 package org.cosinus.streamer.ui.action.execute;
 
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
-import org.cosinus.streamer.ui.dialog.ProgressDialog;
 import org.cosinus.swing.action.execute.ActionExecutor;
 import org.cosinus.swing.action.execute.ActionModel;
 import org.cosinus.swing.worker.SwingWorker;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Optional.ofNullable;
+import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 /**
  * Implementation of {@link ActionExecutor} for deleting streamers based on {@link Worker}
@@ -38,8 +39,8 @@ public abstract class WorkerExecutor<A extends ActionModel, M extends WorkerMode
 
     private final Map<String, Worker<M, T>> workersMap = new ConcurrentHashMap<>();
 
-    protected WorkerExecutor(ProgressFormHandler progressFormHandler,
-                             WorkerListenerHandler workerListenerHandler) {
+    protected WorkerExecutor(final ProgressFormHandler progressFormHandler,
+                             final WorkerListenerHandler workerListenerHandler) {
         this.progressFormHandler = progressFormHandler;
         this.workerListenerHandler = workerListenerHandler;
     }
@@ -47,8 +48,8 @@ public abstract class WorkerExecutor<A extends ActionModel, M extends WorkerMode
     @Override
     public void execute(A actionModel) {
 
-        ProgressDialog<M> progressDialog = createProgressDialog(actionModel);
-        workerListenerHandler.register(actionModel.getActionId(), progressDialog);
+        ofNullable(createWorkerListener(actionModel))
+            .ifPresent(workerListener -> workerListenerHandler.register(actionModel.getActionId(), workerListener));
 
         Worker<M, T> worker = createSwingWorker(actionModel);
         workersMap.put(actionModel.getActionId(), worker);
@@ -75,7 +76,7 @@ public abstract class WorkerExecutor<A extends ActionModel, M extends WorkerMode
 //                });
 //    }
 
-    protected abstract ProgressDialog<M> createProgressDialog(A actionModel);
+    protected abstract WorkerListener<M> createWorkerListener(A actionModel);
 
     protected abstract Worker<M, T> createSwingWorker(A actionModel);
 }

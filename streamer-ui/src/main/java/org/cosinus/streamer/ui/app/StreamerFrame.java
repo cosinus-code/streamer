@@ -16,7 +16,6 @@
 
 package org.cosinus.streamer.ui.app;
 
-import org.cosinus.streamer.api.meta.StreamerHandler;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.view.*;
 import org.cosinus.swing.action.execute.ActionExecutors;
@@ -29,6 +28,7 @@ import java.awt.*;
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.NORTH;
 import static java.util.Arrays.stream;
+import static org.cosinus.streamer.ui.action.execute.find.FindActionModel.findLastStreamerAndConsume;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.ADDRESS_BAR;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_LEFT_VIEW;
 import static org.cosinus.streamer.ui.view.PanelLocation.LEFT;
@@ -38,11 +38,7 @@ public class StreamerFrame extends SwingApplicationFrame {
 
     private MainSplit split;
 
-    private final StreamerHandler streamerHandler;
-
     private final StreamerViewHandler streamerViewHandler;
-
-    private final StreamerViewStorage streamerViewStorage;
 
     private final Preferences preferences;
 
@@ -50,14 +46,11 @@ public class StreamerFrame extends SwingApplicationFrame {
 
     private final ActionExecutors actionExecutors;
 
-    public StreamerFrame(StreamerHandler streamerHandler,
-                         StreamerViewHandler streamerViewHandler,
-                         StreamerViewStorage streamerViewStorage,
-                         Preferences preferences,
-                         AddressBar addressBar, ActionExecutors actionExecutors) {
-        this.streamerHandler = streamerHandler;
+    public StreamerFrame(final StreamerViewHandler streamerViewHandler,
+                         final Preferences preferences,
+                         final AddressBar addressBar,
+                         final ActionExecutors actionExecutors) {
         this.streamerViewHandler = streamerViewHandler;
-        this.streamerViewStorage = streamerViewStorage;
         this.preferences = preferences;
         this.addressBar = addressBar;
         this.actionExecutors = actionExecutors;
@@ -87,7 +80,7 @@ public class StreamerFrame extends SwingApplicationFrame {
 
     private void addStreamerPanel(PanelLocation location) {
         split.add(streamerViewHandler.createStreamerPanel(location),
-                  location.toString());
+            location.toString());
     }
 
     public void setVisibleSidebar(boolean visible) {
@@ -98,9 +91,13 @@ public class StreamerFrame extends SwingApplicationFrame {
 
     @Override
     public void loadContent() {
+//        stream(PanelLocation.values())
+//            .forEach(location -> actionExecutors.execute(new LoadActionModel(
+//                location, null, null)));
         stream(PanelLocation.values())
-            .forEach(location -> actionExecutors.execute(new LoadActionModel(
-                location, null, null)));
+            .forEach(location -> actionExecutors
+                .execute(findLastStreamerAndConsume(location, streamerToLoad -> actionExecutors
+                    .execute(new LoadActionModel(location, streamerToLoad, null)))));
     }
 
     public StreamerView getCurrentView() {

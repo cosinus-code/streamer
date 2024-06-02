@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import static java.lang.Thread.currentThread;
-import static java.util.Optional.ofNullable;
 
 /**
  * Abstract {@link javax.swing.SwingWorker} with custom progress
@@ -115,8 +114,9 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
             errorHandler.handleError(applicationFrame, ex);
         }
 
-        ofNullable(error)
-            .ifPresent(error -> errorHandler.handleError(applicationFrame, error));
+        if (error != null) {
+            errorHandler.handleError(applicationFrame, error);
+        }
 
         workerListenerHandler.workerFinished(getId(), workerModel);
         actionExecutors.getActionExecutor(CopyActionModel.class)

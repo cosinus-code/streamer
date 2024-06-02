@@ -18,12 +18,11 @@ package org.cosinus.streamer.ui.view;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.meta.StreamerHandler;
-import org.cosinus.streamer.api.expand.ExpandedStreamer;
 import org.cosinus.streamer.ui.action.execute.WorkerListener;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
-import org.cosinus.streamer.ui.action.execute.save.SaveWorkerModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
+import org.cosinus.streamer.ui.action.execute.save.SaveWorkerModel;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.form.Panel;
@@ -150,8 +149,7 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
     }
 
     @Override
-    public void workerStarted(LoadWorkerModel<T> loadWorkerModel)
-    {
+    public void workerStarted(LoadWorkerModel<T> loadWorkerModel) {
         loadingIndicator.startLoading(loadWorkerModel.getTotalSizeToLoad());
         updateAddressBarAndStreamerPanel();
     }

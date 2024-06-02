@@ -34,6 +34,10 @@ public class LoadingProgress extends ProgressBar {
         }
     }
 
+    public void startLoading() {
+        startLoading(-1);
+    }
+
     public void startLoading(long totalSizeToLoad) {
         if (totalSizeToLoad != 0) {
             setVisible(true);

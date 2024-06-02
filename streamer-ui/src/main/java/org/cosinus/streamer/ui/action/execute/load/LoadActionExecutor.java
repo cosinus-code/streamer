@@ -17,158 +17,69 @@
 package org.cosinus.streamer.ui.action.execute.load;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.TextStreamer;
-import org.cosinus.streamer.api.expand.ExpandedStreamer;
-import org.cosinus.streamer.api.meta.StreamerHandler;
 import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
+import org.cosinus.streamer.ui.action.execute.WorkerExecutor;
 import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
-import org.cosinus.streamer.ui.view.PanelLocation;
+import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.streamer.ui.view.StreamerViewStorage;
 import org.cosinus.swing.action.execute.ActionExecutor;
-import org.cosinus.swing.worker.SwingWorker;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-
 import static java.util.Optional.ofNullable;
-import static java.util.function.Predicate.not;
 import static org.cosinus.streamer.ui.view.text.TextStreamerView.TEXT_EDITOR;
 
 /**
  * Implementation of {@link ActionExecutor} based on {@link LoadWorker}
  */
 @Component
-public class LoadActionExecutor implements ActionExecutor<LoadActionModel> {
-
-    private final StreamerViewStorage streamerViewStorage;
+public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, LoadWorkerModel<T>, T> {
 
     private final StreamerViewHandler streamerViewHandler;
 
-    private final StreamerHandler streamerHandler;
-
     private final BinaryExpanderHandler binaryExpanderHandler;
 
-    protected final WorkerListenerHandler workerListenerHandler;
-
-    private final Map<String, LoadWorker<?>> workersMap;
-
-    public LoadActionExecutor(StreamerViewStorage streamerViewStorage,
-                              StreamerViewHandler streamerViewHandler,
-                              StreamerHandler streamerHandler,
-                              BinaryExpanderHandler binaryExpanderHandler,
-                              WorkerListenerHandler workerListenerHandler) {
-        this.streamerViewStorage = streamerViewStorage;
+    protected LoadActionExecutor(final ProgressFormHandler progressFormHandler,
+                                 final WorkerListenerHandler workerListenerHandler,
+                                 final StreamerViewHandler streamerViewHandler,
+                                 final BinaryExpanderHandler binaryExpanderHandler) {
+        super(progressFormHandler, workerListenerHandler);
         this.streamerViewHandler = streamerViewHandler;
-        this.streamerHandler = streamerHandler;
         this.binaryExpanderHandler = binaryExpanderHandler;
-        this.workerListenerHandler = workerListenerHandler;
-        this.workersMap = new ConcurrentHashMap<>();
     }
 
     @Override
-    public void execute(LoadActionModel actionModel) {
-        startLoadWorker(actionModel);
-    }
+    protected StreamerView<T> createWorkerListener(LoadActionModel<T> actionModel) {
+        actionModel.setStreamerToLoad(actionModel.isExpanding() ?
+            binaryExpanderHandler.expandStreamer(actionModel.getInitialStreamerToLoad()) :
+            (Streamer<T>) actionModel.getInitialStreamerToLoad());
 
-    private <V> void startLoadWorker(LoadActionModel actionModel) {
-        Streamer<V> streamer =
-            findStreamerToLoad(actionModel.getStreamerToLoad(), actionModel.getLocationToLoadTo());
-        if (streamer == null) {
-            return;
-        }
-
-        Streamer<V> streamerToLoad = actionModel.isExpanding() ? expandStreamer(streamer) : streamer;
-
-        String streamerViewNameToOpen = ofNullable(actionModel.getStreamerViewNameToLoadIn())
-            .filter(viewName -> !streamerToLoad.isTextCompatible() || TEXT_EDITOR.equals(viewName))
-            .orElseGet(() -> !streamerToLoad.isParent() && streamerToLoad.isTextCompatible() ? TEXT_EDITOR : null);
-
-        PanelLocation location = actionModel.getLocationToLoadTo();
-        StreamerView<V> streamerViewToLoadTo = streamerViewHandler.getStreamerView(location, streamerViewNameToOpen);
-        if (streamerViewToLoadTo == null) {
-            return;
-        }
-
+        Streamer<T> streamerToLoad = actionModel.getStreamerToLoad();
+        StreamerView<T> streamerViewToLoadTo = streamerViewHandler.getStreamerView(
+            actionModel.getLocationToLoadTo(),
+            ofNullable(actionModel.getStreamerViewNameToLoadIn())
+                .filter(viewName -> !streamerToLoad.isTextCompatible() || TEXT_EDITOR.equals(viewName))
+                .orElseGet(() -> !streamerToLoad.isParent() && streamerToLoad.isTextCompatible() ? TEXT_EDITOR : null));
         streamerViewToLoadTo.setParentStreamer(streamerToLoad);
-        String itemToSelectAfterLoad = actionModel.getItemToSelectAfterLoad();
-        LoadWorker<V> worker = new LoadWorker<>(
-            actionModel.getActionId(), streamerToLoad, streamerViewToLoadTo, itemToSelectAfterLoad);
-        workerListenerHandler.register(worker.getId(), streamerViewToLoadTo);
-        registerWorker(worker);
-        worker.start();
+
+        actionModel.setStreamerViewToLoadTo(streamerViewToLoadTo);
+
+        return streamerViewToLoadTo;
     }
 
-    private <V> void registerWorker(LoadWorker<V> worker) {
-        cancel(worker.getId());
-        workersMap.put(worker.getId(), worker);
-    }
 
     @Override
-    public void cancel(final String workerId) {
-        ofNullable(workersMap.get(workerId))
-            .ifPresent(SwingWorker::cancel);
-    }
-
-    @Override
-    public void remove(String workerId) {
-        workersMap.remove(workerId);
+    protected LoadWorker<T> createSwingWorker(LoadActionModel<T> actionModel) {
+        return new LoadWorker<>(
+            actionModel.getActionId(),
+            actionModel.getStreamerToLoad(),
+            actionModel.getStreamerViewToLoadTo(),
+            actionModel.getItemToSelectAfterLoad());
     }
 
     @Override
     public String getHandledAction() {
         return LoadActionModel.class.getName();
-    }
-
-    private Streamer findStreamerToLoad(Streamer streamerToLoad, PanelLocation location) {
-        return ofNullable(streamerToLoad)
-            .or(() -> loadLastStreamer(location))
-            .or(() -> ofNullable(streamerHandler.getDefaultStreamer()))
-            .map(this::checkIfStreamerExist)
-            .orElse(null);
-    }
-
-    private Optional<Streamer> loadLastStreamer(PanelLocation location) {
-        return streamerViewStorage.loadLastLoadedStreamer(location)
-            .map(urlPath -> streamerHandler.getStreamer(urlPath));
-    }
-
-    private Streamer<?> checkIfStreamerExist(Streamer<?> streamerToCheck) {
-        return !streamerToCheck.exists() ? findFirstAncestorAlive(streamerToCheck) : streamerToCheck;
-    }
-
-    private Streamer<?> findFirstAncestorAlive(Streamer streamer) {
-        return ofNullable(streamer.getParent())
-            .filter(not(Streamer::exists))
-            .map(this::findFirstAncestorAlive)
-            .orElse(streamer.getParent());
-    }
-
-    private Streamer expandStreamer(Streamer streamerToExpand) {
-        return ofNullable(streamerToExpand)
-            .map(this::checkIfStreamerIsExpandable)
-            .map(this::checkIfStreamerIsText)
-            .orElse(null);
-    }
-
-    private Streamer<?> checkIfStreamerIsExpandable(Streamer<?> streamerToCheck) {
-        return ofNullable(streamerToCheck)
-            .filter(stream -> !ExpandedStreamer.class.isAssignableFrom(stream.getClass()))
-            .map(Streamer::binaryStreamer)
-            .<Streamer>flatMap(binaryStream -> binaryExpanderHandler
-                .findStreamExpander(binaryStream.getType())
-                .map(binaryExpander -> binaryExpander.expand(binaryStream)))
-            .orElse(streamerToCheck);
-    }
-
-    private Streamer<?> checkIfStreamerIsText(Streamer<?> streamerToCheck) {
-        return ofNullable(streamerToCheck)
-            .filter(Streamer::isTextCompatible)
-            .map(Streamer::binaryStreamer)
-            .<Streamer<?>>map(TextStreamer::new)
-            .orElse(streamerToCheck);
     }
 }

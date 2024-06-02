@@ -46,6 +46,7 @@ public class StreamerPanel extends Panel {
 
     @Autowired
     private FormatHandler formatHandler;
+
     private final TextField addressLabel;
 
     private final JLabel freeSpaceLabel;

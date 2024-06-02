@@ -18,8 +18,8 @@ package org.cosinus.streamer.ui.action.execute.delete;
 
 import org.cosinus.streamer.ui.action.execute.SimpleWorker;
 import org.cosinus.streamer.ui.action.execute.WorkerExecutor;
-import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
+import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.streamer.ui.action.progress.StreamersProgressModel;
 import org.cosinus.streamer.ui.dialog.ProgressDialog;
 import org.cosinus.swing.action.execute.ActionExecutor;
@@ -30,17 +30,15 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class DeleteWorkerExecutor
-    extends WorkerExecutor<DeleteActionModel, StreamersProgressModel, StreamersProgressModel>
-{
+    extends WorkerExecutor<DeleteActionModel, StreamersProgressModel, StreamersProgressModel> {
 
-    public DeleteWorkerExecutor(ProgressFormHandler progressFormHandler,
-                                WorkerListenerHandler workerListenerHandler) {
-        super(progressFormHandler,
-            workerListenerHandler);
+    protected DeleteWorkerExecutor(final ProgressFormHandler progressFormHandler,
+                                   final WorkerListenerHandler workerListenerHandler) {
+        super(progressFormHandler, workerListenerHandler);
     }
 
     @Override
-    protected ProgressDialog<StreamersProgressModel> createProgressDialog(DeleteActionModel deleteModel) {
+    protected ProgressDialog<StreamersProgressModel> createWorkerListener(DeleteActionModel deleteModel) {
         return progressFormHandler.createStreamersProgressDialog(deleteModel);
     }
 

@@ -34,13 +34,13 @@ import org.springframework.stereotype.Component;
 public class MoveWorkerExecutor<S extends Streamer<S>, T extends Streamer<T>>
     extends WorkerExecutor<MoveActionModel<S, T>, CopyProgressModel, CopyProgressModel> {
 
-    public MoveWorkerExecutor(ProgressFormHandler progressFormHandler,
-                              WorkerListenerHandler workerListenerHandler) {
+    protected MoveWorkerExecutor(final ProgressFormHandler progressFormHandler,
+                                 final WorkerListenerHandler workerListenerHandler) {
         super(progressFormHandler, workerListenerHandler);
     }
 
     @Override
-    protected ProgressDialog<CopyProgressModel> createProgressDialog(MoveActionModel<S, T> copyModel) {
+    protected ProgressDialog<CopyProgressModel> createWorkerListener(MoveActionModel<S, T> copyModel) {
         return progressFormHandler.createCopyProgressDialog(copyModel);
     }
 
