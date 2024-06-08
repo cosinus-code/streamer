@@ -16,15 +16,14 @@
 
 package org.cosinus.streamer.ui.action.progress;
 
-import org.cosinus.streamer.ui.action.execute.WorkerModel;
+import org.cosinus.streamer.api.worker.WorkerModel;
 
 import java.util.List;
 
 /**
  * Action progress model
  */
-public class SimpleProgressModel implements WorkerModel<Long>
-{
+public class SimpleProgressModel implements WorkerModel<Long> {
 
     private long progressSize;
 
@@ -39,8 +38,7 @@ public class SimpleProgressModel implements WorkerModel<Long>
     private long remainingTime;
 
     @Override
-    public void update(List<Long> items)
-    {
+    public void update(List<Long> items) {
         updateProgress(items
             .stream()
             .mapToLong(Long::longValue)
@@ -64,8 +62,8 @@ public class SimpleProgressModel implements WorkerModel<Long>
         if (spentTime > 0) {
             speed = 1000 * progressDone / spentTime;
             remainingTime = progressDone != 0 ?
-                    (progressSize - progressDone) * spentTime / (1000 * progressDone) :
-                    0;
+                (progressSize - progressDone) * spentTime / (1000 * progressDone) :
+                0;
         }
     }
 

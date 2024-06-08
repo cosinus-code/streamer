@@ -13,18 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cosinus.streamer.ui.action.execute.save;
+package org.cosinus.streamer.api.stream.consumer;
 
-import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
-import org.cosinus.streamer.ui.action.execute.WorkerModel;
+import java.io.IOException;
+import java.io.OutputStream;
 
-import java.util.stream.Stream;
+@FunctionalInterface
+public interface OutputWriter<O extends OutputStream> {
 
-public interface SaveWorkerModel<T> extends WorkerModel<T> {
-
-    Stream<T> streamToSave();
-
-    StreamConsumer<T> streamConsumer();
-
-    int totalItemsToSave();
+    void write(O output) throws IOException;
 }

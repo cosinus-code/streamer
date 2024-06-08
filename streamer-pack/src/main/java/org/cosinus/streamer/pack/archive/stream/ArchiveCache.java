@@ -15,6 +15,7 @@
  */
 package org.cosinus.streamer.pack.archive.stream;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.cosinus.streamer.pack.archive.ArchiveStreamEntry;
 
 /**
@@ -24,9 +25,13 @@ public interface ArchiveCache {
 
     void add(ArchiveStreamEntry archiveEntry);
 
+    boolean contains(ArchiveEntry archiveEntry);
+
     boolean isLoaded();
 
     void setLoaded(boolean loaded);
 
     void evict();
+
+    boolean evict(ArchiveStreamEntry archiveEntry);
 }

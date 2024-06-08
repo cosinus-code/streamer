@@ -16,8 +16,8 @@
 package org.cosinus.streamer.ui.view.text;
 
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
-import org.cosinus.streamer.ui.action.execute.save.SaveWorkerModel;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.error.ErrorHandler;
@@ -52,7 +52,7 @@ public class TextEditor extends TextArea implements LoadWorkerModel<String> {
 
     private final TextStreamerView view;
 
-    private final SaveTextModel saveWorkerModel;
+    private final SaveTextWorkerModel saveWorkerModel;
 
     private boolean dirty;
 
@@ -60,7 +60,7 @@ public class TextEditor extends TextArea implements LoadWorkerModel<String> {
 
     public TextEditor(final TextStreamerView view) {
         this.view = view;
-        saveWorkerModel = new SaveTextModel(this);
+        saveWorkerModel = new SaveTextWorkerModel(this);
     }
 
     public void initComponent() {

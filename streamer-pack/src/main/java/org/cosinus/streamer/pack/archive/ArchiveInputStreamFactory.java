@@ -16,11 +16,12 @@
 
 package org.cosinus.streamer.pack.archive;
 
-import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
+import org.apache.commons.compress.archivers.sevenz.SevenZOutputFile;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,7 +50,7 @@ public class ArchiveInputStreamFactory extends ArchiveStreamFactory {
         try {
             return super.createArchiveInputStream(inputStream);
         } catch (ArchiveException e) {
-            throw new RuntimeException("Cannot create archiver", e);
+            throw new StreamerException("Cannot create archiver", e);
         }
     }
 
@@ -59,7 +60,7 @@ public class ArchiveInputStreamFactory extends ArchiveStreamFactory {
         try {
             return super.createArchiveInputStream(archiverName, inputStream);
         } catch (ArchiveException e) {
-            throw new RuntimeException("Cannot create archiver of type: " + archiverName, e);
+            throw new StreamerException("Cannot create archiver of type: " + archiverName, e);
         }
     }
 
@@ -83,7 +84,15 @@ public class ArchiveInputStreamFactory extends ArchiveStreamFactory {
         try {
             return new SevenZFile(file);
         } catch (IOException e) {
-            throw new RuntimeException("Cannot create 7Z file from file: " + file.getPath(), e);
+            throw new StreamerException("Cannot create 7Z file from file: " + file.getPath(), e);
+        }
+    }
+
+    protected SevenZOutputFile createSevenZOutputFile(File file) {
+        try {
+            return new SevenZOutputFile(file);
+        } catch (IOException e) {
+            throw new StreamerException("Cannot create 7Z file from file: " + file.getPath(), e);
         }
     }
 
@@ -124,7 +133,7 @@ public class ArchiveInputStreamFactory extends ArchiveStreamFactory {
             });
     }
 
-    private EntryInputStream createArchiveInputStream(final BinaryStreamer binaryStreamer) {
+    public EntryInputStream createArchiveInputStream(final BinaryStreamer binaryStreamer) {
         return detectArchiverName(binaryStreamer.getName(), binaryStreamer.inputStream())
             .map(archiverName -> createArchiveInputStream(archiverName,
                 binaryStreamer.getPath(),
@@ -136,7 +145,7 @@ public class ArchiveInputStreamFactory extends ArchiveStreamFactory {
      * Get the input stream corresponding to an archive entry by opening the archive the searching for the entry.
      *
      * @param binaryStreamer the archive binary streamer
-     * @param archiveEntry the archive entry to open input stream for
+     * @param archiveEntry   the archive entry to open input stream for
      * @return the input stream
      */
     public InputStream inputStream(final BinaryStreamer binaryStreamer, final ArchiveStreamEntry archiveEntry) {
@@ -150,4 +159,21 @@ public class ArchiveInputStreamFactory extends ArchiveStreamFactory {
             .orElse(null);
     }
 
+    @Override
+    public ArchiveOutputStream createArchiveOutputStream(String archiverName, final OutputStream output) {
+//        if (archiverName.equals(SEVEN_Z)) {
+//            return ofNullable(path)
+//                .map(Path::toFile)
+//                .filter(File::exists)
+//                .map(this::createSevenZOutputFile)
+//                .map(SevenZEntryOutputStream::new)
+//                .orElse(null);
+//        }
+
+        try {
+            return super.createArchiveOutputStream(archiverName, output);
+        } catch (ArchiveException e) {
+            throw new StreamerException("Cannot create archive output", e);
+        }
+    }
 }

@@ -17,6 +17,7 @@
 package org.cosinus.streamer.ui.action.execute.load;
 
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
 import org.cosinus.streamer.api.stream.pipeline.PipelineListener;
 import org.cosinus.streamer.api.stream.pipeline.PipelineStrategy;
 import org.cosinus.streamer.ui.action.execute.PipelineWorker;
@@ -61,5 +62,10 @@ public class LoadWorker<T> extends PipelineWorker<LoadWorkerModel<T>, T> impleme
     @Override
     public PipelineListener<T> getPipelineListener() {
         return this;
+    }
+
+    @Override
+    protected StreamConsumer<T> streamConsumer() {
+        return null;
     }
 }

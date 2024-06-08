@@ -16,6 +16,7 @@
 package org.cosinus.streamer.ui.action.execute.save;
 
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.swing.action.execute.ActionExecutor;
@@ -28,8 +29,7 @@ public class SaveWorkerExecutor implements ActionExecutor<SaveActionModel<?>> {
 
     private final WorkerListenerHandler workerListenerHandler;
 
-    public SaveWorkerExecutor(final WorkerListenerHandler workerListenerHandler)
-    {
+    public SaveWorkerExecutor(final WorkerListenerHandler workerListenerHandler) {
         this.workerListenerHandler = workerListenerHandler;
     }
 
@@ -40,15 +40,18 @@ public class SaveWorkerExecutor implements ActionExecutor<SaveActionModel<?>> {
 
     private <T> void executeSave(SaveActionModel<T> actionModel) {
         Streamer<T> streamerToSave = actionModel.getStreamerToSave();
-        if (!streamerToSave.isParent()) {
-            StreamerView<T> streamerView = actionModel.getStreamerView();
-            SaveWorkerModel<T> saveModel = streamerView.getSaveModel();
-            if (saveModel != null) {
-                SaveWorker<T> saveWorker = new SaveWorker<>(actionModel, saveModel);
-                ofNullable(streamerView.getSaveListener())
-                    .ifPresent(listener -> workerListenerHandler.register(saveWorker.getId(), listener));
-                saveWorker.start();
-            }
+        StreamerView<T> streamerView = actionModel.getStreamerView();
+
+        SaveWorkerModel<?> saveWorkerModel = streamerToSave.saveModel();
+        if (saveWorkerModel == null && !streamerToSave.isParent()) {
+            saveWorkerModel = streamerView.getSaveModel();
+        }
+
+        if (saveWorkerModel != null) {
+            SaveWorker<?> saveWorker = new SaveWorker<>(actionModel, saveWorkerModel);
+            ofNullable(streamerView.getSaveListener())
+                .ifPresent(listener -> workerListenerHandler.register(saveWorker.getId(), listener));
+            saveWorker.start();
         }
     }
 

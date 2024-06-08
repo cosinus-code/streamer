@@ -64,4 +64,7 @@ public interface StreamConsumer<T> extends Consumer<T>, AutoCloseable {
     @Override
     default void close() throws IOException {
     }
+
+    default void afterClose(boolean failed) {
+    }
 }

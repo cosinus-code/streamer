@@ -13,41 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.cosinus.streamer.api;
+package org.cosinus.streamer.api.worker;
 
 import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
-import org.cosinus.streamer.api.worker.SaveWorkerModel;
 
 import java.util.stream.Stream;
 
-public interface Streamer<T> extends Streamable {
+public interface SaveWorkerModel<T> extends WorkerModel<T> {
 
-    Stream<T> stream();
+    Stream<T> streamToSave();
 
-    default StreamConsumer<T> streamConsumer() {
-        return null;
-    }
+    StreamConsumer<T> streamConsumer();
 
-    default BinaryStreamer binaryStreamer() {
-        return null;
-    }
+    long totalItemsToSave();
 
-    @Override
-    ParentStreamer<?> getParent();
+    long getSavedItemsCount();
 
-    default boolean isTextCompatible() {
-        return false;
-    }
-
-    default void reset() {
-    }
-
-    default boolean isDirty() {
-        return false;
-    }
-
-    default SaveWorkerModel<?> saveModel() {
-        return null;
-    }
+    void setDirty(boolean dirty);
 }

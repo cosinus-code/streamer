@@ -13,25 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cosinus.streamer.ui.action.execute;
+package org.cosinus.streamer.api.stream.consumer;
 
-import org.cosinus.streamer.api.worker.WorkerModel;
+import java.io.File;
 
-import java.util.List;
+@FunctionalInterface
+public interface TemporaryFileStrategy {
 
-public abstract class SimpleWorker<M extends WorkerModel<M>> extends Worker<M, M> {
-    protected SimpleWorker(String actionId, M workerModel) {
-        super(actionId, workerModel);
-    }
-
-    public void updateModel(Runnable runnable) {
-        runnable.run();
-        publish(workerModel);
-    }
-
-    @Override
-    protected void process(List<M> items) {
-        checkWorkerStatus();
-        workerListenerHandler.workerUpdated(getId(), workerModel);
-    }
+    File getFile(File file);
 }

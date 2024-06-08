@@ -33,7 +33,6 @@ import org.cosinus.streamer.ui.error.ActionException;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.awt.*;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.stream.Stream;
@@ -125,7 +124,7 @@ public class DeleteWorker extends SimpleWorker<StreamersProgressModel>
         }
 
         @Override
-        public void afterPipelineClose()
+        public void afterPipelineClose(boolean pipelineFailed)
         {
             updateModel(workerModel::finishProgress);
         }

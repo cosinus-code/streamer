@@ -16,9 +16,12 @@
 
 package org.cosinus.streamer.pack.archive;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.worker.SaveWorkerModel;
 
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Objects;
 
@@ -44,6 +47,14 @@ public abstract class ArchiveStreamer<T> implements Streamer<T> {
     @Override
     public Path getPath() {
         return archiveEntry.getPath();
+    }
+
+    public ArchiveEntry getArchiveEntry() {
+        return archiveEntry.getArchiveEntry();
+    }
+
+    public InputStream getArchiveInputStream() {
+        return archiveEntry.getArchiveInputStream();
     }
 
     @Override
@@ -94,4 +105,18 @@ public abstract class ArchiveStreamer<T> implements Streamer<T> {
         return true;
     }
 
+    @Override
+    public boolean delete() {
+        return archivePackStreamer.delete(archiveEntry);
+    }
+
+    @Override
+    public boolean isDirty() {
+        return archivePackStreamer.isDirty();
+    }
+
+    @Override
+    public SaveWorkerModel<?> saveModel() {
+        return archivePackStreamer.saveModel();
+    }
 }

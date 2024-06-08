@@ -16,6 +16,8 @@
 
 package org.cosinus.streamer.ui.action.execute;
 
+import org.cosinus.streamer.api.worker.WorkerModel;
+
 /**
  * Worker listener.
  *

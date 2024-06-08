@@ -13,15 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.cosinus.streamer.api.stream.consumer;
 
-package org.cosinus.streamer.ui.action.execute;
+import java.io.File;
 
-import java.util.List;
+public class SuffixTemporaryFileStrategy implements TemporaryFileStrategy {
 
-/**
- * Generic interface for a progress model
- */
-public interface WorkerModel<T> {
+    public static final TemporaryFileStrategy PART_TEMPORARY_FILE = new SuffixTemporaryFileStrategy(".part");
 
-    void update(List<T> items);
+    private final String suffix;
+
+    public SuffixTemporaryFileStrategy(String suffix) {
+        this.suffix = suffix;
+    }
+
+    @Override
+    public File getFile(File file) {
+        return file.toPath().getParent().resolve(file.getName() + suffix).toFile();
+    }
 }

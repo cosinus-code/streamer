@@ -20,6 +20,9 @@ public interface PipelineListener<D> {
     default void beforePipelineClose() {
     }
 
-    default void afterPipelineClose() {
+    default void afterPipelineClose(boolean pipelineFailed) {
+    }
+
+    default void onPipelineFail() {
     }
 }

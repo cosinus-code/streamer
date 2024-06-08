@@ -18,6 +18,7 @@ package org.cosinus.streamer.ui.action.execute;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cosinus.streamer.api.worker.WorkerModel;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.error.AbortActionException;
 import org.cosinus.streamer.ui.error.ActionException;
@@ -115,7 +116,8 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
         }
 
         if (error != null) {
-            errorHandler.handleError(applicationFrame, error);
+            LOG.error("Error while worker run", error);
+            errorHandler.handleError(applicationFrame, error.getLocalizedMessage());
         }
 
         workerListenerHandler.workerFinished(getId(), workerModel);

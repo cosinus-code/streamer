@@ -18,7 +18,7 @@ package org.cosinus.streamer.ui.view.table.details;
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
 import org.cosinus.streamer.api.value.Value;
-import org.cosinus.streamer.ui.action.execute.save.SaveWorkerModel;
+import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.streamer.ui.view.DetailEditor;
 import org.cosinus.streamer.ui.view.StreamerEditor;
 import org.cosinus.streamer.ui.view.StreamerView;
@@ -40,7 +40,7 @@ public class DetailStreamerEditor<T extends Streamable> implements StreamerEdito
 
     private T itemToBeEdited;
 
-    private int savedItemsCount;
+    private long savedItemsCount;
 
     private boolean dirty;
 
@@ -105,7 +105,7 @@ public class DetailStreamerEditor<T extends Streamable> implements StreamerEdito
     }
 
     @Override
-    public int totalItemsToSave() {
+    public long totalItemsToSave() {
         return view.getDataTableModel().getAllItems().toList().size();
     }
 
@@ -114,8 +114,7 @@ public class DetailStreamerEditor<T extends Streamable> implements StreamerEdito
         savedItemsCount += items.size();
     }
 
-    public int getSavedItemsCount()
-    {
+    public long getSavedItemsCount() {
         return savedItemsCount;
     }
 
@@ -124,8 +123,8 @@ public class DetailStreamerEditor<T extends Streamable> implements StreamerEdito
         return dirty;
     }
 
+    @Override
     public void setDirty(boolean dirty) {
         this.dirty = dirty;
-        view.updateAddressBarAndStreamerPanel();
     }
 }

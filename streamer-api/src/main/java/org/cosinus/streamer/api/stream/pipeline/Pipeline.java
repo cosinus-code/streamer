@@ -30,7 +30,8 @@ public interface Pipeline<D, I extends Stream<D>, O extends StreamConsumer<D>, S
     default void openPipeline() throws IOException {
         S pipelineStrategy = getPipelineStrategy();
         PipelineListener<D> pipelineListener = ofNullable(getPipelineListener())
-            .orElseGet(() -> new PipelineListener<>(){});
+            .orElseGet(() -> new PipelineListener<>() {
+            });
 
         try {
             preparePipelineOpen(pipelineStrategy, pipelineListener);
@@ -39,6 +40,7 @@ public interface Pipeline<D, I extends Stream<D>, O extends StreamConsumer<D>, S
             return;
         }
 
+        boolean pipelineFailed = false;
         pipelineListener.beforePipelineOpen();
         try (I pipelineInputStream = openPipelineInputStream(pipelineStrategy);
              O pipelineOutputStream = openPipelineOutputStream(pipelineStrategy)) {
@@ -56,8 +58,12 @@ public interface Pipeline<D, I extends Stream<D>, O extends StreamConsumer<D>, S
             pipelineListener.beforePipelineClose();
         } catch (SkipPipelineConsumeException ex) {
             pipelineListener.afterPipelineDataSkip(ex.getSkippedSize());
+        } catch (Exception ex) {
+            pipelineFailed = true;
+            pipelineListener.onPipelineFail();
+            throw ex;
         } finally {
-            pipelineListener.afterPipelineClose();
+            pipelineListener.afterPipelineClose(pipelineFailed);
         }
     }
 

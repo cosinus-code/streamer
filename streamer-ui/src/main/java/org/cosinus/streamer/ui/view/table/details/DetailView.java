@@ -17,23 +17,23 @@
 package org.cosinus.streamer.ui.view.table.details;
 
 import org.cosinus.streamer.api.Streamable;
+import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.streamer.ui.action.execute.DefaultWorkerListener;
 import org.cosinus.streamer.ui.action.execute.WorkerListener;
-import org.cosinus.streamer.ui.action.execute.save.SaveWorkerModel;
 import org.cosinus.streamer.ui.view.PanelLocation;
+import org.cosinus.streamer.ui.view.StreamerEditor;
 import org.cosinus.streamer.ui.view.table.DataTable;
 import org.cosinus.streamer.ui.view.table.TableStreamerView;
 
 import java.awt.*;
-import java.util.Optional;
 
-import static org.cosinus.streamer.ui.view.text.TextStreamerView.DIRTY_TEXT_MARKER;
+import static java.util.Optional.ofNullable;
 
 public class DetailView<T extends Streamable> extends TableStreamerView<T> {
 
     public static final String DETAIL_VIEW_NAME = "detail";
 
-    private WorkerListener<DetailStreamerEditor<T>> saveListener;
+    private WorkerListener<? extends SaveWorkerModel<?>> saveListener;
 
     public DetailView(PanelLocation location) {
         super(location);
@@ -44,21 +44,22 @@ public class DetailView<T extends Streamable> extends TableStreamerView<T> {
         super.initComponents();
         this.saveListener = new DefaultWorkerListener<>() {
             @Override
-            public void workerStarted(DetailStreamerEditor<T> detailStreamerEditor) {
-                loadingIndicator.startLoading(detailStreamerEditor.totalItemsToSave());
+            public void workerStarted(SaveWorkerModel<?> saveModel) {
+                loadingIndicator.startLoading(saveModel.totalItemsToSave());
             }
 
             @Override
-            public void workerUpdated(DetailStreamerEditor<T> detailStreamerEditor) {
+            public void workerUpdated(SaveWorkerModel<?> saveModel) {
                 loadingIndicator.updateLoading(
-                    detailStreamerEditor.getSavedItemsCount(),
-                    detailStreamerEditor.totalItemsToSave());
+                    saveModel.getSavedItemsCount(),
+                    saveModel.totalItemsToSave());
             }
 
             @Override
-            public void workerFinished(DetailStreamerEditor<T> detailStreamerEditor) {
-                detailStreamerEditor.setDirty(false);
+            public void workerFinished(SaveWorkerModel<?> saveModel) {
                 loadingIndicator.finishLoading();
+                saveModel.setDirty(false);
+                updateAddressBarAndStreamerPanel();
             }
         };
 
@@ -80,7 +81,7 @@ public class DetailView<T extends Streamable> extends TableStreamerView<T> {
     }
 
     @Override
-    public WorkerListener<? extends SaveWorkerModel<T>> getSaveListener() {
+    public WorkerListener<? extends SaveWorkerModel<?>> getSaveListener() {
         return saveListener;
     }
 
@@ -90,9 +91,10 @@ public class DetailView<T extends Streamable> extends TableStreamerView<T> {
     }
 
     @Override
-    protected Optional<String> getStreamerAddress() {
-        return super.getStreamerAddress()
-            .map(address -> streamerEditor != null && streamerEditor.isDirty() ? DIRTY_TEXT_MARKER + address : address);
+    protected boolean isDirty() {
+        return super.isDirty() || ofNullable(streamerEditor)
+            .map(StreamerEditor::isDirty)
+            .orElse(false);
     }
 
     public Rectangle getCurrentDetailRectangle(int detailIndex) {

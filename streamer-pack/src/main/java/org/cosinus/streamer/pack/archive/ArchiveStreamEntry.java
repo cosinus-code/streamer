@@ -53,8 +53,7 @@ public class ArchiveStreamEntry implements Comparable<ArchiveStreamEntry> {
         this.path = Paths.get(archiveEntry.getName());
     }
 
-    public ArchiveEntry getArchiveEntry()
-    {
+    public ArchiveEntry getArchiveEntry() {
         return archiveEntry;
     }
 

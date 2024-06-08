@@ -22,6 +22,8 @@ import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.api.expand.ExpandedStreamer;
+import org.cosinus.streamer.api.worker.SaveWorkerModel;
+import org.cosinus.streamer.pack.archive.save.ArchiveSaveModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.file.Path;
@@ -154,5 +156,19 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedS
     @Override
     public void reset() {
         archiveHolder.evict();
+    }
+
+    public boolean delete(ArchiveStreamEntry archiveEntry) {
+        return archiveHolder.evict(archiveEntry);
+    }
+
+    @Override
+    public boolean isDirty() {
+        return archiveHolder.isDirty();
+    }
+
+    @Override
+    public SaveWorkerModel<?> saveModel() {
+        return new ArchiveSaveModel(binaryStreamer, archiveHolder);
     }
 }

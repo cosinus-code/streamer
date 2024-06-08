@@ -16,15 +16,15 @@
 
 package org.cosinus.streamer.ui.dialog;
 
-import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
+import org.cosinus.streamer.api.worker.WorkerModel;
 import org.cosinus.streamer.ui.action.execute.WorkerListener;
-import org.cosinus.streamer.ui.action.execute.WorkerModel;
+import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.action.execute.ActionModel;
 import org.cosinus.swing.format.FormatHandler;
+import org.cosinus.swing.translate.Translator;
 import org.cosinus.swing.window.Dialog;
 import org.cosinus.swing.window.Frame;
-import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
@@ -34,15 +34,14 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import static java.awt.BorderLayout.SOUTH;
 import static javax.swing.SwingUtilities.invokeLater;
 import static org.cosinus.swing.border.Borders.emptyBorder;
-import static java.awt.BorderLayout.SOUTH;
 
 /**
  * Generic dialog for showing progress
  */
-public abstract class ProgressDialog<M extends WorkerModel> extends Dialog<Void> implements WorkerListener<M>
-{
+public abstract class ProgressDialog<M extends WorkerModel> extends Dialog<Void> implements WorkerListener<M> {
 
     @Autowired
     protected ActionExecutors actionExecutors;

@@ -16,17 +16,16 @@
 
 package org.cosinus.streamer.ui.action.execute;
 
+import org.cosinus.streamer.api.worker.WorkerModel;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.swing.action.execute.ActionExecutor;
 import org.cosinus.swing.action.execute.ActionModel;
 import org.cosinus.swing.worker.SwingWorker;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Optional.ofNullable;
-import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 /**
  * Implementation of {@link ActionExecutor} for deleting streamers based on {@link Worker}

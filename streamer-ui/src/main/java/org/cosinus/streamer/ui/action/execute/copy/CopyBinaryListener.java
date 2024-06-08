@@ -57,7 +57,7 @@ public class CopyBinaryListener implements PipelineListener<byte[]> {
     }
 
     @Override
-    public void afterPipelineClose() {
+    public void afterPipelineClose(boolean pipelineFailed) {
         copyWorker.updateModel(workerModel::finishStreamerProgress);
     }
 }

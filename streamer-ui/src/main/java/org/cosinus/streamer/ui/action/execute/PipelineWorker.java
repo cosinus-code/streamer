@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
 import org.cosinus.streamer.api.stream.pipeline.PipelineStrategy;
 import org.cosinus.streamer.api.stream.pipeline.StreamPipeline;
+import org.cosinus.streamer.api.worker.WorkerModel;
 import org.cosinus.streamer.ui.error.AbortActionException;
 import org.cosinus.streamer.ui.error.ActionException;
 
@@ -42,9 +43,7 @@ public abstract class PipelineWorker<M extends WorkerModel<T>, T>
         return this;
     }
 
-    protected StreamConsumer<T> streamConsumer() {
-        return null;
-    }
+    protected abstract StreamConsumer<T> streamConsumer();
 
     @Override
     public void accept(T item) {

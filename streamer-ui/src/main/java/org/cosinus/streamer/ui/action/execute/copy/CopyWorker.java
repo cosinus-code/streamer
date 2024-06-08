@@ -171,7 +171,7 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
         }
 
         @Override
-        public void afterPipelineClose() {
+        public void afterPipelineClose(boolean pipelineFailed) {
             updateModel(workerModel::finishTotalProgress);
         }
     }

@@ -17,9 +17,9 @@
 package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.worker.WorkerModel;
 import org.cosinus.streamer.ui.action.execute.DefaultWorkerListener;
 import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
-import org.cosinus.streamer.ui.action.execute.WorkerModel;
 import org.cosinus.streamer.ui.action.execute.delete.DeleteActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;

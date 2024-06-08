@@ -17,21 +17,18 @@ package org.cosinus.streamer.ui.view.text;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
-import org.cosinus.streamer.ui.action.execute.save.SaveWorkerModel;
+import org.cosinus.streamer.api.worker.AbstractSaveWorkerModel;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
-import static java.util.stream.IntStream.range;
+import static java.util.stream.LongStream.range;
 
-public class SaveTextModel implements SaveWorkerModel<String> {
+public class SaveTextWorkerModel extends AbstractSaveWorkerModel<String> {
 
     private final TextEditor textEditor;
 
-    private int savedItemsCount;
-
-    public SaveTextModel(TextEditor textEditor) {
+    public SaveTextWorkerModel(TextEditor textEditor) {
         this.textEditor = textEditor;
     }
 
@@ -39,6 +36,8 @@ public class SaveTextModel implements SaveWorkerModel<String> {
     public Stream<String> streamToSave() {
         this.savedItemsCount = 0;
         return range(0, totalItemsToSave())
+            .boxed()
+            .mapToInt(Long::intValue)
             .mapToObj(textEditor::getLineAtIndex);
     }
 
@@ -50,16 +49,12 @@ public class SaveTextModel implements SaveWorkerModel<String> {
     }
 
     @Override
-    public int totalItemsToSave() {
+    public long totalItemsToSave() {
         return textEditor.getLineCount();
     }
 
     @Override
-    public void update(List<String> items) {
-        savedItemsCount += items.size();
-    }
-
-    public int getSavedItemsCount() {
-        return savedItemsCount;
+    public void setDirty(boolean dirty) {
+        textEditor.setDirty(dirty);
     }
 }

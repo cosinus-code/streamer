@@ -16,9 +16,9 @@
 package org.cosinus.streamer.ui.view.text;
 
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.streamer.ui.action.execute.DefaultWorkerListener;
 import org.cosinus.streamer.ui.action.execute.WorkerListener;
-import org.cosinus.streamer.ui.action.execute.save.SaveWorkerModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
@@ -28,10 +28,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
-import java.util.Optional;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.util.Collections.singletonList;
+import static java.util.Optional.ofNullable;
 
 public class TextStreamerView extends StreamerView<String> {
     public static final String TEXT_EDITOR = "text-editor";
@@ -43,7 +43,7 @@ public class TextStreamerView extends StreamerView<String> {
 
     private final TextEditor textEditor;
 
-    private WorkerListener<SaveTextModel> saveListener;
+    private WorkerListener<SaveTextWorkerModel> saveListener;
 
     public TextStreamerView(PanelLocation location) {
         super(location);
@@ -59,17 +59,17 @@ public class TextStreamerView extends StreamerView<String> {
         textEditor.initComponent();
         this.saveListener = new DefaultWorkerListener<>() {
             @Override
-            public void workerStarted(SaveTextModel saveTextModel) {
+            public void workerStarted(SaveTextWorkerModel saveTextModel) {
                 loadingIndicator.startLoading(saveTextModel.totalItemsToSave());
             }
 
             @Override
-            public void workerUpdated(SaveTextModel saveTextModel) {
+            public void workerUpdated(SaveTextWorkerModel saveTextModel) {
                 loadingIndicator.updateLoading(saveTextModel.getSavedItemsCount(), saveTextModel.totalItemsToSave());
             }
 
             @Override
-            public void workerFinished(SaveTextModel workerModel) {
+            public void workerFinished(SaveTextWorkerModel workerModel) {
                 textEditor.setDirty(false);
                 loadingIndicator.finishLoading();
             }
@@ -83,26 +83,22 @@ public class TextStreamerView extends StreamerView<String> {
     }
 
     @Override
-    public String getCurrentItem()
-    {
+    public String getCurrentItem() {
         return textEditor.getSelectedText();
     }
 
     @Override
-    public List<String> getSelectedItems()
-    {
+    public List<String> getSelectedItems() {
         return singletonList(textEditor.getSelectedText());
     }
 
     @Override
-    public Streamer<String> getParentStreamer()
-    {
+    public Streamer<String> getParentStreamer() {
         return parentStreamer;
     }
 
     @Override
-    public String getCurrentItemIdentifier()
-    {
+    public String getCurrentItemIdentifier() {
         return null;
     }
 
@@ -112,8 +108,7 @@ public class TextStreamerView extends StreamerView<String> {
     }
 
     @Override
-    public LoadWorkerModel<String> getLoadWorkerModel()
-    {
+    public LoadWorkerModel<String> getLoadWorkerModel() {
         return textEditor;
     }
 
@@ -123,16 +118,14 @@ public class TextStreamerView extends StreamerView<String> {
     }
 
     @Override
-    public void workerStarted(LoadWorkerModel<String> loadWorkerModel)
-    {
+    public void workerStarted(LoadWorkerModel<String> loadWorkerModel) {
         super.workerStarted(loadWorkerModel);
         textEditor.setDirty(false);
         textEditor.setLoading(true);
     }
 
     @Override
-    public void workerFinished(LoadWorkerModel<String> loadWorkerModel)
-    {
+    public void workerFinished(LoadWorkerModel<String> loadWorkerModel) {
         super.workerFinished(loadWorkerModel);
         textEditor.setCaretPosition(0);
         textEditor.requestFocus();
@@ -141,21 +134,19 @@ public class TextStreamerView extends StreamerView<String> {
     }
 
     @Override
-    protected Optional<String> getStreamerAddress()
-    {
-        return super.getStreamerAddress()
-            .map(address -> textEditor.isDirty() ? DIRTY_TEXT_MARKER + address : address);
+    protected boolean isDirty() {
+        return super.isDirty() || ofNullable(textEditor)
+            .map(TextEditor::isDirty)
+            .orElse(false);
     }
 
     @Override
-    public SaveWorkerModel<String> getSaveModel()
-    {
+    public SaveWorkerModel<String> getSaveModel() {
         return textEditor.getSaveWorkerModel();
     }
 
     @Override
-    public WorkerListener<SaveTextModel> getSaveListener()
-    {
+    public WorkerListener<SaveTextWorkerModel> getSaveListener() {
         return saveListener;
     }
 

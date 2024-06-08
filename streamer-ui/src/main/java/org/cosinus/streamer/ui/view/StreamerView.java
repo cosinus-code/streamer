@@ -18,11 +18,11 @@ package org.cosinus.streamer.ui.view;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.meta.StreamerHandler;
+import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.streamer.ui.action.execute.WorkerListener;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
-import org.cosinus.streamer.ui.action.execute.save.SaveWorkerModel;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.form.Panel;
@@ -38,6 +38,7 @@ import java.util.UUID;
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.SOUTH;
 import static java.util.Optional.ofNullable;
+import static org.cosinus.streamer.ui.view.text.TextStreamerView.DIRTY_TEXT_MARKER;
 
 public abstract class StreamerView<T> extends Panel implements WorkerListener<LoadWorkerModel<T>> {
 
@@ -162,6 +163,7 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
     @Override
     public void workerFinished(LoadWorkerModel<T> loadWorkerModel) {
         loadingIndicator.finishLoading();
+        updateAddressBarAndStreamerPanel();
 
         streamerViewStorage.saveLastLoadedStreamer(this.getParentStreamer(), getCurrentLocation());
 
@@ -185,11 +187,16 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
         });
     }
 
+    protected boolean isDirty() {
+        return getParentStreamer().isDirty();
+    }
+
     protected Optional<String> getStreamerAddress() {
         return ofNullable(this.getParentStreamer())
             .map(Streamer::getUrlPath)
             .map(address -> address.split("://"))
-            .map(address -> address.length > 1 ? address[address.length - 1] : "");
+            .map(address -> address.length > 1 ? address[address.length - 1] : "")
+            .map(address -> isDirty() ? DIRTY_TEXT_MARKER + address : address);
     }
 
     public Optional<StreamerPanel> getPanel() {
@@ -221,7 +228,7 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
         return null;
     }
 
-    public WorkerListener<? extends SaveWorkerModel<T>> getSaveListener() {
+    public WorkerListener<? extends SaveWorkerModel<?>> getSaveListener() {
         return null;
     }
 

@@ -17,15 +17,14 @@
 package org.cosinus.streamer.ui.action.progress;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.action.execute.WorkerModel;
+import org.cosinus.streamer.api.worker.WorkerModel;
 
 import java.util.List;
 
 /**
  * Model for a progress over multiple streamers
  */
-public class StreamersProgressModel implements WorkerModel<StreamersProgressModel>
-{
+public class StreamersProgressModel implements WorkerModel<StreamersProgressModel> {
     private final SimpleProgressModel simpleProgressMode;
 
     private Streamer<?> currentStreamer;

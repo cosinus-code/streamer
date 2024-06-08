@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.ui.action.execute;
 
+import org.cosinus.streamer.api.worker.WorkerModel;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;

@@ -16,10 +16,12 @@
 
 package org.cosinus.streamer.pack.archive;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.cosinus.streamer.api.error.StreamerException;
 import org.cosinus.streamer.pack.archive.stream.ArchiveCache;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -41,6 +43,8 @@ public class ArchiveHolder implements ArchiveCache {
     private final Map<String, Set<ArchiveStreamEntry>> entriesGroupedByParentMap;
 
     private boolean loaded;
+
+    private boolean dirty;
 
     public ArchiveHolder() {
         injectContext(this);
@@ -87,7 +91,9 @@ public class ArchiveHolder implements ArchiveCache {
     }
 
     public Stream<ArchiveStreamEntry> listEntries(String path) {
-        return ofNullable(entriesGroupedByParentMap.get(key(path))).stream().flatMap(Collection::stream);
+        return ofNullable(entriesGroupedByParentMap.get(key(path)))
+            .stream()
+            .flatMap(Collection::stream);
     }
 
     public Stream<ArchiveStreamEntry> listEntries() {
@@ -107,6 +113,11 @@ public class ArchiveHolder implements ArchiveCache {
     }
 
     @Override
+    public boolean contains(ArchiveEntry archiveEntry) {
+        return entriesMap.containsKey(key(Paths.get(archiveEntry.getName())));
+    }
+
+    @Override
     public boolean isLoaded() {
         return loaded;
     }
@@ -123,5 +134,36 @@ public class ArchiveHolder implements ArchiveCache {
         entriesMap.clear();
         entriesGroupedByParentMap.clear();
         loaded = false;
+    }
+
+    @Override
+    public boolean evict(ArchiveStreamEntry archiveEntry) {
+        String entryPathToDelete = key(archiveEntry.getPath());
+        dirty = entriesMap.remove(entryPathToDelete) != null;
+
+        if (dirty) {
+            if (archiveEntry.isDirectory()) {
+                entriesMap.keySet()
+                    .removeIf(entryPath -> entryPath.startsWith(entryPathToDelete));
+                entriesGroupedByParentMap.keySet()
+                    .removeIf(parentEntryPath -> parentEntryPath.startsWith(entryPathToDelete));
+            }
+
+            archiveEntry.getParentPath()
+                .map(this::key)
+                .map(entriesGroupedByParentMap::get)
+                .ifPresent(childEntries -> childEntries
+                    .removeIf(childEntry -> key(childEntry.getPath()).equals(entryPathToDelete)));
+        }
+
+        return dirty;
+    }
+
+    public boolean isDirty() {
+        return dirty;
+    }
+
+    public void setDirty(boolean dirty) {
+        this.dirty = dirty;
     }
 }

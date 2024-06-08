@@ -16,14 +16,17 @@
 package org.cosinus.streamer.ui.action.execute.save;
 
 import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
+import org.cosinus.streamer.api.stream.pipeline.PipelineListener;
 import org.cosinus.streamer.api.stream.pipeline.PipelineStrategy;
+import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.streamer.ui.action.execute.PipelineWorker;
 
 import java.util.stream.Stream;
 
-public class SaveWorker<T> extends PipelineWorker<SaveWorkerModel<T>, T>
-{
-    public SaveWorker(final SaveActionModel actionModel, final SaveWorkerModel<T> workerModel) {
+public class SaveWorker<T> extends PipelineWorker<SaveWorkerModel<T>, T> {
+    private StreamConsumer<T> streamConsumer;
+
+    public SaveWorker(final SaveActionModel<?> actionModel, final SaveWorkerModel<T> workerModel) {
         super(actionModel.getActionId(), workerModel);
     }
 
@@ -33,8 +36,22 @@ public class SaveWorker<T> extends PipelineWorker<SaveWorkerModel<T>, T>
     }
 
     @Override
-    protected StreamConsumer<T> streamConsumer()
-    {
-        return workerModel.streamConsumer();
+    protected StreamConsumer<T> streamConsumer() {
+        if (streamConsumer == null) {
+            streamConsumer = workerModel.streamConsumer();
+        }
+        return streamConsumer;
+    }
+
+    @Override
+    public PipelineListener<T> getPipelineListener() {
+        return new PipelineListener<T>() {
+            @Override
+            public void afterPipelineClose(boolean pipelineFailed) {
+                if (streamConsumer != null) {
+                    streamConsumer.afterClose(pipelineFailed);
+                }
+            }
+        };
     }
 }
