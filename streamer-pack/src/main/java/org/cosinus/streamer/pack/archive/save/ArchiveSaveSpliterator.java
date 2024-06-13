@@ -28,6 +28,7 @@ import java.util.Spliterators.AbstractSpliterator;
 import java.util.function.Consumer;
 
 import static java.lang.Long.MAX_VALUE;
+import static java.util.Arrays.copyOf;
 
 public class ArchiveSaveSpliterator extends AbstractSpliterator<OutputWriter<ArchiveOutputStream>> {
 
@@ -40,6 +41,8 @@ public class ArchiveSaveSpliterator extends AbstractSpliterator<OutputWriter<Arc
     private ArchiveEntry archiveEntry;
 
     private InputStream archiveEntryInputStream;
+
+    private byte[] readBytes;
 
     public ArchiveSaveSpliterator(final EntryInputStream archiveInputStream,
                                   final ArchiveCache archiveCache,
@@ -58,12 +61,12 @@ public class ArchiveSaveSpliterator extends AbstractSpliterator<OutputWriter<Arc
                 if (archiveEntry == null) {
                     return false;
                 }
-                action.accept(startArchiveEntry());
-            } else if (archiveEntry.isDirectory() || readNext() <= 0) {
-                action.accept(closeArchiveEntry());
-                resetArchiveEntry();
+                action.accept(new PutArchiveEntry(archiveEntry));
+            } else if (!archiveEntry.isDirectory() && readNext()) {
+                action.accept(new WriteArchiveEntry(getReadBytes()));
             } else {
-                action.accept(writeArchiveEntry(buffer));
+                action.accept(new CloseArchiveEntry());
+                resetArchiveEntry();
             }
 
             return true;
@@ -73,35 +76,29 @@ public class ArchiveSaveSpliterator extends AbstractSpliterator<OutputWriter<Arc
     }
 
     private ArchiveEntry nextArchiveEntry() throws IOException {
-        ArchiveEntry currentArchiveEntry;
+        ArchiveEntry nextEntry;
         do {
-            currentArchiveEntry = archiveInputStream.getNextEntry();
-        } while (currentArchiveEntry != null && !archiveCache.contains(currentArchiveEntry));
+            nextEntry = archiveInputStream.getNextEntry();
+        } while (nextEntry != null && !archiveCache.contains(nextEntry));
 
-        return currentArchiveEntry;
+        return nextEntry;
     }
 
-    private int readNext() throws IOException {
+    private boolean readNext() throws IOException {
         if (archiveEntryInputStream == null) {
             archiveEntryInputStream = archiveInputStream.getInputStream(archiveEntry);
         }
-        return archiveEntryInputStream.read(buffer);
+        int readSize = archiveEntryInputStream.read(buffer);
+        readBytes = readSize > 0 ? copyOf(buffer, readSize) : new byte[0];
+        return readSize > 0;
+    }
+
+    private byte[] getReadBytes() {
+        return readBytes;
     }
 
     private void resetArchiveEntry() {
         archiveEntry = null;
         archiveEntryInputStream = null;
-    }
-
-    private OutputWriter<ArchiveOutputStream> startArchiveEntry() {
-        return outputStream -> outputStream.putArchiveEntry(archiveEntry);
-    }
-
-    private OutputWriter<ArchiveOutputStream> writeArchiveEntry(byte[] bytes) {
-        return outputStream -> outputStream.write(bytes);
-    }
-
-    private OutputWriter<ArchiveOutputStream> closeArchiveEntry() {
-        return ArchiveOutputStream::closeArchiveEntry;
     }
 }

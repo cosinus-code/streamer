@@ -32,7 +32,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptySet;
 import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedStreamer<A> implements ParentStreamer<A> {
@@ -65,16 +67,8 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedS
         return flatStream(streamerFilter, null);
     }
 
-    protected Stream<A> flatStream(StreamerFilter streamerFilter, Path path) {
-        Set<String> basePaths = ofNullable(path)
-            .map(archiveHolder::listEntries)
-            .orElseGet(archiveHolder::rootEntries)
-            .map(this::createArchiveStreamer)
-            .filter(streamerFilter)
-            .map(Streamer::getPath)
-            .map(Path::toString)
-            .collect(Collectors.toSet());
-
+    protected Stream<A> flatStream(StreamerFilter streamerFilter, Path parentPath) {
+        Set<String> basePaths = getBasePaths(streamerFilter, parentPath);
         return archiveInputStreamFactory.stream(binaryStreamer)
             .filter(entry -> basePaths
                 .stream()
@@ -169,6 +163,36 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedS
 
     @Override
     public SaveWorkerModel<?> saveModel() {
-        return new ArchiveSaveModel(binaryStreamer, archiveHolder);
+        return new ArchiveSaveModel(this, archiveHolder);
+    }
+
+    @Override
+    public long computeSize(StreamerFilter streamerFilter) {
+        return computeSize(streamerFilter, null);
+    }
+
+    public long computeSize(final StreamerFilter streamerFilter, Path parentPath) {
+        Set<String> basePaths = getBasePaths(streamerFilter, parentPath);
+        return archiveHolder.listEntries()
+            .filter(not(ArchiveStreamEntry::isDirectory))
+            .filter(entry -> basePaths.isEmpty() || basePaths
+                .stream()
+                .anyMatch(path -> entry.getName().startsWith(path)))
+            .mapToLong(ArchiveStreamEntry::getSize)
+            .sum();
+    }
+
+    private Set<String> getBasePaths(final StreamerFilter streamerFilter, Path parentPath) {
+        if (streamerFilter == null) {
+            return emptySet();
+        }
+        return ofNullable(parentPath)
+            .map(archiveHolder::listEntries)
+            .orElseGet(archiveHolder::rootEntries)
+            .map(this::createArchiveStreamer)
+            .filter(streamerFilter)
+            .map(Streamer::getPath)
+            .map(Path::toString)
+            .collect(Collectors.toSet());
     }
 }

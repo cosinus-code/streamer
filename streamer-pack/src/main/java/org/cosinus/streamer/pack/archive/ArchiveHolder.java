@@ -56,9 +56,14 @@ public class ArchiveHolder implements ArchiveCache {
     public void add(ArchiveStreamEntry archiveEntry) {
         entriesMap.put(key(archiveEntry.toPath()), archiveEntry);
 
-        String parentPath = archiveEntry.getParentPath().map(this::key).orElse(ARCHIVE_ROOT);
+        String parentPath = archiveEntry
+            .getParentPath()
+            .map(this::key)
+            .orElse(ARCHIVE_ROOT);
 
-        entriesGroupedByParentMap.computeIfAbsent(parentPath, key -> new TreeSet<>()).add(archiveEntry);
+        entriesGroupedByParentMap
+            .computeIfAbsent(parentPath, key -> new TreeSet<>())
+            .add(archiveEntry);
 
         archiveEntry.getParentPath().ifPresent(this::checkPath);
     }
@@ -129,7 +134,7 @@ public class ArchiveHolder implements ArchiveCache {
     @Override
     public void evict() {
         if (!loaded) {
-            throw new StreamerException("Cannot reset still loading archive stremer");
+            throw new StreamerException("Cannot reset still loading archive streamer");
         }
         entriesMap.clear();
         entriesGroupedByParentMap.clear();

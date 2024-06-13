@@ -13,14 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cosinus.streamer.api.stream.consumer;
+package org.cosinus.streamer.pack.archive.save;
+
+import org.apache.commons.compress.archivers.ArchiveOutputStream;
+import org.cosinus.streamer.api.stream.consumer.OutputWriter;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
-public interface OutputWriter<O extends OutputStream> {
+/**
+ * Close archive entry
+ */
+public class CloseArchiveEntry implements OutputWriter<ArchiveOutputStream> {
+    @Override
+    public void write(ArchiveOutputStream output) throws IOException {
+        output.closeArchiveEntry();
+    }
 
-    void write(O output) throws IOException;
-
-    long size();
+    @Override
+    public long size() {
+        return 0;
+    }
 }

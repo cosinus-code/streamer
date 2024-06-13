@@ -50,8 +50,10 @@ public class LoadingProgress extends ProgressBar {
     public void updateLoading(long loadedSize, long totalSizeToLoad) {
         if (totalSizeToLoad > 0 && loadedSize > 0) {
             int progress = (int) ((loadedSize * 100) / totalSizeToLoad);
-            setIndeterminate(false);
-            setValue(progress);
+            if (progress > 0) {
+                setIndeterminate(false);
+                setValue(progress);
+            }
         }
     }
 

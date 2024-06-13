@@ -57,8 +57,8 @@ public class FindActionModel extends ActionModel {
         return streamerConsumer;
     }
 
-    public static FindActionModel findLastStreamerAndConsume(final PanelLocation location,
-                                                             final Consumer<Streamer<?>> consumer) {
+    public static FindActionModel findLastStreamerAndDo(final PanelLocation location,
+                                                        final Consumer<Streamer<?>> consumer) {
         return new FindActionModel(location, true, consumer);
     }
 }

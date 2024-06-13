@@ -28,7 +28,7 @@ import java.awt.*;
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.NORTH;
 import static java.util.Arrays.stream;
-import static org.cosinus.streamer.ui.action.execute.find.FindActionModel.findLastStreamerAndConsume;
+import static org.cosinus.streamer.ui.action.execute.find.FindActionModel.findLastStreamerAndDo;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.ADDRESS_BAR;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_LEFT_VIEW;
 import static org.cosinus.streamer.ui.view.PanelLocation.LEFT;
@@ -96,7 +96,7 @@ public class StreamerFrame extends SwingApplicationFrame {
 //                location, null, null)));
         stream(PanelLocation.values())
             .forEach(location -> actionExecutors
-                .execute(findLastStreamerAndConsume(location, streamerToLoad -> actionExecutors
+                .execute(findLastStreamerAndDo(location, streamerToLoad -> actionExecutors
                     .execute(new LoadActionModel(location, streamerToLoad, null)))));
     }
 

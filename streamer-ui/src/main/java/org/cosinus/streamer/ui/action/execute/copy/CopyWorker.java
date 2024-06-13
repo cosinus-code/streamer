@@ -98,13 +98,7 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
     @Override
     public void preparePipelineOpen(CopyStrategy pipelineStrategy,
                                     PipelineListener<S> pipelineListener) {
-        try (Stream<? extends Streamer<?>> flatStreamers = source.flatStream(getStreamerFilter())) {
-            this.totalSize = flatStreamers
-                .filter(not(Streamer::isParent))
-                .mapToLong(Streamer::getSize)
-                .sum();
-        }
-
+        this.totalSize = source.computeSize(getStreamerFilter());
         long freeSpace = destination.getFreeSpace();
         if (totalSize > freeSpace && !copyStrategy.shouldContinueWhenNotEnoughFreeSpace()) {
             throw new AbortPipelineConsumeException("Not enough free space on destination: " +

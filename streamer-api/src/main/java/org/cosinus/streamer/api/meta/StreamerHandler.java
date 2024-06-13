@@ -16,6 +16,8 @@
 
 package org.cosinus.streamer.api.meta;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
@@ -25,10 +27,13 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 
 @Component
 public class StreamerHandler {
+
+    private static final Logger LOG = LogManager.getLogger(StreamerHandler.class);
 
     public static final String PACKER_SEPARATOR = "#";
 
@@ -71,20 +76,25 @@ public class StreamerHandler {
     }
 
     public Optional<Streamer> findStreamerForUrlPath(String urlPath) {
-        String[] paths = urlPath.split(PACKER_SEPARATOR);
+        try {
+            String[] paths = urlPath.split(PACKER_SEPARATOR);
 
-        if (paths.length < 2) {
-            return metaStreamer.findByUrlPath(urlPath)
-                .or(() -> findStreamer(urlPath));
+            if (paths.length < 2) {
+                return metaStreamer.findByUrlPath(urlPath)
+                    .or(() -> findStreamer(urlPath));
+            }
+
+            String mainUrlPath = paths[0];
+            String pathInsideExpandedStreamer = paths[1];
+            return metaStreamer.findByUrlPath(mainUrlPath)
+                .or(() -> findStreamer(mainUrlPath))
+                .filter(streamer -> BinaryStreamer.class.isAssignableFrom(streamer.getClass()))
+                .map(BinaryStreamer.class::cast)
+                .flatMap(binaryStreamer -> findExpandedStreamer(binaryStreamer, pathInsideExpandedStreamer));
+        } catch (Exception ex) {
+            LOG.error("Failed to find streamer for url {}", urlPath, ex);
+            return empty();
         }
-
-        String mainUrlPath = paths[0];
-        String pathInsideExpandedStreamer = paths[1];
-        return metaStreamer.findByUrlPath(mainUrlPath)
-            .or(() -> findStreamer(mainUrlPath))
-            .filter(streamer -> BinaryStreamer.class.isAssignableFrom(streamer.getClass()))
-            .map(BinaryStreamer.class::cast)
-            .flatMap(binaryStreamer -> findExpandedStreamer(binaryStreamer, pathInsideExpandedStreamer));
     }
 
     private Optional<Streamer> findStreamer(String urlPath) {

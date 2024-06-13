@@ -16,46 +16,45 @@
 package org.cosinus.streamer.pack.archive.save;
 
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
-import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.error.StreamerException;
 import org.cosinus.streamer.api.stream.consumer.DefaultStreamConsumer;
 import org.cosinus.streamer.api.stream.consumer.OutputWriter;
 import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
 import org.cosinus.streamer.api.stream.consumer.TemporaryFileOutputStream;
 import org.cosinus.streamer.api.worker.AbstractSaveWorkerModel;
-import org.cosinus.streamer.pack.archive.ArchiveHolder;
-import org.cosinus.streamer.pack.archive.ArchiveInputStreamFactory;
-import org.cosinus.streamer.pack.archive.EntryInputStream;
+import org.cosinus.streamer.pack.archive.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.util.List;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static org.cosinus.streamer.api.stream.consumer.SuffixTemporaryFileStrategy.PART_TEMPORARY_FILE;
 
-public class ArchiveSaveModel extends AbstractSaveWorkerModel<OutputWriter<ArchiveOutputStream>> {
+public class ArchiveSaveModel<A extends ArchiveStreamer<?>> extends AbstractSaveWorkerModel<OutputWriter<ArchiveOutputStream>> {
 
     private static final int DEFAULT_PIPELINE_RATE = 8192;
 
     @Autowired
     protected ArchiveInputStreamFactory archiveInputStreamFactory;
 
-    private final BinaryStreamer binaryStreamer;
+    private final ArchivePackStreamer<A> archivePackStreamer;
 
     private final ArchiveHolder archiveHolder;
 
-    public ArchiveSaveModel(final BinaryStreamer binaryStreamer, final ArchiveHolder archiveHolder) {
-        this.binaryStreamer = binaryStreamer;
+    public ArchiveSaveModel(final ArchivePackStreamer<A> archivePackStreamer, final ArchiveHolder archiveHolder) {
+        this.archivePackStreamer = archivePackStreamer;
         this.archiveHolder = archiveHolder;
     }
 
     @Override
     public Stream<OutputWriter<ArchiveOutputStream>> streamToSave() {
-        EntryInputStream archiveInputStream = archiveInputStreamFactory.createArchiveInputStream(binaryStreamer);
+        EntryInputStream archiveInputStream = archiveInputStreamFactory
+            .createArchiveInputStream(archivePackStreamer.binaryStreamer());
         return StreamSupport
             .stream(new ArchiveSaveSpliterator(archiveInputStream, archiveHolder, DEFAULT_PIPELINE_RATE), false)
             .onClose(() -> {
@@ -70,15 +69,15 @@ public class ArchiveSaveModel extends AbstractSaveWorkerModel<OutputWriter<Archi
     @Override
     public StreamConsumer<OutputWriter<ArchiveOutputStream>> streamConsumer() {
         return archiveInputStreamFactory
-            .detectArchiverName(binaryStreamer.getName(), binaryStreamer.inputStream())
+            .detectArchiverName(archivePackStreamer.getName(), archivePackStreamer.binaryStreamer().inputStream())
             .map(this::createStreamConsumer)
             .orElseThrow(() -> new StreamerException(
-                "Cannot open archive output stream for: " + binaryStreamer.getPath()));
+                "Cannot open archive output stream for: " + archivePackStreamer.getPath()));
     }
 
     private StreamConsumer<OutputWriter<ArchiveOutputStream>> createStreamConsumer(String archiverType) {
         try {
-            File binaryFile = binaryStreamer.getPath().toFile();
+            File binaryFile = archivePackStreamer.getPath().toFile();
             final TemporaryFileOutputStream temporaryOutputStream =
                 new TemporaryFileOutputStream(binaryFile, PART_TEMPORARY_FILE);
             ArchiveOutputStream archiveOutputStream = archiveInputStreamFactory
@@ -97,11 +96,19 @@ public class ArchiveSaveModel extends AbstractSaveWorkerModel<OutputWriter<Archi
 
     @Override
     public long totalItemsToSave() {
-        return -1;
+        return archivePackStreamer.computeSize(null);
     }
 
     @Override
     public void setDirty(boolean dirty) {
         archiveHolder.setDirty(dirty);
+    }
+
+    @Override
+    public void update(List<OutputWriter<ArchiveOutputStream>> items) {
+        savedItemsCount += items
+            .stream()
+            .mapToLong(OutputWriter::size)
+            .sum();
     }
 }

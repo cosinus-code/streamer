@@ -93,6 +93,12 @@ public class ArchiveStreamEntry implements Comparable<ArchiveStreamEntry> {
             null;
     }
 
+    public boolean isOSSpecific() {
+        return archiveEntry.getName().startsWith("__MACOSX") ||
+            archiveEntry.getName().startsWith("__MACOSX64") ||
+            archiveEntry.getName().equals(".DS_Store");
+    }
+
     @Override
     public int compareTo(@NotNull ArchiveStreamEntry entry) {
         return getName().compareTo(entry.getName());
@@ -103,11 +109,10 @@ public class ArchiveStreamEntry implements Comparable<ArchiveStreamEntry> {
         if (this == other) {
             return true;
         }
-        if (!(other instanceof ArchiveStreamEntry)) {
+        if (!(other instanceof ArchiveStreamEntry entry)) {
             return false;
         }
 
-        ArchiveStreamEntry entry = (ArchiveStreamEntry) other;
         return getName().equals(entry.getName());
     }
 

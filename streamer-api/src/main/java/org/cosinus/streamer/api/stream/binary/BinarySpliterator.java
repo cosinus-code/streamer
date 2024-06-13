@@ -19,11 +19,11 @@ package org.cosinus.streamer.api.stream.binary;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.util.Arrays;
-import java.util.function.Consumer;
 import java.util.Spliterators.AbstractSpliterator;
+import java.util.function.Consumer;
 
 import static java.lang.Long.MAX_VALUE;
+import static java.util.Arrays.copyOf;
 
 /**
  * Generic {@link java.util.Spliterator} for streaming input streams as chunks of binary data.
@@ -54,8 +54,8 @@ public class BinarySpliterator extends AbstractSpliterator<byte[]> {
         }
 
         action.accept(readSize == buffer.length ?
-                          buffer :
-                          Arrays.copyOf(buffer, readSize));
+            buffer :
+            copyOf(buffer, readSize));
         return true;
     }
 
