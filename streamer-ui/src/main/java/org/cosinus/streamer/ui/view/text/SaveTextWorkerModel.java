@@ -57,4 +57,9 @@ public class SaveTextWorkerModel extends AbstractSaveWorkerModel<String> {
     public void setDirty(boolean dirty) {
         textEditor.setDirty(dirty);
     }
+
+    @Override
+    public boolean isDirty() {
+        return textEditor.isDirty();
+    }
 }

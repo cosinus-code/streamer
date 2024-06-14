@@ -105,6 +105,11 @@ public class ArchiveSaveModel<A extends ArchiveStreamer<?>> extends AbstractSave
     }
 
     @Override
+    public boolean isDirty() {
+        return archiveHolder.isDirty();
+    }
+
+    @Override
     public void update(List<OutputWriter<ArchiveOutputStream>> items) {
         savedItemsCount += items
             .stream()

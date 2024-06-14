@@ -47,7 +47,7 @@ public class SaveWorkerExecutor implements ActionExecutor<SaveActionModel<?>> {
             saveWorkerModel = streamerView.getSaveModel();
         }
 
-        if (saveWorkerModel != null) {
+        if (saveWorkerModel != null && saveWorkerModel.isDirty()) {
             SaveWorker<?> saveWorker = new SaveWorker<>(actionModel, saveWorkerModel);
             ofNullable(streamerView.getSaveListener())
                 .ifPresent(listener -> workerListenerHandler.register(saveWorker.getId(), listener));

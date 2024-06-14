@@ -30,4 +30,7 @@ public interface SaveWorkerModel<T> extends WorkerModel<T> {
     long getSavedItemsCount();
 
     void setDirty(boolean dirty);
+
+    //TODO: should be taken from org.cosinus.streamer.ui.view.StreamerEditor
+    boolean isDirty();
 }
