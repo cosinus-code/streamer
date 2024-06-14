@@ -120,10 +120,14 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
             errorHandler.handleError(applicationFrame, error.getLocalizedMessage());
         }
 
+        onWorkerDoneBeforeFinishing();
         workerListenerHandler.workerFinished(getId(), workerModel);
         actionExecutors.getActionExecutor(CopyActionModel.class)
             .ifPresent(executor -> executor.remove(getId()));
 
+    }
+
+    protected void onWorkerDoneBeforeFinishing() {
     }
 
     public void checkWorkerStatus() {

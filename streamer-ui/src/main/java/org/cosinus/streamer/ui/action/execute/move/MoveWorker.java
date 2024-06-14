@@ -7,6 +7,8 @@ import org.cosinus.streamer.ui.action.execute.copy.CopyWorker;
 
 import java.util.List;
 
+import static org.cosinus.streamer.api.stream.FlatStreamingStrategy.LEVEL_BOTTOM_UP;
+
 public class MoveWorker<S extends Streamer<S>, T extends Streamer<T>> extends CopyWorker<S, T> {
 
     private List<S> streamersToCopy;
@@ -30,5 +32,21 @@ public class MoveWorker<S extends Streamer<S>, T extends Streamer<T>> extends Co
         if (!this.streamersToCopy.isEmpty()) {
             super.doWork();
         }
+    }
+
+    @Override
+    protected void copyStreamer(S streamerToCopy, T streamerToCopyTo) {
+        super.copyStreamer(streamerToCopy, streamerToCopyTo);
+        if (!streamerToCopy.isParent()) {
+            streamerToCopy.delete();
+        }
+    }
+
+    @Override
+    protected void onWorkerDoneBeforeFinishing() {
+        super.onWorkerDoneBeforeFinishing();
+        source.flatStream(LEVEL_BOTTOM_UP, getStreamerFilter())
+            .filter(Streamer::exists)
+            .forEach(Streamer::delete);
     }
 }

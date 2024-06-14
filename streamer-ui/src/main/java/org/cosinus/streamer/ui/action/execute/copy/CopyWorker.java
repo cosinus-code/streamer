@@ -37,7 +37,6 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
-import static java.util.function.Predicate.not;
 
 /**
  * {@link Worker} for copying streamers from a source parent streamer to target parent streamer
@@ -67,7 +66,7 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
         this.destination = copyModel.getDestination();
         this.streamerFilter = copyModel.getSourceFilter();
         this.copyStrategy = new CopyStrategy();
-        this.overallCopyProgress = new OverallCopyListener();
+        this.overallCopyProgress = createOverallCopyListener();
     }
 
     public StreamerFilter getStreamerFilter() {
@@ -150,7 +149,11 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
             streamerPath.getNameCount());
     }
 
-    private class OverallCopyListener implements PipelineListener<S> {
+    protected OverallCopyListener createOverallCopyListener() {
+        return new OverallCopyListener();
+    }
+
+    protected class OverallCopyListener implements PipelineListener<S> {
         @Override
         public void beforePipelineOpen() {
             updateModel(() -> workerModel.startTotalProgress(totalSize));
