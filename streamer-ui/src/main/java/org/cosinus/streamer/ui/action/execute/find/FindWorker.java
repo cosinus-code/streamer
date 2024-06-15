@@ -44,7 +44,7 @@ public class FindWorker extends Worker<FindWorkerModel, Streamer<?>> {
     private final Streamer streamerToFind;
 
     protected FindWorker(final FindActionModel findActionModel, final Streamer<?> streamerToFind) {
-        super(findActionModel.getActionId(), new FindWorkerModel());
+        super(findActionModel, new FindWorkerModel());
         this.findActionModel = findActionModel;
         this.streamerToFind = streamerToFind;
     }

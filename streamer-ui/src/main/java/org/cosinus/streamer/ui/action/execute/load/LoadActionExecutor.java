@@ -100,7 +100,7 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
     @Override
     protected LoadWorker<T> createSwingWorker(LoadActionModel<T> actionModel) {
         return new LoadWorker<>(
-            actionModel.getActionId(),
+            actionModel,
             actionModel.getStreamerToLoad(),
             actionModel.getStreamerViewToLoadTo(),
             actionModel.getItemToSelectAfterLoad());

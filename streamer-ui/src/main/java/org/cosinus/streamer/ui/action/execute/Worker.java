@@ -23,6 +23,7 @@ import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.error.AbortActionException;
 import org.cosinus.streamer.ui.error.ActionException;
 import org.cosinus.swing.action.execute.ActionExecutors;
+import org.cosinus.swing.action.execute.ActionModel;
 import org.cosinus.swing.boot.SwingApplicationFrame;
 import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.worker.SwingWorker;
@@ -54,14 +55,17 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
 
     private final String id;
 
+    private final ActionModel actionModel;
+
     protected final M workerModel;
 
     private ActionException error;
 
     private boolean paused;
 
-    protected Worker(String id, M workerModel) {
-        this.id = id;
+    protected Worker(ActionModel actionModel, M workerModel) {
+        this.id = actionModel.getActionId();
+        this.actionModel = actionModel;
         this.workerModel = workerModel;
     }
 
@@ -122,7 +126,7 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
 
         onWorkerDoneBeforeFinishing();
         workerListenerHandler.workerFinished(getId(), workerModel);
-        actionExecutors.getActionExecutor(CopyActionModel.class)
+        actionExecutors.getActionExecutor(actionModel.getClass())
             .ifPresent(executor -> executor.remove(getId()));
 
     }

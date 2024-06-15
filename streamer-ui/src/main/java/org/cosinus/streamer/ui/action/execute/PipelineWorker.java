@@ -8,6 +8,7 @@ import org.cosinus.streamer.api.stream.pipeline.StreamPipeline;
 import org.cosinus.streamer.api.worker.WorkerModel;
 import org.cosinus.streamer.ui.error.AbortActionException;
 import org.cosinus.streamer.ui.error.ActionException;
+import org.cosinus.swing.action.execute.ActionModel;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -22,8 +23,8 @@ public abstract class PipelineWorker<M extends WorkerModel<T>, T>
 
     private final StreamConsumer<T> streamConsumer;
 
-    protected PipelineWorker(String id, M workerModel) {
-        super(id, workerModel);
+    protected PipelineWorker(ActionModel actionModel, M workerModel) {
+        super(actionModel, workerModel);
         this.streamConsumer = streamConsumer();
     }
 

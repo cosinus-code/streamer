@@ -27,7 +27,7 @@ public class SaveWorker<T> extends PipelineWorker<SaveWorkerModel<T>, T> {
     private StreamConsumer<T> streamConsumer;
 
     public SaveWorker(final SaveActionModel<?> actionModel, final SaveWorkerModel<T> workerModel) {
-        super(actionModel.getActionId(), workerModel);
+        super(actionModel, workerModel);
     }
 
     @Override

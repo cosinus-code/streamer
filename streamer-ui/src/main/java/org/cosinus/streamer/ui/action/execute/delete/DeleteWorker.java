@@ -56,7 +56,7 @@ public class DeleteWorker extends SimpleWorker<StreamersProgressModel>
     private long streamersToDeleteCount;
 
     public DeleteWorker(DeleteActionModel deleteModel) {
-        super(deleteModel.getActionId(), new StreamersProgressModel());
+        super(deleteModel, new StreamersProgressModel());
         this.deleteModel = deleteModel;
         this.deleteListener = new DeleteListener();
     }

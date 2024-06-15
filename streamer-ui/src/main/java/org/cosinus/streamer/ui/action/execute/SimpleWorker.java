@@ -16,12 +16,13 @@
 package org.cosinus.streamer.ui.action.execute;
 
 import org.cosinus.streamer.api.worker.WorkerModel;
+import org.cosinus.swing.action.execute.ActionModel;
 
 import java.util.List;
 
 public abstract class SimpleWorker<M extends WorkerModel<M>> extends Worker<M, M> {
-    protected SimpleWorker(String actionId, M workerModel) {
-        super(actionId, workerModel);
+    protected SimpleWorker(ActionModel actionModel, M workerModel) {
+        super(actionModel, workerModel);
     }
 
     public void updateModel(Runnable runnable) {

@@ -61,7 +61,7 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
     private long totalSize;
 
     public CopyWorker(CopyActionModel<S, T> copyModel) {
-        super(copyModel.getActionId(), new CopyProgressModel());
+        super(copyModel, new CopyProgressModel());
         this.source = copyModel.getSource();
         this.destination = copyModel.getDestination();
         this.streamerFilter = copyModel.getSourceFilter();
