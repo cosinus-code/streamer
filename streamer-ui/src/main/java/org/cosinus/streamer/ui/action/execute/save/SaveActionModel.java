@@ -15,29 +15,18 @@
  */
 package org.cosinus.streamer.ui.action.execute.save;
 
-import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.swing.action.execute.ActionModel;
-
-import java.util.UUID;
 
 import static org.cosinus.streamer.ui.action.SaveAction.SAVE_ACTION_ID;
 
 public class SaveActionModel<T> extends ActionModel {
 
-    private final Streamer<T> streamerToSave;
-
     private final StreamerView<T> streamerView;
 
-    public SaveActionModel(final Streamer<T> streamerToSave,
-                           final StreamerView<T> streamerView) {
-        super(UUID.randomUUID().toString(), SAVE_ACTION_ID);
-        this.streamerToSave = streamerToSave;
+    public SaveActionModel(final StreamerView<T> streamerView) {
+        super(streamerView.getParentStreamer().getId(), SAVE_ACTION_ID);
         this.streamerView = streamerView;
-    }
-
-    public Streamer<T> getStreamerToSave() {
-        return streamerToSave;
     }
 
     public StreamerView<T> getStreamerView() {

@@ -17,51 +17,52 @@ package org.cosinus.streamer.ui.action.execute.save;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
+import org.cosinus.streamer.ui.action.execute.Worker;
+import org.cosinus.streamer.ui.action.execute.WorkerExecutor;
+import org.cosinus.streamer.ui.action.execute.WorkerListener;
 import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
+import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.streamer.ui.view.StreamerView;
-import org.cosinus.swing.action.execute.ActionExecutor;
 import org.springframework.stereotype.Component;
 
 import static java.util.Optional.ofNullable;
 
 @Component
-public class SaveWorkerExecutor implements ActionExecutor<SaveActionModel<?>> {
+public class SaveWorkerExecutor<T> extends WorkerExecutor<SaveActionModel, SaveWorkerModel<T>, T> {
 
-    private final WorkerListenerHandler workerListenerHandler;
-
-    public SaveWorkerExecutor(final WorkerListenerHandler workerListenerHandler) {
-        this.workerListenerHandler = workerListenerHandler;
+    public SaveWorkerExecutor(
+        final ProgressFormHandler progressFormHandler,
+        final WorkerListenerHandler workerListenerHandler) {
+        super(progressFormHandler, workerListenerHandler);
     }
 
     @Override
-    public void execute(SaveActionModel<?> actionModel) {
-        executeSave(actionModel);
+    public void execute(SaveActionModel actionModel) {
+        if (isWorkerRunning(actionModel.getActionId())) {
+            return;
+        }
+        super.execute(actionModel);
     }
 
-    private <T> void executeSave(SaveActionModel<T> actionModel) {
-        Streamer<T> streamerToSave = actionModel.getStreamerToSave();
+    @Override
+    protected WorkerListener<SaveWorkerModel<T>> createWorkerListener(SaveActionModel actionModel) {
+        return actionModel.getStreamerView().getSaveListener();
+    }
+
+    @Override
+    protected Worker<SaveWorkerModel<T>, T> createSwingWorker(SaveActionModel actionModel) {
+        Streamer<T> streamerToSave = actionModel.getStreamerView().getParentStreamer();
         StreamerView<T> streamerView = actionModel.getStreamerView();
 
-        SaveWorkerModel<?> saveWorkerModel = streamerToSave.saveModel();
+        SaveWorkerModel<T> saveWorkerModel = (SaveWorkerModel<T>) streamerToSave.saveModel();
         if (saveWorkerModel == null && !streamerToSave.isParent()) {
             saveWorkerModel = streamerView.getSaveModel();
         }
 
-        if (saveWorkerModel != null && saveWorkerModel.isDirty()) {
-            SaveWorker<?> saveWorker = new SaveWorker<>(actionModel, saveWorkerModel);
-            ofNullable(streamerView.getSaveListener())
-                .ifPresent(listener -> workerListenerHandler.register(saveWorker.getId(), listener));
-            saveWorker.start();
-        }
-    }
-
-    @Override
-    public void cancel(String executionId) {
-    }
-
-    @Override
-    public void remove(String executionId) {
-
+        return ofNullable(saveWorkerModel)
+            .filter(SaveWorkerModel::isDirty)
+            .map(workerModel -> new SaveWorker<>(actionModel, workerModel))
+            .orElse(null);
     }
 
     @Override

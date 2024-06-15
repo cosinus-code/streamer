@@ -187,8 +187,10 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
         });
     }
 
-    protected boolean isDirty() {
-        return getParentStreamer().isDirty();
+    public boolean isDirty() {
+        return ofNullable(getParentStreamer())
+            .map(Streamer::isDirty)
+            .orElse(false);
     }
 
     protected Optional<String> getStreamerAddress() {

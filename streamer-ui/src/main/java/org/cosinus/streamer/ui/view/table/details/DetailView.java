@@ -91,7 +91,7 @@ public class DetailView<T extends Streamable> extends TableStreamerView<T> {
     }
 
     @Override
-    protected boolean isDirty() {
+    public boolean isDirty() {
         return super.isDirty() || ofNullable(streamerEditor)
             .map(StreamerEditor::isDirty)
             .orElse(false);

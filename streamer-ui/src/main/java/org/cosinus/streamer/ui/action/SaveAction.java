@@ -49,7 +49,6 @@ public class SaveAction implements ActionInContext {
     @Override
     public void run(ActionContext context) {
         actionExecutors.execute(new SaveActionModel(
-            streamerViewHandler.getCurrentView().getParentStreamer(),
             streamerViewHandler.getCurrentView()));
     }
 

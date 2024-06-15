@@ -134,7 +134,7 @@ public class TextStreamerView extends StreamerView<String> {
     }
 
     @Override
-    protected boolean isDirty() {
+    public boolean isDirty() {
         return super.isDirty() || ofNullable(textEditor)
             .map(TextEditor::isDirty)
             .orElse(false);

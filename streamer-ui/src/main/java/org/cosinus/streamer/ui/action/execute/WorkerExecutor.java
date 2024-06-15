@@ -46,14 +46,15 @@ public abstract class WorkerExecutor<A extends ActionModel, M extends WorkerMode
 
     @Override
     public void execute(A actionModel) {
+        ofNullable(createSwingWorker(actionModel))
+            .ifPresent(worker -> {
+                workersMap.put(actionModel.getActionId(), worker);
 
-        ofNullable(createWorkerListener(actionModel))
-            .ifPresent(workerListener -> workerListenerHandler.register(actionModel.getActionId(), workerListener));
+                ofNullable(createWorkerListener(actionModel))
+                    .ifPresent(workerListener -> workerListenerHandler.register(actionModel.getActionId(), workerListener));
 
-        Worker<M, T> worker = createSwingWorker(actionModel);
-        workersMap.put(actionModel.getActionId(), worker);
-
-        worker.start();
+                worker.start();
+            });
     }
 
     @Override
@@ -65,6 +66,11 @@ public abstract class WorkerExecutor<A extends ActionModel, M extends WorkerMode
     @Override
     public void remove(String workerId) {
         workersMap.remove(workerId);
+    }
+
+    public boolean isWorkerRunning(String workerId) {
+        return ofNullable(workersMap.get(workerId))
+            .isPresent();
     }
 
 //    @Override

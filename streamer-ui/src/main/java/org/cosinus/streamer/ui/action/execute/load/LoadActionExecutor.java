@@ -20,15 +20,19 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
 import org.cosinus.streamer.ui.action.execute.WorkerExecutor;
 import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
+import org.cosinus.streamer.ui.action.execute.save.SaveActionModel;
+import org.cosinus.streamer.ui.action.execute.save.SaveWorkerExecutor;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.execute.ActionExecutor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.cosinus.swing.dialog.DialogHandler;
+import org.cosinus.swing.translate.Translator;
 import org.springframework.stereotype.Component;
 
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.view.text.TextStreamerView.TEXT_EDITOR;
+import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 
 /**
  * Implementation of {@link ActionExecutor} based on {@link LoadWorker}
@@ -40,17 +44,36 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
 
     private final BinaryExpanderHandler binaryExpanderHandler;
 
+    private final DialogHandler dialogHandler;
+
+    private final Translator translator;
+
+    private final SaveWorkerExecutor saveWorkerExecutor;
+
     protected LoadActionExecutor(final ProgressFormHandler progressFormHandler,
                                  final WorkerListenerHandler workerListenerHandler,
                                  final StreamerViewHandler streamerViewHandler,
-                                 final BinaryExpanderHandler binaryExpanderHandler) {
+                                 final BinaryExpanderHandler binaryExpanderHandler,
+                                 final DialogHandler dialogHandler,
+                                 final Translator translator,
+                                 final SaveWorkerExecutor saveWorkerExecutor) {
         super(progressFormHandler, workerListenerHandler);
         this.streamerViewHandler = streamerViewHandler;
         this.binaryExpanderHandler = binaryExpanderHandler;
+        this.dialogHandler = dialogHandler;
+        this.translator = translator;
+        this.saveWorkerExecutor = saveWorkerExecutor;
     }
 
     @Override
-    protected StreamerView<T> createWorkerListener(LoadActionModel<T> actionModel) {
+    public void execute(LoadActionModel<T> actionModel) {
+        StreamerView<?> currentStreamerView = streamerViewHandler.getCurrentView();
+        if (isCurrentStreamerViewDirty() && !isParentStreamerDirty() && !isCurrentStreamerSaving() && shouldSave()) {
+            saveWorkerExecutor.execute(new SaveActionModel<>(currentStreamerView));
+            return;
+        }
+
+
         actionModel.setStreamerToLoad(actionModel.isExpanding() ?
             binaryExpanderHandler.expandStreamer(actionModel.getInitialStreamerToLoad()) :
             (Streamer<T>) actionModel.getInitialStreamerToLoad());
@@ -65,7 +88,12 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
 
         actionModel.setStreamerViewToLoadTo(streamerViewToLoadTo);
 
-        return streamerViewToLoadTo;
+        super.execute(actionModel);
+    }
+
+    @Override
+    protected StreamerView<T> createWorkerListener(LoadActionModel<T> actionModel) {
+        return actionModel.getStreamerViewToLoadTo();
     }
 
 
@@ -81,5 +109,31 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
     @Override
     public String getHandledAction() {
         return LoadActionModel.class.getName();
+    }
+
+    private boolean isCurrentStreamerViewDirty() {
+        return ofNullable(streamerViewHandler.getCurrentView())
+            .map(StreamerView::isDirty)
+            .orElse(false);
+    }
+
+    private boolean isParentStreamerDirty() {
+        return ofNullable(streamerViewHandler.getCurrentView())
+            .map(StreamerView::getParentStreamer)
+            .map(Streamer::getParent)
+            .map(Streamer::isDirty)
+            .orElse(false);
+    }
+
+    private boolean shouldSave() {
+        return dialogHandler.confirm(applicationFrame, translator.translate("do-you-want-to-save"));
+    }
+
+    private boolean isCurrentStreamerSaving() {
+        return ofNullable(streamerViewHandler.getCurrentView())
+            .map(StreamerView::getParentStreamer)
+            .map(Streamer::getId)
+            .map(saveWorkerExecutor::isWorkerRunning)
+            .orElse(false);
     }
 }
