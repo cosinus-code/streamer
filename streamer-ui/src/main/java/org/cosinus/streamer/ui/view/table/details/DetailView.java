@@ -18,7 +18,6 @@ package org.cosinus.streamer.ui.view.table.details;
 
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
-import org.cosinus.streamer.api.worker.DefaultWorkerListener;
 import org.cosinus.streamer.api.worker.WorkerListener;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerEditor;
@@ -33,7 +32,7 @@ public class DetailView<T extends Streamable> extends TableStreamerView<T> {
 
     public static final String DETAIL_VIEW_NAME = "detail";
 
-    private WorkerListener<? extends SaveWorkerModel<?>> saveListener;
+    private WorkerListener<SaveWorkerModel<T>, T> saveListener;
 
     public DetailView(PanelLocation location) {
         super(location);
@@ -42,21 +41,21 @@ public class DetailView<T extends Streamable> extends TableStreamerView<T> {
     @Override
     public void initComponents() {
         super.initComponents();
-        this.saveListener = new DefaultWorkerListener<>() {
+        this.saveListener = new WorkerListener<>() {
             @Override
-            public void workerStarted(SaveWorkerModel<?> saveModel) {
+            public void workerStarted(SaveWorkerModel<T> saveModel) {
                 loadingIndicator.startLoading(saveModel.totalItemsToSave());
             }
 
             @Override
-            public void workerUpdated(SaveWorkerModel<?> saveModel) {
+            public void workerUpdated(SaveWorkerModel<T> saveModel) {
                 loadingIndicator.updateLoading(
                     saveModel.getSavedItemsCount(),
                     saveModel.totalItemsToSave());
             }
 
             @Override
-            public void workerFinished(SaveWorkerModel<?> saveModel) {
+            public void workerFinished(SaveWorkerModel<T> saveModel) {
                 loadingIndicator.finishLoading();
                 saveModel.setDirty(false);
                 updateAddressBarAndStreamerPanel();
@@ -81,7 +80,7 @@ public class DetailView<T extends Streamable> extends TableStreamerView<T> {
     }
 
     @Override
-    public WorkerListener<? extends SaveWorkerModel<?>> getSaveListener() {
+    public WorkerListener<SaveWorkerModel<T>, T> getSaveListener() {
         return saveListener;
     }
 

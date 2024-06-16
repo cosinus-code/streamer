@@ -17,10 +17,10 @@
 package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.worker.WorkerModel;
-import org.cosinus.streamer.api.worker.DefaultWorkerListener;
+import org.cosinus.streamer.api.worker.WorkerListener;
 import org.cosinus.streamer.api.worker.WorkerListenerHandler;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
+import org.cosinus.streamer.ui.action.execute.copy.CopyProgressModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.dialog.CopyConfirmationDialog;
@@ -110,21 +110,22 @@ public abstract class AbstractCopyAction implements ActionInContext {
 
     protected <S extends Streamer<S>, T extends Streamer<T>> void executeStreamerCopy(
         CopyActionModel<S, T> copyAction) {
-        workerListenerHandler.register(copyAction.getActionId(), new DefaultWorkerListener() {
-            @Override
-            public void workerFinished(WorkerModel workerModel) {
-                final StreamerView<?> currentView = streamerViewHandler.getCurrentView();
-                final StreamerView<?> oppositeView = streamerViewHandler.getOppositeView();
-                loadActionExecutor.execute(new LoadActionModel(
-                    oppositeView.getCurrentLocation(),
-                    oppositeView.getParentStreamer(),
-                    null));
-                loadActionExecutor.execute(new LoadActionModel(
-                    currentView.getCurrentLocation(),
-                    currentView.getParentStreamer(),
-                    currentView.getNextItemIdentifier()));
-            }
-        });
+        workerListenerHandler.register(copyAction.getActionId(),
+            new WorkerListener<CopyProgressModel, CopyProgressModel>() {
+                @Override
+                public void workerFinished(CopyProgressModel workerModel) {
+                    final StreamerView<?> currentView = streamerViewHandler.getCurrentView();
+                    final StreamerView<?> oppositeView = streamerViewHandler.getOppositeView();
+                    loadActionExecutor.execute(new LoadActionModel(
+                        oppositeView.getCurrentLocation(),
+                        oppositeView.getParentStreamer(),
+                        null));
+                    loadActionExecutor.execute(new LoadActionModel(
+                        currentView.getCurrentLocation(),
+                        currentView.getParentStreamer(),
+                        currentView.getNextItemIdentifier()));
+                }
+            });
         actionExecutors.execute(copyAction);
     }
 

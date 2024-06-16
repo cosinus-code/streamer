@@ -16,11 +16,10 @@
 package org.cosinus.streamer.ui.action.execute.find;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.worker.DefaultWorkerListener;
 import org.cosinus.streamer.api.worker.Worker;
 import org.cosinus.streamer.api.worker.WorkerListener;
 import org.cosinus.streamer.api.worker.WorkerListenerHandler;
-import org.cosinus.streamer.ui.action.execute.*;
+import org.cosinus.streamer.ui.action.execute.WorkerExecutor;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
@@ -39,10 +38,10 @@ public class FindActionExecutor extends WorkerExecutor<FindActionModel, FindWork
     }
 
     @Override
-    protected WorkerListener<FindWorkerModel> createWorkerListener(FindActionModel actionModel) {
+    protected WorkerListener<FindWorkerModel, Streamer<?>> createWorkerListener(FindActionModel actionModel) {
         return streamerViewHandler.getView(actionModel.getLocation())
             .map(StreamerView::getLoadingIndicator)
-            .map(loaderIndicator -> new DefaultWorkerListener<FindWorkerModel>() {
+            .map(loaderIndicator -> new WorkerListener<FindWorkerModel, Streamer<?>>() {
                 @Override
                 public void workerStarted(FindWorkerModel workerModel) {
                     loaderIndicator.startLoading();

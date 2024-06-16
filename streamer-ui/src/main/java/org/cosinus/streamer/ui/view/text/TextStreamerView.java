@@ -17,7 +17,6 @@ package org.cosinus.streamer.ui.view.text;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
-import org.cosinus.streamer.api.worker.DefaultWorkerListener;
 import org.cosinus.streamer.api.worker.WorkerListener;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.PanelLocation;
@@ -43,7 +42,7 @@ public class TextStreamerView extends StreamerView<String> {
 
     private final TextEditor textEditor;
 
-    private WorkerListener<SaveTextWorkerModel> saveListener;
+    private WorkerListener<SaveTextWorkerModel, String> saveListener;
 
     public TextStreamerView(PanelLocation location) {
         super(location);
@@ -57,7 +56,7 @@ public class TextStreamerView extends StreamerView<String> {
         scroll.setViewportView(textEditor);
         streamerViewMainPanel.add(scroll, CENTER);
         textEditor.initComponent();
-        this.saveListener = new DefaultWorkerListener<>() {
+        this.saveListener = new WorkerListener<>() {
             @Override
             public void workerStarted(SaveTextWorkerModel saveTextModel) {
                 loadingIndicator.startLoading(saveTextModel.totalItemsToSave());
@@ -146,7 +145,7 @@ public class TextStreamerView extends StreamerView<String> {
     }
 
     @Override
-    public WorkerListener<SaveTextWorkerModel> getSaveListener() {
+    public WorkerListener<SaveTextWorkerModel, String> getSaveListener() {
         return saveListener;
     }
 

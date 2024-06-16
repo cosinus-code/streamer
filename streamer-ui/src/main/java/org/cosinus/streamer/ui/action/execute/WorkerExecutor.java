@@ -84,7 +84,7 @@ public abstract class WorkerExecutor<A extends ActionModel, M extends WorkerMode
 //                });
 //    }
 
-    protected abstract WorkerListener<M> createWorkerListener(A actionModel);
+    protected abstract WorkerListener<M, T> createWorkerListener(A actionModel);
 
     protected abstract Worker<M, T> createSwingWorker(A actionModel);
 }

@@ -41,7 +41,7 @@ import static org.cosinus.swing.border.Borders.emptyBorder;
 /**
  * Generic dialog for showing progress
  */
-public abstract class ProgressDialog<M extends WorkerModel> extends Dialog<Void> implements WorkerListener<M> {
+public abstract class ProgressDialog<M extends WorkerModel<M>> extends Dialog<Void> implements WorkerListener<M, M> {
 
     @Autowired
     protected ActionExecutors actionExecutors;

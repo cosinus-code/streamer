@@ -45,7 +45,7 @@ public class SaveWorkerExecutor<T> extends WorkerExecutor<SaveActionModel, SaveW
     }
 
     @Override
-    protected WorkerListener<SaveWorkerModel<T>> createWorkerListener(SaveActionModel actionModel) {
+    protected WorkerListener<SaveWorkerModel<T>, T> createWorkerListener(SaveActionModel actionModel) {
         return actionModel.getStreamerView().getSaveListener();
     }
 

@@ -17,12 +17,12 @@
 package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.worker.WorkerModel;
-import org.cosinus.streamer.api.worker.DefaultWorkerListener;
+import org.cosinus.streamer.api.worker.WorkerListener;
 import org.cosinus.streamer.api.worker.WorkerListenerHandler;
 import org.cosinus.streamer.ui.action.execute.delete.DeleteActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
+import org.cosinus.streamer.ui.action.progress.StreamersProgressModel;
 import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
@@ -115,16 +115,16 @@ public class DeleteStreamerAction implements ActionInContext {
             translator.translate("act-delete-are-you-sure-streamers"),
             getActionName(),
             YES_NO_CANCEL_OPTION)) {
-            workerListenerHandler.register(deleteAction.getActionId(), new DefaultWorkerListener() {
-
-                @Override
-                public void workerFinished(WorkerModel workerModel) {
-                    loadActionExecutor.execute(new LoadActionModel(
-                        currentView.getCurrentLocation(),
-                        currentView.getParentStreamer(),
-                        currentView.getNextItemIdentifier()));
-                }
-            });
+            workerListenerHandler.register(deleteAction.getActionId(),
+                new WorkerListener<StreamersProgressModel, StreamersProgressModel>() {
+                    @Override
+                    public void workerFinished(StreamersProgressModel workerModel) {
+                        loadActionExecutor.execute(new LoadActionModel(
+                            currentView.getCurrentLocation(),
+                            currentView.getParentStreamer(),
+                            currentView.getNextItemIdentifier()));
+                    }
+                });
             actionExecutors.execute(deleteAction);
         }
     }

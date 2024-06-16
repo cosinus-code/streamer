@@ -21,26 +21,32 @@ package org.cosinus.streamer.api.worker;
  *
  * @param <M> the worker model type
  */
-public interface WorkerListener<M extends WorkerModel> {
+public interface WorkerListener<M extends WorkerModel<T>, T> {
 
     /**
      * Signal the worker was started
      *
      * @param workerModel the worker model
      */
-    void workerStarted(M workerModel);
+    default void workerStarted(M workerModel) {
+
+    }
 
     /**
      * Signal the worker model was updated
      *
      * @param workerModel the worker model
      */
-    void workerUpdated(M workerModel);
+    default void workerUpdated(M workerModel) {
+
+    }
 
     /**
      * Signal the worker was finished
      *
      * @param workerModel the worker model
      */
-    void workerFinished(M workerModel);
+    default void workerFinished(M workerModel) {
+
+    }
 }

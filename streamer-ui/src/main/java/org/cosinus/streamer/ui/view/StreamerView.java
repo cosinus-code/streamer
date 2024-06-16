@@ -40,7 +40,7 @@ import static java.awt.BorderLayout.SOUTH;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.view.text.TextStreamerView.DIRTY_TEXT_MARKER;
 
-public abstract class StreamerView<T> extends Panel implements WorkerListener<LoadWorkerModel<T>> {
+public abstract class StreamerView<T> extends Panel implements WorkerListener<LoadWorkerModel<T>, T> {
 
     @Autowired
     protected StreamerViewHandler streamerViewHandler;
@@ -230,7 +230,7 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
         return null;
     }
 
-    public WorkerListener<? extends SaveWorkerModel<?>> getSaveListener() {
+    public <V> WorkerListener<? extends SaveWorkerModel<V>, V> getSaveListener() {
         return null;
     }
 
