@@ -18,7 +18,7 @@ package org.cosinus.streamer.ui.action.execute.find;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
 import org.cosinus.streamer.api.meta.StreamerHandler;
-import org.cosinus.streamer.ui.action.execute.Worker;
+import org.cosinus.streamer.api.worker.Worker;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerViewStorage;
 import org.springframework.beans.factory.annotation.Autowired;

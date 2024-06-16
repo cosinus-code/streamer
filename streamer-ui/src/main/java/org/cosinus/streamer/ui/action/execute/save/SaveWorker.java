@@ -19,7 +19,7 @@ import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
 import org.cosinus.streamer.api.stream.pipeline.PipelineListener;
 import org.cosinus.streamer.api.stream.pipeline.PipelineStrategy;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
-import org.cosinus.streamer.ui.action.execute.PipelineWorker;
+import org.cosinus.streamer.api.worker.PipelineWorker;
 
 import java.util.stream.Stream;
 

@@ -13,19 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.cosinus.streamer.api.worker;
 
-package org.cosinus.streamer.ui.error;
+import org.cosinus.swing.action.execute.ActionModel;
 
-/**
- * Exception thrown during executing an action
- */
-public class ActionException extends StreamerException {
+import java.util.List;
 
-    public ActionException(Throwable cause, String messageKey, Object... messageArguments) {
-        super(cause, messageKey, messageArguments);
+public abstract class SimpleWorker<M extends WorkerModel<M>> extends Worker<M, M> {
+    protected SimpleWorker(ActionModel actionModel, M workerModel) {
+        super(actionModel, workerModel);
     }
 
-    public ActionException(String messageKey, Object... messageArguments) {
-        super(messageKey, messageArguments);
+    public void updateModel(Runnable runnable) {
+        runnable.run();
+        publish(workerModel);
+    }
+
+    @Override
+    protected void process(List<M> items) {
+        checkWorkerStatus();
+        workerListenerHandler.workerUpdated(getId(), workerModel);
     }
 }

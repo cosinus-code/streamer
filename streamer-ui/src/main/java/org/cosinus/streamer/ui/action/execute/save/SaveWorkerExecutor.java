@@ -17,10 +17,10 @@ package org.cosinus.streamer.ui.action.execute.save;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
-import org.cosinus.streamer.ui.action.execute.Worker;
+import org.cosinus.streamer.api.worker.Worker;
 import org.cosinus.streamer.ui.action.execute.WorkerExecutor;
-import org.cosinus.streamer.ui.action.execute.WorkerListener;
-import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
+import org.cosinus.streamer.api.worker.WorkerListener;
+import org.cosinus.streamer.api.worker.WorkerListenerHandler;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.springframework.stereotype.Component;

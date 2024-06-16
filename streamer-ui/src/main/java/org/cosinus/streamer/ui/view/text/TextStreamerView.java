@@ -17,8 +17,8 @@ package org.cosinus.streamer.ui.view.text;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
-import org.cosinus.streamer.ui.action.execute.DefaultWorkerListener;
-import org.cosinus.streamer.ui.action.execute.WorkerListener;
+import org.cosinus.streamer.api.worker.DefaultWorkerListener;
+import org.cosinus.streamer.api.worker.WorkerListener;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;

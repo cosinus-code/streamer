@@ -19,7 +19,7 @@ package org.cosinus.streamer.ui.action.execute.load;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
 import org.cosinus.streamer.ui.action.execute.WorkerExecutor;
-import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
+import org.cosinus.streamer.api.worker.WorkerListenerHandler;
 import org.cosinus.streamer.ui.action.execute.save.SaveActionModel;
 import org.cosinus.streamer.ui.action.execute.save.SaveWorkerExecutor;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;

@@ -19,7 +19,7 @@ package org.cosinus.streamer.api.worker;
 import java.util.List;
 
 /**
- * Generic interface for a progress model
+ * Generic interface for a worker model
  */
 public interface WorkerModel<T> {
 

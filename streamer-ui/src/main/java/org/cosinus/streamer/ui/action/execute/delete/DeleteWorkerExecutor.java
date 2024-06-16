@@ -16,9 +16,9 @@
 
 package org.cosinus.streamer.ui.action.execute.delete;
 
-import org.cosinus.streamer.ui.action.execute.SimpleWorker;
+import org.cosinus.streamer.api.worker.SimpleWorker;
 import org.cosinus.streamer.ui.action.execute.WorkerExecutor;
-import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
+import org.cosinus.streamer.api.worker.WorkerListenerHandler;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.streamer.ui.action.progress.StreamersProgressModel;
 import org.cosinus.streamer.ui.dialog.ProgressDialog;

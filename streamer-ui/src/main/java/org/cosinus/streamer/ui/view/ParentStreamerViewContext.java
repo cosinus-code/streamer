@@ -2,7 +2,7 @@ package org.cosinus.streamer.ui.view;
 
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.error.StreamerException;
+import error.StreamerException;
 
 import java.util.List;
 

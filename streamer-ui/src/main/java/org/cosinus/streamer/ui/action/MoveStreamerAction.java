@@ -18,7 +18,7 @@ package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.action.execute.WorkerListenerHandler;
+import org.cosinus.streamer.api.worker.WorkerListenerHandler;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
@@ -34,7 +34,6 @@ import javax.swing.*;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_F6;
-import static org.cosinus.streamer.ui.action.execute.copy.CopyActionModel.copy;
 import static org.cosinus.streamer.ui.action.execute.copy.CopyActionModel.move;
 
 /**

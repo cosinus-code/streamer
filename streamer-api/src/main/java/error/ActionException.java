@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Cosinus Software
+ * Copyright 2020 Cosinus Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cosinus.streamer.ui.error;
 
-public class AbortActionException extends StreamerException {
+package error;
 
-    public AbortActionException(String messageKey, Object[] messageArguments) {
+/**
+ * Exception thrown during executing an action
+ */
+public class ActionException extends StreamerException {
+
+    public ActionException(Throwable cause, String messageKey, Object... messageArguments) {
+        super(cause, messageKey, messageArguments);
+    }
+
+    public ActionException(String messageKey, Object... messageArguments) {
         super(messageKey, messageArguments);
-    }
-
-    public AbortActionException(String messageKey) {
-        super(messageKey);
-    }
-
-    public AbortActionException(String messageKey, Throwable cause) {
-        super(cause, messageKey);
     }
 }

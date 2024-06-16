@@ -18,8 +18,8 @@ package org.cosinus.streamer.ui.view.table.details;
 
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
-import org.cosinus.streamer.ui.action.execute.DefaultWorkerListener;
-import org.cosinus.streamer.ui.action.execute.WorkerListener;
+import org.cosinus.streamer.api.worker.DefaultWorkerListener;
+import org.cosinus.streamer.api.worker.WorkerListener;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerEditor;
 import org.cosinus.streamer.ui.view.table.DataTable;

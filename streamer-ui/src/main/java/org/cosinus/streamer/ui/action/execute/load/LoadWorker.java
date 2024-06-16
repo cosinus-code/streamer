@@ -20,7 +20,7 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
 import org.cosinus.streamer.api.stream.pipeline.PipelineListener;
 import org.cosinus.streamer.api.stream.pipeline.PipelineStrategy;
-import org.cosinus.streamer.ui.action.execute.PipelineWorker;
+import org.cosinus.streamer.api.worker.PipelineWorker;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.swing.action.execute.ActionModel;
 

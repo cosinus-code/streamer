@@ -16,11 +16,14 @@
 package org.cosinus.streamer.ui.action.execute.find;
 
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.worker.DefaultWorkerListener;
+import org.cosinus.streamer.api.worker.Worker;
+import org.cosinus.streamer.api.worker.WorkerListener;
+import org.cosinus.streamer.api.worker.WorkerListenerHandler;
 import org.cosinus.streamer.ui.action.execute.*;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component

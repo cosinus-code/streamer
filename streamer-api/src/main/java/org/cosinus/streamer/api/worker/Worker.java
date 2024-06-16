@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.action.execute;
+package org.cosinus.streamer.api.worker;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cosinus.streamer.api.worker.WorkerModel;
-import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
-import org.cosinus.streamer.ui.error.AbortActionException;
-import org.cosinus.streamer.ui.error.ActionException;
+import error.AbortActionException;
+import error.ActionException;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.action.execute.ActionModel;
 import org.cosinus.swing.boot.SwingApplicationFrame;
@@ -97,7 +95,7 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
         } catch (ActionException ex) {
             setError(ex);
         } catch (AbortActionException ex) {
-            LOG.trace("Action aborted: " + id);
+            LOG.trace("Action aborted: {}", id);
         }
         return workerModel;
     }
@@ -115,7 +113,9 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
             if (!isCancelled()) {
                 get();
             }
-        } catch (InterruptedException | ExecutionException ex) {
+        } catch (InterruptedException e) {
+            currentThread().interrupt();
+        } catch (ExecutionException ex) {
             errorHandler.handleError(applicationFrame, ex);
         }
 

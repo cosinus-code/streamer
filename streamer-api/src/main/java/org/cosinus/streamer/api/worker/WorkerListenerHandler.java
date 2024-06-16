@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.action.execute;
+package org.cosinus.streamer.api.worker;
 
-import org.cosinus.streamer.api.worker.WorkerModel;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
