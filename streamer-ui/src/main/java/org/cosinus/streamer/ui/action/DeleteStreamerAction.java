@@ -55,23 +55,15 @@ public class DeleteStreamerAction implements ActionInContext {
 
     private final ActionExecutors actionExecutors;
 
-    private final WorkerListenerHandler workerListenerHandler;
-
-    private final LoadActionExecutor loadActionExecutor;
-
     private final StreamerViewHandler streamerViewHandler;
 
     public DeleteStreamerAction(final DialogHandler dialogHandler,
                                 final Translator translator,
                                 final ActionExecutors actionExecutors,
-                                final WorkerListenerHandler workerListenerHandler,
-                                final LoadActionExecutor loadActionExecutor,
                                 final StreamerViewHandler streamerViewHandler) {
         this.dialogHandler = dialogHandler;
         this.translator = translator;
         this.actionExecutors = actionExecutors;
-        this.workerListenerHandler = workerListenerHandler;
-        this.loadActionExecutor = loadActionExecutor;
         this.streamerViewHandler = streamerViewHandler;
     }
 
@@ -115,16 +107,6 @@ public class DeleteStreamerAction implements ActionInContext {
             translator.translate("act-delete-are-you-sure-streamers"),
             getActionName(),
             YES_NO_CANCEL_OPTION)) {
-            workerListenerHandler.register(deleteAction.getActionId(),
-                new WorkerListener<StreamersProgressModel, StreamersProgressModel>() {
-                    @Override
-                    public void workerFinished(StreamersProgressModel workerModel) {
-                        loadActionExecutor.execute(new LoadActionModel(
-                            currentView.getCurrentLocation(),
-                            currentView.getParentStreamer(),
-                            currentView.getNextItemIdentifier()));
-                    }
-                });
             actionExecutors.execute(deleteAction);
         }
     }

@@ -18,10 +18,10 @@ package org.cosinus.streamer.ui.action.execute.copy;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.SimpleWorker;
-import org.cosinus.streamer.ui.action.execute.WorkerExecutor;
 import org.cosinus.streamer.api.worker.WorkerListenerHandler;
+import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
-import org.cosinus.streamer.ui.dialog.ProgressDialog;
+import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.execute.ActionExecutor;
 import org.springframework.stereotype.Component;
 
@@ -30,16 +30,13 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class CopyWorkerExecutor<S extends Streamer<S>, T extends Streamer<T>>
-    extends WorkerExecutor<CopyActionModel<S, T>, CopyProgressModel, CopyProgressModel> {
+    extends AbstractCopyWorkerExecutor<S, T, CopyActionModel<S, T>> {
 
     protected CopyWorkerExecutor(final ProgressFormHandler progressFormHandler,
-                                 final WorkerListenerHandler workerListenerHandler) {
-        super(progressFormHandler, workerListenerHandler);
-    }
-
-    @Override
-    protected ProgressDialog<CopyProgressModel> createWorkerListener(CopyActionModel<S, T> copyModel) {
-        return progressFormHandler.createCopyProgressDialog(copyModel);
+                                 final WorkerListenerHandler workerListenerHandler,
+                                 final LoadActionExecutor loadActionExecutor,
+                                 final StreamerViewHandler streamerViewHandler) {
+        super(progressFormHandler, workerListenerHandler, loadActionExecutor, streamerViewHandler);
     }
 
     @Override

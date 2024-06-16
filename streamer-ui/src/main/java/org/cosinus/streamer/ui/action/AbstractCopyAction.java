@@ -109,23 +109,7 @@ public abstract class AbstractCopyAction implements ActionInContext {
     }
 
     protected <S extends Streamer<S>, T extends Streamer<T>> void executeStreamerCopy(
-        CopyActionModel<S, T> copyAction) {
-        workerListenerHandler.register(copyAction.getActionId(),
-            new WorkerListener<CopyProgressModel, CopyProgressModel>() {
-                @Override
-                public void workerFinished(CopyProgressModel workerModel) {
-                    final StreamerView<?> currentView = streamerViewHandler.getCurrentView();
-                    final StreamerView<?> oppositeView = streamerViewHandler.getOppositeView();
-                    loadActionExecutor.execute(new LoadActionModel(
-                        oppositeView.getCurrentLocation(),
-                        oppositeView.getParentStreamer(),
-                        null));
-                    loadActionExecutor.execute(new LoadActionModel(
-                        currentView.getCurrentLocation(),
-                        currentView.getParentStreamer(),
-                        currentView.getNextItemIdentifier()));
-                }
-            });
+        final CopyActionModel<S, T> copyAction) {
         actionExecutors.execute(copyAction);
     }
 

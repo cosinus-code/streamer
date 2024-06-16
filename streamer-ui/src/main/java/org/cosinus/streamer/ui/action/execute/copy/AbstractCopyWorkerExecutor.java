@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.action.execute.delete;
+package org.cosinus.streamer.ui.action.execute.copy;
 
-import org.cosinus.streamer.api.worker.SimpleWorker;
+import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.WorkerListener;
-import org.cosinus.streamer.ui.action.execute.WorkerExecutor;
 import org.cosinus.streamer.api.worker.WorkerListenerHandler;
+import org.cosinus.streamer.ui.action.execute.WorkerExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
-import org.cosinus.streamer.ui.action.progress.StreamersProgressModel;
 import org.cosinus.streamer.ui.dialog.ProgressDialog;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
@@ -31,55 +30,51 @@ import org.cosinus.swing.action.execute.ActionExecutor;
 import org.springframework.stereotype.Component;
 
 /**
- * Implementation of {@link ActionExecutor} for deleting streamers based on {@link DeleteWorker}
+ * Implementation of {@link ActionExecutor} for copying streamers based on {@link CopyWorker}
  */
 @Component
-public class DeleteWorkerExecutor
-    extends WorkerExecutor<DeleteActionModel, StreamersProgressModel, StreamersProgressModel> {
+public abstract class AbstractCopyWorkerExecutor<
+    S extends Streamer<S>,
+    T extends Streamer<T>,
+    A extends CopyActionModel<S, T>> extends WorkerExecutor<A, CopyProgressModel, CopyProgressModel> {
 
     private final LoadActionExecutor loadActionExecutor;
 
     private final StreamerViewHandler streamerViewHandler;
 
-    protected DeleteWorkerExecutor(final ProgressFormHandler progressFormHandler,
-                                   final WorkerListenerHandler workerListenerHandler,
-                                   final LoadActionExecutor loadActionExecutor,
-                                   final StreamerViewHandler streamerViewHandler) {
+    protected AbstractCopyWorkerExecutor(final ProgressFormHandler progressFormHandler,
+                                         final WorkerListenerHandler workerListenerHandler,
+                                         final LoadActionExecutor loadActionExecutor,
+                                         final StreamerViewHandler streamerViewHandler) {
         super(progressFormHandler, workerListenerHandler);
         this.loadActionExecutor = loadActionExecutor;
         this.streamerViewHandler = streamerViewHandler;
     }
 
     @Override
-    protected void registerWorkerListeners(DeleteActionModel deleteAction, StreamersProgressModel workerModel) {
-        super.registerWorkerListeners(deleteAction, workerModel);
-
-        final StreamerView<?> currentView = streamerViewHandler.getCurrentView();
-        workerListenerHandler.register(StreamersProgressModel.class, deleteAction.getActionId(),
+    protected void registerWorkerListeners(A copyAction, CopyProgressModel workerModel) {
+        super.registerWorkerListeners(copyAction, workerModel);
+        workerListenerHandler.register(CopyProgressModel.class, copyAction.getActionId(),
             new WorkerListener<>() {
                 @Override
-                public void workerFinished(StreamersProgressModel workerModel) {
+                public void workerFinished(CopyProgressModel workerModel) {
+                    final StreamerView<?> oppositeView = streamerViewHandler.getOppositeView();
+                    loadActionExecutor.execute(new LoadActionModel(
+                        oppositeView.getCurrentLocation(),
+                        oppositeView.getParentStreamer(),
+                        null));
+
+                    final StreamerView<?> currentView = streamerViewHandler.getCurrentView();
                     loadActionExecutor.execute(new LoadActionModel(
                         currentView.getCurrentLocation(),
                         currentView.getParentStreamer(),
                         currentView.getNextItemIdentifier()));
                 }
             });
-
     }
 
     @Override
-    protected ProgressDialog<StreamersProgressModel> createWorkerListener(DeleteActionModel deleteModel) {
-        return progressFormHandler.createStreamersProgressDialog(deleteModel);
-    }
-
-    @Override
-    protected SimpleWorker<StreamersProgressModel> createSwingWorker(DeleteActionModel actionModel) {
-        return new DeleteWorker(actionModel);
-    }
-
-    @Override
-    public String getHandledAction() {
-        return DeleteActionModel.class.getName();
+    protected ProgressDialog<CopyProgressModel> createWorkerListener(A copyModel) {
+        return progressFormHandler.createCopyProgressDialog(copyModel);
     }
 }

@@ -52,12 +52,16 @@ public abstract class WorkerExecutor<A extends ActionModel, M extends WorkerMode
         ofNullable(createSwingWorker(actionModel))
             .ifPresent(worker -> {
                 workersMap.put(actionModel.getActionId(), worker);
-
-                ofNullable(createWorkerListener(actionModel))
-                    .ifPresent(workerListener -> workerListenerHandler.register(actionModel.getActionId(), workerListener));
-
+                registerWorkerListeners(actionModel, worker.getWorkerModel());
                 worker.start();
             });
+    }
+
+    protected void registerWorkerListeners(A actionModel, M workerModel) {
+        Class<M> modelClass = (Class<M>) workerModel.getClass();
+        ofNullable(createWorkerListener(actionModel))
+            .ifPresent(workerListener -> workerListenerHandler
+                .register(modelClass, actionModel.getActionId(), workerListener));
     }
 
     @Override
