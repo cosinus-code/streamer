@@ -16,6 +16,8 @@
 
 package org.cosinus.streamer.ui.action.execute.copy;
 
+import error.AbortActionException;
+import error.ActionException;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
@@ -26,8 +28,6 @@ import org.cosinus.streamer.api.stream.pipeline.PipelineListener;
 import org.cosinus.streamer.api.stream.pipeline.error.AbortPipelineConsumeException;
 import org.cosinus.streamer.api.worker.SimpleWorker;
 import org.cosinus.streamer.api.worker.Worker;
-import error.AbortActionException;
-import error.ActionException;
 import org.cosinus.swing.format.FormatHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -137,7 +137,7 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
     protected T targetStreamer(S streamerToCopy) {
         Path relativePath = getRelativePath(streamerToCopy);
         Path targetPath = destination.getPath().resolve(relativePath);
-        return destination.create(targetPath, streamerToCopy.isParent());
+        return destination.create(targetPath, streamerToCopy);
     }
 
     private Path getRelativePath(Streamer<?> streamer) {

@@ -42,6 +42,8 @@ public class ArchiveHolder implements ArchiveCache {
 
     private final Map<String, Set<ArchiveStreamEntry>> entriesGroupedByParentMap;
 
+    private final Map<String, ArchiveEntry> additionalEntries;
+
     private boolean loaded;
 
     private boolean dirty;
@@ -50,6 +52,7 @@ public class ArchiveHolder implements ArchiveCache {
         injectContext(this);
         this.entriesMap = new TreeMap<>();
         this.entriesGroupedByParentMap = new TreeMap<>();
+        this.additionalEntries = new HashMap<>();
     }
 
     @Override
@@ -66,6 +69,12 @@ public class ArchiveHolder implements ArchiveCache {
             .add(archiveEntry);
 
         archiveEntry.getParentPath().ifPresent(this::checkPath);
+    }
+
+    public void addAdditional(ArchiveStreamEntry archiveEntry) {
+        add(archiveEntry);
+        additionalEntries.put(key(archiveEntry.toPath()), archiveEntry.getArchiveEntry());
+        setDirty(true);
     }
 
     private void checkPath(Path path) {
@@ -170,5 +179,10 @@ public class ArchiveHolder implements ArchiveCache {
 
     public void setDirty(boolean dirty) {
         this.dirty = dirty;
+    }
+
+    @Override
+    public Collection<ArchiveEntry> additionalEntries() {
+        return additionalEntries.values();
     }
 }

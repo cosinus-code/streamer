@@ -18,6 +18,8 @@ package org.cosinus.streamer.pack.archive.stream;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.cosinus.streamer.pack.archive.ArchiveStreamEntry;
 
+import java.util.Collection;
+
 /**
  * Interface for an archive cache
  */
@@ -34,4 +36,6 @@ public interface ArchiveCache {
     void evict();
 
     boolean evict(ArchiveStreamEntry archiveEntry);
+
+    Collection<ArchiveEntry> additionalEntries();
 }

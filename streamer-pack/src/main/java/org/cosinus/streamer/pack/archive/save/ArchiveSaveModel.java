@@ -40,7 +40,7 @@ public class ArchiveSaveModel<A extends ArchiveStreamer<?>> extends AbstractSave
     private static final int DEFAULT_PIPELINE_RATE = 8192;
 
     @Autowired
-    protected ArchiveInputStreamFactory archiveInputStreamFactory;
+    protected ArchiveStreamerFactory archiveStreamerFactory;
 
     private final ArchivePackStreamer<A> archivePackStreamer;
 
@@ -53,8 +53,8 @@ public class ArchiveSaveModel<A extends ArchiveStreamer<?>> extends AbstractSave
 
     @Override
     public Stream<OutputWriter<ArchiveOutputStream>> streamToSave() {
-        EntryInputStream archiveInputStream = archiveInputStreamFactory
-            .createArchiveInputStream(archivePackStreamer.binaryStreamer());
+        EntryInputStream archiveInputStream = archiveStreamerFactory
+            .createArchiveInputStream(archivePackStreamer.getArchiveType(), archivePackStreamer.binaryStreamer());
         return StreamSupport
             .stream(new ArchiveSaveSpliterator(archiveInputStream, archiveHolder, DEFAULT_PIPELINE_RATE), false)
             .onClose(() -> {
@@ -68,20 +68,12 @@ public class ArchiveSaveModel<A extends ArchiveStreamer<?>> extends AbstractSave
 
     @Override
     public StreamConsumer<OutputWriter<ArchiveOutputStream>> streamConsumer() {
-        return archiveInputStreamFactory
-            .detectArchiverName(archivePackStreamer.getName(), archivePackStreamer.binaryStreamer().inputStream())
-            .map(this::createStreamConsumer)
-            .orElseThrow(() -> new StreamerException(
-                "Cannot open archive output stream for: " + archivePackStreamer.getPath()));
-    }
-
-    private StreamConsumer<OutputWriter<ArchiveOutputStream>> createStreamConsumer(String archiverType) {
         try {
             File binaryFile = archivePackStreamer.getPath().toFile();
             final TemporaryFileOutputStream temporaryOutputStream =
                 new TemporaryFileOutputStream(binaryFile, PART_TEMPORARY_FILE);
-            ArchiveOutputStream archiveOutputStream = archiveInputStreamFactory
-                .createArchiveOutputStream(archiverType, temporaryOutputStream);
+            ArchiveOutputStream archiveOutputStream = archiveStreamerFactory
+                .createArchiveOutputStream(archivePackStreamer.getArchiveType(), temporaryOutputStream);
 
             return new DefaultStreamConsumer<>(archiveOutputStream) {
                 @Override

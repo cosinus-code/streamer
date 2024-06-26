@@ -26,6 +26,8 @@ import java.util.Optional;
 import java.util.zip.CheckedOutputStream;
 import java.util.zip.Checksum;
 
+import static java.util.Optional.ofNullable;
+
 public class BinaryStreamConsumer implements StreamConsumer<byte[]> {
 
     protected final OutputStream outputStream;
@@ -37,14 +39,16 @@ public class BinaryStreamConsumer implements StreamConsumer<byte[]> {
     @Override
     public void accept(byte[] bytes) {
         try {
-            outputStream.write(bytes);
+            if (outputStream != null) {
+                outputStream.write(bytes);
+            }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
     public Optional<String> checksum() {
-        return Optional.of(outputStream)
+        return ofNullable(outputStream)
             .filter(output -> CheckedOutputStream.class.isAssignableFrom(output.getClass()))
             .map(CheckedOutputStream.class::cast)
             .map(CheckedOutputStream::getChecksum)
@@ -55,7 +59,9 @@ public class BinaryStreamConsumer implements StreamConsumer<byte[]> {
 
     @Override
     public void close() throws IOException {
-        outputStream.close();
+        if (outputStream != null) {
+            outputStream.close();
+        }
     }
 
 }

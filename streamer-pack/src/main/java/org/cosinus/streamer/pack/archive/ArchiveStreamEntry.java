@@ -18,7 +18,6 @@ package org.cosinus.streamer.pack.archive;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -26,30 +25,28 @@ import java.nio.file.Paths;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import static java.util.Optional.ofNullable;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 public class ArchiveStreamEntry implements Comparable<ArchiveStreamEntry> {
 
-    @Autowired
-    private ArchiveInputStreamFactory archiveInputStreamFactory;
-
     private final Path path;
 
     private final ArchiveEntry archiveEntry;
 
-    private final EntryInputStream archiveInputStream;
+    private final Supplier<InputStream> inputStreamSupplier;
 
     public ArchiveStreamEntry(ArchiveEntry archiveEntry) {
         this(archiveEntry, null);
     }
 
     public ArchiveStreamEntry(final ArchiveEntry archiveEntry,
-                              final EntryInputStream archiveInputStream) {
+                              final Supplier<InputStream> inputStreamSupplier) {
         injectContext(this);
         this.archiveEntry = archiveEntry;
-        this.archiveInputStream = archiveInputStream;
+        this.inputStreamSupplier = inputStreamSupplier;
         this.path = Paths.get(archiveEntry.getName());
     }
 
@@ -87,10 +84,10 @@ public class ArchiveStreamEntry implements Comparable<ArchiveStreamEntry> {
         return archiveEntry.getName();
     }
 
-    public InputStream getArchiveInputStream() {
-        return archiveInputStream != null && !archiveInputStream.isClosed() ?
-            archiveInputStream.getInputStream(archiveEntry) :
-            null;
+    public InputStream getEntryInputStream() {
+        return ofNullable(inputStreamSupplier)
+            .map(Supplier::get)
+            .orElse(null);
     }
 
     public boolean isOSSpecific() {

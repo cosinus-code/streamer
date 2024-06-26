@@ -24,6 +24,8 @@ import org.cosinus.streamer.pack.archive.stream.ArchiveCache;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Spliterators.AbstractSpliterator;
 import java.util.function.Consumer;
 
@@ -44,6 +46,8 @@ public class ArchiveSaveSpliterator extends AbstractSpliterator<OutputWriter<Arc
 
     private byte[] readBytes;
 
+    private final Queue<ArchiveEntry> additionalEntries;
+
     public ArchiveSaveSpliterator(final EntryInputStream archiveInputStream,
                                   final ArchiveCache archiveCache,
                                   int bufferSize) {
@@ -51,6 +55,7 @@ public class ArchiveSaveSpliterator extends AbstractSpliterator<OutputWriter<Arc
         this.buffer = new byte[bufferSize];
         this.archiveInputStream = archiveInputStream;
         this.archiveCache = archiveCache;
+        this.additionalEntries = new LinkedList<>(archiveCache.additionalEntries());
     }
 
     @Override
@@ -80,6 +85,10 @@ public class ArchiveSaveSpliterator extends AbstractSpliterator<OutputWriter<Arc
         do {
             nextEntry = archiveInputStream.getNextEntry();
         } while (nextEntry != null && !archiveCache.contains(nextEntry));
+
+        if (nextEntry == null) {
+            nextEntry = additionalEntries.poll();
+        }
 
         return nextEntry;
     }

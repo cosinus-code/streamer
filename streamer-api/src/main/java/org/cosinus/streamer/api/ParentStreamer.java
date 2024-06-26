@@ -66,6 +66,10 @@ public interface ParentStreamer<S extends Streamer> extends Streamer<S> {
         return true;
     }
 
+    default S create(Path path, Streamer<?> source) {
+        return create(path, source.isParent());
+    }
+
     default S create(Path path, boolean parent) {
         return null;
     }

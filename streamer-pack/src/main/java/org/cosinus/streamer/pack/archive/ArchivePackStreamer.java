@@ -16,7 +16,6 @@
 
 package org.cosinus.streamer.pack.archive;
 
-import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
@@ -26,9 +25,11 @@ import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.streamer.pack.archive.save.ArchiveSaveModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,9 +41,11 @@ import static org.cosinus.swing.context.ApplicationContextInjector.injectContext
 public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedStreamer<A> implements ParentStreamer<A> {
 
     @Autowired
-    protected ArchiveInputStreamFactory archiveInputStreamFactory;
+    protected ArchiveStreamerFactory archiveStreamerFactory;
 
     private final ArchiveHolder archiveHolder;
+
+    private String archiveType;
 
     protected ArchivePackStreamer(BinaryStreamer binaryStreamer) {
         super(binaryStreamer);
@@ -53,7 +56,7 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedS
     @Override
     public Stream<A> stream() {
         if (!archiveHolder.isLoaded()) {
-            return archiveInputStreamFactory.stream(binaryStreamer, archiveHolder)
+            return archiveStreamerFactory.stream(getArchiveType(), binaryStreamer, archiveHolder)
                 .filter(entry -> entry.getParentPath().isEmpty())
                 .map(this::createArchiveStreamer);
         }
@@ -69,27 +72,41 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedS
 
     protected Stream<A> flatStream(StreamerFilter streamerFilter, Path parentPath) {
         Set<String> basePaths = getBasePaths(streamerFilter, parentPath);
-        return archiveInputStreamFactory.stream(binaryStreamer)
+        return archiveStreamerFactory.stream(getArchiveType(), binaryStreamer)
             .filter(entry -> basePaths
                 .stream()
                 .anyMatch(bsePath -> entry.getName().startsWith(bsePath)))
             .map(this::createArchiveStreamer);
     }
 
-    public ArchiveBinaryStreamer createBinaryStreamer(Path path) {
+    @Override
+    public A create(Path path, boolean parent) {
         ArchiveStreamEntry archiveEntry = archiveHolder.get(path)
-            .orElse(createArchiveStreamEntry(path.toString()));
-        return createBinaryStreamer(archiveEntry);
+            .orElse(createArchiveStreamEntry(path, parent, 0L, null));
+        return createArchiveStreamer(archiveEntry);
     }
 
-    protected ArchiveStreamEntry createArchiveStreamEntry(String name) {
-        return new ArchiveStreamEntry(createArchiveEntry(name));
+    @Override
+    public A create(Path path, Streamer<?> source) {
+        ArchiveStreamEntry archiveEntry = archiveHolder.get(path)
+            .orElse(createArchiveStreamEntry(path, source.isParent(), source.getSize(),
+                () -> source instanceof BinaryStreamer binaryStreamer ? binaryStreamer.inputStream() : null));
+        return createArchiveStreamer(archiveEntry);
+    }
+
+    protected ArchiveStreamEntry createArchiveStreamEntry(Path path, boolean parent, long size,
+                                                          final Supplier<InputStream> inputStreamSupplier) {
+        ArchiveStreamEntry archiveStreamEntry =
+            archiveStreamerFactory.createArchiveStreamEntry(getArchiveType(), path, parent, size, inputStreamSupplier);
+        archiveHolder.addAdditional(archiveStreamEntry);
+        return archiveStreamEntry;
     }
 
     @Override
     public Optional<A> find(String path) {
         if (!archiveHolder.isLoaded()) {
-            try (Stream<ArchiveStreamEntry> input = archiveInputStreamFactory.stream(binaryStreamer, archiveHolder)) {
+            try (Stream<ArchiveStreamEntry> input =
+                     archiveStreamerFactory.stream(getArchiveType(), binaryStreamer, archiveHolder)) {
                 input.toList();
             }
         }
@@ -121,7 +138,7 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedS
 
     public A createArchiveStreamer(ArchiveStreamEntry archiveEntry) {
         return archiveEntry.isDirectory() ?
-            (A) createDirectoryStreamer(archiveEntry) :
+            (A) createParentStreamer(archiveEntry) :
             (A) createBinaryStreamer(archiveEntry);
     }
 
@@ -129,17 +146,12 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedS
         return archiveHolder.listEntries(path);
     }
 
-    public ArchiveParentStreamer createDirectoryStreamer(ArchiveStreamEntry archiveEntry) {
+    public ArchiveParentStreamer createParentStreamer(ArchiveStreamEntry archiveEntry) {
         return new ArchiveParentStreamer(this, archiveEntry);
     }
 
     public ArchiveBinaryStreamer createBinaryStreamer(ArchiveStreamEntry archiveEntry) {
         return new ArchiveBinaryStreamer(this, archiveEntry);
-    }
-
-    protected ArchiveEntry createArchiveEntry(String path) {
-        //TODO:
-        return null;
     }
 
     @Override
@@ -194,5 +206,12 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedS
             .map(Streamer::getPath)
             .map(Path::toString)
             .collect(Collectors.toSet());
+    }
+
+    public String getArchiveType() {
+        if (archiveType == null) {
+            archiveType = archiveStreamerFactory.detectArchiverType(binaryStreamer);
+        }
+        return archiveType;
     }
 }

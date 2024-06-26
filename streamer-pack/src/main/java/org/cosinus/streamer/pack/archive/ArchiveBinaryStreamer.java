@@ -28,7 +28,7 @@ import static org.cosinus.swing.context.ApplicationContextInjector.injectContext
 public class ArchiveBinaryStreamer extends ArchiveStreamer<byte[]> implements BinaryStreamer {
 
     @Autowired
-    private ArchiveInputStreamFactory archiveInputStreamFactory;
+    private ArchiveStreamerFactory archiveStreamerFactory;
 
     public ArchiveBinaryStreamer(ArchivePackStreamer archivePackStreamer,
                                  ArchiveStreamEntry archiveEntry) {
@@ -38,14 +38,13 @@ public class ArchiveBinaryStreamer extends ArchiveStreamer<byte[]> implements Bi
 
     @Override
     public InputStream inputStream() {
-        return ofNullable(archiveEntry.getArchiveInputStream())
-            .orElseGet(() -> archiveInputStreamFactory
-                .inputStream(archivePackStreamer.binaryStreamer(), archiveEntry));
+        return ofNullable(archiveEntry.getEntryInputStream())
+            .orElseGet(() -> archiveStreamerFactory
+                .inputStream(archivePackStreamer.getArchiveType(), archivePackStreamer.binaryStreamer(), archiveEntry));
     }
 
     @Override
     public OutputStream outputStream(boolean append) {
-        //TODO:
         return null;
     }
 

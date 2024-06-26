@@ -54,7 +54,7 @@ public abstract class ArchiveStreamer<T> implements Streamer<T> {
     }
 
     public InputStream getArchiveInputStream() {
-        return archiveEntry.getArchiveInputStream();
+        return archiveEntry.getEntryInputStream();
     }
 
     @Override

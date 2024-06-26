@@ -58,7 +58,7 @@ public class ArchiveSpliterator implements Spliterator<ArchiveStreamEntry> {
             Optional<ArchiveStreamEntry> archiveStreamEntry;
             do {
                 archiveStreamEntry = ofNullable(archiveInputStream.getNextEntry())
-                    .map(entry -> new ArchiveStreamEntry(entry, archiveInputStream));
+                    .map(entry -> new ArchiveStreamEntry(entry, () -> archiveInputStream.getInputStream(entry)));
             } while (archiveStreamEntry
                 .filter(ArchiveStreamEntry::isOSSpecific)
                 .isPresent());
