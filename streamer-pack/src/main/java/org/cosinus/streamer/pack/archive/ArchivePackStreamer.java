@@ -133,7 +133,8 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedS
     }
 
     public boolean exists(Path path) {
-        return archiveHolder.get(path).isPresent();
+        return archiveHolder.get(path).isPresent() &&
+            archiveHolder.getAdditional(path).isEmpty();
     }
 
     public A createArchiveStreamer(ArchiveStreamEntry archiveEntry) {

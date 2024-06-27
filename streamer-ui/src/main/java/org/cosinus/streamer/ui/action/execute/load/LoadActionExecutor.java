@@ -67,18 +67,17 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
 
     @Override
     public void execute(LoadActionModel<T> actionModel) {
-        StreamerView<?> currentStreamerView = streamerViewHandler.getCurrentView();
-        if (isCurrentStreamerViewDirty() && !isParentStreamerDirty() && !isCurrentStreamerSaving() && shouldSave()) {
-            saveWorkerExecutor.execute(new SaveActionModel<>(currentStreamerView));
-            return;
-        }
-
-
         actionModel.setStreamerToLoad(actionModel.isExpanding() ?
             binaryExpanderHandler.expandStreamer(actionModel.getInitialStreamerToLoad()) :
             (Streamer<T>) actionModel.getInitialStreamerToLoad());
 
         Streamer<T> streamerToLoad = actionModel.getStreamerToLoad();
+        StreamerView<?> currentStreamerView = streamerViewHandler.getCurrentView();
+        if (isCurrentStreamerViewDirty() && !streamerToLoad.isDirty() && !isCurrentStreamerSaving() && shouldSave()) {
+            saveWorkerExecutor.execute(new SaveActionModel<>(currentStreamerView));
+            return;
+        }
+
         StreamerView<T> streamerViewToLoadTo = streamerViewHandler.getStreamerView(
             actionModel.getLocationToLoadTo(),
             ofNullable(actionModel.getStreamerViewNameToLoadIn())
@@ -114,14 +113,6 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
     private boolean isCurrentStreamerViewDirty() {
         return ofNullable(streamerViewHandler.getCurrentView())
             .map(StreamerView::isDirty)
-            .orElse(false);
-    }
-
-    private boolean isParentStreamerDirty() {
-        return ofNullable(streamerViewHandler.getCurrentView())
-            .map(StreamerView::getParentStreamer)
-            .map(Streamer::getParent)
-            .map(Streamer::isDirty)
             .orElse(false);
     }
 

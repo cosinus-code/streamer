@@ -94,6 +94,7 @@ public class ArchiveSaveModel<A extends ArchiveStreamer<?>> extends AbstractSave
     @Override
     public void setDirty(boolean dirty) {
         archiveHolder.setDirty(dirty);
+        archiveHolder.clearAdditionalEntries();
     }
 
     @Override

@@ -61,14 +61,9 @@ public class MoveStreamerAction extends AbstractCopyAction {
     }
 
     @Override
-    protected <S extends Streamer<S>, T extends Streamer<T>> void executeStreamerCopy(CopyActionModel<S, T> copyAction) {
-        //TODO: to avoid cast
-        ParentStreamer<T> destination =
-            (ParentStreamer<T>) copyAction.getDestination().create(copyAction.getTargetPath(), true);
-        if (destination == null || !destination.exists()) {
-            dialogHandler.showInfo(translator.translate("act_move_destination_not_found"));
-            return;
-        }
+    protected <S extends Streamer<S>, T extends Streamer<T>> void
+    executeStreamerCopy(CopyActionModel<S, T> copyAction) {
+        ParentStreamer<T> destination = prepareDestination(copyAction);
         super.executeStreamerCopy(copyAction.to(destination));
     }
 

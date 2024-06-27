@@ -42,7 +42,7 @@ public class ArchiveHolder implements ArchiveCache {
 
     private final Map<String, Set<ArchiveStreamEntry>> entriesGroupedByParentMap;
 
-    private final Map<String, ArchiveStreamEntry> additionalEntries;
+    private final Map<String, ArchiveStreamEntry> additionalEntriesMap;
 
     private boolean loaded;
 
@@ -52,7 +52,7 @@ public class ArchiveHolder implements ArchiveCache {
         injectContext(this);
         this.entriesMap = new TreeMap<>();
         this.entriesGroupedByParentMap = new TreeMap<>();
-        this.additionalEntries = new HashMap<>();
+        this.additionalEntriesMap = new HashMap<>();
     }
 
     @Override
@@ -73,7 +73,7 @@ public class ArchiveHolder implements ArchiveCache {
 
     public void addAdditional(ArchiveStreamEntry archiveEntry) {
         add(archiveEntry);
-        additionalEntries.put(key(archiveEntry.toPath()), archiveEntry);
+        additionalEntriesMap.put(key(archiveEntry.toPath()), archiveEntry);
         setDirty(true);
     }
 
@@ -119,12 +119,21 @@ public class ArchiveHolder implements ArchiveCache {
     }
 
     public Optional<ArchiveStreamEntry> get(Path path) {
-        return ofNullable(path).map(this::key).map(entriesMap::get);
+        return ofNullable(path)
+            .map(this::key)
+            .map(entriesMap::get);
     }
 
     public Optional<ArchiveStreamEntry> get(String path) {
         return ofNullable(entriesMap.get(key(path)));
     }
+
+    public Optional<ArchiveStreamEntry> getAdditional(Path path) {
+        return ofNullable(path)
+            .map(this::key)
+            .map(additionalEntriesMap::get);
+    }
+
 
     @Override
     public boolean contains(ArchiveEntry archiveEntry) {
@@ -183,6 +192,10 @@ public class ArchiveHolder implements ArchiveCache {
 
     @Override
     public Collection<ArchiveStreamEntry> additionalEntries() {
-        return additionalEntries.values();
+        return additionalEntriesMap.values();
+    }
+
+    public void clearAdditionalEntries() {
+        additionalEntriesMap.clear();
     }
 }

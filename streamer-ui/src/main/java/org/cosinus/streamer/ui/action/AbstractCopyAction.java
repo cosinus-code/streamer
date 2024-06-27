@@ -16,15 +16,12 @@
 
 package org.cosinus.streamer.ui.action;
 
+import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.worker.WorkerListener;
 import org.cosinus.streamer.api.worker.WorkerListenerHandler;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
-import org.cosinus.streamer.ui.action.execute.copy.CopyProgressModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
-import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.dialog.CopyConfirmationDialog;
-import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.ActionContext;
 import org.cosinus.swing.action.ActionInContext;
@@ -34,6 +31,7 @@ import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.translate.Translator;
 
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.BOUND;
+import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 /**
@@ -116,6 +114,27 @@ public abstract class AbstractCopyAction implements ActionInContext {
     protected <S extends Streamer<S>, T extends Streamer<T>> CopyConfirmationDialog copyConfirmationDialog(
         CopyActionModel<S, T> copyAction) {
         return new CopyConfirmationDialog(copyAction);
+    }
+
+
+    protected <S extends Streamer<S>, T extends Streamer<T>> ParentStreamer<T>
+    prepareDestination(CopyActionModel<S, T> copyAction) {
+
+        if (!copyAction.getDestination().getPath().equals(copyAction.getTargetPath())) {
+            //TODO: to avoid cast
+            ParentStreamer<T> destination =
+                (ParentStreamer<T>) copyAction.getDestination().create(copyAction.getTargetPath(), true);
+            if (destination == null) {
+                return null;
+            }
+            if (!destination.exists()) {
+                dialogHandler.showInfo(
+                    applicationFrame, translator.translate("act_copy_destination_not_found", destination.getPath()));
+                return null;
+            }
+            return destination;
+        }
+        return copyAction.getDestination();
     }
 
     protected abstract <S extends Streamer<S>, T extends Streamer<T>> CopyActionModel<S, T> actionModel();
