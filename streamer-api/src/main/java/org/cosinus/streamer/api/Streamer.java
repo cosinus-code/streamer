@@ -23,6 +23,11 @@ import java.util.stream.Stream;
 
 public interface Streamer<T> extends Streamable {
 
+    String DETAIL_KEY_NAME = "name";
+    String DETAIL_KEY_TYPE = "type";
+    String DETAIL_KEY_SIZE = "size";
+    String DETAIL_KEY_TIME = "time";
+
     Stream<T> stream();
 
     default StreamConsumer<T> streamConsumer() {

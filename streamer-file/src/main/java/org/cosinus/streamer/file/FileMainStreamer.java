@@ -35,7 +35,6 @@ import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static org.cosinus.streamer.file.FileStreamer.DETAIL_KEY_FREE_MEMORY;
-import static org.cosinus.streamer.file.FileStreamer.DETAIL_KEY_NAME;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_COMPUTER;
 
 @RootStreamer("Filesystem")

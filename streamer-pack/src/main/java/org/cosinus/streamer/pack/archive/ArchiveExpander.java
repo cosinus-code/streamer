@@ -21,8 +21,15 @@ import org.cosinus.streamer.api.expand.BinaryExpander;
 import org.cosinus.streamer.api.expand.ExpandedStreamer;
 import org.cosinus.streamer.api.expand.Expander;
 
-@Expander({"tar", "zip", "jar", "war", "ear", "7z"})
+import static org.apache.commons.compress.archivers.ArchiveStreamFactory.*;
+import static org.cosinus.streamer.pack.archive.ArchiveExpander.WAR;
+import static org.cosinus.streamer.pack.archive.ArchiveExpander.EAR;
+
+@Expander({TAR, ZIP, JAR, SEVEN_Z, JAR, AR, CPIO, DUMP, WAR, EAR})
 public class ArchiveExpander implements BinaryExpander<ArchiveStreamer> {
+
+    public static final String WAR = "war";
+    public static final String EAR = "ear";
 
     @Override
     public ExpandedStreamer<ArchiveStreamer> expand(BinaryStreamer binaryStreamer) {

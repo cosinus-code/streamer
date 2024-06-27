@@ -18,6 +18,7 @@ package org.cosinus.streamer.pack.archive.save;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.cosinus.streamer.api.stream.consumer.OutputWriter;
+import org.cosinus.streamer.pack.archive.ArchiveStreamEntry;
 import org.cosinus.streamer.pack.archive.EntryInputStream;
 import org.cosinus.streamer.pack.archive.stream.ArchiveCache;
 
@@ -46,7 +47,7 @@ public class ArchiveSaveSpliterator extends AbstractSpliterator<OutputWriter<Arc
 
     private byte[] readBytes;
 
-    private final Queue<ArchiveEntry> additionalEntries;
+    private final Queue<ArchiveStreamEntry> additionalEntries;
 
     public ArchiveSaveSpliterator(final EntryInputStream archiveInputStream,
                                   final ArchiveCache archiveCache,
@@ -87,7 +88,11 @@ public class ArchiveSaveSpliterator extends AbstractSpliterator<OutputWriter<Arc
         } while (nextEntry != null && !archiveCache.contains(nextEntry));
 
         if (nextEntry == null) {
-            nextEntry = additionalEntries.poll();
+            ArchiveStreamEntry archiveStreamEntry = additionalEntries.poll();
+            if (archiveStreamEntry != null) {
+                nextEntry = archiveStreamEntry.getArchiveEntry();
+                archiveEntryInputStream = archiveStreamEntry.getEntryInputStream();
+            }
         }
 
         return nextEntry;

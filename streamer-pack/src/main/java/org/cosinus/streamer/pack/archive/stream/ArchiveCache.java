@@ -37,5 +37,5 @@ public interface ArchiveCache {
 
     boolean evict(ArchiveStreamEntry archiveEntry);
 
-    Collection<ArchiveEntry> additionalEntries();
+    Collection<ArchiveStreamEntry> additionalEntries();
 }

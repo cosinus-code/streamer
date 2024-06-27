@@ -42,7 +42,7 @@ public class ArchiveHolder implements ArchiveCache {
 
     private final Map<String, Set<ArchiveStreamEntry>> entriesGroupedByParentMap;
 
-    private final Map<String, ArchiveEntry> additionalEntries;
+    private final Map<String, ArchiveStreamEntry> additionalEntries;
 
     private boolean loaded;
 
@@ -73,7 +73,7 @@ public class ArchiveHolder implements ArchiveCache {
 
     public void addAdditional(ArchiveStreamEntry archiveEntry) {
         add(archiveEntry);
-        additionalEntries.put(key(archiveEntry.toPath()), archiveEntry.getArchiveEntry());
+        additionalEntries.put(key(archiveEntry.toPath()), archiveEntry);
         setDirty(true);
     }
 
@@ -182,7 +182,7 @@ public class ArchiveHolder implements ArchiveCache {
     }
 
     @Override
-    public Collection<ArchiveEntry> additionalEntries() {
+    public Collection<ArchiveStreamEntry> additionalEntries() {
         return additionalEntries.values();
     }
 }

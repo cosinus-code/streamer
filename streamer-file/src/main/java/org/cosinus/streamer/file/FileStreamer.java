@@ -38,10 +38,6 @@ import static org.cosinus.swing.context.ApplicationContextInjector.injectContext
 
 public abstract class FileStreamer<T> implements Streamer<T> {
 
-    protected static final String DETAIL_KEY_NAME = "name";
-    protected static final String DETAIL_KEY_TYPE = "type";
-    protected static final String DETAIL_KEY_SIZE = "size";
-    protected static final String DETAIL_KEY_TIME = "time";
     protected static final String DETAIL_KEY_FREE_MEMORY = "detail_free_memory";
 
     @Autowired

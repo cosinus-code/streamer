@@ -45,7 +45,7 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedS
 
     private final ArchiveHolder archiveHolder;
 
-    private String archiveType;
+    private ArchiveType archiveType;
 
     protected ArchivePackStreamer(BinaryStreamer binaryStreamer) {
         super(binaryStreamer);
@@ -208,7 +208,7 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedS
             .collect(Collectors.toSet());
     }
 
-    public String getArchiveType() {
+    public ArchiveType getArchiveType() {
         if (archiveType == null) {
             archiveType = archiveStreamerFactory.detectArchiverType(binaryStreamer);
         }
