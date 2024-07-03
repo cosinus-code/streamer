@@ -20,6 +20,7 @@ import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.ui.action.execute.move.MoveActionModel;
+import org.cosinus.streamer.ui.action.execute.pack.PackActionModel;
 import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
 import org.cosinus.swing.action.execute.ActionModel;
 
@@ -28,6 +29,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import static java.util.UUID.randomUUID;
+import static org.apache.commons.compress.archivers.ArchiveStreamFactory.ZIP;
 
 /**
  * Encapsulates the model of the copy streamers action
@@ -66,6 +68,16 @@ public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> exten
             .setStreamersToCopy(from.getSelectedItems())
             .from(from.getParentStreamer())
             .to(to.getParentStreamer());
+    }
+
+
+    public static <S extends Streamer<S>, T extends Streamer<T>>
+    CopyActionModel<S, T> pack(String actionName, ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
+        return new PackActionModel<S, T>(actionName)
+            .setStreamersToCopy(from.getSelectedItems())
+            .from(from.getParentStreamer())
+            .to(to.getParentStreamer())
+            .withPackType(ZIP);
     }
 
     public Path getTargetPath() {

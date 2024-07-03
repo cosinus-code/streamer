@@ -65,4 +65,9 @@ public class ArchiveParentStreamer extends ArchiveStreamer<ArchiveStreamer> impl
     public ArchiveStreamer create(Path path, Streamer<?> source) {
         return archivePackStreamer.create(path, source);
     }
+
+    @Override
+    public void save() {
+        archivePackStreamer.save(this);
+    }
 }

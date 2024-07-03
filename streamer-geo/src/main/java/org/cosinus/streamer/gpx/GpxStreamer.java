@@ -28,6 +28,7 @@ import org.cosinus.streamer.api.value.TranslatableName;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.Optional;
@@ -89,6 +90,11 @@ public class GpxStreamer extends ExpandedStreamer<GpxPoint> implements Streamer<
     @Override
     public Optional<GpxPoint> find(String path) {
         return Optional.empty();
+    }
+
+    @Override
+    public OutputStream outputStream(boolean append) {
+        return null;
     }
 
     @Override

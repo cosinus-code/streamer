@@ -45,7 +45,7 @@ public class ArchiveBinaryStreamer extends ArchiveStreamer<byte[]> implements Bi
 
     @Override
     public OutputStream outputStream(boolean append) {
-        return null;
+        return archivePackStreamer.entryOutputStream(this);
     }
 
     @Override

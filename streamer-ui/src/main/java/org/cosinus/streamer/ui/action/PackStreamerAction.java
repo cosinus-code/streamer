@@ -16,11 +16,13 @@
 
 package org.cosinus.streamer.ui.action;
 
+import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
 import org.cosinus.streamer.api.worker.WorkerListenerHandler;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
+import org.cosinus.streamer.ui.action.execute.pack.PackWorkerExecutor;
 import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
@@ -33,10 +35,13 @@ import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_F5;
-import static org.cosinus.streamer.ui.action.execute.copy.CopyActionModel.copy;
+import static org.cosinus.streamer.ui.action.execute.copy.CopyActionModel.pack;
+import static org.cosinus.swing.util.FileUtils.setExtension;
 
 /**
  * Copy streamers action
@@ -50,6 +55,8 @@ public class PackStreamerAction extends AbstractCopyAction {
 
     private final BinaryExpanderHandler binaryExpanderHandler;
 
+    private final PackWorkerExecutor packWorkerExecutor;
+
     public PackStreamerAction(final Preferences preferences,
                               final Translator translator,
                               final DialogHandler dialogHandler,
@@ -58,7 +65,8 @@ public class PackStreamerAction extends AbstractCopyAction {
                               final LoadActionExecutor loadActionExecutor,
                               final StreamerViewHandler streamerViewHandler,
                               final ApplicationUIHandler uiHandler,
-                              final BinaryExpanderHandler binaryExpanderHandler) {
+                              final BinaryExpanderHandler binaryExpanderHandler,
+                              final PackWorkerExecutor packWorkerExecutor) {
         super(preferences,
             translator,
             dialogHandler,
@@ -68,6 +76,7 @@ public class PackStreamerAction extends AbstractCopyAction {
             streamerViewHandler);
         this.uiHandler = uiHandler;
         this.binaryExpanderHandler = binaryExpanderHandler;
+        this.packWorkerExecutor = packWorkerExecutor;
     }
 
     @Override
@@ -84,31 +93,26 @@ public class PackStreamerAction extends AbstractCopyAction {
     protected <S extends Streamer<S>, T extends Streamer<T>> void executeStreamerCopy(
         CopyActionModel<S, T> copyAction) {
 
-//        Optional.ofNullable(copyAction.getPackType())
-//                .map(packerHandler.getPackers()::get)
-//                .ifPresent(packer -> {
-//                    DataView<S> currentView = actionContext.getCurrentView();
-//                    List<S> streamersToCopy = copyAction.getStreamersToCopy();
-//                    String name = streamersToCopy.size() == 1 ?
-//                            streamersToCopy.get(0).getName() :
-//                            currentView.getCurrentStreamer().getName();
-//                    String packName = setExtension(name, copyAction.getPackType());
-//                    Path packStreamerPath = copyAction.getTargetPath().resolve(packName);
-//
-//                    Streamer destination = copyAction.getDestination().create(packStreamerPath);
-//
-//                    super.execute(copy(streamersToCopy)
-//                                          .from(currentView.getLoadedStreamer())
-//                                          .to(packer.pack(destination))
-//                                            //TODO: to avoid setting target path to null
-//                                          .toTargetPath((Path) null),
-//                                  actionContext);
-//                });
+        Optional.ofNullable(copyAction.getPackType())
+            .map(binaryExpanderHandler.getBinaryExpandersMap()::get)
+            .ifPresent(expander -> {
+                StreamerView<S> currentView = (StreamerView<S>) streamerViewHandler.getCurrentView();
+                List<Streamer<S>> streamersToCopy = copyAction.getStreamersToCopy();
+                String name = streamersToCopy.size() == 1 ?
+                    streamersToCopy.get(0).getName() :
+                    currentView.getParentStreamer().getName();
+                String packName = setExtension(name, copyAction.getPackType());
+                Path packStreamerPath = copyAction.getTargetPath().resolve(packName);
+                Streamer destination = copyAction.getDestination().create(packStreamerPath, false);
+                ParentStreamer expandedDestination = (ParentStreamer) expander.expand(destination.binaryStreamer());
+
+                packWorkerExecutor.execute(copyAction.to(expandedDestination));
+            });
     }
 
     @Override
     protected <S extends Streamer<S>, T extends Streamer<T>> CopyActionModel<S, T> actionModel() {
-        return copy(getCopyActionName(),
+        return pack(getCopyActionName(),
             new ParentStreamerViewContext<>((StreamerView<S>) streamerViewHandler.getCurrentView()),
             new ParentStreamerViewContext<>((StreamerView<T>) streamerViewHandler.getOppositeView()));
     }

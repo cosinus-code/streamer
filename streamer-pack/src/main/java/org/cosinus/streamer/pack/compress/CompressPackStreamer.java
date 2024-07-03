@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -70,6 +71,12 @@ public class CompressPackStreamer extends ExpandedStreamer<CompressStreamer> imp
     @Override
     public Optional<CompressStreamer> find(String path) {
         return Optional.of(createCompressStreamer());
+    }
+
+    @Override
+    public OutputStream outputStream(boolean append) {
+        //TODO
+        return null;
     }
 
     protected String getDefaultCompressedStreamerName() {

@@ -90,7 +90,6 @@ public abstract class AbstractCopyAction implements ActionInContext {
     }
 
     protected <S extends Streamer<S>, T extends Streamer<T>> void copyParentStreamer() {
-
         CopyActionModel<S, T> copyAction = actionModel();
         if (isEmpty(copyAction.getStreamersToCopy())) {
             return;

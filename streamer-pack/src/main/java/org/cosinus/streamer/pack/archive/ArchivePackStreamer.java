@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.pack.archive;
 
+import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
@@ -25,7 +26,7 @@ import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.streamer.pack.archive.save.ArchiveSaveModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Set;
@@ -46,6 +47,8 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedS
     private final ArchiveHolder archiveHolder;
 
     private ArchiveType archiveType;
+
+    private ArchiveOutputStream archiveOutputStream;
 
     protected ArchivePackStreamer(BinaryStreamer binaryStreamer) {
         super(binaryStreamer);
@@ -214,5 +217,43 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedS
             archiveType = archiveStreamerFactory.detectArchiverType(binaryStreamer);
         }
         return archiveType;
+    }
+
+    @Override
+    public OutputStream outputStream(boolean append) {
+        archiveOutputStream = archiveStreamerFactory
+            .createArchiveOutputStream(getArchiveType(), binaryStreamer.outputStream(append));
+        return archiveOutputStream;
+    }
+
+    public void save(ArchiveParentStreamer archiveParentStreamer) {
+        try {
+            archiveOutputStream.putArchiveEntry(archiveParentStreamer.getArchiveEntry());
+            archiveOutputStream.closeArchiveEntry();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    public OutputStream entryOutputStream(ArchiveBinaryStreamer archiveBinaryStreamer) {
+        if (archiveOutputStream == null) {
+            return null;
+        }
+
+        try {
+            archiveOutputStream.putArchiveEntry(archiveBinaryStreamer.getArchiveEntry());
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        return new FilterOutputStream(archiveOutputStream) {
+            @Override
+            public void close() {
+                try {
+                    archiveOutputStream.closeArchiveEntry();
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            }
+        };
     }
 }

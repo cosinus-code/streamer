@@ -135,12 +135,15 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
     }
 
     protected T targetStreamer(S streamerToCopy) {
-        Path relativePath = getRelativePath(streamerToCopy);
-        Path targetPath = destination.getPath().resolve(relativePath);
+        Path targetPath = getTargetPath(streamerToCopy);
         return destination.create(targetPath, streamerToCopy);
     }
 
-    private Path getRelativePath(Streamer<?> streamer) {
+    protected Path getTargetPath(S streamerToCopy) {
+        return destination.getPath().resolve(getRelativePath(streamerToCopy));
+    }
+
+    protected Path getRelativePath(Streamer<?> streamer) {
         Path streamerPath = streamer.getPath();
         return streamerPath.subpath(ofNullable(source.getPath())
                 .filter(streamerPath::startsWith)

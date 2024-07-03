@@ -20,6 +20,7 @@ import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 
+import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.Optional;
 
@@ -81,4 +82,6 @@ public abstract class ExpandedStreamer<T> implements Streamer<T> {
     }
 
     public abstract Optional<T> find(String path);
+
+    public abstract OutputStream outputStream(boolean append);
 }
