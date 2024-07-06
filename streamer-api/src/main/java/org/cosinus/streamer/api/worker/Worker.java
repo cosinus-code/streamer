@@ -126,7 +126,7 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
 
         onWorkerDoneBeforeFinishing();
         workerListenerHandler.workerFinished(getId(), workerModel);
-        actionExecutors.getActionExecutor(actionModel.getClass())
+        actionExecutors.getActionExecutor(actionModel)
             .ifPresent(executor -> executor.remove(getId()));
 
     }

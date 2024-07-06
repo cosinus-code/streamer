@@ -29,7 +29,6 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import static java.util.UUID.randomUUID;
-import static org.apache.commons.compress.archivers.ArchiveStreamFactory.ZIP;
 
 /**
  * Encapsulates the model of the copy streamers action
@@ -47,8 +46,6 @@ public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> exten
     private Path targetPath;
 
     private String packType;
-
-    private boolean shouldPack;
 
     public CopyActionModel(String actionName) {
         super(randomUUID().toString(), actionName);
@@ -76,8 +73,7 @@ public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> exten
         return new PackActionModel<S, T>(actionName)
             .setStreamersToCopy(from.getSelectedItems())
             .from(from.getParentStreamer())
-            .to(to.getParentStreamer())
-            .withPackType(ZIP);
+            .to(to.getParentStreamer());
     }
 
     public Path getTargetPath() {
@@ -132,15 +128,6 @@ public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> exten
     public CopyActionModel<S, T> to(ParentStreamer<T> destination) {
         this.destination = destination;
         this.targetPath = destination.getPath();
-        return this;
-    }
-
-    public boolean shouldPackStreamers() {
-        return shouldPack;
-    }
-
-    public CopyActionModel<S, T> pack() {
-        this.shouldPack = true;
         return this;
     }
 }

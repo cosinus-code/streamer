@@ -35,16 +35,23 @@ import static org.cosinus.swing.border.Borders.emptyBorder;
 public class CopyConfirmationDialog extends Dialog<CopyActionModel> {
 
     @Autowired
-    private Translator translator;
+    protected Translator translator;
 
     @Autowired
-    private DialogHandler dialogHandler;
+    protected DialogHandler dialogHandler;
 
-    private JTextField txtCopyTo;
+    protected JPanel mainPanel;
 
-    private final CopyActionModel copyAction;
+    private JButton okButton ;
+    private JButton cancelButton;
+    private JButton browseButton;
 
-    private final String actionName;
+
+    protected JTextField txtCopyTo;
+
+    protected final CopyActionModel copyAction;
+
+    protected final String actionName;
 
     public CopyConfirmationDialog(CopyActionModel copyAction) {
         super(applicationFrame, applicationFrame.getTitle(), true, false);
@@ -56,13 +63,26 @@ public class CopyConfirmationDialog extends Dialog<CopyActionModel> {
     public void initComponents() {
         super.initComponents();
 
+        mainPanel = new JPanel(new BorderLayout());
+
+        createUiStructure();
+
+        getContentPane().add(mainPanel);
+        mainPanel.getRootPane().setDefaultButton(okButton);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+        pack();
+        centerWindow();
+    }
+
+    protected void createUiStructure() {
         JLabel copyToLabel = new JLabel(translator.translate("form_copy_files", getActionName()));
         JLabel filterLabel = new JLabel(translator.translate("form_copy_only"));
         JComboBox<Object> cmbFilter = new JComboBox<>();
 
-        JButton okButton = new JButton(translator.translate("form_copy_ok"));
-        JButton cancelButton = new JButton(translator.translate("form_copy_cancel"));
-        JButton browseButton = new JButton(translator.translate("form_copy_tree"));
+        okButton = new JButton(translator.translate("form_copy_ok"));
+        cancelButton = new JButton(translator.translate("form_copy_cancel"));
+        browseButton = new JButton(translator.translate("form_copy_tree"));
 
         txtCopyTo = new JTextField(copyAction.getTargetPath().toString());
 
@@ -82,6 +102,7 @@ public class CopyConfirmationDialog extends Dialog<CopyActionModel> {
         filterLabel.setVerticalAlignment(SwingConstants.BOTTOM);
 
         JPanel buttonsPanel = new JPanel(new GridLayout(1, 3, 4, 2));
+        buttonsPanel.setBorder(emptyBorder(10, 0, 0, 0));
         buttonsPanel.add(okButton);
         buttonsPanel.add(browseButton);
         buttonsPanel.add(cancelButton);
@@ -96,21 +117,12 @@ public class CopyConfirmationDialog extends Dialog<CopyActionModel> {
         copyPanel.add(filterLabel);
         copyPanel.add(cmbFilter);
 
-        JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBorder(emptyBorder(2, 10, 5, 10));
         mainPanel.add(copyPanel, BorderLayout.NORTH);
         mainPanel.add(southPanel, BorderLayout.SOUTH);
 
         filterLabel.setEnabled(false);
         cmbFilter.setEnabled(false);
-
-        getContentPane().add(mainPanel);
-        mainPanel.getRootPane().setDefaultButton(okButton);
-
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-
-        setSize(new Dimension(363, 213));
-        centerWindow();
     }
 
     public void browse() {
@@ -119,13 +131,6 @@ public class CopyConfirmationDialog extends Dialog<CopyActionModel> {
 
     @Override
     protected CopyActionModel getDialogResponse() {
-        if (copyAction.shouldPackStreamers()) {
-            //TODO: to find the packType is needed
-//            Optional.ofNullable(cmbTransferType.getSelectedItem())
-//                .map(Object::toString)
-//                .ifPresent(copyAction::withPackType);
-        }
-
         return copyAction.toTargetPath(txtCopyTo.getText());
     }
 

@@ -16,9 +16,8 @@
 
 package org.cosinus.streamer.ui.dialog;
 
-import org.cosinus.streamer.api.worker.WorkerModel;
 import org.cosinus.streamer.api.worker.WorkerListener;
-import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
+import org.cosinus.streamer.api.worker.WorkerModel;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.action.execute.ActionModel;
 import org.cosinus.swing.format.FormatHandler;
@@ -133,7 +132,7 @@ public abstract class ProgressDialog<M extends WorkerModel<M>> extends Dialog<Vo
 
     @Override
     public void cancel() {
-        actionExecutors.getActionExecutor(CopyActionModel.class)
+        actionExecutors.getActionExecutor(actionModel)
             .ifPresent(executor -> executor.cancel(actionModel.getActionId()));
         super.cancel();
     }
