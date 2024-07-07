@@ -86,10 +86,10 @@ public class CopyConfirmationDialog<M extends CopyActionModel> extends Dialog<M>
 
         txtCopyTo = new JTextField(copyAction.getTargetPath().toString());
 
-        ActionListener actionListener = av -> {
-            if (av.getSource() == okButton) dispose();
-            else if (av.getSource() == cancelButton) cancel();
-            else if (av.getSource() == browseButton) browse();
+        ActionListener actionListener = actionEvent -> {
+            if (actionEvent.getSource() == okButton) dispose();
+            else if (actionEvent.getSource() == cancelButton) cancel();
+            else if (actionEvent.getSource() == browseButton) browse();
         };
 
         okButton.addActionListener(actionListener);

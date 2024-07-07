@@ -29,6 +29,7 @@ import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.translate.Translator;
+import org.cosinus.swing.window.Dialog;
 
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.BOUND;
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
@@ -109,7 +110,7 @@ public abstract class AbstractCopyAction<M extends CopyActionModel> implements A
         actionExecutors.execute(copyAction);
     }
 
-    protected <S extends Streamer<S>, T extends Streamer<T>> CopyConfirmationDialog<M> copyConfirmationDialog(
+    protected <S extends Streamer<S>, T extends Streamer<T>> Dialog<M> copyConfirmationDialog(
         final M copyAction) {
         return new CopyConfirmationDialog<>(copyAction);
     }

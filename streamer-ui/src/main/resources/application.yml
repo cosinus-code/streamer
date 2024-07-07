@@ -2,6 +2,8 @@ swing:
   application:
     name: Streamer
     icon: streamer.png
+  ui:
+    initializer: true
 
 spring:
   cache:

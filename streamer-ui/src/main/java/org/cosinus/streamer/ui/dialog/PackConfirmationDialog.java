@@ -13,63 +13,85 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.cosinus.streamer.ui.dialog;
 
 import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
 import org.cosinus.streamer.pack.archive.ArchiveExpander;
 import org.cosinus.streamer.ui.action.execute.pack.PackActionModel;
+import org.cosinus.swing.form.control.ComboBox;
+import org.cosinus.swing.form.control.FileTextField;
+import org.cosinus.swing.ui.UIStructure;
+import org.cosinus.swing.ui.UiInitializer;
+import org.cosinus.swing.window.Dialog;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.Map;
 
-import static org.apache.commons.compress.archivers.ArchiveStreamFactory.ZIP;
+import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 
-/**
- * Dialog used for confirmation of copy action
- */
-public class PackConfirmationDialog extends CopyConfirmationDialog<PackActionModel> {
+public class PackConfirmationDialog extends Dialog<PackActionModel> {
+
+    private static final String UI_DESCRIPTOR_NAME = "packConfirmationDialog.json";
+
+    protected static final String PACK_TYPE = "packType";
+
+    protected static final String PACK_TO = "packTo";
+
+    protected static final String PACK_FILTER = "packFilter";
+
+    @Autowired
+    private UiInitializer uiInitializer;
 
     @Autowired
     private BinaryExpanderHandler expanderHandler;
 
-    private JComboBox<String> cmbTransferType;
+    protected final PackActionModel packAction;
 
-    public PackConfirmationDialog(PackActionModel copyAction) {
-        super(copyAction);
+    protected UIStructure uiStructure;
+
+    public PackConfirmationDialog(PackActionModel packAction) {
+        super(applicationFrame, applicationFrame.getTitle(), true, false);
+        this.packAction = packAction;
     }
 
     @Override
-    public void createUiStructure() {
-        super.createUiStructure();
+    public void initComponents() {
+        super.initComponents();
 
-        cmbTransferType = new JComboBox<>(expanderHandler.getBinaryExpandersMap()
-            .entrySet()
-            .stream()
-            .filter(entry -> entry.getValue() instanceof ArchiveExpander)
-            .map(Map.Entry::getKey)
-            .toArray(String[]::new));
+        uiStructure = uiInitializer.createUiStructure(UI_DESCRIPTOR_NAME);
+        getContentPane().add(uiStructure);
+        uiStructure.getDefaultButton()
+            .ifPresent(uiStructure.getRootPane()::setDefaultButton);
+        registerDefaultActions(uiStructure);
 
-        JLabel lblTransferType = new JLabel(translator.translate("form_copy_transfer_type"));
-        cmbTransferType.setSelectedItem(ZIP);
+        uiStructure.getField(PACK_TO)
+            .filter(FileTextField.class::isInstance)
+            .map(FileTextField.class::cast)
+            .ifPresent(control -> control.setControlValue(packAction.getTargetPath().toFile()));
 
-        JPanel panTransferType = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-        panTransferType.setBorder(null);
-        panTransferType.add(lblTransferType);
-        panTransferType.add(cmbTransferType);
+        uiStructure.getField(PACK_FILTER)
+            .ifPresent(control -> control.setEnabled(false));
+        uiStructure.getField(PACK_TYPE)
+            .filter(ComboBox.class::isInstance)
+            .map(ComboBox.class::cast)
+            .ifPresent(control -> control.setModel(
+                new DefaultComboBoxModel<>(expanderHandler.getBinaryExpandersMap()
+                    .entrySet()
+                    .stream()
+                    .filter(entry -> entry.getValue() instanceof ArchiveExpander)
+                    .map(Map.Entry::getKey)
+                    .toArray(String[]::new))));
 
-        JPanel panCenter = new JPanel(new BorderLayout());
-        panCenter.add(panTransferType, BorderLayout.CENTER);
-
-        mainPanel.add(panCenter, BorderLayout.CENTER);
+        pack();
+        centerWindow();
     }
 
     @Override
     protected PackActionModel getDialogResponse() {
-        copyAction.toTargetPath(txtCopyTo.getText());
-        copyAction.withPackType(cmbTransferType.getSelectedItem().toString());
-        return copyAction;
+        uiStructure.getValue(PACK_TYPE)
+            .map(Object::toString)
+            .ifPresent(packAction::withPackType);
+        return packAction;
     }
 }

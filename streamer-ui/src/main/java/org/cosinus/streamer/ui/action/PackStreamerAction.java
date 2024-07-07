@@ -23,7 +23,6 @@ import org.cosinus.streamer.api.worker.WorkerListenerHandler;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.pack.PackActionModel;
 import org.cosinus.streamer.ui.action.execute.pack.PackWorkerExecutor;
-import org.cosinus.streamer.ui.dialog.CopyConfirmationDialog;
 import org.cosinus.streamer.ui.dialog.PackConfirmationDialog;
 import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
 import org.cosinus.streamer.ui.view.StreamerView;
@@ -34,6 +33,7 @@ import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.translate.Translator;
 import org.cosinus.swing.ui.ApplicationUIHandler;
+import org.cosinus.swing.window.Dialog;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
@@ -92,7 +92,7 @@ public class PackStreamerAction extends AbstractCopyAction<PackActionModel> {
     }
 
     @Override
-    protected <S extends Streamer<S>, T extends Streamer<T>> CopyConfirmationDialog<PackActionModel> copyConfirmationDialog(PackActionModel copyAction) {
+    protected <S extends Streamer<S>, T extends Streamer<T>> Dialog<PackActionModel> copyConfirmationDialog(PackActionModel copyAction) {
         return new PackConfirmationDialog(copyAction);
     }
 

@@ -1,0 +1,31 @@
+{
+  "fields": [
+    {
+      "id": "packTo",
+      "label": "pack-files",
+      "type": "file"
+    },
+    {
+      "id": "packFilter",
+      "label": "form_copy_only",
+      "type": "text"
+    },
+    {
+      "id": "packType",
+      "label": "form_copy_transfer_type",
+      "type": "combobox"
+    }
+  ],
+  "buttons": [
+    {
+      "id": "ok",
+      "label": "form_copy_ok",
+      "action": "ok"
+    },
+    {
+      "id": "cancel",
+      "label": "form_copy_cancel",
+      "action": "cancel"
+    }
+  ]
+}
