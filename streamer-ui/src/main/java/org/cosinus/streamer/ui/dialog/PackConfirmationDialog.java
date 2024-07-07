@@ -18,14 +18,11 @@ package org.cosinus.streamer.ui.dialog;
 import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
 import org.cosinus.streamer.pack.archive.ArchiveExpander;
 import org.cosinus.streamer.ui.action.execute.pack.PackActionModel;
-import org.cosinus.swing.form.control.ComboBox;
-import org.cosinus.swing.form.control.FileTextField;
 import org.cosinus.swing.ui.UIStructure;
 import org.cosinus.swing.ui.UiInitializer;
 import org.cosinus.swing.window.Dialog;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.swing.*;
 import java.util.Map;
 
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
@@ -65,23 +62,17 @@ public class PackConfirmationDialog extends Dialog<PackActionModel> {
             .ifPresent(uiStructure.getRootPane()::setDefaultButton);
         registerDefaultActions(uiStructure);
 
-        uiStructure.getField(PACK_TO)
-            .filter(FileTextField.class::isInstance)
-            .map(FileTextField.class::cast)
-            .ifPresent(control -> control.setControlValue(packAction.getTargetPath().toFile()));
-
-        uiStructure.getField(PACK_FILTER)
-            .ifPresent(control -> control.setEnabled(false));
-        uiStructure.getField(PACK_TYPE)
-            .filter(ComboBox.class::isInstance)
-            .map(ComboBox.class::cast)
-            .ifPresent(control -> control.setModel(
-                new DefaultComboBoxModel<>(expanderHandler.getBinaryExpandersMap()
-                    .entrySet()
-                    .stream()
-                    .filter(entry -> entry.getValue() instanceof ArchiveExpander)
-                    .map(Map.Entry::getKey)
-                    .toArray(String[]::new))));
+        uiStructure.findControl(PACK_FILTER)
+            .ifPresent(control -> control.setControlEnabled(false));
+        uiStructure.getFileControl(PACK_TO)
+            .setControlValue(packAction.getTargetPath().toFile());
+        uiStructure.getComboBoxControl(PACK_TYPE)
+            .setValues(expanderHandler.getBinaryExpandersMap()
+                .entrySet()
+                .stream()
+                .filter(entry -> entry.getValue() instanceof ArchiveExpander)
+                .map(Map.Entry::getKey)
+                .toArray(String[]::new));
 
         pack();
         centerWindow();
@@ -89,9 +80,6 @@ public class PackConfirmationDialog extends Dialog<PackActionModel> {
 
     @Override
     protected PackActionModel getDialogResponse() {
-        uiStructure.getValue(PACK_TYPE)
-            .map(Object::toString)
-            .ifPresent(packAction::withPackType);
-        return packAction;
+        return packAction.withPackType(uiStructure.getStringValue(PACK_TYPE));
     }
 }
