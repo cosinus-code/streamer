@@ -16,10 +16,9 @@
 
 package org.cosinus.streamer.ui.dialog;
 
-import org.cosinus.streamer.api.expand.BinaryExpander;
 import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
 import org.cosinus.streamer.pack.archive.ArchiveExpander;
-import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
+import org.cosinus.streamer.ui.action.execute.pack.PackActionModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
@@ -31,14 +30,14 @@ import static org.apache.commons.compress.archivers.ArchiveStreamFactory.ZIP;
 /**
  * Dialog used for confirmation of copy action
  */
-public class PackConfirmationDialog extends CopyConfirmationDialog {
+public class PackConfirmationDialog extends CopyConfirmationDialog<PackActionModel> {
 
     @Autowired
     private BinaryExpanderHandler expanderHandler;
 
     private JComboBox<String> cmbTransferType;
 
-    public PackConfirmationDialog(CopyActionModel copyAction) {
+    public PackConfirmationDialog(PackActionModel copyAction) {
         super(copyAction);
     }
 
@@ -68,8 +67,9 @@ public class PackConfirmationDialog extends CopyConfirmationDialog {
     }
 
     @Override
-    protected CopyActionModel getDialogResponse() {
-        return super.getDialogResponse()
-            .withPackType(cmbTransferType.getSelectedItem().toString());
+    protected PackActionModel getDialogResponse() {
+        copyAction.toTargetPath(txtCopyTo.getText());
+        copyAction.withPackType(cmbTransferType.getSelectedItem().toString());
+        return copyAction;
     }
 }

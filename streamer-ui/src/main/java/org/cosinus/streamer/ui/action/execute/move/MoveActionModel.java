@@ -18,6 +18,7 @@ package org.cosinus.streamer.ui.action.execute.move;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
+import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
 
 /**
  * Encapsulates the model of the copy streamers action
@@ -26,5 +27,15 @@ public class MoveActionModel<S extends Streamer<S>, T extends Streamer<T>> exten
 
     public MoveActionModel(String actionName) {
         super(actionName);
+    }
+
+    public static <S extends Streamer<S>, T extends Streamer<T>>
+    MoveActionModel<S, T> move(String actionName, ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
+        MoveActionModel<S, T> moveActionModel = new MoveActionModel<>(actionName);
+        moveActionModel.setStreamersToCopy(from.getSelectedItems())
+            .from(from.getParentStreamer())
+            .to(to.getParentStreamer());
+
+        return moveActionModel;
     }
 }

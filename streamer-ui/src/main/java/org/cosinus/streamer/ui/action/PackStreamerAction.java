@@ -20,8 +20,8 @@ import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
 import org.cosinus.streamer.api.worker.WorkerListenerHandler;
-import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
+import org.cosinus.streamer.ui.action.execute.pack.PackActionModel;
 import org.cosinus.streamer.ui.action.execute.pack.PackWorkerExecutor;
 import org.cosinus.streamer.ui.dialog.CopyConfirmationDialog;
 import org.cosinus.streamer.ui.dialog.PackConfirmationDialog;
@@ -42,15 +42,14 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_F5;
-import static org.apache.commons.compress.archivers.ArchiveStreamFactory.ZIP;
-import static org.cosinus.streamer.ui.action.execute.copy.CopyActionModel.pack;
+import static org.cosinus.streamer.ui.action.execute.pack.PackActionModel.pack;
 import static org.cosinus.swing.util.FileUtils.setExtension;
 
 /**
  * Copy streamers action
  */
 @Component
-public class PackStreamerAction extends AbstractCopyAction {
+public class PackStreamerAction extends AbstractCopyAction<PackActionModel> {
 
     public static final String PACK_STREAMER_ACTION_ID = "pack-streamer";
 
@@ -78,8 +77,7 @@ public class PackStreamerAction extends AbstractCopyAction {
     }
 
     @Override
-    protected <S extends Streamer<S>, T extends Streamer<T>> void executeStreamerCopy(CopyActionModel<S, T> copyAction) {
-
+    protected <S extends Streamer<S>, T extends Streamer<T>> void executeStreamerCopy(PackActionModel copyAction) {
         Optional.ofNullable(copyAction.getPackType()).map(binaryExpanderHandler.getBinaryExpandersMap()::get).ifPresent(expander -> {
             StreamerView<S> currentView = (StreamerView<S>) streamerViewHandler.getCurrentView();
             List<Streamer<S>> streamersToCopy = copyAction.getStreamersToCopy();
@@ -94,13 +92,15 @@ public class PackStreamerAction extends AbstractCopyAction {
     }
 
     @Override
-    protected <S extends Streamer<S>, T extends Streamer<T>> CopyConfirmationDialog copyConfirmationDialog(CopyActionModel<S, T> copyAction) {
+    protected <S extends Streamer<S>, T extends Streamer<T>> CopyConfirmationDialog<PackActionModel> copyConfirmationDialog(PackActionModel copyAction) {
         return new PackConfirmationDialog(copyAction);
     }
 
     @Override
-    protected <S extends Streamer<S>, T extends Streamer<T>> CopyActionModel<S, T> actionModel() {
-        return pack(getCopyActionName(), new ParentStreamerViewContext<>((StreamerView<S>) streamerViewHandler.getCurrentView()), new ParentStreamerViewContext<>((StreamerView<T>) streamerViewHandler.getOppositeView()));
+    protected <S extends Streamer<S>, T extends Streamer<T>> PackActionModel actionModel() {
+        return pack(getActionName(),
+            new ParentStreamerViewContext<>((StreamerView<S>) streamerViewHandler.getCurrentView()),
+            new ParentStreamerViewContext<>((StreamerView<T>) streamerViewHandler.getOppositeView()));
     }
 
     @Override
@@ -109,7 +109,7 @@ public class PackStreamerAction extends AbstractCopyAction {
     }
 
     @Override
-    protected String getCopyActionName() {
+    protected String getActionName() {
         return PACK_ACTION_NAME;
     }
 

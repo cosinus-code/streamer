@@ -37,7 +37,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 /**
  * Abstract copy action
  */
-public abstract class AbstractCopyAction implements ActionInContext {
+public abstract class AbstractCopyAction<M extends CopyActionModel> implements ActionInContext {
 
     protected static final String COPY_ACTION_NAME = "act-copy";
 
@@ -90,7 +90,7 @@ public abstract class AbstractCopyAction implements ActionInContext {
     }
 
     protected <S extends Streamer<S>, T extends Streamer<T>> void copyParentStreamer() {
-        CopyActionModel<S, T> copyAction = actionModel();
+        M copyAction = actionModel();
         if (isEmpty(copyAction.getStreamersToCopy())) {
             return;
         }
@@ -105,14 +105,13 @@ public abstract class AbstractCopyAction implements ActionInContext {
             .ifPresent(this::executeStreamerCopy);
     }
 
-    protected <S extends Streamer<S>, T extends Streamer<T>> void executeStreamerCopy(
-        final CopyActionModel<S, T> copyAction) {
+    protected <S extends Streamer<S>, T extends Streamer<T>> void executeStreamerCopy(final M copyAction) {
         actionExecutors.execute(copyAction);
     }
 
-    protected <S extends Streamer<S>, T extends Streamer<T>> CopyConfirmationDialog copyConfirmationDialog(
-        CopyActionModel<S, T> copyAction) {
-        return new CopyConfirmationDialog(copyAction);
+    protected <S extends Streamer<S>, T extends Streamer<T>> CopyConfirmationDialog<M> copyConfirmationDialog(
+        final M copyAction) {
+        return new CopyConfirmationDialog<>(copyAction);
     }
 
 
@@ -136,7 +135,7 @@ public abstract class AbstractCopyAction implements ActionInContext {
         return copyAction.getDestination();
     }
 
-    protected abstract <S extends Streamer<S>, T extends Streamer<T>> CopyActionModel<S, T> actionModel();
+    protected abstract <S extends Streamer<S>, T extends Streamer<T>> M actionModel();
 
-    protected abstract String getCopyActionName();
+    protected abstract String getActionName();
 }

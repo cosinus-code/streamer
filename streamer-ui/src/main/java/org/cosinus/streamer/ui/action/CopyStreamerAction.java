@@ -40,7 +40,7 @@ import static org.cosinus.streamer.ui.action.execute.copy.CopyActionModel.copy;
  * Copy streamers action
  */
 @Component
-public class CopyStreamerAction extends AbstractCopyAction {
+public class CopyStreamerAction extends AbstractCopyAction<CopyActionModel> {
 
     public static final String COPY_STREAMER_ACTION_ID = "copy-streamer";
 
@@ -61,15 +61,14 @@ public class CopyStreamerAction extends AbstractCopyAction {
     }
 
     @Override
-    protected <S extends Streamer<S>, T extends Streamer<T>> void
-    executeStreamerCopy(CopyActionModel<S, T> copyAction) {
+    protected <S extends Streamer<S>, T extends Streamer<T>> void executeStreamerCopy(CopyActionModel copyAction) {
         ParentStreamer<T> destination = prepareDestination(copyAction);
         super.executeStreamerCopy(copyAction.to(destination));
     }
 
     @Override
     protected <S extends Streamer<S>, T extends Streamer<T>> CopyActionModel<S, T> actionModel() {
-        return copy(getCopyActionName(),
+        return copy(getActionName(),
             new ParentStreamerViewContext<>((StreamerView<S>) streamerViewHandler.getCurrentView()),
             new ParentStreamerViewContext<>((StreamerView<T>) streamerViewHandler.getOppositeView()));
     }
@@ -80,7 +79,7 @@ public class CopyStreamerAction extends AbstractCopyAction {
     }
 
     @Override
-    protected String getCopyActionName() {
+    protected String getActionName() {
         return COPY_ACTION_NAME;
     }
 

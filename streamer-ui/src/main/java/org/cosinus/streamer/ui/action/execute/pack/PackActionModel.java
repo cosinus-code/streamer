@@ -17,10 +17,33 @@ package org.cosinus.streamer.ui.action.execute.pack;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
+import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
 
 public class PackActionModel<S extends Streamer<S>, T extends Streamer<T>> extends CopyActionModel<S, T> {
 
+    private String packType;
+
     public PackActionModel(String actionName) {
         super(actionName);
+    }
+
+    public String getPackType() {
+        return packType;
+    }
+
+    public PackActionModel<S, T> withPackType(String packType) {
+        this.packType = packType;
+        return this;
+    }
+
+    public static <S extends Streamer<S>, T extends Streamer<T>>
+    PackActionModel<S, T> pack(String actionName, ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
+        PackActionModel<S, T> packActionModel = new PackActionModel(actionName);
+        packActionModel
+            .setStreamersToCopy(from.getSelectedItems())
+            .from(from.getParentStreamer())
+            .to(to.getParentStreamer());
+
+        return packActionModel;
     }
 }

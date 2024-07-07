@@ -32,7 +32,7 @@ import static org.cosinus.swing.border.Borders.emptyBorder;
 /**
  * Dialog used for confirmation of copy action
  */
-public class CopyConfirmationDialog extends Dialog<CopyActionModel> {
+public class CopyConfirmationDialog<M extends CopyActionModel> extends Dialog<M> {
 
     @Autowired
     protected Translator translator;
@@ -49,11 +49,11 @@ public class CopyConfirmationDialog extends Dialog<CopyActionModel> {
 
     protected JTextField txtCopyTo;
 
-    protected final CopyActionModel copyAction;
+    protected final M copyAction;
 
     protected final String actionName;
 
-    public CopyConfirmationDialog(CopyActionModel copyAction) {
+    public CopyConfirmationDialog(M copyAction) {
         super(applicationFrame, applicationFrame.getTitle(), true, false);
         this.copyAction = copyAction;
         this.actionName = translator.translate(copyAction.getActionName());
@@ -130,8 +130,9 @@ public class CopyConfirmationDialog extends Dialog<CopyActionModel> {
     }
 
     @Override
-    protected CopyActionModel getDialogResponse() {
-        return copyAction.toTargetPath(txtCopyTo.getText());
+    protected M getDialogResponse() {
+        copyAction.toTargetPath(txtCopyTo.getText());
+        return copyAction;
     }
 
     protected String getActionName() {

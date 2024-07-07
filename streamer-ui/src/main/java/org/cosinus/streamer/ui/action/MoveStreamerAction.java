@@ -19,8 +19,8 @@ package org.cosinus.streamer.ui.action;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.WorkerListenerHandler;
-import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
+import org.cosinus.streamer.ui.action.execute.move.MoveActionModel;
 import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
@@ -34,13 +34,13 @@ import javax.swing.*;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_F6;
-import static org.cosinus.streamer.ui.action.execute.copy.CopyActionModel.move;
+import static org.cosinus.streamer.ui.action.execute.move.MoveActionModel.move;
 
 /**
  * Copy streamers action
  */
 @Component
-public class MoveStreamerAction extends AbstractCopyAction {
+public class MoveStreamerAction extends AbstractCopyAction<MoveActionModel> {
 
     public static final String MOVE_STREAMER_ACTION_ID = "move-streamer";
 
@@ -61,15 +61,15 @@ public class MoveStreamerAction extends AbstractCopyAction {
     }
 
     @Override
-    protected <S extends Streamer<S>, T extends Streamer<T>> void
-    executeStreamerCopy(CopyActionModel<S, T> copyAction) {
-        ParentStreamer<T> destination = prepareDestination(copyAction);
-        super.executeStreamerCopy(copyAction.to(destination));
+    protected <S extends Streamer<S>, T extends Streamer<T>> void executeStreamerCopy(MoveActionModel moveAction) {
+        ParentStreamer<T> destination = prepareDestination(moveAction);
+        moveAction.to(destination);
+        super.executeStreamerCopy(moveAction);
     }
 
     @Override
-    protected <S extends Streamer<S>, T extends Streamer<T>> CopyActionModel<S, T> actionModel() {
-        return move(getCopyActionName(),
+    protected <S extends Streamer<S>, T extends Streamer<T>> MoveActionModel<S, T> actionModel() {
+        return move(getActionName(),
             new ParentStreamerViewContext<>((StreamerView<S>) streamerViewHandler.getCurrentView()),
             new ParentStreamerViewContext<>((StreamerView<T>) streamerViewHandler.getOppositeView()));
     }
@@ -80,7 +80,7 @@ public class MoveStreamerAction extends AbstractCopyAction {
     }
 
     @Override
-    protected String getCopyActionName() {
+    protected String getActionName() {
         return MOVE_ACTION_NAME;
     }
 

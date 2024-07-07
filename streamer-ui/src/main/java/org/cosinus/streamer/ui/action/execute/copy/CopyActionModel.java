@@ -19,8 +19,6 @@ package org.cosinus.streamer.ui.action.execute.copy;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
-import org.cosinus.streamer.ui.action.execute.move.MoveActionModel;
-import org.cosinus.streamer.ui.action.execute.pack.PackActionModel;
 import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
 import org.cosinus.swing.action.execute.ActionModel;
 
@@ -45,8 +43,6 @@ public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> exten
 
     private Path targetPath;
 
-    private String packType;
-
     public CopyActionModel(String actionName) {
         super(randomUUID().toString(), actionName);
     }
@@ -54,23 +50,6 @@ public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> exten
     public static <S extends Streamer<S>, T extends Streamer<T>>
     CopyActionModel<S, T> copy(String actionName, ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
         return new CopyActionModel<S, T>(actionName)
-            .setStreamersToCopy(from.getSelectedItems())
-            .from(from.getParentStreamer())
-            .to(to.getParentStreamer());
-    }
-
-    public static <S extends Streamer<S>, T extends Streamer<T>>
-    CopyActionModel<S, T> move(String actionName, ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
-        return new MoveActionModel<S, T>(actionName)
-            .setStreamersToCopy(from.getSelectedItems())
-            .from(from.getParentStreamer())
-            .to(to.getParentStreamer());
-    }
-
-
-    public static <S extends Streamer<S>, T extends Streamer<T>>
-    CopyActionModel<S, T> pack(String actionName, ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
-        return new PackActionModel<S, T>(actionName)
             .setStreamersToCopy(from.getSelectedItems())
             .from(from.getParentStreamer())
             .to(to.getParentStreamer());
@@ -87,15 +66,6 @@ public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> exten
 
     public CopyActionModel<S, T> toTargetPath(String targetPath) {
         return toTargetPath(Paths.get(targetPath));
-    }
-
-    public String getPackType() {
-        return packType;
-    }
-
-    public CopyActionModel<S, T> withPackType(String packType) {
-        this.packType = packType;
-        return this;
     }
 
     public ParentStreamer<S> getSource() {
