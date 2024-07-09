@@ -2,29 +2,29 @@
   "fields": [
     {
       "id": "packTo",
-      "label": "pack-files",
-      "type": "file"
+      "label": "pack-files-to",
+      "type": "folder"
     },
     {
       "id": "packFilter",
-      "label": "form_copy_only",
+      "label": "pack-filter",
       "type": "text"
     },
     {
       "id": "packType",
-      "label": "form_copy_transfer_type",
+      "label": "pack-type",
       "type": "combobox"
     }
   ],
   "buttons": [
     {
       "id": "ok",
-      "label": "form_copy_ok",
+      "label": "ok",
       "action": "ok"
     },
     {
       "id": "cancel",
-      "label": "form_copy_cancel",
+      "label": "cancel",
       "action": "cancel"
     }
   ]

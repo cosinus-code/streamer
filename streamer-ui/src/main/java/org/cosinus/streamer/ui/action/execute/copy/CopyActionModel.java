@@ -59,13 +59,13 @@ public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> exten
         return targetPath;
     }
 
-    public CopyActionModel<S, T> toTargetPath(Path targetPath) {
+    public CopyActionModel<S, T> setTargetPath(Path targetPath) {
         this.targetPath = targetPath;
         return this;
     }
 
-    public CopyActionModel<S, T> toTargetPath(String targetPath) {
-        return toTargetPath(Paths.get(targetPath));
+    public CopyActionModel<S, T> setTargetPath(String targetPath) {
+        return setTargetPath(Paths.get(targetPath));
     }
 
     public ParentStreamer<S> getSource() {

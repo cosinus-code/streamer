@@ -15,40 +15,21 @@
  */
 package org.cosinus.streamer.ui.dialog;
 
-import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
-import org.cosinus.streamer.pack.archive.ArchiveExpander;
 import org.cosinus.streamer.ui.action.execute.pack.PackActionModel;
-import org.cosinus.swing.ui.UIStructure;
-import org.cosinus.swing.ui.UiInitializer;
-import org.cosinus.swing.window.Dialog;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.cosinus.swing.window.SimpleDialog;
 
-import java.util.Map;
-
+import static org.cosinus.streamer.ui.action.execute.pack.PackActionModel.PACK_FILTER;
+import static org.cosinus.streamer.ui.action.execute.pack.PackActionModel.PACK_TYPE;
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 
-public class PackConfirmationDialog extends Dialog<PackActionModel> {
+public class PackConfirmationDialog extends SimpleDialog<PackActionModel> {
 
     private static final String UI_DESCRIPTOR_NAME = "packConfirmationDialog.json";
 
-    protected static final String PACK_TYPE = "packType";
-
-    protected static final String PACK_TO = "packTo";
-
-    protected static final String PACK_FILTER = "packFilter";
-
-    @Autowired
-    private UiInitializer uiInitializer;
-
-    @Autowired
-    private BinaryExpanderHandler expanderHandler;
-
-    protected final PackActionModel packAction;
-
-    protected UIStructure uiStructure;
+    private final PackActionModel packAction;
 
     public PackConfirmationDialog(PackActionModel packAction) {
-        super(applicationFrame, applicationFrame.getTitle(), true, false);
+        super(applicationFrame, applicationFrame.getTitle(), true, false, UI_DESCRIPTOR_NAME, packAction);
         this.packAction = packAction;
     }
 
@@ -56,30 +37,10 @@ public class PackConfirmationDialog extends Dialog<PackActionModel> {
     public void initComponents() {
         super.initComponents();
 
-        uiStructure = uiInitializer.createUiStructure(UI_DESCRIPTOR_NAME);
-        getContentPane().add(uiStructure);
-        uiStructure.getDefaultButton()
-            .ifPresent(uiStructure.getRootPane()::setDefaultButton);
-        registerDefaultActions(uiStructure);
-
         uiStructure.findControl(PACK_FILTER)
             .ifPresent(control -> control.setControlEnabled(false));
-        uiStructure.getFileControl(PACK_TO)
-            .setControlValue(packAction.getTargetPath().toFile());
         uiStructure.getComboBoxControl(PACK_TYPE)
-            .setValues(expanderHandler.getBinaryExpandersMap()
-                .entrySet()
-                .stream()
-                .filter(entry -> entry.getValue() instanceof ArchiveExpander)
-                .map(Map.Entry::getKey)
-                .toArray(String[]::new));
+            .setValues(packAction.getPackTypes());
 
-        pack();
-        centerWindow();
-    }
-
-    @Override
-    protected PackActionModel getDialogResponse() {
-        return packAction.withPackType(uiStructure.getStringValue(PACK_TYPE));
     }
 }

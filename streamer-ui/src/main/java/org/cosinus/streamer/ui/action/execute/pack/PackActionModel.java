@@ -18,10 +18,26 @@ package org.cosinus.streamer.ui.action.execute.pack;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
+import org.cosinus.swing.ui.UIModel;
 
-public class PackActionModel<S extends Streamer<S>, T extends Streamer<T>> extends CopyActionModel<S, T> {
+import java.util.Set;
+
+import static java.util.Optional.ofNullable;
+
+public class PackActionModel<S extends Streamer<S>, T extends Streamer<T>>
+    extends CopyActionModel<S, T> implements UIModel {
+
+    public static final String PACK_TYPE = "packType";
+
+    public static final String PACK_TO = "packTo";
+
+    public static final String PACK_FILTER = "packFilter";
+
+    public static final Set<String> PACK_KEYS = Set.of(PACK_TYPE, PACK_TO, PACK_FILTER);
 
     private String packType;
+
+    private String[] packTypes;
 
     public PackActionModel(String actionName) {
         super(actionName);
@@ -31,19 +47,57 @@ public class PackActionModel<S extends Streamer<S>, T extends Streamer<T>> exten
         return packType;
     }
 
-    public PackActionModel<S, T> withPackType(String packType) {
-        this.packType = packType;
-        return this;
+    public void setPackTypes(String[] packTypes) {
+        this.packTypes = packTypes;
+    }
+
+    public String[] getPackTypes() {
+        return packTypes;
     }
 
     public static <S extends Streamer<S>, T extends Streamer<T>>
     PackActionModel<S, T> pack(String actionName, ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
-        PackActionModel<S, T> packActionModel = new PackActionModel(actionName);
+        PackActionModel<S, T> packActionModel = new PackActionModel<>(actionName);
         packActionModel
             .setStreamersToCopy(from.getSelectedItems())
             .from(from.getParentStreamer())
             .to(to.getParentStreamer());
-
         return packActionModel;
+    }
+
+    @Override
+    public Set<String> keys() {
+        return PACK_KEYS;
+    }
+
+    @Override
+    public Object getValue(String key) {
+        if (key.equals(PACK_TO)) {
+            return getTargetPath().toFile();
+        }
+
+        if (key.equals(PACK_TYPE)) {
+            return packType;
+        }
+
+        return null;
+    }
+
+    @Override
+    public void putValue(String key, Object value) {
+        ofNullable(value)
+            .map(Object::toString)
+            .ifPresent(text -> {
+                if (key.equals(PACK_TO)) {
+                    setTargetPath(text);
+                } else if (key.equals(PACK_TYPE)) {
+                    packType = text;
+                }
+            });
+    }
+
+    @Override
+    public Object[] getValues(String key) {
+        return packTypes;
     }
 }

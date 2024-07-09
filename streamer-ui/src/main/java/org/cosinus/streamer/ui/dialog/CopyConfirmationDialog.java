@@ -131,7 +131,7 @@ public class CopyConfirmationDialog<M extends CopyActionModel> extends Dialog<M>
 
     @Override
     protected M getDialogResponse() {
-        copyAction.toTargetPath(txtCopyTo.getText());
+        copyAction.setTargetPath(txtCopyTo.getText());
         return copyAction;
     }
 

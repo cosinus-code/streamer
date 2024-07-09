@@ -20,6 +20,7 @@ import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
 import org.cosinus.streamer.api.worker.WorkerListenerHandler;
+import org.cosinus.streamer.pack.archive.ArchiveExpander;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.pack.PackActionModel;
 import org.cosinus.streamer.ui.action.execute.pack.PackWorkerExecutor;
@@ -34,11 +35,13 @@ import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.translate.Translator;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.cosinus.swing.window.Dialog;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_F5;
@@ -59,11 +62,25 @@ public class PackStreamerAction extends AbstractCopyAction<PackActionModel> {
 
     private final PackWorkerExecutor packWorkerExecutor;
 
-    public PackStreamerAction(final Preferences preferences, final Translator translator, final DialogHandler dialogHandler, final ActionExecutors actionExecutors, final WorkerListenerHandler workerListenerHandler, final LoadActionExecutor loadActionExecutor, final StreamerViewHandler streamerViewHandler, final ApplicationUIHandler uiHandler, final BinaryExpanderHandler binaryExpanderHandler, final PackWorkerExecutor packWorkerExecutor) {
-        super(preferences, translator, dialogHandler, actionExecutors, workerListenerHandler, loadActionExecutor, streamerViewHandler);
+    private final BinaryExpanderHandler expanderHandler;
+
+    public PackStreamerAction(final Preferences preferences,
+                              final Translator translator,
+                              final DialogHandler dialogHandler,
+                              final ActionExecutors actionExecutors,
+                              final WorkerListenerHandler workerListenerHandler,
+                              final LoadActionExecutor loadActionExecutor,
+                              final StreamerViewHandler streamerViewHandler,
+                              final ApplicationUIHandler uiHandler,
+                              final BinaryExpanderHandler binaryExpanderHandler,
+                              final PackWorkerExecutor packWorkerExecutor,
+                              final BinaryExpanderHandler expanderHandler) {
+        super(preferences, translator, dialogHandler, actionExecutors,
+            workerListenerHandler, loadActionExecutor, streamerViewHandler);
         this.uiHandler = uiHandler;
         this.binaryExpanderHandler = binaryExpanderHandler;
         this.packWorkerExecutor = packWorkerExecutor;
+        this.expanderHandler = expanderHandler;
     }
 
     @Override
@@ -98,9 +115,17 @@ public class PackStreamerAction extends AbstractCopyAction<PackActionModel> {
 
     @Override
     protected <S extends Streamer<S>, T extends Streamer<T>> PackActionModel actionModel() {
-        return pack(getActionName(),
+        PackActionModel packActionModel = pack(getActionName(),
             new ParentStreamerViewContext<>((StreamerView<S>) streamerViewHandler.getCurrentView()),
             new ParentStreamerViewContext<>((StreamerView<T>) streamerViewHandler.getOppositeView()));
+
+        packActionModel.setPackTypes(expanderHandler.getBinaryExpandersMap()
+            .entrySet()
+            .stream()
+            .filter(entry -> entry.getValue() instanceof ArchiveExpander)
+            .map(Map.Entry::getKey)
+            .toArray(String[]::new));
+        return packActionModel;
     }
 
     @Override
