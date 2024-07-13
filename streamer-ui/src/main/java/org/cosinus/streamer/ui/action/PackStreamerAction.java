@@ -24,7 +24,6 @@ import org.cosinus.streamer.pack.archive.ArchiveExpander;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.pack.PackActionModel;
 import org.cosinus.streamer.ui.action.execute.pack.PackWorkerExecutor;
-import org.cosinus.streamer.ui.dialog.PackConfirmationDialog;
 import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
@@ -35,7 +34,6 @@ import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.translate.Translator;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.cosinus.swing.window.Dialog;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
@@ -46,6 +44,7 @@ import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_F5;
 import static org.cosinus.streamer.ui.action.execute.pack.PackActionModel.pack;
+import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 import static org.cosinus.swing.util.FileUtils.setExtension;
 
 /**
@@ -55,6 +54,8 @@ import static org.cosinus.swing.util.FileUtils.setExtension;
 public class PackStreamerAction extends AbstractCopyAction<PackActionModel> {
 
     public static final String PACK_STREAMER_ACTION_ID = "pack-streamer";
+
+    private static final String PACK_CONFIRMATION_UI = "packConfirmationDialog.json";
 
     private final ApplicationUIHandler uiHandler;
 
@@ -110,7 +111,7 @@ public class PackStreamerAction extends AbstractCopyAction<PackActionModel> {
 
     @Override
     protected <S extends Streamer<S>, T extends Streamer<T>> Dialog<PackActionModel> copyConfirmationDialog(PackActionModel copyAction) {
-        return new PackConfirmationDialog(copyAction);
+        return dialogHandler.createDialog(applicationFrame, PACK_CONFIRMATION_UI, copyAction);
     }
 
     @Override
