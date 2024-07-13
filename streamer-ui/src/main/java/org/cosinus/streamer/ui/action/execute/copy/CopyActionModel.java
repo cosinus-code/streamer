@@ -21,17 +21,26 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
 import org.cosinus.swing.action.execute.ActionModel;
+import org.cosinus.swing.ui.UIModel;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Set;
 
+import static java.util.Optional.ofNullable;
 import static java.util.UUID.randomUUID;
 
 /**
  * Encapsulates the model of the copy streamers action
  */
-public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> extends ActionModel {
+public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> extends ActionModel implements UIModel {
+
+    public static final String COPY_TO = "copyTo";
+
+    public static final String COPY_FILTER = "copyFilter";
+
+    public static final Set<String> COPY_KEYS = Set.of(COPY_TO, COPY_FILTER);
 
     private StreamerFilter sourceFilter = streamer -> true;
 
@@ -99,5 +108,24 @@ public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> exten
         this.destination = destination;
         this.targetPath = destination.getPath();
         return this;
+    }
+
+    @Override
+    public Set<String> keys() {
+        return COPY_KEYS;
+    }
+
+    @Override
+    public void putValue(String key, Object value) {
+        if (key.equals(COPY_TO)) {
+            ofNullable(value)
+                .map(Object::toString)
+                .ifPresent(this::setTargetPath);
+        }
+    }
+
+    @Override
+    public Object getValue(String key) {
+        return key.equals(COPY_TO) ? getTargetPath().toFile() : null;
     }
 }

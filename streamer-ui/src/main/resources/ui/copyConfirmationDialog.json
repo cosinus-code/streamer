@@ -1,0 +1,27 @@
+{
+  "fields": [
+    {
+      "id": "copyTo",
+      "label": "copy-files-to",
+      "type": "folder"
+    },
+    {
+      "id": "copyFilter",
+      "label": "copy-filter",
+      "type": "text",
+      "disabled": true
+    }
+  ],
+  "buttons": [
+    {
+      "id": "ok",
+      "label": "ok",
+      "action": "ok"
+    },
+    {
+      "id": "cancel",
+      "label": "cancel",
+      "action": "cancel"
+    }
+  ]
+}

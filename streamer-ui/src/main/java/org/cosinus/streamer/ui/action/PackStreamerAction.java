@@ -53,6 +53,8 @@ import static org.cosinus.swing.util.FileUtils.setExtension;
 @Component
 public class PackStreamerAction extends AbstractCopyAction<PackActionModel> {
 
+    protected static final String PACK_ACTION_NAME = "act-pack";
+
     public static final String PACK_STREAMER_ACTION_ID = "pack-streamer";
 
     private static final String PACK_CONFIRMATION_UI = "packConfirmationDialog.json";

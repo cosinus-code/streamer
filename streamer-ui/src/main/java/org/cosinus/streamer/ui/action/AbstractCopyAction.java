@@ -21,7 +21,6 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.WorkerListenerHandler;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
-import org.cosinus.streamer.ui.dialog.CopyConfirmationDialog;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.ActionContext;
 import org.cosinus.swing.action.ActionInContext;
@@ -44,7 +43,7 @@ public abstract class AbstractCopyAction<M extends CopyActionModel> implements A
 
     protected static final String MOVE_ACTION_NAME = "act-move";
 
-    protected static final String PACK_ACTION_NAME = "act-pack";
+    private static final String PACK_CONFIRMATION_UI = "copyConfirmationDialog.json";
 
     protected final Preferences preferences;
 
@@ -110,9 +109,8 @@ public abstract class AbstractCopyAction<M extends CopyActionModel> implements A
         actionExecutors.execute(copyAction);
     }
 
-    protected <S extends Streamer<S>, T extends Streamer<T>> Dialog<M> copyConfirmationDialog(
-        final M copyAction) {
-        return new CopyConfirmationDialog<>(copyAction);
+    protected <S extends Streamer<S>, T extends Streamer<T>> Dialog<M> copyConfirmationDialog( final M copyAction) {
+        return dialogHandler.createDialog(applicationFrame, PACK_CONFIRMATION_UI, copyAction);
     }
 
 
