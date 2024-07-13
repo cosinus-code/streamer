@@ -8,8 +8,7 @@
     {
       "id": "copyFilter",
       "label": "copy-filter",
-      "type": "text",
-      "disabled": true
+      "type": "text"
     }
   ],
   "buttons": [

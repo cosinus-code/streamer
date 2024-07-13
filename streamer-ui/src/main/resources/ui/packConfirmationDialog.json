@@ -8,8 +8,7 @@
     {
       "id": "packFilter",
       "label": "pack-filter",
-      "type": "text",
-      "disabled": true
+      "type": "text"
     },
     {
       "id": "packType",

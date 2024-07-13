@@ -92,6 +92,8 @@ public class PackActionModel<S extends Streamer<S>, T extends Streamer<T>>
                     setTargetPath(text);
                 } else if (key.equals(PACK_TYPE)) {
                     packType = text;
+                } else if (key.equals(PACK_FILTER)) {
+                    setCopyFilter(text);
                 }
             });
     }

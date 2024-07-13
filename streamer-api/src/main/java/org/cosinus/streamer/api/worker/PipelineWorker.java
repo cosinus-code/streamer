@@ -31,8 +31,6 @@ public abstract class PipelineWorker<M extends WorkerModel<T>, T>
     protected void doWork() {
         try {
             openPipeline();
-        } catch (AbortActionException ex) {
-            LOG.trace("Action aborted: " + getId());
         } catch (IOException | UncheckedIOException ex) {
             throw new ActionException(ex, "act-load-error");
         }

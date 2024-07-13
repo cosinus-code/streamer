@@ -30,6 +30,7 @@ import java.util.Set;
 
 import static java.util.Optional.ofNullable;
 import static java.util.UUID.randomUUID;
+import static java.util.function.Predicate.not;
 
 /**
  * Encapsulates the model of the copy streamers action
@@ -68,13 +69,21 @@ public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> exten
         return targetPath;
     }
 
-    public CopyActionModel<S, T> setTargetPath(Path targetPath) {
+    public void setTargetPath(Path targetPath) {
         this.targetPath = targetPath;
-        return this;
     }
 
-    public CopyActionModel<S, T> setTargetPath(String targetPath) {
-        return setTargetPath(Paths.get(targetPath));
+    public void setTargetPath(String targetPath) {
+        setTargetPath(Paths.get(targetPath));
+    }
+
+    public void setCopyFilter(String pattern) {
+        String regularExpression = "^" + pattern
+            .replace(".", "\\.")
+            .replace("*", ".*") + "$";
+        sourceFilter = streamer -> streamersToCopy.contains(streamer)
+            && streamer.getName().matches(regularExpression);
+
     }
 
     public ParentStreamer<S> getSource() {
@@ -117,11 +126,16 @@ public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> exten
 
     @Override
     public void putValue(String key, Object value) {
-        if (key.equals(COPY_TO)) {
-            ofNullable(value)
-                .map(Object::toString)
-                .ifPresent(this::setTargetPath);
-        }
+        ofNullable(value)
+            .map(Object::toString)
+            .filter(not(String::isBlank))
+            .ifPresent(text -> {
+                if (key.equals(COPY_TO)) {
+                    setTargetPath(text);
+                } else if (key.equals(COPY_FILTER)) {
+                    setCopyFilter(text);
+                }
+            });
     }
 
     @Override

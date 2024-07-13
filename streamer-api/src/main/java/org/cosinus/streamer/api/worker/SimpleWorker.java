@@ -15,6 +15,8 @@
  */
 package org.cosinus.streamer.api.worker;
 
+import error.AbortActionException;
+import error.ActionException;
 import org.cosinus.swing.action.execute.ActionModel;
 
 import java.util.List;
@@ -31,7 +33,13 @@ public abstract class SimpleWorker<M extends WorkerModel<M>> extends Worker<M, M
 
     @Override
     protected void process(List<M> items) {
-        checkWorkerStatus();
-        workerListenerHandler.workerUpdated(getId(), workerModel);
+        try {
+            checkWorkerStatus();
+            workerListenerHandler.workerUpdated(getId(), workerModel);
+        } catch (ActionException ex) {
+            setError(ex);
+        } catch (AbortActionException ex) {
+            logUserAbort();
+        }
     }
 }

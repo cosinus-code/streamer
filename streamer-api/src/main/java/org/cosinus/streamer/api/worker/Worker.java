@@ -95,16 +95,26 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
         } catch (ActionException ex) {
             setError(ex);
         } catch (AbortActionException ex) {
-            LOG.trace("Action aborted: {}", id);
+            logUserAbort();
         }
         return workerModel;
     }
 
     @Override
     protected void process(List<T> items) {
-        checkWorkerStatus();
-        workerModel.update(items);
-        workerListenerHandler.workerUpdated(getId(), workerModel);
+        try {
+            checkWorkerStatus();
+            workerModel.update(items);
+            workerListenerHandler.workerUpdated(getId(), workerModel);
+        } catch (ActionException ex) {
+            setError(ex);
+        } catch (AbortActionException ex) {
+            logUserAbort();
+        }
+    }
+
+    protected void logUserAbort() {
+        LOG.trace("Action aborted: {}", id);
     }
 
     @Override
