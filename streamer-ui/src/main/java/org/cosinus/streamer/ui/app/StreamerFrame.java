@@ -91,9 +91,6 @@ public class StreamerFrame extends SwingApplicationFrame {
 
     @Override
     public void loadContent() {
-//        stream(PanelLocation.values())
-//            .forEach(location -> actionExecutors.execute(new LoadActionModel(
-//                location, null, null)));
         stream(PanelLocation.values())
             .forEach(location -> actionExecutors
                 .execute(findLastStreamerAndDo(location, streamerToLoad -> actionExecutors

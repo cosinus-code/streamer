@@ -22,6 +22,7 @@ import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.swing.error.ErrorHandler;
+import org.cosinus.swing.form.Panel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
@@ -29,6 +30,7 @@ import java.awt.*;
 import java.util.List;
 
 import static java.awt.BorderLayout.CENTER;
+import static java.awt.BorderLayout.NORTH;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.ofNullable;
 
@@ -52,6 +54,11 @@ public class TextStreamerView extends StreamerView<String> {
     @Override
     public void initComponents() {
         super.initComponents();
+
+        findPanel = new FindPanel();
+        findPanel.initComponents();
+        streamerViewMainPanel.add(findPanel, NORTH);
+
         JScrollPane scroll = new JScrollPane();
         scroll.setViewportView(textEditor);
         streamerViewMainPanel.add(scroll, CENTER);

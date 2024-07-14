@@ -15,8 +15,6 @@
  */
 package org.cosinus.streamer.ui.action;
 
-import org.cosinus.streamer.ui.action.execute.find.FindActionModel;
-import org.cosinus.streamer.ui.action.execute.find.FindActionExecutor;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.ActionContext;
@@ -28,6 +26,7 @@ import javax.swing.*;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_F;
+import static java.util.Optional.ofNullable;
 
 /**
  * Load streamer action
@@ -37,25 +36,21 @@ public class FindStreamerAction implements ActionInContext {
 
     public static final String FIND_STREAMER_ACTION_ID = "find-streamer";
 
-    private final FindActionExecutor findActionExecutor;
-
     private final ApplicationUIHandler uiHandler;
 
     private final StreamerViewHandler streamerViewHandler;
 
-    public FindStreamerAction(final FindActionExecutor findActionExecutor,
-                              final ApplicationUIHandler uiHandler,
+    public FindStreamerAction(final ApplicationUIHandler uiHandler,
                               final StreamerViewHandler streamerViewHandler) {
-        this.findActionExecutor = findActionExecutor;
         this.uiHandler = uiHandler;
         this.streamerViewHandler = streamerViewHandler;
     }
 
     @Override
     public void run(ActionContext context) {
-        StreamerView<?> currentStreamerView = streamerViewHandler.getCurrentView();
-        findActionExecutor.execute(
-            new FindActionModel(currentStreamerView.getCurrentLocation()));
+        ofNullable(streamerViewHandler.getCurrentView())
+            .map(StreamerView::getFindPanel)
+            .ifPresent(findPanel -> findPanel.setVisible(true));
     }
 
     @Override

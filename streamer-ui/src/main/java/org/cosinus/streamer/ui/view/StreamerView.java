@@ -72,6 +72,8 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
 
     protected final JPanel streamerViewMainPanel;
 
+    protected Panel findPanel;
+
     protected LoadingProgress loadingIndicator;
 
     protected Streamer<T> parentStreamer;
@@ -211,6 +213,10 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
 
     public void setActive(boolean active) {
         getPanel().ifPresent(panel -> panel.setEnabled(active));
+    }
+
+    public Panel getFindPanel() {
+        return findPanel;
     }
 
     public void selectCurrentContent() {
