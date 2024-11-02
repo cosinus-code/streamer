@@ -26,9 +26,9 @@ import static java.util.stream.LongStream.range;
 
 public class SaveTextWorkerModel extends AbstractSaveWorkerModel<String> {
 
-    private final TextEditor textEditor;
+    private final TextStreamerEditor textEditor;
 
-    public SaveTextWorkerModel(TextEditor textEditor) {
+    public SaveTextWorkerModel(TextStreamerEditor textEditor) {
         this.textEditor = textEditor;
     }
 

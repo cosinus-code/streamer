@@ -22,7 +22,6 @@ import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.swing.error.ErrorHandler;
-import org.cosinus.swing.form.Panel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
@@ -42,20 +41,20 @@ public class TextStreamerView extends StreamerView<String> {
     @Autowired
     public ErrorHandler errorHandler;
 
-    private final TextEditor textEditor;
+    private TextStreamerEditor textEditor;
 
     private WorkerListener<SaveTextWorkerModel, String> saveListener;
 
     public TextStreamerView(PanelLocation location) {
         super(location);
-        this.textEditor = new TextEditor(this);
     }
 
     @Override
     public void initComponents() {
         super.initComponents();
 
-        findPanel = new FindPanel();
+        textEditor = new TextStreamerEditor(this);
+        findPanel = new FindPanel(textEditor);
         findPanel.initComponents();
         streamerViewMainPanel.add(findPanel, NORTH);
 
@@ -142,7 +141,7 @@ public class TextStreamerView extends StreamerView<String> {
     @Override
     public boolean isDirty() {
         return super.isDirty() || ofNullable(textEditor)
-            .map(TextEditor::isDirty)
+            .map(TextStreamerEditor::isDirty)
             .orElse(false);
     }
 

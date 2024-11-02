@@ -1,64 +1,152 @@
+/*
+ * Copyright 2020 Cosinus Software
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.cosinus.streamer.ui.view.text;
 
+import org.cosinus.swing.find.FindResult;
+import org.cosinus.swing.find.FindText;
+import org.cosinus.swing.find.TextFinder;
 import org.cosinus.swing.form.Panel;
+import org.cosinus.swing.form.TextEditor;
 import org.cosinus.swing.form.control.Button;
+import org.cosinus.swing.form.control.FindTextField;
 import org.cosinus.swing.form.control.Label;
-import org.cosinus.swing.form.control.TextField;
-import org.cosinus.swing.form.control.ToggleButton;
+import org.cosinus.swing.text.TextHandler;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
+import java.awt.event.ActionListener;
+import java.util.stream.Stream;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.EAST;
-import static org.cosinus.swing.border.Borders.emptyBorder;
+import static java.util.Optional.ofNullable;
 
+/**
+ * Panel for controls to find text
+ */
 public class FindPanel extends Panel {
 
     @Autowired
     private Translator translator;
 
-    private TextField findTextField;
+    @Autowired
+    private TextHandler textHandler;
 
-    public FindPanel() {
+    private final TextEditor textEditor;
+
+    private TextFinder textFinder;
+
+    private FindTextField findTextField;
+
+    private Label findResultLabel;
+
+    public FindPanel(TextEditor textEditor) {
         super(new BorderLayout(0, 0));
+        this.textEditor = textEditor;
     }
 
     @Override
     public void initComponents() {
-        findTextField = new TextField();
+        findTextField = new FindTextField(this::performFindAction);
 
-        ToggleButton findCaseSensitiveButton = new ToggleButton("Cc", false);
-        ToggleButton findWordButton = new ToggleButton("W", false);
-        ToggleButton findByRegularExpressionButton = new ToggleButton(".*", false);
-
-//        findCaseSensitiveButton.setBorder(emptyBorder(0, 5, 0, 2));
-//        findWordButton.setBorder(emptyBorder(0, 2, 0, 2));
-//        findByRegularExpressionButton.setBorder(emptyBorder(0, 2, 0, 5));
-
-        Label findResultLabel = new Label();
+        findResultLabel = new Label();
         findResultLabel.setText(translator.translate("find-no-results"));
+        findResultLabel.setPreferredSize(new Dimension(100, 20));
 
-        Button findPreviousButton = new Button("↑");
-        Button findNextButton = new Button("↓");
+        Button findPreviousButton = new Button("↑", event -> findPrevious());
+        Button findNextButton = new Button("↓", event -> findNext());
 
-        Panel buttonsPanel = new Panel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-        buttonsPanel.add(findCaseSensitiveButton);
-        buttonsPanel.add(findWordButton);
-        buttonsPanel.add(findByRegularExpressionButton);
+        Panel findButtonsPanel = new Panel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        findButtonsPanel.add(findPreviousButton);
+        findButtonsPanel.add(findNextButton);
+        findButtonsPanel.add(findResultLabel);
 
-        buttonsPanel.add(findResultLabel);
-        buttonsPanel.add(findPreviousButton);
-        buttonsPanel.add(findNextButton);
-
+        setLayout(new BorderLayout(0, 0));
         add(findTextField, CENTER);
-        add(buttonsPanel, EAST);
+        add(findButtonsPanel, EAST);
 
+        registerEscapeAction(this::hidePanel);
         setVisible(false);
     }
 
-    public String getTextToFind() {
-        return findTextField.getText();
+    @Override
+    public void setVisible(boolean visible) {
+        super.setVisible(visible);
+        if (visible) {
+            initTextFinderIfNeeded();
+            findTextField.requestFocusInWindow();
+        }
+    }
+
+    private void initTextFinderIfNeeded() {
+        if (!findTextField.getText().isEmpty()) {
+            FindText textToFind = findTextField.getControlValue();
+            if (textFinder == null || !textFinder.getTextToFind().equals(textToFind)) {
+                textEditor.removeAllHighlights();
+                textFinder = textHandler.createTextFinder(textEditor.getText(), textToFind);
+                try (Stream<FindResult> findResults = textFinder.findAll()) {
+                    findResults.forEach(textEditor::highlightFoundText);
+                }
+            }
+        } else {
+            textFinder = null;
+            textEditor.removeAllHighlights();
+        }
+    }
+
+    private void findPrevious() {
+        ofNullable(textFinder)
+            .flatMap(TextFinder::findPrevious)
+            .ifPresent(textEditor::highlightCurrentFoundText);
+        showFindResult();
+    }
+
+    private void findNext() {
+        ofNullable(textFinder)
+            .flatMap(TextFinder::findNext)
+            .ifPresent(textEditor::highlightCurrentFoundText);
+        showFindResult();
+    }
+
+    private void showFindResult() {
+        findResultLabel.setText(ofNullable(textFinder)
+            .filter(finder -> finder.count() > 0)
+            .map(finder -> finder.currentIndex() + "/" + finder.count())
+            .orElseGet(() -> translator.translate("find-no-results")));
+    }
+
+    private ActionListener hidePanel() {
+        return event -> {
+            setVisible(false);
+            textEditor.removeAllHighlights();
+            if (textFinder != null) {
+                textEditor.selectFoundText(textFinder.getCurrentFind());
+            }
+            textFinder = null;
+            textEditor.preventCancelAction();
+            textEditor.requestFocusInWindow();
+        };
+    }
+
+    private void performFindAction() {
+        initTextFinderIfNeeded();
+        ofNullable(textFinder)
+            .flatMap(finder -> finder.findNext(textEditor.getCaretPosition()))
+            .ifPresent(textEditor::highlightCurrentFoundText);
+        showFindResult();
     }
 }
