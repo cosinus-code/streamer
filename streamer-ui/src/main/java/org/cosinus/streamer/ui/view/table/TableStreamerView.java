@@ -31,6 +31,7 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 
 import static java.awt.BorderLayout.CENTER;
+import static java.lang.Math.max;
 import static java.util.Optional.ofNullable;
 
 public abstract class TableStreamerView<T extends Streamable> extends DefaultStreamerView<T> {
@@ -58,6 +59,7 @@ public abstract class TableStreamerView<T extends Streamable> extends DefaultStr
             .map(Color::new)
             .ifPresent(scroll.getViewport()::setBackground);
         scroll.addMouseListener(new MouseAdapter() {
+            @Override
             public void mousePressed(MouseEvent e) {
                 table.requestFocus();
             }
@@ -84,7 +86,7 @@ public abstract class TableStreamerView<T extends Streamable> extends DefaultStr
     @Override
     public void setActive(boolean active) {
         if (active) {
-            table.setCurrentIndex(table.getCurrentIndex(), true);
+            table.setCurrentIndex(max(table.getCurrentIndex(), 0), true);
         } else {
             table.getSelectionModel().clearSelection();
         }
@@ -144,11 +146,14 @@ public abstract class TableStreamerView<T extends Streamable> extends DefaultStr
     }
 
     @Override
-    public void workerUpdated(LoadWorkerModel<T> loadWorkerModel) {
-        ofNullable(loadWorkerModel.getContentIdentifier())
-            .ifPresent(this::findContent);
+    public void workerStarted(LoadWorkerModel<T> loadWorkerModel) {
         getDataTableModel().fireTableDataChanged();
+        super.workerStarted(loadWorkerModel);
+    }
 
+    @Override
+    public void workerUpdated(LoadWorkerModel<T> loadWorkerModel) {
+        getDataTableModel().fireTableDataChanged();
         super.workerUpdated(loadWorkerModel);
     }
 
@@ -156,6 +161,8 @@ public abstract class TableStreamerView<T extends Streamable> extends DefaultStr
     public void workerFinished(LoadWorkerModel<T> loadWorkerModel) {
         super.workerFinished(loadWorkerModel);
         if (isActive()) {
+            ofNullable(loadWorkerModel.getContentIdentifier())
+                .ifPresent(this::findContent);
             if (table.getCurrentIndex() < 0) {
                 table.setCurrentIndex(0, true);
             } else if (table.getCurrentIndex() >= table.getItemsCount()) {

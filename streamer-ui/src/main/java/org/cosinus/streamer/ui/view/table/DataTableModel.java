@@ -150,6 +150,7 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
     public void clear() {
         viewItems.clear();
         streamableMap.clear();
+        currentIndex = -1;
     }
 
     public void reset(final Streamer<T> parentStreamer) {
@@ -159,7 +160,6 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
             ofNullable(parentStreamer.getParent())
                 .map(parent -> new ViewItem(parent, true))
                 .ifPresent(this::addItem);
-            fireTableDataChanged();
         }
     }
 

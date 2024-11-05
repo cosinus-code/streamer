@@ -16,8 +16,6 @@
 
 package org.cosinus.streamer.ui.view;
 
-import org.cosinus.streamer.api.Streamer;
-
 public interface StreamerViewCreator {
 
     StreamerView<?> createStreamerView(PanelLocation location);

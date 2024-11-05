@@ -105,7 +105,9 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
     @Override
     public void focusGained(FocusEvent e) {
         try {
-            streamerViewHandler.setCurrentLocation(view.getCurrentLocation());
+            if (streamerViewHandler.getCurrentLocation() != view.getCurrentLocation()) {
+                streamerViewHandler.setCurrentLocation(view.getCurrentLocation());
+            }
         } catch (Exception ex) {
             errorHandler.handleError(this, ex);
         }
@@ -130,6 +132,7 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
 //                setDragItself(true);
             } else if (event.getID() == MOUSE_PRESSED) {
                 setCurrentIndex(getIndexForItemAtPoint(event.getPoint()));
+                resetContentIdentifier();
             } else if (event.getID() == MOUSE_CLICKED) {
                 if (isLeftMouseButton(event)) {
                     if (event.getClickCount() == 2) {
@@ -159,10 +162,14 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
                 }
                 nameToFind += (char) keyEvent.getKeyCode();
                 movePositionByName(nameToFind);
+                resetContentIdentifier();
                 return;
             }
         }
         super.processComponentKeyEvent(keyEvent);
+        if (actionController.isGoKey(keyEvent)) {
+            resetContentIdentifier();
+        }
     }
 
     private boolean isAction(long actionTime, int speed) {
@@ -191,9 +198,9 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
             int start = getSelectedRow() + (name.length() == 1 ? 1 : 0);
             concat(range(start, items.size()),
                 range(min, start))
-                .filter(i -> items.get(i).getName().toLowerCase().startsWith(name.toLowerCase()))
+                .filter(i -> i < items.size() && items.get(i).getName().toLowerCase().startsWith(name.toLowerCase()))
                 .findFirst()
-                .ifPresent(this::setCurrentIndex);
+                .ifPresent(index -> setCurrentIndex(index, false));
         }
     }
 
@@ -310,8 +317,16 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
     public void setCurrentIndex(int index, boolean silent) {
         setCurrentIndex(index);
         if (!silent) {
-            getTableModel().setContentIdentifier(getCurrentItemName());
+            updateContentIdentifier();
         }
+    }
+
+    private void updateContentIdentifier() {
+        getTableModel().setContentIdentifier(getCurrentItemName());
+    }
+
+    private void resetContentIdentifier() {
+        getTableModel().setContentIdentifier(null);
     }
 
     public abstract void setCurrentIndex(int index);

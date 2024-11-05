@@ -68,7 +68,7 @@ public class DetailTableModel<T extends Streamable> extends DataTableModel<T> {
 
     @Override
     public Object getValueAt(int row, int column) {
-        if (row >= viewItems.size()) {
+        if (row < 0 || row >= viewItems.size()) {
             return null;
         }
         ViewItem item = viewItems.get(row);

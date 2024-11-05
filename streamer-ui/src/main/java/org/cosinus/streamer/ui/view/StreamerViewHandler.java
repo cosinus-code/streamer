@@ -48,8 +48,6 @@ public class StreamerViewHandler {
 
     private final StreamerViewCreator defaultStreamerViewCreator;
 
-    private final Map<PanelLocation, Map<String, StreamerView<?>>> streamerViewsMap;
-
     private String preferredViewName;
 
     public StreamerViewHandler(Preferences preferences,
@@ -60,8 +58,6 @@ public class StreamerViewHandler {
             .stream()
             .collect(toMap(StreamerViewCreator::getViewName, identity()));
         this.defaultStreamerViewCreator = defaultStreamerViewCreator;
-        this.streamerViewsMap = stream(PanelLocation.values())
-            .collect(toMap(identity(), location -> new HashMap<>()));
         this.currentLocation = preferences.booleanPreference(SHOW_LEFT_VIEW) ? LEFT : RIGHT;
     }
 
@@ -86,20 +82,19 @@ public class StreamerViewHandler {
     }
 
     public <T> StreamerView<T> getStreamerView(PanelLocation location, String streamerViewName) {
-        StreamerView<?> view = ofNullable(streamerViewName)
-            .or(() -> getPreferredViewName(location))
-            .flatMap(viewName -> findExistingStreamerView(location, viewName)
-                    .or(() -> ofNullable(streamerViewCreatorsMap.get(viewName))
-                        .map(streamerViewCreator -> streamerViewCreator.createStreamerView(location))))
-            .orElseGet(() -> defaultStreamerViewCreator.createStreamerView(location));
+        Optional<String> resolvedViewName = ofNullable(streamerViewName)
+            .or(() -> getPreferredViewName(location));
+
+        StreamerView<T> view = resolvedViewName
+            .map(streamerViewCreatorsMap::get)
+            //TODO: to avoid cast
+            .map(streamerViewCreator -> (StreamerView<T>) streamerViewCreator.createStreamerView(location))
+            .orElseGet(() -> (StreamerView<T>) defaultStreamerViewCreator.createStreamerView(location));
 
         getPanel(location)
             .ifPresent(panel -> panel.setView(view));
-        return (StreamerView<T>) view;
-    }
 
-    protected Optional<StreamerView<?>> findExistingStreamerView(PanelLocation location, String streamerViewName) {
-        return ofNullable(streamerViewsMap.get(location).get(streamerViewName));
+        return view;
     }
 
     protected Optional<String> getPreferredViewName(PanelLocation location) {

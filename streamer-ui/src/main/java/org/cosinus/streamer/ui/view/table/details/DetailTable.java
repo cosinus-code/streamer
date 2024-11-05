@@ -30,13 +30,13 @@ import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -58,9 +58,6 @@ public class DetailTable<T extends Streamable> extends DataTable<T> implements A
     @Autowired
     public Translator translator;
 
-    //TODO
-    private boolean keyboardArrow;
-
     public PopupMenu popupHeader;
 
     private final DetailView view;
@@ -78,13 +75,29 @@ public class DetailTable<T extends Streamable> extends DataTable<T> implements A
         super.initComponents();
         setSelectionType();
 
+        model.addTableModelListener(e -> invokeLater(() -> {
+            int index = model.getCurrentIndex();
+            if (index >= 0 && index < getRowCount()) {
+                selectionModel.setSelectionInterval(index, index);
+            }
+        }));
+
         setSelectionModel(new DefaultListSelectionModel() {
-            public void setSelectionInterval(int row1, int row2) {
+            @Override
+            public void setSelectionInterval(int rowIndex1, int rowIndex2) {
+                super.setSelectionInterval(rowIndex1, rowIndex2);
+                model.setCurrentIndex(rowIndex1);
+            }
+        });
+
+        setColumnModel(new DefaultTableColumnModel() {
+            @Override
+            public TableColumn getColumn(int columnIndex) {
                 try {
-                    super.setSelectionInterval(row1, row2);
-                    model.setCurrentIndex(row1);
-                } catch (Exception ex) {
-                    errorHandler.handleError(DetailTable.this, ex);
+                    return super.getColumn(columnIndex);
+                } catch (Exception e) {
+                    //TODO: sometimes it throws IndexOutOfBoundsException
+                    return new TableColumn();
                 }
             }
         });
@@ -111,13 +124,6 @@ public class DetailTable<T extends Streamable> extends DataTable<T> implements A
 
     private void setSelectionType() {
         setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-    }
-
-    @Override
-    protected void processComponentKeyEvent(KeyEvent keyEvent) {
-        keyboardArrow = true;
-        super.processComponentKeyEvent(keyEvent);
-        invokeLater(() -> keyboardArrow = true);
     }
 
     public void setHeaderPopup() {
