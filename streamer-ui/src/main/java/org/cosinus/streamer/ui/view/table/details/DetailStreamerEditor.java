@@ -73,6 +73,7 @@ public class DetailStreamerEditor<T extends Streamable> implements StreamerEdito
     @Override
     public void save() {
         itemToBeEdited.save();
+        setDirty(false);
         if (itemToBeEdited.getParent().isParent()) {
             view.reload(ofNullable(itemToBeEdited.details().get(itemToBeEdited.getLeadDetailIndex()))
                 .map(Value::toString)
