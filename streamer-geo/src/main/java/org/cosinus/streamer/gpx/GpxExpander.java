@@ -25,6 +25,11 @@ public class GpxExpander implements BinaryExpander<GpxPoint> {
 
     public static final String GPX_PROTOCOL = "gpx://";
 
+    public GpxExpander() {
+        System.setProperty("javax.xml.transform.TransformerFactory",
+            "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl");
+    }
+
     @Override
     public ExpandedStreamer<GpxPoint> expand(BinaryStreamer binaryStreamer) {
         return new GpxStreamer(binaryStreamer);
