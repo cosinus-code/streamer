@@ -20,6 +20,9 @@ import org.cosinus.swing.form.ProgressBar;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.math.BigDecimal;
+
+import static java.math.BigDecimal.ZERO;
 import static org.cosinus.swing.border.Borders.emptyBorder;
 
 public class LoadingProgress extends ProgressBar {
@@ -36,11 +39,11 @@ public class LoadingProgress extends ProgressBar {
 
     public void startLoading() {
         startLoading(-1);
+        setIndeterminate(true);
     }
 
     public void startLoading(long totalSizeToLoad) {
         if (totalSizeToLoad != 0) {
-            setVisible(true);
             if (totalSizeToLoad > 0) {
                 setMaximum(100);
             }
@@ -49,18 +52,17 @@ public class LoadingProgress extends ProgressBar {
 
     public void updateLoading(long loadedSize, long totalSizeToLoad) {
         if (totalSizeToLoad > 0 && loadedSize > 0) {
-            int progress = (int) ((loadedSize * 100) / totalSizeToLoad);
-            if (progress > 0) {
+            BigDecimal progress = BigDecimal.valueOf(loadedSize * 100d / totalSizeToLoad);
+            if (progress.compareTo(ZERO) > 0) {
                 setIndeterminate(false);
-                setValue(progress);
+                setValue(progress.intValue());
             }
         }
     }
 
     public void finishLoading() {
-        setValue(getMaximum());
-        setVisible(false);
-        setIndeterminate(true);
+        setIndeterminate(false);
         setMaximum(0);
+        setValue(0);
     }
 }

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static java.awt.Color.black;
 import static java.util.Optional.ofNullable;
 
 public class ImagePanel extends Panel implements LoadWorkerModel<byte[], UpdatableImage> {
@@ -28,8 +29,14 @@ public class ImagePanel extends Panel implements LoadWorkerModel<byte[], Updatab
 
     private UpdatableImage updatableImage;
 
+    boolean finished;
+
     public void reset(Streamer<byte[]> binaryStreamer) {
         this.binaryStreamer = binaryStreamer;
+        if (binaryStreamer == null) {
+            updatableImage = null;
+        }
+        finished = false;
     }
 
     @Override
@@ -42,16 +49,33 @@ public class ImagePanel extends Panel implements LoadWorkerModel<byte[], Updatab
         super.paintComponent(g);
         ofNullable(updatableImage)
             .map(UpdatableImage::getImage)
-            .ifPresent(image -> {
-                if (image.getWidth(this) > getWidth() || image.getHeight(this) > getHeight()) {
-                    image = imageHandler.scaleImage(image, getWidth(), getHeight());
-                    updatableImage.setImage(image);
-                }
+            .ifPresentOrElse(image -> drawImage(image, g), () -> drawBrokenImage(g));
+    }
 
-                int x = (getWidth() - image.getWidth(this)) / 2;
-                int y = (getHeight() - image.getHeight(this)) / 2;
-                g.drawImage(image, x, y, this);
-            });
+    private void drawImage(BufferedImage image, Graphics g) {
+        if (image.getWidth(this) > getWidth() || image.getHeight(this) > getHeight()) {
+            image = imageHandler.scaleImage(image, getWidth(), getHeight());
+            updatableImage.setImage(image);
+        }
+        drawImageBackground(g);
+
+        int x = (getWidth() - image.getWidth(this)) / 2;
+        int y = (getHeight() - image.getHeight(this)) / 2;
+        g.drawImage(image, x, y, this);
+    }
+
+    private void drawBrokenImage(Graphics g) {
+        if (finished) {
+            getBrokenPhotoIcon()
+                .ifPresent(image -> g.drawImage(image, 0, 0, this));
+        } else if (binaryStreamer != null) {
+            drawImageBackground(g);
+        }
+    }
+
+    private void drawImageBackground(Graphics g) {
+        g.setColor(black);
+        g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
     }
 
     @Override
@@ -77,11 +101,7 @@ public class ImagePanel extends Panel implements LoadWorkerModel<byte[], Updatab
     }
 
     public void finish() {
-        if (updatableImage == null || updatableImage.getImage() == null) {
-            getBrokenPhotoIcon()
-                .map(UpdatableImage::new)
-                .ifPresent(this::setImage);
-        }
+        finished = true;
         repaint();
     }
 }
