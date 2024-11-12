@@ -51,7 +51,7 @@ public class ExecuteStreamerAction implements ActionInContext {
 
     @Override
     public void run(ActionContext context) {
-        StreamerView<?> streamerView = streamerViewHandler.getCurrentView();
+        StreamerView<?, ?> streamerView = streamerViewHandler.getCurrentView();
         ofNullable(streamerView.getCurrentItem())
             .filter(item -> Streamer.class.isAssignableFrom(item.getClass()))
             .map(Streamer.class::cast)

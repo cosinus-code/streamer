@@ -52,7 +52,7 @@ public class SaveWorkerExecutor<T> extends WorkerExecutor<SaveActionModel, SaveW
     @Override
     protected Worker<SaveWorkerModel<T>, T> createSwingWorker(SaveActionModel actionModel) {
         Streamer<T> streamerToSave = actionModel.getStreamerView().getParentStreamer();
-        StreamerView<T> streamerView = actionModel.getStreamerView();
+        StreamerView<T, T> streamerView = actionModel.getStreamerView();
 
         SaveWorkerModel<T> saveWorkerModel = (SaveWorkerModel<T>) streamerToSave.saveModel();
         if (saveWorkerModel == null && !streamerToSave.isParent()) {

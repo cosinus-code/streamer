@@ -33,7 +33,10 @@ import static java.awt.BorderLayout.NORTH;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.ofNullable;
 
-public class TextStreamerView extends StreamerView<String> {
+/**
+ * Text streamer view
+ */
+public class TextStreamerView extends StreamerView<String, String> {
     public static final String TEXT_EDITOR = "text-editor";
 
     public static final String DIRTY_TEXT_MARKER = "*";
@@ -98,11 +101,6 @@ public class TextStreamerView extends StreamerView<String> {
     }
 
     @Override
-    public Streamer<String> getParentStreamer() {
-        return parentStreamer;
-    }
-
-    @Override
     public String getCurrentItemIdentifier() {
         return null;
     }
@@ -113,7 +111,7 @@ public class TextStreamerView extends StreamerView<String> {
     }
 
     @Override
-    public LoadWorkerModel<String> getLoadWorkerModel() {
+    public LoadWorkerModel<String, String> getLoadWorkerModel() {
         return textEditor;
     }
 
@@ -123,14 +121,14 @@ public class TextStreamerView extends StreamerView<String> {
     }
 
     @Override
-    public void workerStarted(LoadWorkerModel<String> loadWorkerModel) {
+    public void workerStarted(LoadWorkerModel<String, String> loadWorkerModel) {
         super.workerStarted(loadWorkerModel);
         textEditor.setDirty(false);
         textEditor.setLoading(true);
     }
 
     @Override
-    public void workerFinished(LoadWorkerModel<String> loadWorkerModel) {
+    public void workerFinished(LoadWorkerModel<String, String> loadWorkerModel) {
         super.workerFinished(loadWorkerModel);
         textEditor.setCaretPosition(0);
         textEditor.requestFocus();

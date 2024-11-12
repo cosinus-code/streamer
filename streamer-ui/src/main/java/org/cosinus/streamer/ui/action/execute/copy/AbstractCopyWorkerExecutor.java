@@ -58,13 +58,13 @@ public abstract class AbstractCopyWorkerExecutor<
             new WorkerListener<>() {
                 @Override
                 public void workerFinished(CopyProgressModel workerModel) {
-                    final StreamerView<?> oppositeView = streamerViewHandler.getOppositeView();
+                    final StreamerView<?, ?> oppositeView = streamerViewHandler.getOppositeView();
                     loadActionExecutor.execute(new LoadActionModel(
                         oppositeView.getCurrentLocation(),
                         oppositeView.getParentStreamer(),
                         null));
 
-                    final StreamerView<?> currentView = streamerViewHandler.getCurrentView();
+                    final StreamerView<?, ?> currentView = streamerViewHandler.getCurrentView();
                     loadActionExecutor.execute(new LoadActionModel(
                         currentView.getCurrentLocation(),
                         currentView.getParentStreamer(),

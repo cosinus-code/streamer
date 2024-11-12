@@ -54,7 +54,7 @@ public class StreamerViewStorage {
         return ofNullable(applicationStorage.getString(LAST_VIEW + location));
     }
 
-    public <T> void saveLastLoadedView(StreamerView<T> streamerView, PanelLocation location) {
+    public <T> void saveLastLoadedView(StreamerView<T, T> streamerView, PanelLocation location) {
         ofNullable(streamerView)
             .map(StreamerView::getName)
             .ifPresent(path -> applicationStorage.saveString(LAST_VIEW + location, path));

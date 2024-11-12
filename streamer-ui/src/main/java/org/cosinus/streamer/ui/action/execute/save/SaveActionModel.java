@@ -22,14 +22,14 @@ import static org.cosinus.streamer.ui.action.SaveAction.SAVE_ACTION_ID;
 
 public class SaveActionModel<T> extends ActionModel {
 
-    private final StreamerView<T> streamerView;
+    private final StreamerView<T, T> streamerView;
 
-    public SaveActionModel(final StreamerView<T> streamerView) {
+    public SaveActionModel(final StreamerView<T, T> streamerView) {
         super(streamerView.getParentStreamer().getId(), SAVE_ACTION_ID);
         this.streamerView = streamerView;
     }
 
-    public StreamerView<T> getStreamerView() {
+    public StreamerView<T, T> getStreamerView() {
         return streamerView;
     }
 }

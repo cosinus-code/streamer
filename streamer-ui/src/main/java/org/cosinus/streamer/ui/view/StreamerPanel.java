@@ -53,7 +53,7 @@ public class StreamerPanel extends Panel {
 
     private final ProgressBar freeSpaceMarker;
 
-    private StreamerView<?> view;
+    private StreamerView<?, ?> view;
 
     public StreamerPanel() {
         this.addressLabel = new TextField();
@@ -94,7 +94,7 @@ public class StreamerPanel extends Panel {
         add(topPanel, NORTH);
     }
 
-    public void setView(StreamerView<?> view) {
+    public void setView(StreamerView<?, ?> view) {
         if (this.view == view) {
             return;
         }
@@ -124,7 +124,7 @@ public class StreamerPanel extends Panel {
         addressLabel.setText(formatHandler.formatTextForLabel(addressLabel, address));
     }
 
-    public StreamerView<?> getView() {
+    public StreamerView<?, ?> getView() {
         return view;
     }
 

@@ -53,9 +53,7 @@ public class BinarySpliterator extends AbstractSpliterator<byte[]> {
             return false;
         }
 
-        action.accept(readSize == buffer.length ?
-            buffer :
-            copyOf(buffer, readSize));
+        action.accept(copyOf(buffer, readSize));
         return true;
     }
 

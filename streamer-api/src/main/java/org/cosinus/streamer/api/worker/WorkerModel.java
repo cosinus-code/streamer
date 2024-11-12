@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * Generic interface for a worker model
  */
-public interface WorkerModel<T> {
+public interface WorkerModel<V> {
 
-    void update(List<T> items);
+    void update(List<V> items);
 }

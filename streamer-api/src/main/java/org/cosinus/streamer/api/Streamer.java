@@ -45,6 +45,10 @@ public interface Streamer<T> extends Streamable {
         return false;
     }
 
+    default boolean isImage() {
+        return false;
+    }
+
     default void reset() {
     }
 

@@ -33,7 +33,7 @@ import static java.util.function.Predicate.not;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_HIDDEN;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.TOP_VISIBLE;
 
-public abstract class DataTableModel<T extends Streamable> extends TableModel implements LoadWorkerModel<T> {
+public abstract class DataTableModel<T extends Streamable> extends TableModel implements LoadWorkerModel<T, T> {
 
     private static final Logger LOG = LogManager.getLogger(DataTableModel.class);
 
@@ -126,7 +126,9 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
     }
 
     public void setSortColumn(int column, boolean ascending) {
-        comparator.sort(column, ascending);
+        if (column >= 0 && column < getItemsCount()) {
+            comparator.sort(column, ascending);
+        }
     }
 
     public void sort() {

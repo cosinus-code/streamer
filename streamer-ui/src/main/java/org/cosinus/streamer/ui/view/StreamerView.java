@@ -40,7 +40,7 @@ import static java.awt.BorderLayout.SOUTH;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.view.text.TextStreamerView.DIRTY_TEXT_MARKER;
 
-public abstract class StreamerView<T> extends Panel implements WorkerListener<LoadWorkerModel<T>, T> {
+public abstract class StreamerView<T, V> extends Panel implements WorkerListener<LoadWorkerModel<T, V>, V> {
 
     @Autowired
     protected StreamerViewHandler streamerViewHandler;
@@ -152,24 +152,24 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
     }
 
     @Override
-    public void workerStarted(LoadWorkerModel<T> loadWorkerModel) {
+    public void workerStarted(LoadWorkerModel<T, V> loadWorkerModel) {
         loadingIndicator.startLoading(loadWorkerModel.getTotalSizeToLoad());
         updateAddressBarAndStreamerPanel();
     }
 
     @Override
-    public void workerUpdated(LoadWorkerModel<T> loadWorkerModel) {
+    public void workerUpdated(LoadWorkerModel<T, V> loadWorkerModel) {
         loadingIndicator.updateLoading(loadWorkerModel.getLoadedSize(), loadWorkerModel.getTotalSizeToLoad());
     }
 
     @Override
-    public void workerFinished(LoadWorkerModel<T> loadWorkerModel) {
+    public void workerFinished(LoadWorkerModel<T, V> loadWorkerModel) {
         loadingIndicator.finishLoading();
         updateAddressBarAndStreamerPanel();
 
         streamerViewStorage.saveLastLoadedStreamer(this.getParentStreamer(), getCurrentLocation());
 
-        StreamerView<?> currentView = streamerViewHandler.getCurrentView();
+        StreamerView<?, ?> currentView = streamerViewHandler.getCurrentView();
         if (currentView != null && !currentView.hasFocus()) {
             currentView.requestFocus();
         }
@@ -250,7 +250,7 @@ public abstract class StreamerView<T> extends Panel implements WorkerListener<Lo
 
     public abstract String getNextItemIdentifier();
 
-    public abstract LoadWorkerModel<T> getLoadWorkerModel();
+    public abstract LoadWorkerModel<T, V> getLoadWorkerModel();
 
     protected abstract Container getContainer();
 }

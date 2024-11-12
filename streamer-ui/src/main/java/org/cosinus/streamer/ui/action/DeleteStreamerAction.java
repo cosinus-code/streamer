@@ -77,7 +77,7 @@ public class DeleteStreamerAction implements ActionInContext {
     }
 
     private <S extends Streamer<S>> void deleteFromParentStreamer() {
-        final StreamerView<S> currentView = (StreamerView<S>) streamerViewHandler.getCurrentView();
+        final StreamerView<S, S> currentView = (StreamerView<S, S>) streamerViewHandler.getCurrentView();
         ParentStreamerViewContext<S> streamerViewContext = new ParentStreamerViewContext<>(currentView);
 
         if (streamerViewContext.getSelectedItems().isEmpty()) {

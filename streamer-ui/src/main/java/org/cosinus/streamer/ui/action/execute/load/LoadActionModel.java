@@ -40,7 +40,7 @@ public class LoadActionModel<T> extends ActionModel {
 
     private Streamer<T> streamerToLoad;
 
-    private StreamerView<T> streamerViewToLoadTo;
+    private StreamerView<T, T> streamerViewToLoadTo;
 
     public LoadActionModel(final PanelLocation locationToLoadTo,
                            final Streamer<?> initialStreamerToLoad,
@@ -95,11 +95,11 @@ public class LoadActionModel<T> extends ActionModel {
         return expanding;
     }
 
-    public StreamerView<T> getStreamerViewToLoadTo() {
+    public StreamerView<T, T> getStreamerViewToLoadTo() {
         return streamerViewToLoadTo;
     }
 
-    public void setStreamerViewToLoadTo(StreamerView<T> streamerViewToLoadTo) {
+    public void setStreamerViewToLoadTo(StreamerView<T, T> streamerViewToLoadTo) {
         this.streamerViewToLoadTo = streamerViewToLoadTo;
     }
 

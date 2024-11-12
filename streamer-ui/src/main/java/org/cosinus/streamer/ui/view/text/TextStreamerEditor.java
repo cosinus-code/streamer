@@ -36,7 +36,7 @@ import static java.lang.System.lineSeparator;
 import static org.cosinus.streamer.ui.action.GoToParentStreamerAction.GO_TO_PARENT_ACTION;
 import static org.cosinus.swing.border.Borders.emptyBorder;
 
-public class TextStreamerEditor extends TextEditor implements LoadWorkerModel<String> {
+public class TextStreamerEditor extends TextEditor implements LoadWorkerModel<String, String> {
 
     @Autowired
     private ErrorHandler errorHandler;

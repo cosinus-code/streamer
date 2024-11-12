@@ -1,12 +1,9 @@
 package org.cosinus.streamer.api.worker;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import error.ActionException;
 import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
 import org.cosinus.streamer.api.stream.pipeline.PipelineStrategy;
 import org.cosinus.streamer.api.stream.pipeline.StreamPipeline;
-import error.AbortActionException;
-import error.ActionException;
 import org.cosinus.swing.action.execute.ActionModel;
 
 import java.io.IOException;
@@ -14,11 +11,9 @@ import java.io.UncheckedIOException;
 
 import static java.util.Optional.ofNullable;
 
-public abstract class PipelineWorker<M extends WorkerModel<T>, T>
-    extends Worker<M, T>
+public abstract class PipelineWorker<M extends WorkerModel<V>, T, V>
+    extends Worker<M, V>
     implements StreamPipeline<T>, StreamConsumer<T> {
-
-    private static final Logger LOG = LogManager.getLogger(PipelineWorker.class);
 
     private final StreamConsumer<T> streamConsumer;
 
@@ -37,7 +32,7 @@ public abstract class PipelineWorker<M extends WorkerModel<T>, T>
     }
 
     @Override
-    final public StreamConsumer<T> openPipelineOutputStream(PipelineStrategy pipelineStrategy) {
+    public final StreamConsumer<T> openPipelineOutputStream(PipelineStrategy pipelineStrategy) {
         return this;
     }
 
@@ -45,18 +40,17 @@ public abstract class PipelineWorker<M extends WorkerModel<T>, T>
 
     @Override
     public void accept(T item) {
-//        try
-//        {
+//        try {
 //            java.lang.Thread.sleep(10);
-//        }
-//        catch (InterruptedException e)
-//        {
+//        } catch (InterruptedException e) {
 //            throw new RuntimeException(e);
 //        }
         ofNullable(streamConsumer)
             .ifPresent(consumer -> consumer.accept(item));
-        publish(item);
+        publish(transform(item));
     }
+
+    protected abstract V transform(T item);
 
     @Override
     public void close() throws IOException {

@@ -29,7 +29,7 @@ import static org.cosinus.streamer.ui.view.table.details.DetailView.DETAIL_VIEW_
 public class DetailViewCreator implements StreamerViewCreator {
 
     @Override
-    public StreamerView<?> createStreamerView(PanelLocation location) {
+    public StreamerView<?, ?> createStreamerView(PanelLocation location) {
         return new DetailView<>(location);
     }
 

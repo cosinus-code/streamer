@@ -18,19 +18,25 @@ package org.cosinus.streamer.ui.action.execute.load;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
-import org.cosinus.streamer.ui.action.execute.WorkerExecutor;
 import org.cosinus.streamer.api.worker.WorkerListenerHandler;
+import org.cosinus.streamer.ui.action.execute.WorkerExecutor;
+import org.cosinus.streamer.ui.action.execute.load.image.LoadImageActionModel;
+import org.cosinus.streamer.ui.action.execute.load.image.LoadImageExecutor;
 import org.cosinus.streamer.ui.action.execute.save.SaveActionModel;
 import org.cosinus.streamer.ui.action.execute.save.SaveWorkerExecutor;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
+import org.cosinus.streamer.ui.view.image.ImageStreamerView;
 import org.cosinus.swing.action.execute.ActionExecutor;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 import static java.util.Optional.ofNullable;
+import static org.cosinus.streamer.ui.view.image.ImageStreamerView.IMAGE_VIEWER;
 import static org.cosinus.streamer.ui.view.text.TextStreamerView.TEXT_EDITOR;
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 
@@ -38,7 +44,7 @@ import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
  * Implementation of {@link ActionExecutor} based on {@link LoadWorker}
  */
 @Component
-public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, LoadWorkerModel<T>, T> {
+public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, LoadWorkerModel<T, T>, T> {
 
     private final StreamerViewHandler streamerViewHandler;
 
@@ -50,19 +56,23 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
 
     private final SaveWorkerExecutor saveWorkerExecutor;
 
+    private final LoadImageExecutor loadImageExecutor;
+
     protected LoadActionExecutor(final ProgressFormHandler progressFormHandler,
                                  final WorkerListenerHandler workerListenerHandler,
                                  final StreamerViewHandler streamerViewHandler,
                                  final BinaryExpanderHandler binaryExpanderHandler,
                                  final DialogHandler dialogHandler,
                                  final Translator translator,
-                                 final SaveWorkerExecutor saveWorkerExecutor) {
+                                 final SaveWorkerExecutor saveWorkerExecutor,
+                                 final LoadImageExecutor loadImageExecutor) {
         super(progressFormHandler, workerListenerHandler);
         this.streamerViewHandler = streamerViewHandler;
         this.binaryExpanderHandler = binaryExpanderHandler;
         this.dialogHandler = dialogHandler;
         this.translator = translator;
         this.saveWorkerExecutor = saveWorkerExecutor;
+        this.loadImageExecutor = loadImageExecutor;
     }
 
     @Override
@@ -72,26 +82,44 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
             (Streamer<T>) actionModel.getInitialStreamerToLoad());
 
         Streamer<T> streamerToLoad = actionModel.getStreamerToLoad();
-        StreamerView<?> currentStreamerView = streamerViewHandler.getCurrentView();
+        StreamerView<T, T> currentStreamerView = (StreamerView<T, T>) streamerViewHandler.getCurrentView();
         if (isCurrentStreamerViewDirty() && !streamerToLoad.isDirty() && !isCurrentStreamerSaving() && shouldSave()) {
             saveWorkerExecutor.execute(new SaveActionModel<>(currentStreamerView));
             return;
         }
 
-        StreamerView<T> streamerViewToLoadTo = streamerViewHandler.getStreamerView(
+        StreamerView<T, T> streamerViewToLoadTo = streamerViewHandler.getStreamerView(
             actionModel.getLocationToLoadTo(),
             ofNullable(actionModel.getStreamerViewNameToLoadIn())
                 .filter(viewName -> !streamerToLoad.isTextCompatible() || TEXT_EDITOR.equals(viewName))
-                .orElseGet(() -> !streamerToLoad.isParent() && streamerToLoad.isTextCompatible() ? TEXT_EDITOR : null));
+                .orElseGet(() -> getDefaultViewName(streamerToLoad)));
         streamerViewToLoadTo.setParentStreamer(streamerToLoad);
 
         actionModel.setStreamerViewToLoadTo(streamerViewToLoadTo);
 
-        super.execute(actionModel);
+        Optional.of(streamerViewToLoadTo)
+            .filter(ImageStreamerView.class::isInstance)
+            .map(ImageStreamerView.class::cast)
+            .map(imageStreamerView ->
+                new LoadImageActionModel(streamerToLoad.binaryStreamer(), imageStreamerView))
+            .ifPresentOrElse(loadImageExecutor::execute, () -> super.execute(actionModel));
+    }
+
+    private String getDefaultViewName(Streamer<?> streamerToLoad) {
+        if (streamerToLoad.isParent()) {
+            return null;
+        }
+        if (streamerToLoad.isImage()) {
+            return IMAGE_VIEWER;
+        }
+        if (streamerToLoad.isTextCompatible()) {
+            return TEXT_EDITOR;
+        }
+        return null;
     }
 
     @Override
-    protected StreamerView<T> createWorkerListener(LoadActionModel<T> actionModel) {
+    protected StreamerView<T, T> createWorkerListener(LoadActionModel<T> actionModel) {
         return actionModel.getStreamerViewToLoadTo();
     }
 

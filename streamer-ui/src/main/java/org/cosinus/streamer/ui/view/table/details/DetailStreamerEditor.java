@@ -90,7 +90,7 @@ public class DetailStreamerEditor<T extends Streamable> implements StreamerEdito
     }
 
     @Override
-    public StreamerView<T> getView() {
+    public StreamerView<T, T> getView() {
         return view;
     }
 

@@ -5,13 +5,16 @@ import org.cosinus.streamer.api.worker.WorkerModel;
 
 import static java.util.Optional.ofNullable;
 
-public interface LoadWorkerModel<T> extends WorkerModel<T> {
+public interface LoadWorkerModel<T, V> extends WorkerModel<V> {
 
     Streamer<T> getParentStreamer();
 
-    String getContentIdentifier();
+    default String getContentIdentifier() {
+        return null;
+    }
 
-    void setContentIdentifier(String contentIdentifier);
+    default void setContentIdentifier(String contentIdentifier) {
+    }
 
     default long getTotalSizeToLoad() {
         return ofNullable(getParentStreamer())

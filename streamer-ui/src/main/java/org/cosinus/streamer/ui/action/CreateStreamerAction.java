@@ -56,7 +56,7 @@ public class CreateStreamerAction implements ActionInContext {
 
     @Override
     public void run(ActionContext context) {
-        StreamerView<?> currentView = streamerViewHandler.getCurrentView();
+        StreamerView<?, ?> currentView = streamerViewHandler.getCurrentView();
         if (currentView.getParentStreamer() instanceof ParentStreamer<?> parent) {
             if (!parent.canUpdate()) {
                 return;

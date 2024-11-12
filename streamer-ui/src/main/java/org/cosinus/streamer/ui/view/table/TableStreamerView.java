@@ -79,7 +79,7 @@ public abstract class TableStreamerView<T extends Streamable> extends DefaultStr
     protected abstract DataTable<T> createDataTable();
 
     @Override
-    public LoadWorkerModel<T> getLoadWorkerModel() {
+    public LoadWorkerModel<T, T> getLoadWorkerModel() {
         return getDataTableModel();
     }
 
@@ -146,19 +146,19 @@ public abstract class TableStreamerView<T extends Streamable> extends DefaultStr
     }
 
     @Override
-    public void workerStarted(LoadWorkerModel<T> loadWorkerModel) {
+    public void workerStarted(LoadWorkerModel<T, T> loadWorkerModel) {
         getDataTableModel().fireTableDataChanged();
         super.workerStarted(loadWorkerModel);
     }
 
     @Override
-    public void workerUpdated(LoadWorkerModel<T> loadWorkerModel) {
+    public void workerUpdated(LoadWorkerModel<T, T> loadWorkerModel) {
         getDataTableModel().fireTableDataChanged();
         super.workerUpdated(loadWorkerModel);
     }
 
     @Override
-    public void workerFinished(LoadWorkerModel<T> loadWorkerModel) {
+    public void workerFinished(LoadWorkerModel<T, T> loadWorkerModel) {
         super.workerFinished(loadWorkerModel);
         if (isActive()) {
             ofNullable(loadWorkerModel.getContentIdentifier())

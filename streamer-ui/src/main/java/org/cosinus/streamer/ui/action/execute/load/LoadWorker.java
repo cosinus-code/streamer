@@ -20,7 +20,7 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
 import org.cosinus.streamer.api.stream.pipeline.PipelineListener;
 import org.cosinus.streamer.api.stream.pipeline.PipelineStrategy;
-import org.cosinus.streamer.api.worker.PipelineWorker;
+import org.cosinus.streamer.api.worker.DirectPipelineWorker;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.swing.action.execute.ActionModel;
 
@@ -29,15 +29,15 @@ import java.util.stream.Stream;
 /**
  * {@link javax.swing.SwingWorker} for loading a streamer
  */
-public class LoadWorker<T> extends PipelineWorker<LoadWorkerModel<T>, T> implements PipelineListener<T> {
+public class LoadWorker<T> extends DirectPipelineWorker<LoadWorkerModel<T, T>, T> implements PipelineListener<T> {
 
     private final Streamer<T> streamerToLoad;
 
-    private final StreamerView<T> streamerViewToLoadTo;
+    private final StreamerView<T, T> streamerViewToLoadTo;
 
     public LoadWorker(ActionModel actionModel,
                       final Streamer<T> streamerToLoad,
-                      final StreamerView<T> streamerViewToLoadTo,
+                      final StreamerView<T, T> streamerViewToLoadTo,
                       String contentIdentifier) {
         super(actionModel, streamerViewToLoadTo.getLoadWorkerModel());
         this.streamerToLoad = streamerToLoad;

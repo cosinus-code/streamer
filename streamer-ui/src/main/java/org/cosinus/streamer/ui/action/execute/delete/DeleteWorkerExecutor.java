@@ -54,7 +54,7 @@ public class DeleteWorkerExecutor
     protected void registerWorkerListeners(DeleteActionModel deleteAction, StreamersProgressModel workerModel) {
         super.registerWorkerListeners(deleteAction, workerModel);
 
-        final StreamerView<?> currentView = streamerViewHandler.getCurrentView();
+        final StreamerView<?, ?> currentView = streamerViewHandler.getCurrentView();
         workerListenerHandler.register(StreamersProgressModel.class, deleteAction.getActionId(),
             new WorkerListener<>() {
                 @Override

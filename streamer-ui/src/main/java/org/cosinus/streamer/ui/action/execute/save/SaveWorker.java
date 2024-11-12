@@ -18,12 +18,13 @@ package org.cosinus.streamer.ui.action.execute.save;
 import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
 import org.cosinus.streamer.api.stream.pipeline.PipelineListener;
 import org.cosinus.streamer.api.stream.pipeline.PipelineStrategy;
+import org.cosinus.streamer.api.worker.DirectPipelineWorker;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.streamer.api.worker.PipelineWorker;
 
 import java.util.stream.Stream;
 
-public class SaveWorker<T> extends PipelineWorker<SaveWorkerModel<T>, T> {
+public class SaveWorker<T> extends DirectPipelineWorker<SaveWorkerModel<T>, T> {
     private StreamConsumer<T> streamConsumer;
 
     public SaveWorker(final SaveActionModel<?> actionModel, final SaveWorkerModel<T> workerModel) {

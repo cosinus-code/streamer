@@ -70,7 +70,7 @@ public class StreamerViewHandler {
         setActiveView(currentLocation);
     }
 
-    public StreamerView<?> getCurrentView() {
+    public StreamerView<?, ?> getCurrentView() {
         return getPanel(currentLocation)
             .map(StreamerPanel::getView)
             .orElse(null);
@@ -81,15 +81,15 @@ public class StreamerViewHandler {
             .ifPresent(view -> view.setActive(location == currentLocation)));
     }
 
-    public <T> StreamerView<T> getStreamerView(PanelLocation location, String streamerViewName) {
+    public <T, V> StreamerView<T, V> getStreamerView(PanelLocation location, String streamerViewName) {
         Optional<String> resolvedViewName = ofNullable(streamerViewName)
             .or(() -> getPreferredViewName(location));
 
-        StreamerView<T> view = resolvedViewName
+        StreamerView<T, V> view = resolvedViewName
             .map(streamerViewCreatorsMap::get)
             //TODO: to avoid cast
-            .map(streamerViewCreator -> (StreamerView<T>) streamerViewCreator.createStreamerView(location))
-            .orElseGet(() -> (StreamerView<T>) defaultStreamerViewCreator.createStreamerView(location));
+            .map(streamerViewCreator -> (StreamerView<T, V>) streamerViewCreator.createStreamerView(location))
+            .orElseGet(() -> (StreamerView<T, V>) defaultStreamerViewCreator.createStreamerView(location));
 
         getPanel(location)
             .ifPresent(panel -> panel.setView(view));

@@ -66,4 +66,9 @@ public class FileBinaryStreamer extends FileStreamer<byte[]> implements BinarySt
     {
         return fileHandler.isTextCompatible(getPath());
     }
+
+    @Override
+    public boolean isImage() {
+        return fileHandler.isImage(getPath());
+    }
 }

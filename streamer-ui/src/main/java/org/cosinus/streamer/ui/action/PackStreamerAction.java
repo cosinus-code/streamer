@@ -99,7 +99,7 @@ public class PackStreamerAction extends AbstractCopyAction<PackActionModel> {
     @Override
     protected <S extends Streamer<S>, T extends Streamer<T>> void executeStreamerCopy(PackActionModel copyAction) {
         Optional.ofNullable(copyAction.getPackType()).map(binaryExpanderHandler.getBinaryExpandersMap()::get).ifPresent(expander -> {
-            StreamerView<S> currentView = (StreamerView<S>) streamerViewHandler.getCurrentView();
+            StreamerView<S, S> currentView = (StreamerView<S, S>) streamerViewHandler.getCurrentView();
             List<Streamer<S>> streamersToCopy = copyAction.getStreamersToCopy();
             String name = streamersToCopy.size() == 1 ? streamersToCopy.get(0).getName() : currentView.getParentStreamer().getName();
             String packName = setExtension(name, copyAction.getPackType());
@@ -119,8 +119,8 @@ public class PackStreamerAction extends AbstractCopyAction<PackActionModel> {
     @Override
     protected <S extends Streamer<S>, T extends Streamer<T>> PackActionModel actionModel() {
         PackActionModel packActionModel = pack(getActionName(),
-            new ParentStreamerViewContext<>((StreamerView<S>) streamerViewHandler.getCurrentView()),
-            new ParentStreamerViewContext<>((StreamerView<T>) streamerViewHandler.getOppositeView()));
+            new ParentStreamerViewContext<>((StreamerView<S, S>) streamerViewHandler.getCurrentView()),
+            new ParentStreamerViewContext<>((StreamerView<T, T>) streamerViewHandler.getOppositeView()));
 
         packActionModel.setPackTypes(expanderHandler.getBinaryExpandersMap()
             .entrySet()

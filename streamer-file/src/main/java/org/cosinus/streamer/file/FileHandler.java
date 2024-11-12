@@ -22,16 +22,16 @@ import net.sf.jmimemagic.MagicMatchNotFoundException;
 import net.sf.jmimemagic.MagicParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cosinus.streamer.api.error.StreamerException;
 import org.cosinus.streamer.file.system.FileSystem;
 import org.springframework.stereotype.Component;
 import oshi.SystemInfo;
 import oshi.software.os.OSFileStore;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -106,20 +106,36 @@ public class FileHandler {
             .isPresent();
     }
 
+    public boolean isImage(Path path) {
+        return mimeType(path)
+            .filter(mimeType -> mimeType.startsWith("image"))
+            .isPresent();
+    }
+
     public Optional<String> mimeType(Path path) {
-        //return Files.probeContentType(path);
         return ofNullable(path)
             .map(Path::toFile)
             .filter(not(File::isDirectory))
-            .map(file -> {
-                try {
-                    return Magic.getMagicMatch(path.toFile(), true).getMimeType();
-                }
-                catch (MagicMatchNotFoundException | MagicException | MagicParseException e) {
-                    LOG.error("Failed to match a mime type for path: {}", path);
-                    return null;
-                }
-            });
+            .map(file -> ofNullable(getFileContentType(file.toPath()))
+                .orElseGet(() -> getFileMagicMatch(file)));
+    }
+
+    private String getFileContentType(Path path) {
+        try {
+            return Files.probeContentType(path);
+        } catch (IOException ex) {
+            LOG.error("Failed to probe the file content type for path: {}", path);
+            return null;
+        }
+    }
+
+    private String getFileMagicMatch(File file) {
+        try {
+            return Magic.getMagicMatch(file, true).getMimeType();
+        } catch (MagicMatchNotFoundException | MagicException | MagicParseException e) {
+            LOG.error("Failed to match a mime type for path: {}", file);
+            return null;
+        }
     }
 
     public void reset() {
