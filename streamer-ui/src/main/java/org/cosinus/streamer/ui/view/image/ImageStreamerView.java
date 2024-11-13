@@ -60,6 +60,7 @@ public class ImageStreamerView extends StreamerView<byte[], UpdatableImage> {
         super.initComponents();
 
         imagePanel = new ImagePanel();
+        imagePanel.initHeaderPopup();
 
         JScrollPane scroll = new JScrollPane();
         scroll.setViewportView(imagePanel);
@@ -97,7 +98,6 @@ public class ImageStreamerView extends StreamerView<byte[], UpdatableImage> {
                 }
             }
         });
-
     }
 
     @Override
@@ -219,5 +219,10 @@ public class ImageStreamerView extends StreamerView<byte[], UpdatableImage> {
                         imagePanel.repaint();
                     });
             });
+    }
+
+    @Override
+    public void translate() {
+        imagePanel.translate();
     }
 }
