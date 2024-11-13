@@ -4,6 +4,7 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.swing.form.Panel;
 import org.cosinus.swing.image.ImageHandler;
+import org.cosinus.swing.image.ImageSettings;
 import org.cosinus.swing.image.UpdatableImage;
 import org.cosinus.swing.resource.ClasspathResourceResolver;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,25 +17,28 @@ import java.util.Optional;
 
 import static java.awt.Color.black;
 import static java.util.Optional.ofNullable;
+import static org.cosinus.swing.image.ImageSettings.SPEED;
 
 public class ImagePanel extends Panel implements LoadWorkerModel<byte[], UpdatableImage> {
 
     @Autowired
-    private ClasspathResourceResolver resourceResolver;
+    private transient ClasspathResourceResolver resourceResolver;
 
     @Autowired
-    private ImageHandler imageHandler;
+    private transient ImageHandler imageHandler;
 
-    private Streamer<byte[]> binaryStreamer;
+    private transient Streamer<byte[]> binaryStreamer;
 
-    private UpdatableImage updatableImage;
+    private transient UpdatableImage originalImage;
 
-    boolean finished;
+    private ImageSettings imageSettings = SPEED;
 
-    public void reset(Streamer<byte[]> binaryStreamer) {
+    private boolean finished;
+
+    public void reset(final Streamer<byte[]> binaryStreamer) {
         this.binaryStreamer = binaryStreamer;
         if (binaryStreamer == null) {
-            updatableImage = null;
+            originalImage = null;
         }
         finished = false;
     }
@@ -47,21 +51,21 @@ public class ImagePanel extends Panel implements LoadWorkerModel<byte[], Updatab
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        ofNullable(updatableImage)
+        ofNullable(originalImage)
             .map(UpdatableImage::getImage)
-            .ifPresentOrElse(image -> drawImage(image, g), () -> drawBrokenImage(g));
+            .ifPresentOrElse(
+                image -> drawImage(g, image),
+                () -> drawBrokenImage(g));
     }
 
-    private void drawImage(BufferedImage image, Graphics g) {
-        if (image.getWidth(this) > getWidth() || image.getHeight(this) > getHeight()) {
-            image = imageHandler.scaleImage(image, getWidth(), getHeight());
-            updatableImage.setImage(image);
-        }
+    private void drawImage(Graphics g, BufferedImage image) {
         drawImageBackground(g);
-
-        int x = (getWidth() - image.getWidth(this)) / 2;
-        int y = (getHeight() - image.getHeight(this)) / 2;
-        g.drawImage(image, x, y, this);
+        if (imageSettings.isHighQualityOnScaling() &&
+            !imageHandler.isImageFitInCanvas(image, this)) {
+            image = imageHandler.fitImageToCanvas(image, this, imageSettings);
+        }
+        imageHandler.drawFitImage((Graphics2D) g, image,
+            getWidth(), getHeight(), true, imageSettings, this);
     }
 
     private void drawBrokenImage(Graphics g) {
@@ -80,11 +84,11 @@ public class ImagePanel extends Panel implements LoadWorkerModel<byte[], Updatab
 
     @Override
     public long getLoadedSize() {
-        return updatableImage.getSize();
+        return originalImage.getSize();
     }
 
     public void setImage(UpdatableImage updatableImage) {
-        this.updatableImage = updatableImage;
+        this.originalImage = updatableImage;
     }
 
     @Override
@@ -102,6 +106,11 @@ public class ImagePanel extends Panel implements LoadWorkerModel<byte[], Updatab
 
     public void finish() {
         finished = true;
+        repaint();
+    }
+
+    public void setImageSettings(final ImageSettings imageSettings) {
+        this.imageSettings = imageSettings;
         repaint();
     }
 }
