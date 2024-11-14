@@ -23,7 +23,7 @@ public class ImageLoader extends BinaryStreamConsumer {
         super(new ByteArrayOutputStream());
         this.loadImageWorker = loadImageWorker;
         this.streamerToLoad = loadImageWorker.getStreamerToLoad();
-        this.image = new UpdatableImage();
+        this.image = new UpdatableImage(streamerToLoad.getType());
     }
 
     @Override

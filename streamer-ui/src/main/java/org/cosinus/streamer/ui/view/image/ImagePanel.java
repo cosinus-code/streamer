@@ -51,7 +51,7 @@ public class ImagePanel extends Panel implements LoadWorkerModel<byte[], Updatab
 
     private transient UpdatableImage originalImage;
 
-    private transient ImageSettings imageSettings = SPEED;
+    private transient ImageSettings imageSettings = QUALITY;
 
     private boolean finished;
 

@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.math.BigDecimal;
 
 import static java.math.BigDecimal.ZERO;
+import static javax.swing.SwingUtilities.invokeLater;
 import static org.cosinus.swing.border.Borders.emptyBorder;
 
 public class LoadingProgress extends ProgressBar {
@@ -43,10 +44,8 @@ public class LoadingProgress extends ProgressBar {
     }
 
     public void startLoading(long totalSizeToLoad) {
-        if (totalSizeToLoad != 0) {
-            if (totalSizeToLoad > 0) {
-                setMaximum(100);
-            }
+        if (totalSizeToLoad > 0) {
+            setMaximum(100);
         }
     }
 
@@ -62,7 +61,7 @@ public class LoadingProgress extends ProgressBar {
 
     public void finishLoading() {
         setIndeterminate(false);
-        setMaximum(0);
-        setValue(0);
+        setValue(100);
+        invokeLater(() -> setValue(0));
     }
 }

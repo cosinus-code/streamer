@@ -17,8 +17,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 
+import static org.cosinus.swing.format.FormatHandler.MEGA;
+
 public class LoadImageWorker extends Worker<LoadWorkerModel<byte[], UpdatableImage>, UpdatableImage>
     implements BinaryPipeline, PipelineListener<byte[]>, BinaryPipelineStrategy {
+
+    public static final int IMAGE_LOAD_RATE = 3 * MEGA;
 
     private final BinaryStreamer streamerToLoad;
 
@@ -90,6 +94,6 @@ public class LoadImageWorker extends Worker<LoadWorkerModel<byte[], UpdatableIma
 
     @Override
     public int getPipelineRate() {
-        return 1024 * 1024;
+        return IMAGE_LOAD_RATE;
     }
 }
