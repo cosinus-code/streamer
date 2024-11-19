@@ -14,7 +14,8 @@ fi
 "$JAVA_PATH" \
 --add-exports java.desktop/sun.awt=ALL-UNNAMED \
 --add-exports java.desktop/sun.swing=ALL-UNNAMED \
--jar -Dswing.aatext=true $APPLICATION_DIR/streamer.jar \
+-jar -Dswing.aatext=true -Dapplication.dir=$APPLICATION_DIR \
+$APPLICATION_DIR/streamer.jar \
 -splash-progress \
 -splash-progress-color=127,206,0 \
 -splash-progress-y=250
