@@ -101,7 +101,10 @@ public class FileHandler {
     }
 
     public boolean isTextCompatible(Path path) {
-        return mimeType(path)
+        return ofNullable(path)
+            .map(Path::toFile)
+            .filter(not(File::isDirectory))
+            .map(this::getFileMagicMatch)
             .filter(TEXT_PLAIN_VALUE::equals)
             .isPresent();
     }
