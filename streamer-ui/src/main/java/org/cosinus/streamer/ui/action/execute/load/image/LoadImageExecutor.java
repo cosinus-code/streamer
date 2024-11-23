@@ -9,6 +9,8 @@ import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.swing.image.UpdatableImage;
 import org.springframework.stereotype.Component;
 
+import static org.cosinus.streamer.ui.action.execute.load.image.LoadImageActionModel.LOAD_IMAGE_ACTION_ID;
+
 @Component
 public class LoadImageExecutor
     extends WorkerExecutor<LoadImageActionModel, LoadWorkerModel<byte[], UpdatableImage>, UpdatableImage> {
@@ -20,7 +22,7 @@ public class LoadImageExecutor
 
     @Override
     public String getHandledAction() {
-        return LoadImageActionModel.class.getName();
+        return LOAD_IMAGE_ACTION_ID;
     }
 
     @Override

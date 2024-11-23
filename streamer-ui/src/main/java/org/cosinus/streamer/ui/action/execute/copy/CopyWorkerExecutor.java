@@ -25,6 +25,8 @@ import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.execute.ActionExecutor;
 import org.springframework.stereotype.Component;
 
+import static org.cosinus.streamer.ui.action.CopyStreamerAction.COPY_STREAMER_ACTION_ID;
+
 /**
  * Implementation of {@link ActionExecutor} for copying streamers based on {@link CopyWorker}
  */
@@ -46,6 +48,6 @@ public class CopyWorkerExecutor<S extends Streamer<S>, T extends Streamer<T>>
 
     @Override
     public String getHandledAction() {
-        return CopyActionModel.class.getName();
+        return COPY_STREAMER_ACTION_ID;
     }
 }

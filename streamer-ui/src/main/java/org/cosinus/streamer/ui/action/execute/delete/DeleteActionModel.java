@@ -37,13 +37,13 @@ public class DeleteActionModel<S extends Streamer<S>> extends ActionModel {
 
     private ParentStreamer<S> parentStreamer;
 
-    public DeleteActionModel(String actionName) {
-        super(UUID.randomUUID().toString(), actionName);
+    public DeleteActionModel(String actionId, String actionName) {
+        super(UUID.randomUUID().toString(), actionId, actionName);
     }
 
     public static <S extends Streamer<S>> DeleteActionModel<S>
-    delete(String actionName, final ParentStreamerViewContext<S> from) {
-        return new DeleteActionModel<S>(actionName)
+    delete(String actionId, String actionName, final ParentStreamerViewContext<S> from) {
+        return new DeleteActionModel<S>(actionId, actionName)
             .deleteStreamers(from.getSelectedItems())
             .from(from.getParentStreamer());
     }

@@ -25,7 +25,7 @@ public class SaveActionModel<T> extends ActionModel {
     private final StreamerView<T, T> streamerView;
 
     public SaveActionModel(final StreamerView<T, T> streamerView) {
-        super(streamerView.getParentStreamer().getId(), SAVE_ACTION_ID);
+        super(streamerView.getParentStreamer().getId(), SAVE_ACTION_ID, SAVE_ACTION_ID);
         this.streamerView = streamerView;
     }
 

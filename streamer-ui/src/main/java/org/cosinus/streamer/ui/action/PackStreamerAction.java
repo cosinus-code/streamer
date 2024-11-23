@@ -53,7 +53,7 @@ import static org.cosinus.swing.util.FileUtils.setExtension;
 @Component
 public class PackStreamerAction extends AbstractCopyAction<PackActionModel> {
 
-    protected static final String PACK_ACTION_NAME = "act-pack";
+    public static final String PACK_ACTION_NAME = "act-pack";
 
     public static final String PACK_STREAMER_ACTION_ID = "pack-streamer";
 
@@ -118,7 +118,7 @@ public class PackStreamerAction extends AbstractCopyAction<PackActionModel> {
 
     @Override
     protected <S extends Streamer<S>, T extends Streamer<T>> PackActionModel actionModel() {
-        PackActionModel packActionModel = pack(getActionName(),
+        PackActionModel packActionModel = pack(getId(), getActionName(),
             new ParentStreamerViewContext<>((StreamerView<S, S>) streamerViewHandler.getCurrentView()),
             new ParentStreamerViewContext<>((StreamerView<T, T>) streamerViewHandler.getOppositeView()));
 

@@ -42,6 +42,8 @@ import static org.cosinus.streamer.ui.action.execute.move.MoveActionModel.move;
 @Component
 public class MoveStreamerAction extends AbstractCopyAction<MoveActionModel> {
 
+    public static final String MOVE_ACTION_NAME = "act-move";
+
     public static final String MOVE_STREAMER_ACTION_ID = "move-streamer";
 
     public MoveStreamerAction(final Preferences preferences,
@@ -69,7 +71,7 @@ public class MoveStreamerAction extends AbstractCopyAction<MoveActionModel> {
 
     @Override
     protected <S extends Streamer<S>, T extends Streamer<T>> MoveActionModel<S, T> actionModel() {
-        return move(getActionName(),
+        return move(getId(), getActionName(),
             new ParentStreamerViewContext<>((StreamerView<S, S>) streamerViewHandler.getCurrentView()),
             new ParentStreamerViewContext<>((StreamerView<T, T>) streamerViewHandler.getOppositeView()));
     }

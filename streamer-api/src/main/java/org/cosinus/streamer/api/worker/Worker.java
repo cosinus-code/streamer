@@ -62,7 +62,7 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
     private boolean paused;
 
     protected Worker(ActionModel actionModel, M workerModel) {
-        this.id = actionModel.getActionId();
+        this.id = actionModel.getExecutionId();
         this.actionModel = actionModel;
         this.workerModel = workerModel;
     }

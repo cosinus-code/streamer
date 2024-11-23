@@ -25,6 +25,8 @@ import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.springframework.stereotype.Component;
 
+import static org.cosinus.streamer.ui.action.FindStreamerAction.FIND_STREAMER_ACTION_ID;
+
 @Component
 public class FindActionExecutor extends WorkerExecutor<FindActionModel, FindWorkerModel, Streamer<?>> {
 
@@ -69,6 +71,6 @@ public class FindActionExecutor extends WorkerExecutor<FindActionModel, FindWork
 
     @Override
     public String getHandledAction() {
-        return FindActionModel.class.getName();
+        return FIND_STREAMER_ACTION_ID;
     }
 }

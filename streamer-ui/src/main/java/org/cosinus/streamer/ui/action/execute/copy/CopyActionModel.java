@@ -53,13 +53,13 @@ public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> exten
 
     private Path targetPath;
 
-    public CopyActionModel(String actionName) {
-        super(randomUUID().toString(), actionName);
+    public CopyActionModel(String actionId, String actionName) {
+        super(randomUUID().toString(), actionId, actionName);
     }
 
     public static <S extends Streamer<S>, T extends Streamer<T>>
-    CopyActionModel<S, T> copy(String actionName, ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
-        return new CopyActionModel<S, T>(actionName)
+    CopyActionModel<S, T> copy(String actionId, String actionName, ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
+        return new CopyActionModel<S, T>(actionId, actionName)
             .setStreamersToCopy(from.getSelectedItems())
             .from(from.getParentStreamer())
             .to(to.getParentStreamer());

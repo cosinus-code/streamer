@@ -18,8 +18,8 @@ package org.cosinus.streamer.ui.action.execute.delete;
 
 import org.cosinus.streamer.api.worker.SimpleWorker;
 import org.cosinus.streamer.api.worker.WorkerListener;
-import org.cosinus.streamer.ui.action.execute.WorkerExecutor;
 import org.cosinus.streamer.api.worker.WorkerListenerHandler;
+import org.cosinus.streamer.ui.action.execute.WorkerExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
@@ -29,6 +29,8 @@ import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.execute.ActionExecutor;
 import org.springframework.stereotype.Component;
+
+import static org.cosinus.streamer.ui.action.DeleteStreamerAction.DELETE_STREAMER_ACTION_NAME;
 
 /**
  * Implementation of {@link ActionExecutor} for deleting streamers based on {@link DeleteWorker}
@@ -55,7 +57,7 @@ public class DeleteWorkerExecutor
         super.registerWorkerListeners(deleteAction, workerModel);
 
         final StreamerView<?, ?> currentView = streamerViewHandler.getCurrentView();
-        workerListenerHandler.register(StreamersProgressModel.class, deleteAction.getActionId(),
+        workerListenerHandler.register(StreamersProgressModel.class, deleteAction.getExecutionId(),
             new WorkerListener<>() {
                 @Override
                 public void workerFinished(StreamersProgressModel workerModel) {
@@ -80,6 +82,6 @@ public class DeleteWorkerExecutor
 
     @Override
     public String getHandledAction() {
-        return DeleteActionModel.class.getName();
+        return DELETE_STREAMER_ACTION_NAME;
     }
 }

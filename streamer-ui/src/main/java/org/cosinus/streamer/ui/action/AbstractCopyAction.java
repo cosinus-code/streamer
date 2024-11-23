@@ -39,10 +39,6 @@ import static org.springframework.util.CollectionUtils.isEmpty;
  */
 public abstract class AbstractCopyAction<M extends CopyActionModel> implements ActionInContext {
 
-    protected static final String COPY_ACTION_NAME = "act-copy";
-
-    protected static final String MOVE_ACTION_NAME = "act-move";
-
     private static final String PACK_CONFIRMATION_UI = "copyConfirmationDialog.json";
 
     protected final Preferences preferences;

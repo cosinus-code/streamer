@@ -25,13 +25,13 @@ import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
  */
 public class MoveActionModel<S extends Streamer<S>, T extends Streamer<T>> extends CopyActionModel<S, T> {
 
-    public MoveActionModel(String actionName) {
-        super(actionName);
+    public MoveActionModel(String actionId, String actionName) {
+        super(actionId, actionName);
     }
 
     public static <S extends Streamer<S>, T extends Streamer<T>>
-    MoveActionModel<S, T> move(String actionName, ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
-        MoveActionModel<S, T> moveActionModel = new MoveActionModel<>(actionName);
+    MoveActionModel<S, T> move(String actionId, String actionName, ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
+        MoveActionModel<S, T> moveActionModel = new MoveActionModel<>(actionId, actionName);
         moveActionModel.setStreamersToCopy(from.getSelectedItems())
             .from(from.getParentStreamer())
             .to(to.getParentStreamer());

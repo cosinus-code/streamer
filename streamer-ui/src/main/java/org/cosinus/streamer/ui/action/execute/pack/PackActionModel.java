@@ -39,8 +39,8 @@ public class PackActionModel<S extends Streamer<S>, T extends Streamer<T>>
 
     private String[] packTypes;
 
-    public PackActionModel(String actionName) {
-        super(actionName);
+    public PackActionModel(String actionId, String actionName) {
+        super(actionId, actionName);
     }
 
     public String getPackType() {
@@ -56,8 +56,8 @@ public class PackActionModel<S extends Streamer<S>, T extends Streamer<T>>
     }
 
     public static <S extends Streamer<S>, T extends Streamer<T>>
-    PackActionModel<S, T> pack(String actionName, ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
-        PackActionModel<S, T> packActionModel = new PackActionModel<>(actionName);
+    PackActionModel<S, T> pack(String actionId, String actionName, ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
+        PackActionModel<S, T> packActionModel = new PackActionModel<>(actionId, actionName);
         packActionModel
             .setStreamersToCopy(from.getSelectedItems())
             .from(from.getParentStreamer())

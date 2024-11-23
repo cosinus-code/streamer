@@ -36,6 +36,8 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
+import static org.cosinus.streamer.ui.action.LoadStreamerAction.LOAD_STREAMER_ACTION_ID;
 import static org.cosinus.streamer.ui.view.image.ImageStreamerView.IMAGE_VIEWER;
 import static org.cosinus.streamer.ui.view.text.TextStreamerView.TEXT_EDITOR;
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
@@ -106,14 +108,13 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
     }
 
     private String getDefaultViewName(Streamer<?> streamerToLoad) {
-        if (streamerToLoad.isParent()) {
-            return null;
-        }
-        if (streamerToLoad.isImage()) {
-            return IMAGE_VIEWER;
-        }
-        if (streamerToLoad.isTextCompatible()) {
-            return TEXT_EDITOR;
+        if (!streamerToLoad.isParent()) {
+            if (streamerToLoad.isImage()) {
+                return IMAGE_VIEWER;
+            }
+            if (streamerToLoad.isTextCompatible()) {
+                return TEXT_EDITOR;
+            }
         }
         return null;
     }
@@ -135,7 +136,7 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
 
     @Override
     public String getHandledAction() {
-        return LoadActionModel.class.getName();
+        return LOAD_STREAMER_ACTION_ID;
     }
 
     private boolean isCurrentStreamerViewDirty() {

@@ -15,6 +15,7 @@ package org.cosinus.streamer.ui.action.execute.pack;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.expand.ExpandedStreamer;
 import org.cosinus.streamer.api.worker.WorkerListenerHandler;
@@ -23,6 +24,8 @@ import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.springframework.stereotype.Component;
+
+import static org.cosinus.streamer.ui.action.PackStreamerAction.PACK_STREAMER_ACTION_ID;
 
 @Component
 public class PackWorkerExecutor<S extends Streamer<S>, T extends ExpandedStreamer<T>>
@@ -42,6 +45,6 @@ public class PackWorkerExecutor<S extends Streamer<S>, T extends ExpandedStreame
 
     @Override
     public String getHandledAction() {
-        return PackActionModel.class.getName();
+        return PACK_STREAMER_ACTION_ID;
     }
 }

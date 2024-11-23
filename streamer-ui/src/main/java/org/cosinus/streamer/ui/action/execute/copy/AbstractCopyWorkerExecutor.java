@@ -54,7 +54,7 @@ public abstract class AbstractCopyWorkerExecutor<
     @Override
     protected void registerWorkerListeners(A copyAction, CopyProgressModel workerModel) {
         super.registerWorkerListeners(copyAction, workerModel);
-        workerListenerHandler.register(CopyProgressModel.class, copyAction.getActionId(),
+        workerListenerHandler.register(CopyProgressModel.class, copyAction.getExecutionId(),
             new WorkerListener<>() {
                 @Override
                 public void workerFinished(CopyProgressModel workerModel) {

@@ -26,6 +26,7 @@ import org.cosinus.streamer.ui.view.StreamerView;
 import org.springframework.stereotype.Component;
 
 import static java.util.Optional.ofNullable;
+import static org.cosinus.streamer.ui.action.SaveAction.SAVE_ACTION_ID;
 
 @Component
 public class SaveWorkerExecutor<T> extends WorkerExecutor<SaveActionModel, SaveWorkerModel<T>, T> {
@@ -38,7 +39,7 @@ public class SaveWorkerExecutor<T> extends WorkerExecutor<SaveActionModel, SaveW
 
     @Override
     public void execute(SaveActionModel actionModel) {
-        if (isWorkerRunning(actionModel.getActionId())) {
+        if (isWorkerRunning(actionModel.getExecutionId())) {
             return;
         }
         super.execute(actionModel);
@@ -67,6 +68,6 @@ public class SaveWorkerExecutor<T> extends WorkerExecutor<SaveActionModel, SaveW
 
     @Override
     public String getHandledAction() {
-        return SaveActionModel.class.getName();
+        return SAVE_ACTION_ID;
     }
 }

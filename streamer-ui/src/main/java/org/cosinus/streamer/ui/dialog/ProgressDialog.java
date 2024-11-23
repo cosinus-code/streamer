@@ -133,7 +133,7 @@ public abstract class ProgressDialog<M extends WorkerModel<M>> extends Dialog<Vo
     @Override
     public void cancel() {
         actionExecutors.getActionExecutor(actionModel)
-            .ifPresent(executor -> executor.cancel(actionModel.getActionId()));
+            .ifPresent(executor -> executor.cancel(actionModel.getExecutionId()));
         super.cancel();
     }
 

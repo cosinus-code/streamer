@@ -67,7 +67,7 @@ public class LoadActionModel<T> extends ActionModel {
                            final String itemToSelectAfterLoad,
                            final String streamerViewNameToLoadIn,
                            boolean expanding) {
-        super(locationToLoadTo.name(), LOAD_STREAMER_ACTION_ID);
+        super(locationToLoadTo.name(), LOAD_STREAMER_ACTION_ID, LOAD_STREAMER_ACTION_ID);
         this.locationToLoadTo = locationToLoadTo;
         this.initialStreamerToLoad = initialStreamerToLoad;
         this.itemToSelectAfterLoad = itemToSelectAfterLoad;
