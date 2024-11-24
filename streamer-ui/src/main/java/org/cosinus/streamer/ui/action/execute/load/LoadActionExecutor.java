@@ -104,7 +104,19 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
             .map(ImageStreamerView.class::cast)
             .map(imageStreamerView ->
                 new LoadImageActionModel(streamerToLoad.binaryStreamer(), imageStreamerView))
-            .ifPresentOrElse(loadImageExecutor::execute, () -> super.execute(actionModel));
+            .ifPresentOrElse(
+                this::startLoadImageExecutor,
+                () -> startLoadExecutor(actionModel));
+    }
+
+    private void startLoadImageExecutor(LoadImageActionModel loadImageActionModel) {
+        cancel(loadImageActionModel.getExecutionId());
+        loadImageExecutor.execute(loadImageActionModel);
+    }
+
+    private void startLoadExecutor(LoadActionModel<T> actionModel) {
+        loadImageExecutor.cancel(actionModel.getExecutionId());
+        super.execute(actionModel);
     }
 
     private String getDefaultViewName(Streamer<?> streamerToLoad) {

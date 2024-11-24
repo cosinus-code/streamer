@@ -52,8 +52,7 @@ public abstract class WorkerExecutor<A extends ActionModel, M extends WorkerMode
         ofNullable(actionModel)
             .map(this::createSwingWorker)
             .ifPresent(worker -> {
-                ofNullable(workersMap.get(actionModel.getExecutionId()))
-                    .ifPresent(Worker::cancel);
+                cancel(actionModel.getExecutionId());
                 workersMap.put(actionModel.getExecutionId(), worker);
                 registerWorkerListeners(actionModel, worker.getWorkerModel());
                 worker.start();
