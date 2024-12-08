@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.action.execute;
+package org.cosinus.streamer.api.worker;
 
-import org.cosinus.streamer.api.worker.Worker;
-import org.cosinus.streamer.api.worker.WorkerListener;
-import org.cosinus.streamer.api.worker.WorkerListenerHandler;
-import org.cosinus.streamer.api.worker.WorkerModel;
-import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.swing.action.execute.ActionExecutor;
 import org.cosinus.swing.action.execute.ActionModel;
 import org.cosinus.swing.worker.SwingWorker;
@@ -35,22 +30,18 @@ import static java.util.Optional.ofNullable;
  */
 public abstract class WorkerExecutor<A extends ActionModel, M extends WorkerModel<T>, T> implements ActionExecutor<A> {
 
-    protected final ProgressFormHandler progressFormHandler;
-
     protected final WorkerListenerHandler workerListenerHandler;
 
     private final Map<String, Worker<M, T>> workersMap = new ConcurrentHashMap<>();
 
-    protected WorkerExecutor(final ProgressFormHandler progressFormHandler,
-                             final WorkerListenerHandler workerListenerHandler) {
-        this.progressFormHandler = progressFormHandler;
+    protected WorkerExecutor(final WorkerListenerHandler workerListenerHandler) {
         this.workerListenerHandler = workerListenerHandler;
     }
 
     @Override
     public void execute(A actionModel) {
         ofNullable(actionModel)
-            .map(this::createSwingWorker)
+            .map(this::createWorker)
             .ifPresent(worker -> {
                 cancel(actionModel.getExecutionId());
                 workersMap.put(actionModel.getExecutionId(), worker);
@@ -92,5 +83,5 @@ public abstract class WorkerExecutor<A extends ActionModel, M extends WorkerMode
 
     protected abstract WorkerListener<M, T> createWorkerListener(A actionModel);
 
-    protected abstract Worker<M, T> createSwingWorker(A actionModel);
+    protected abstract Worker<M, T> createWorker(A actionModel);
 }

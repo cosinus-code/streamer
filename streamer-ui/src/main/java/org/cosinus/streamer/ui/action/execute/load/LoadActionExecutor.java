@@ -18,13 +18,12 @@ package org.cosinus.streamer.ui.action.execute.load;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
+import org.cosinus.streamer.api.worker.WorkerExecutor;
 import org.cosinus.streamer.api.worker.WorkerListenerHandler;
-import org.cosinus.streamer.ui.action.execute.WorkerExecutor;
 import org.cosinus.streamer.ui.action.execute.load.image.LoadImageActionModel;
 import org.cosinus.streamer.ui.action.execute.load.image.LoadImageExecutor;
 import org.cosinus.streamer.ui.action.execute.save.SaveActionModel;
 import org.cosinus.streamer.ui.action.execute.save.SaveWorkerExecutor;
-import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.streamer.ui.view.image.ImageStreamerView;
@@ -36,7 +35,6 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
-import static java.util.function.Predicate.not;
 import static org.cosinus.streamer.ui.action.LoadStreamerAction.LOAD_STREAMER_ACTION_ID;
 import static org.cosinus.streamer.ui.view.image.ImageStreamerView.IMAGE_VIEWER;
 import static org.cosinus.streamer.ui.view.text.TextStreamerView.TEXT_EDITOR;
@@ -60,15 +58,14 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
 
     private final LoadImageExecutor loadImageExecutor;
 
-    protected LoadActionExecutor(final ProgressFormHandler progressFormHandler,
-                                 final WorkerListenerHandler workerListenerHandler,
+    protected LoadActionExecutor(final WorkerListenerHandler workerListenerHandler,
                                  final StreamerViewHandler streamerViewHandler,
                                  final BinaryExpanderHandler binaryExpanderHandler,
                                  final DialogHandler dialogHandler,
                                  final Translator translator,
                                  final SaveWorkerExecutor saveWorkerExecutor,
                                  final LoadImageExecutor loadImageExecutor) {
-        super(progressFormHandler, workerListenerHandler);
+        super(workerListenerHandler);
         this.streamerViewHandler = streamerViewHandler;
         this.binaryExpanderHandler = binaryExpanderHandler;
         this.dialogHandler = dialogHandler;
@@ -138,7 +135,7 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
 
 
     @Override
-    protected LoadWorker<T> createSwingWorker(LoadActionModel<T> actionModel) {
+    protected LoadWorker<T> createWorker(LoadActionModel<T> actionModel) {
         return new LoadWorker<>(
             actionModel,
             actionModel.getStreamerToLoad(),

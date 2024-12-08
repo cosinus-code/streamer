@@ -45,7 +45,7 @@ public class MoveWorkerExecutor<S extends Streamer<S>, T extends Streamer<T>>
     }
 
     @Override
-    protected SimpleWorker<CopyProgressModel> createSwingWorker(final MoveActionModel<S, T> actionModel) {
+    protected SimpleWorker<CopyProgressModel> createWorker(final MoveActionModel<S, T> actionModel) {
         return new MoveWorker<>(actionModel);
     }
 

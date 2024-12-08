@@ -19,7 +19,7 @@ package org.cosinus.streamer.ui.action.execute.delete;
 import org.cosinus.streamer.api.worker.SimpleWorker;
 import org.cosinus.streamer.api.worker.WorkerListener;
 import org.cosinus.streamer.api.worker.WorkerListenerHandler;
-import org.cosinus.streamer.ui.action.execute.WorkerExecutor;
+import org.cosinus.streamer.api.worker.WorkerExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
@@ -39,6 +39,8 @@ import static org.cosinus.streamer.ui.action.DeleteStreamerAction.DELETE_STREAME
 public class DeleteWorkerExecutor
     extends WorkerExecutor<DeleteActionModel, StreamersProgressModel, StreamersProgressModel> {
 
+    protected final ProgressFormHandler progressFormHandler;
+
     private final LoadActionExecutor loadActionExecutor;
 
     private final StreamerViewHandler streamerViewHandler;
@@ -47,7 +49,8 @@ public class DeleteWorkerExecutor
                                    final WorkerListenerHandler workerListenerHandler,
                                    final LoadActionExecutor loadActionExecutor,
                                    final StreamerViewHandler streamerViewHandler) {
-        super(progressFormHandler, workerListenerHandler);
+        super(workerListenerHandler);
+        this.progressFormHandler = progressFormHandler;
         this.loadActionExecutor = loadActionExecutor;
         this.streamerViewHandler = streamerViewHandler;
     }
@@ -56,11 +59,11 @@ public class DeleteWorkerExecutor
     protected void registerWorkerListeners(DeleteActionModel deleteAction, StreamersProgressModel workerModel) {
         super.registerWorkerListeners(deleteAction, workerModel);
 
-        final StreamerView<?, ?> currentView = streamerViewHandler.getCurrentView();
         workerListenerHandler.register(StreamersProgressModel.class, deleteAction.getExecutionId(),
             new WorkerListener<>() {
                 @Override
                 public void workerFinished(StreamersProgressModel workerModel) {
+                    final StreamerView<?, ?> currentView = streamerViewHandler.getCurrentView();
                     loadActionExecutor.execute(new LoadActionModel(
                         currentView.getCurrentLocation(),
                         currentView.getParentStreamer(),
@@ -76,7 +79,7 @@ public class DeleteWorkerExecutor
     }
 
     @Override
-    protected SimpleWorker<StreamersProgressModel> createSwingWorker(DeleteActionModel actionModel) {
+    protected SimpleWorker<StreamersProgressModel> createWorker(DeleteActionModel actionModel) {
         return new DeleteWorker(actionModel);
     }
 

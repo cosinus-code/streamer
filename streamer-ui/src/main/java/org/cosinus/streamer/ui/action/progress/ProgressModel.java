@@ -16,14 +16,10 @@
 
 package org.cosinus.streamer.ui.action.progress;
 
-import org.cosinus.streamer.api.worker.WorkerModel;
-
-import java.util.List;
-
 /**
- * Action progress model
+ * Progress model
  */
-public class SimpleProgressModel implements WorkerModel<Long> {
+public class ProgressModel {
 
     private long progressTotalSize;
 
@@ -37,14 +33,6 @@ public class SimpleProgressModel implements WorkerModel<Long> {
 
     private long remainingTime;
 
-    @Override
-    public void update(List<Long> items) {
-        updateProgress(items
-            .stream()
-            .mapToLong(Long::longValue)
-            .sum());
-    }
-
     public void startProgress(long totalProgressSize) {
         startTime = System.currentTimeMillis();
         this.progressTotalSize = totalProgressSize;
@@ -52,8 +40,17 @@ public class SimpleProgressModel implements WorkerModel<Long> {
         this.progressPercent = 0;
     }
 
-    public void updateProgress(long value) {
-        progressDone += value;
+    public void addProgress(long value) {
+        updateProgress(progressDone + value);
+    }
+
+    public void updateProgress(long progressDone) {
+        updateProgress(progressDone, progressTotalSize);
+    }
+
+    public void updateProgress(long progressDone, long progressTotalSize) {
+        this.progressDone = progressDone;
+        this.progressTotalSize = progressTotalSize;
         if (progressTotalSize != 0) {
             progressPercent = (int) ((progressDone * 100) / progressTotalSize);
         }
@@ -71,7 +68,7 @@ public class SimpleProgressModel implements WorkerModel<Long> {
         progressPercent = 100;
     }
 
-    public int getProgress() {
+    public int getProgressPercent() {
         return progressPercent;
     }
 

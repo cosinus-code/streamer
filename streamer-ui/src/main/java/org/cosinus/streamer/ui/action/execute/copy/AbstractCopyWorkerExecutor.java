@@ -19,7 +19,7 @@ package org.cosinus.streamer.ui.action.execute.copy;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.WorkerListener;
 import org.cosinus.streamer.api.worker.WorkerListenerHandler;
-import org.cosinus.streamer.ui.action.execute.WorkerExecutor;
+import org.cosinus.streamer.api.worker.WorkerExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
@@ -38,6 +38,8 @@ public abstract class AbstractCopyWorkerExecutor<
     T extends Streamer<T>,
     A extends CopyActionModel<S, T>> extends WorkerExecutor<A, CopyProgressModel, CopyProgressModel> {
 
+    protected final ProgressFormHandler progressFormHandler;
+
     private final LoadActionExecutor loadActionExecutor;
 
     private final StreamerViewHandler streamerViewHandler;
@@ -46,7 +48,8 @@ public abstract class AbstractCopyWorkerExecutor<
                                          final WorkerListenerHandler workerListenerHandler,
                                          final LoadActionExecutor loadActionExecutor,
                                          final StreamerViewHandler streamerViewHandler) {
-        super(progressFormHandler, workerListenerHandler);
+        super(workerListenerHandler);
+        this.progressFormHandler = progressFormHandler;
         this.loadActionExecutor = loadActionExecutor;
         this.streamerViewHandler = streamerViewHandler;
     }

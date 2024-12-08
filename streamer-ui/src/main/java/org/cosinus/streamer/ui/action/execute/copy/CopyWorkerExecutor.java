@@ -42,7 +42,7 @@ public class CopyWorkerExecutor<S extends Streamer<S>, T extends Streamer<T>>
     }
 
     @Override
-    protected SimpleWorker<CopyProgressModel> createSwingWorker(final CopyActionModel<S, T> actionModel) {
+    protected SimpleWorker<CopyProgressModel> createWorker(final CopyActionModel<S, T> actionModel) {
         return new CopyWorker<>(actionModel);
     }
 

@@ -39,7 +39,7 @@ public class PackWorkerExecutor<S extends Streamer<S>, T extends ExpandedStreame
     }
 
     @Override
-    protected PackWorker<S, T> createSwingWorker(PackActionModel<S, T> actionModel) {
+    protected PackWorker<S, T> createWorker(PackActionModel<S, T> actionModel) {
         return new PackWorker<>(actionModel);
     }
 

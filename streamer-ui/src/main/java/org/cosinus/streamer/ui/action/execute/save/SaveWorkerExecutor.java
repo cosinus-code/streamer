@@ -18,10 +18,9 @@ package org.cosinus.streamer.ui.action.execute.save;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.streamer.api.worker.Worker;
-import org.cosinus.streamer.ui.action.execute.WorkerExecutor;
+import org.cosinus.streamer.api.worker.WorkerExecutor;
 import org.cosinus.streamer.api.worker.WorkerListener;
 import org.cosinus.streamer.api.worker.WorkerListenerHandler;
-import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.springframework.stereotype.Component;
 
@@ -31,10 +30,8 @@ import static org.cosinus.streamer.ui.action.SaveAction.SAVE_ACTION_ID;
 @Component
 public class SaveWorkerExecutor<T> extends WorkerExecutor<SaveActionModel, SaveWorkerModel<T>, T> {
 
-    public SaveWorkerExecutor(
-        final ProgressFormHandler progressFormHandler,
-        final WorkerListenerHandler workerListenerHandler) {
-        super(progressFormHandler, workerListenerHandler);
+    public SaveWorkerExecutor(final WorkerListenerHandler workerListenerHandler) {
+        super(workerListenerHandler);
     }
 
     @Override
@@ -51,7 +48,7 @@ public class SaveWorkerExecutor<T> extends WorkerExecutor<SaveActionModel, SaveW
     }
 
     @Override
-    protected Worker<SaveWorkerModel<T>, T> createSwingWorker(SaveActionModel actionModel) {
+    protected Worker<SaveWorkerModel<T>, T> createWorker(SaveActionModel actionModel) {
         Streamer<T> streamerToSave = actionModel.getStreamerView().getParentStreamer();
         StreamerView<T, T> streamerView = actionModel.getStreamerView();
 

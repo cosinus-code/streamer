@@ -17,10 +17,9 @@ package org.cosinus.streamer.ui.action.execute.find;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.Worker;
+import org.cosinus.streamer.api.worker.WorkerExecutor;
 import org.cosinus.streamer.api.worker.WorkerListener;
 import org.cosinus.streamer.api.worker.WorkerListenerHandler;
-import org.cosinus.streamer.ui.action.execute.WorkerExecutor;
-import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.springframework.stereotype.Component;
@@ -32,10 +31,9 @@ public class FindActionExecutor extends WorkerExecutor<FindActionModel, FindWork
 
     private final StreamerViewHandler streamerViewHandler;
 
-    protected FindActionExecutor(final ProgressFormHandler progressFormHandler,
-                                 final WorkerListenerHandler workerListenerHandler,
+    protected FindActionExecutor(final WorkerListenerHandler workerListenerHandler,
                                  final StreamerViewHandler streamerViewHandler) {
-        super(progressFormHandler, workerListenerHandler);
+        super(workerListenerHandler);
         this.streamerViewHandler = streamerViewHandler;
     }
 
@@ -59,7 +57,7 @@ public class FindActionExecutor extends WorkerExecutor<FindActionModel, FindWork
     }
 
     @Override
-    protected Worker<FindWorkerModel, Streamer<?>> createSwingWorker(FindActionModel actionModel) {
+    protected Worker<FindWorkerModel, Streamer<?>> createWorker(FindActionModel actionModel) {
         Streamer<?> streamerToFind = !actionModel.isFindingLastStreamer() ? getStreamerToFind() : null;
         return new FindWorker(actionModel, streamerToFind);
     }

@@ -25,16 +25,16 @@ import java.util.List;
  * Model for a progress over multiple streamers
  */
 public class StreamersProgressModel implements WorkerModel<StreamersProgressModel> {
-    private final SimpleProgressModel simpleProgressMode;
+    private final ProgressModel simpleProgressMode;
 
     private Streamer<?> currentStreamer;
 
     public StreamersProgressModel() {
-        this.simpleProgressMode = new SimpleProgressModel();
+        this.simpleProgressMode = new ProgressModel();
     }
 
     public void updateProgress(Streamer<?> streamer) {
-        simpleProgressMode.updateProgress(1);
+        simpleProgressMode.addProgress(1);
         this.currentStreamer = streamer;
     }
 
@@ -43,7 +43,7 @@ public class StreamersProgressModel implements WorkerModel<StreamersProgressMode
     }
 
     public int getProgress() {
-        return simpleProgressMode.getProgress();
+        return simpleProgressMode.getProgressPercent();
     }
 
     public void startProgress(long totalProgressSize) {

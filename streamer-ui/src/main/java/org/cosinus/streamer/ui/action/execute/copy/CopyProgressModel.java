@@ -18,7 +18,7 @@ package org.cosinus.streamer.ui.action.execute.copy;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.WorkerModel;
-import org.cosinus.streamer.ui.action.progress.SimpleProgressModel;
+import org.cosinus.streamer.ui.action.progress.ProgressModel;
 
 import java.util.List;
 
@@ -28,17 +28,17 @@ import java.util.List;
 public class CopyProgressModel implements WorkerModel<CopyProgressModel>
 {
 
-    private final SimpleProgressModel totalProgressModel;
+    private final ProgressModel totalProgressModel;
 
-    private final SimpleProgressModel streamerProgressModel;
+    private final ProgressModel streamerProgressModel;
 
     private Streamer<?> source;
 
     private Streamer<?> target;
 
     public CopyProgressModel() {
-        totalProgressModel = new SimpleProgressModel();
-        streamerProgressModel = new SimpleProgressModel();
+        totalProgressModel = new ProgressModel();
+        streamerProgressModel = new ProgressModel();
     }
 
     @Override
@@ -47,11 +47,11 @@ public class CopyProgressModel implements WorkerModel<CopyProgressModel>
     }
 
     public int getTotalProgress() {
-        return totalProgressModel.getProgress();
+        return totalProgressModel.getProgressPercent();
     }
 
     public int getStreamerProgress() {
-        return streamerProgressModel.getProgress();
+        return streamerProgressModel.getProgressPercent();
     }
 
     public long getSpeed() {
@@ -73,11 +73,11 @@ public class CopyProgressModel implements WorkerModel<CopyProgressModel>
     }
 
     public void updateTotalProgress(long value) {
-        totalProgressModel.updateProgress(value);
+        totalProgressModel.addProgress(value);
     }
 
     public void updateStreamerProgress(long value) {
-        streamerProgressModel.updateProgress(value);
+        streamerProgressModel.addProgress(value);
         updateTotalProgress(value);
     }
 

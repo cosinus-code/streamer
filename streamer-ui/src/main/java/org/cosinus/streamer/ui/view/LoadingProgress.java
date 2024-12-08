@@ -15,14 +15,12 @@
  */
 package org.cosinus.streamer.ui.view;
 
+import org.cosinus.streamer.ui.action.progress.ProgressModel;
 import org.cosinus.swing.form.CustomProgressBarUI;
 import org.cosinus.swing.form.ProgressBar;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.math.BigDecimal;
-
-import static java.math.BigDecimal.ZERO;
 import static javax.swing.SwingUtilities.invokeLater;
 import static org.cosinus.swing.border.Borders.emptyBorder;
 
@@ -31,7 +29,10 @@ public class LoadingProgress extends ProgressBar {
     @Autowired
     private ApplicationUIHandler uiHandler;
 
+    private final ProgressModel progressModel;
+
     public LoadingProgress() {
+        this.progressModel = new ProgressModel();
         if (uiHandler.isLookAndFeelMac()) {
             setUI(new CustomProgressBarUI());
             setBorder(emptyBorder(0));
@@ -40,10 +41,11 @@ public class LoadingProgress extends ProgressBar {
 
     public void startLoading() {
         startLoading(-1);
-        setIndeterminate(true);
     }
 
     public void startLoading(long totalSizeToLoad) {
+        progressModel.startProgress(totalSizeToLoad);
+        setIndeterminate(true);
         if (totalSizeToLoad > 0) {
             setMaximum(100);
         }
@@ -51,15 +53,17 @@ public class LoadingProgress extends ProgressBar {
 
     public void updateLoading(long loadedSize, long totalSizeToLoad) {
         if (totalSizeToLoad > 0 && loadedSize > 0) {
-            BigDecimal progress = BigDecimal.valueOf(loadedSize * 100d / totalSizeToLoad);
-            if (progress.compareTo(ZERO) > 0) {
+            progressModel.updateProgress(loadedSize, totalSizeToLoad);
+            int progressPercent = progressModel.getProgressPercent();
+            if (progressPercent > 0) {
                 setIndeterminate(false);
-                setValue(progress.intValue());
+                setValue(progressPercent);
             }
         }
     }
 
     public void finishLoading() {
+        progressModel.finishProgress();
         setIndeterminate(false);
         setValue(100);
         invokeLater(() -> setValue(0));
