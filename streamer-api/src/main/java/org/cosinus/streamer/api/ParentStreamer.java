@@ -24,9 +24,19 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static java.util.function.Predicate.not;
+import static org.cosinus.streamer.api.StreamerFilter.ALL_STREAMERS;
 import static org.cosinus.streamer.api.stream.FlatStreamingStrategy.LEVEL_UP_BOTTOM;
 
 public interface ParentStreamer<S extends Streamer> extends Streamer<S> {
+
+    /**
+     * Get the flat stream of all sub-streamers
+     *
+     * @return the flat stream of sub-streamers
+     */
+    default Stream<S> flatStream() {
+        return flatStream(LEVEL_UP_BOTTOM, ALL_STREAMERS);
+    }
 
     /**
      * Get the flat stream of all sub-streamers

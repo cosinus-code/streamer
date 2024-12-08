@@ -7,8 +7,6 @@ import static java.util.Optional.ofNullable;
 
 public interface LoadWorkerModel<T, V> extends WorkerModel<V> {
 
-    Streamer<T> getParentStreamer();
-
     default String getContentIdentifier() {
         return null;
     }
@@ -17,9 +15,7 @@ public interface LoadWorkerModel<T, V> extends WorkerModel<V> {
     }
 
     default long getTotalSizeToLoad() {
-        return ofNullable(getParentStreamer())
-            .map(Streamer::getSize)
-            .orElse(-1L);
+        return -1;
     }
 
     default long getLoadedSize() {

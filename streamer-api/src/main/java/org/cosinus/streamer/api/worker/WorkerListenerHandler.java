@@ -82,6 +82,7 @@ public class WorkerListenerHandler {
     public <M extends WorkerModel<T>, T> void workerFinished(String workerId, M workerModel) {
         getListeners(workerId, workerModel)
             .forEach(listener -> listener.workerFinished(workerModel));
+        removeListeners(workerId, workerModel);
     }
 
     /**
@@ -97,5 +98,11 @@ public class WorkerListenerHandler {
             .stream()
             .flatMap(Collection::stream)
             .map(listener -> (WorkerListener<M, T>) listener);
+    }
+
+    private <M extends WorkerModel<T>, T> void removeListeners(String workerId, M workerModel) {
+        ofNullable(workerListenersMap.get(workerModel.getClass()))
+            .flatMap(listenersByIdmap -> ofNullable(listenersByIdmap.get(workerId)))
+            .ifPresent(Queue::clear);
     }
 }

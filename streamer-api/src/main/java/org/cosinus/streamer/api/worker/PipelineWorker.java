@@ -40,6 +40,7 @@ public abstract class PipelineWorker<M extends WorkerModel<V>, T, V>
 
     @Override
     public void accept(T item) {
+        checkWorkerStatus();
 //        try {
 //            java.lang.Thread.sleep(10);
 //        } catch (InterruptedException e) {

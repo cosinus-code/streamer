@@ -19,6 +19,7 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.streamer.api.worker.WorkerListener;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
+import org.cosinus.streamer.ui.view.FindPanel;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.swing.error.ErrorHandler;
@@ -29,7 +30,6 @@ import java.awt.*;
 import java.util.List;
 
 import static java.awt.BorderLayout.CENTER;
-import static java.awt.BorderLayout.NORTH;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.ofNullable;
 
@@ -44,22 +44,18 @@ public class TextStreamerView extends StreamerView<String, String> {
     @Autowired
     public ErrorHandler errorHandler;
 
-    private TextStreamerEditor textEditor;
+    private final TextStreamerEditor textEditor;
 
     private WorkerListener<SaveTextWorkerModel, String> saveListener;
 
     public TextStreamerView(PanelLocation location) {
         super(location);
+        textEditor = new TextStreamerEditor(this);
     }
 
     @Override
     public void initComponents() {
         super.initComponents();
-
-        textEditor = new TextStreamerEditor(this);
-        findPanel = new FindPanel(textEditor);
-        findPanel.initComponents();
-        streamerViewMainPanel.add(findPanel, NORTH);
 
         JScrollPane scroll = new JScrollPane();
         scroll.setViewportView(textEditor);
@@ -157,5 +153,10 @@ public class TextStreamerView extends StreamerView<String, String> {
     public void reset(final Streamer<String> parentStreamer) {
         super.reset(parentStreamer);
         textEditor.reset();
+    }
+
+    @Override
+    protected FindPanel createFindTextPanel() {
+        return new FindTextPanel(textEditor);
     }
 }

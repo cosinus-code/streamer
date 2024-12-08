@@ -51,6 +51,7 @@ public class FindWorker extends Worker<FindWorkerModel, Streamer<?>> {
 
     @Override
     protected void doWork() {
+        checkWorkerStatus();
 
         Streamer streamer = findStreamer()
             .map(binaryExpanderHandler::expandStreamer)

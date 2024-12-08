@@ -16,10 +16,10 @@
 
 package org.cosinus.streamer.api.worker;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import error.AbortActionException;
 import error.ActionException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.action.execute.ActionModel;
 import org.cosinus.swing.boot.SwingApplicationFrame;
@@ -72,7 +72,6 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
     }
 
     public void start() {
-        workerListenerHandler.workerStarted(getId(), getWorkerModel());
         execute();
     }
 
@@ -90,7 +89,9 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
 
     @Override
     protected M doInBackground() {
+        LOG.trace("Work for action `{}` started: {}", actionModel.getActionName(), id);
         try {
+            workerListenerHandler.workerStarted(getId(), workerModel);
             doWork();
         } catch (ActionException ex) {
             setError(ex);
@@ -102,19 +103,12 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
 
     @Override
     protected void process(List<T> items) {
-        try {
-            checkWorkerStatus();
-            workerModel.update(items);
-            workerListenerHandler.workerUpdated(getId(), workerModel);
-        } catch (ActionException ex) {
-            setError(ex);
-        } catch (AbortActionException ex) {
-            logUserAbort();
-        }
+        workerModel.update(items);
+        workerListenerHandler.workerUpdated(getId(), workerModel);
     }
 
     protected void logUserAbort() {
-        LOG.trace("Action aborted: {}", id);
+        LOG.trace("Work for action `{}` aborted: {}", actionModel.getActionName(), id);
     }
 
     @Override
@@ -138,7 +132,7 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
         workerListenerHandler.workerFinished(getId(), workerModel);
         actionExecutors.getActionExecutor(actionModel)
             .ifPresent(executor -> executor.remove(getId()));
-
+        LOG.trace("Work for action `{}` finished: {}", actionModel.getActionName(), id);
     }
 
     protected void onWorkerDoneBeforeFinishing() {

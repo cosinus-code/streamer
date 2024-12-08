@@ -15,140 +15,151 @@
  */
 package org.cosinus.streamer.api;
 
-import java.nio.file.Path;
+import org.cosinus.streamer.api.value.TranslatableName;
+import org.cosinus.streamer.api.value.Value;
 
-public abstract class StreamerDelegate<T, S extends Streamer<?>> implements Streamer<T>
-{
+import java.nio.file.Path;
+import java.util.List;
+
+public abstract class StreamerDelegate<T, S extends Streamer<?>> implements Streamer<T> {
     protected final S delegate;
 
-    public StreamerDelegate(S delegate)
-    {
+    public StreamerDelegate(S delegate) {
         this.delegate = delegate;
     }
 
     @Override
-    public BinaryStreamer binaryStreamer()
-    {
+    public BinaryStreamer binaryStreamer() {
         return delegate.binaryStreamer();
     }
 
     @Override
-    public ParentStreamer<?> getParent()
-    {
+    public ParentStreamer<?> getParent() {
         return delegate.getParent();
     }
 
     @Override
-    public void save()
-    {
+    public void save() {
         delegate.save();
     }
 
     @Override
-    public boolean delete()
-    {
+    public boolean delete() {
         return delegate.delete();
     }
 
     @Override
-    public String getProtocol()
-    {
+    public String getProtocol() {
         return delegate.getProtocol();
     }
 
     @Override
-    public Path getPath()
-    {
+    public Path getPath() {
         return delegate.getPath();
     }
 
     @Override
-    public boolean exists()
-    {
+    public boolean exists() {
         return delegate.exists();
     }
 
     @Override
-    public long getSize()
-    {
+    public long getSize() {
         return delegate.getSize();
     }
 
     @Override
-    public long lastModified()
-    {
+    public long lastModified() {
         return delegate.lastModified();
     }
 
     @Override
-    public boolean canRead()
-    {
+    public boolean canRead() {
         return delegate.canRead();
     }
 
     @Override
-    public boolean canUpdate()
-    {
+    public boolean canUpdate() {
         return delegate.canUpdate();
     }
 
     @Override
-    public String getName()
-    {
+    public String getName() {
         return delegate.getName();
     }
 
     @Override
-    public String getType()
-    {
+    public String getType() {
         return delegate.getType();
     }
 
     @Override
-    public boolean isLink()
-    {
+    public boolean isLink() {
         return delegate.isLink();
     }
 
     @Override
-    public boolean isHidden()
-    {
+    public boolean isHidden() {
         return delegate.isHidden();
     }
 
     @Override
-    public String getIconName()
-    {
+    public String getIconName() {
         return delegate.getIconName();
     }
 
     @Override
-    public String getDescription()
-    {
+    public String getDescription() {
         return delegate.getDescription();
     }
 
     @Override
-    public String getUrlPath()
-    {
+    public String getUrlPath() {
         return delegate.getUrlPath();
     }
 
     @Override
-    public boolean isParent()
-    {
+    public boolean isParent() {
         return delegate.isParent();
     }
 
     @Override
-    public String getId()
-    {
+    public String getId() {
         return delegate.getId();
     }
 
     @Override
-    public boolean isTextCompatible()
-    {
+    public boolean isTextCompatible() {
         return delegate.isTextCompatible();
+    }
+
+    @Override
+    public boolean isImage() {
+        return delegate.isImage();
+    }
+
+    @Override
+    public boolean isDirty() {
+        return delegate.isDirty();
+    }
+
+    @Override
+    public boolean isFile() {
+        return delegate.isFile();
+    }
+
+    @Override
+    public List<TranslatableName> detailNames() {
+        return delegate.detailNames();
+    }
+
+    @Override
+    public List<Value> details() {
+        return delegate.details();
+    }
+
+    @Override
+    public int getLeadDetailIndex() {
+        return delegate.getLeadDetailIndex();
     }
 }

@@ -89,6 +89,7 @@ public class LoadImageWorker extends Worker<LoadWorkerModel<byte[], UpdatableIma
     }
 
     public void publishImage(final UpdatableImage image) {
+        checkWorkerStatus();
         publish(image);
     }
 

@@ -15,6 +15,7 @@
  */
 package org.cosinus.streamer.ui.view.text;
 
+import org.cosinus.streamer.ui.view.FindPanel;
 import org.cosinus.swing.find.FindResult;
 import org.cosinus.swing.find.FindText;
 import org.cosinus.swing.find.TextFinder;
@@ -38,7 +39,7 @@ import static java.util.Optional.ofNullable;
 /**
  * Panel for controls to find text
  */
-public class FindPanel extends Panel {
+public class FindTextPanel extends FindPanel {
 
     @Autowired
     private Translator translator;
@@ -50,18 +51,15 @@ public class FindPanel extends Panel {
 
     private TextFinder textFinder;
 
-    private FindTextField findTextField;
-
     private Label findResultLabel;
 
-    public FindPanel(TextEditor textEditor) {
-        super(new BorderLayout(0, 0));
+    public FindTextPanel(TextEditor textEditor) {
         this.textEditor = textEditor;
     }
 
     @Override
     public void initComponents() {
-        findTextField = new FindTextField(this::performFindAction);
+        super.initComponents();
 
         findResultLabel = new Label();
         findResultLabel.setText(translator.translate("find-no-results"));
@@ -75,24 +73,11 @@ public class FindPanel extends Panel {
         findButtonsPanel.add(findNextButton);
         findButtonsPanel.add(findResultLabel);
 
-        setLayout(new BorderLayout(0, 0));
-        add(findTextField, CENTER);
         add(findButtonsPanel, EAST);
-
-        registerEscapeAction(this::hidePanel);
-        setVisible(false);
     }
 
     @Override
-    public void setVisible(boolean visible) {
-        super.setVisible(visible);
-        if (visible) {
-            initTextFinderIfNeeded();
-            findTextField.requestFocusInWindow();
-        }
-    }
-
-    private void initTextFinderIfNeeded() {
+    protected void initTextFinder() {
         if (!findTextField.getText().isEmpty()) {
             FindText textToFind = findTextField.getControlValue();
             if (textFinder == null || !textFinder.getTextToFind().equals(textToFind)) {
@@ -106,6 +91,26 @@ public class FindPanel extends Panel {
             textFinder = null;
             textEditor.removeAllHighlights();
         }
+    }
+
+    @Override
+    protected void resetTextFinder() {
+        textEditor.removeAllHighlights();
+        if (textFinder != null) {
+            textEditor.selectFoundText(textFinder.getCurrentFind());
+        }
+        textFinder = null;
+        textEditor.preventCancelAction();
+        textEditor.requestFocusInWindow();
+    }
+
+    @Override
+    protected void performFindAction() {
+        initTextFinder();
+        ofNullable(textFinder)
+            .flatMap(finder -> finder.findNext(textEditor.getCaretPosition()))
+            .ifPresent(textEditor::highlightCurrentFoundText);
+        showFindResult();
     }
 
     private void findPrevious() {
@@ -127,26 +132,5 @@ public class FindPanel extends Panel {
             .filter(finder -> finder.count() > 0)
             .map(finder -> finder.currentIndex() + "/" + finder.count())
             .orElseGet(() -> translator.translate("find-no-results")));
-    }
-
-    private ActionListener hidePanel() {
-        return event -> {
-            setVisible(false);
-            textEditor.removeAllHighlights();
-            if (textFinder != null) {
-                textEditor.selectFoundText(textFinder.getCurrentFind());
-            }
-            textFinder = null;
-            textEditor.preventCancelAction();
-            textEditor.requestFocusInWindow();
-        };
-    }
-
-    private void performFindAction() {
-        initTextFinderIfNeeded();
-        ofNullable(textFinder)
-            .flatMap(finder -> finder.findNext(textEditor.getCaretPosition()))
-            .ifPresent(textEditor::highlightCurrentFoundText);
-        showFindResult();
     }
 }

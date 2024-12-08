@@ -115,7 +115,6 @@ public class TextStreamerEditor extends TextEditor implements LoadWorkerModel<St
         return getText().getBytes().length;
     }
 
-    @Override
     public Streamer<String> getParentStreamer() {
         return view.getParentStreamer();
     }

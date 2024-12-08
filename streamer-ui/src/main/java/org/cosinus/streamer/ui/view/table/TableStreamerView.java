@@ -20,6 +20,7 @@ import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.DefaultStreamerView;
+import org.cosinus.streamer.ui.view.FindPanel;
 import org.cosinus.streamer.ui.view.PanelLocation;
 
 import javax.swing.*;
@@ -193,5 +194,10 @@ public abstract class TableStreamerView<T extends Streamable> extends DefaultStr
         public void componentResized(ComponentEvent e) {
             table.onResize(scroll.getWidth() - 30, scroll.getHeight() - 20);
         }
+    }
+
+    @Override
+    protected FindPanel createFindTextPanel() {
+        return new FindStreamerPanel<>(this);
     }
 }

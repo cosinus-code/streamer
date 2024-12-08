@@ -19,4 +19,6 @@ package org.cosinus.streamer.api;
 import java.util.function.Predicate;
 
 public interface StreamerFilter extends Predicate<Streamer> {
+
+    StreamerFilter ALL_STREAMERS = streamer -> true;
 }

@@ -27,19 +27,13 @@ public abstract class SimpleWorker<M extends WorkerModel<M>> extends Worker<M, M
     }
 
     public void updateModel(Runnable runnable) {
+        checkWorkerStatus();
         runnable.run();
         publish(workerModel);
     }
 
     @Override
     protected void process(List<M> items) {
-        try {
-            checkWorkerStatus();
             workerListenerHandler.workerUpdated(getId(), workerModel);
-        } catch (ActionException ex) {
-            setError(ex);
-        } catch (AbortActionException ex) {
-            logUserAbort();
-        }
     }
 }

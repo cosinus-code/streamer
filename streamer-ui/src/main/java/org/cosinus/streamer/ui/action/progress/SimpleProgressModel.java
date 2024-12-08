@@ -25,11 +25,11 @@ import java.util.List;
  */
 public class SimpleProgressModel implements WorkerModel<Long> {
 
-    private long progressSize;
+    private long progressTotalSize;
 
     private long progressDone;
 
-    private int progress;
+    private int progressPercent;
 
     private long startTime;
 
@@ -47,32 +47,32 @@ public class SimpleProgressModel implements WorkerModel<Long> {
 
     public void startProgress(long totalProgressSize) {
         startTime = System.currentTimeMillis();
-        this.progressSize = totalProgressSize;
+        this.progressTotalSize = totalProgressSize;
         this.progressDone = 0;
-        this.progress = 0;
+        this.progressPercent = 0;
     }
 
     public void updateProgress(long value) {
         progressDone += value;
-        if (progressSize != 0) {
-            progress = (int) ((progressDone * 100) / progressSize);
+        if (progressTotalSize != 0) {
+            progressPercent = (int) ((progressDone * 100) / progressTotalSize);
         }
 
         long spentTime = System.currentTimeMillis() - startTime;
         if (spentTime > 0) {
             speed = 1000 * progressDone / spentTime;
             remainingTime = progressDone != 0 ?
-                (progressSize - progressDone) * spentTime / (1000 * progressDone) :
+                (progressTotalSize - progressDone) * spentTime / (1000 * progressDone) :
                 0;
         }
     }
 
     public void finishProgress() {
-        progress = 100;
+        progressPercent = 100;
     }
 
     public int getProgress() {
-        return progress;
+        return progressPercent;
     }
 
     public long getSpeed() {

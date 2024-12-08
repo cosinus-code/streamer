@@ -36,6 +36,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static java.awt.BorderLayout.CENTER;
+import static java.awt.BorderLayout.NORTH;
 import static java.awt.BorderLayout.SOUTH;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.view.text.TextStreamerView.DIRTY_TEXT_MARKER;
@@ -72,7 +73,7 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
 
     protected final JPanel streamerViewMainPanel;
 
-    protected Panel findPanel;
+    protected FindPanel findPanel;
 
     protected LoadingProgress loadingIndicator;
 
@@ -115,6 +116,12 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
     @Override
     public void initComponents() {
         super.initComponents();
+
+        findPanel = createFindTextPanel();
+        if (findPanel != null) {
+            findPanel.initComponents();
+            streamerViewMainPanel.add(findPanel, NORTH);
+        }
 
         this.loadingIndicator = createLoadingIndicator();
         add(streamerViewMainPanel, CENTER);
@@ -237,6 +244,10 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
     }
 
     public <V> WorkerListener<SaveWorkerModel<V>, V> getSaveListener() {
+        return null;
+    }
+
+    protected FindPanel createFindTextPanel() {
         return null;
     }
 

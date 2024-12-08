@@ -20,6 +20,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.search.SearchStreamer;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.swing.form.TableModel;
 import org.cosinus.swing.preference.Preferences;
@@ -58,7 +59,6 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
         this.streamableMap = new HashMap<>();
     }
 
-    @Override
     public Streamer<T> getParentStreamer() {
         return parentStreamer;
     }
@@ -185,7 +185,22 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
     }
 
     @Override
+    public long getTotalSizeToLoad() {
+        //TODO: to avoid cast
+        if (getParentStreamer() instanceof SearchStreamer<?> searchStreamer) {
+            return searchStreamer.getSearchTotalCount();
+        }
+        return ofNullable(getParentStreamer())
+            .map(Streamer::getSize)
+            .orElse(-1L);
+    }
+
+    @Override
     public long getLoadedSize() {
+        //TODO: to avoid cast
+        if (getParentStreamer() instanceof SearchStreamer<?> searchStreamer) {
+            return searchStreamer.getSearchDoneCount();
+        }
         return viewItems.size() - (isTopVisible() ? 1 : 0);
     }
 

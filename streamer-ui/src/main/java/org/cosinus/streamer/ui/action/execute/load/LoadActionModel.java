@@ -43,6 +43,11 @@ public class LoadActionModel<T> extends ActionModel {
     private StreamerView<T, T> streamerViewToLoadTo;
 
     public LoadActionModel(final PanelLocation locationToLoadTo,
+                           final Streamer<?> initialStreamerToLoad) {
+        this(locationToLoadTo, initialStreamerToLoad, null, null, true);
+    }
+
+    public LoadActionModel(final PanelLocation locationToLoadTo,
                            final Streamer<?> initialStreamerToLoad,
                            final String itemToSelectAfterLoad) {
         this(locationToLoadTo, initialStreamerToLoad, itemToSelectAfterLoad, null, true);

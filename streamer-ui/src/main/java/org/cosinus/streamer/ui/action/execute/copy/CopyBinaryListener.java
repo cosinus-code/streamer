@@ -44,7 +44,6 @@ public class CopyBinaryListener implements PipelineListener<byte[]> {
 
     @Override
     public void afterPipelineDataConsume(final byte[] bytes) {
-        copyWorker.checkWorkerStatus();
         copyWorker.updateModel(() -> workerModel.updateStreamerProgress(bytes.length));
     }
 

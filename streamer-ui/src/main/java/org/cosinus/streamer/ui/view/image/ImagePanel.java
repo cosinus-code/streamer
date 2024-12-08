@@ -70,7 +70,6 @@ public class ImagePanel extends Panel implements LoadWorkerModel<byte[], Updatab
         finished = false;
     }
 
-    @Override
     public Streamer<byte[]> getParentStreamer() {
         return binaryStreamer;
     }

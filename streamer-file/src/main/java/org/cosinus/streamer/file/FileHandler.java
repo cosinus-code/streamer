@@ -23,6 +23,7 @@ import net.sf.jmimemagic.MagicParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.file.system.FileSystem;
+import org.cosinus.swing.io.MimeTypeResolver;
 import org.springframework.stereotype.Component;
 import oshi.SystemInfo;
 import oshi.software.os.OSFileStore;
@@ -38,7 +39,6 @@ import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
-import static org.springframework.util.MimeTypeUtils.TEXT_PLAIN_VALUE;
 
 /**
  * Proxy for handling files.
@@ -49,11 +49,15 @@ public class FileHandler {
 
     private static final Logger LOG = LogManager.getLogger(FileHandler.class);
 
+    private final MimeTypeResolver mimeTypeResolver;
+
     private final FileSystem fileSystem;
 
     private List<OSFileStore> fileStores;
 
-    public FileHandler(FileSystem fileSystem) {
+    public FileHandler(final MimeTypeResolver mimeTypeResolver,
+                       final FileSystem fileSystem) {
+        this.mimeTypeResolver = mimeTypeResolver;
         this.fileSystem = fileSystem;
     }
 
@@ -101,18 +105,12 @@ public class FileHandler {
     }
 
     public boolean isTextCompatible(Path path) {
-        return ofNullable(path)
-            .map(Path::toFile)
-            .filter(not(File::isDirectory))
-            .map(this::getFileMagicMatch)
-            .filter(TEXT_PLAIN_VALUE::equals)
-            .isPresent();
+        return mimeTypeResolver.isTextCompatible(path) ||
+            mimeTypeResolver.hasUnknownMimeType(path);
     }
 
     public boolean isImage(Path path) {
-        return mimeType(path)
-            .filter(mimeType -> mimeType.startsWith("image"))
-            .isPresent();
+        return mimeTypeResolver.isImageCompatible(path);
     }
 
     public Optional<String> mimeType(Path path) {
