@@ -167,11 +167,17 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
 
     @Override
     public void update(List<T> items) {
+        if (!items.isEmpty() && !(items.get(0) instanceof Streamable)) {
+            //TODO: this is just an workaround
+            return;
+        }
         boolean showHidden = preferences.booleanPreference(SHOW_HIDDEN);
         items
             .stream()
             .filter(Objects::nonNull)
-            .filter(streamer -> !streamer.isHidden() || showHidden)
+            .filter(streamable -> Streamable.class.isAssignableFrom(streamable.getClass()))
+            .map(Streamable.class::cast)
+            .filter(streamable -> !streamable.isHidden() || showHidden)
             .map(ViewItem::new)
             .forEach(this::addItem);
 
