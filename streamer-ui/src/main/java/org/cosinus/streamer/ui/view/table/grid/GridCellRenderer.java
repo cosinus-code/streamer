@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.view.table.details;
+package org.cosinus.streamer.ui.view.table.grid;
 
 import org.cosinus.streamer.ui.view.table.TableCellRenderer;
 import org.cosinus.streamer.ui.view.table.ViewItem;
@@ -27,11 +27,11 @@ import static java.util.Optional.ofNullable;
 import static org.cosinus.swing.border.Borders.emptyBorder;
 import static org.cosinus.swing.image.icon.IconSize.X16;
 
-public class DetailCellRenderer extends TableCellRenderer<DetailTable> {
+public class GridCellRenderer extends TableCellRenderer<GridTable> {
 
     @Override
     public Component getCellComponent(JLabel label,
-                                      DetailTable table,
+                                      GridTable table,
                                       ViewItem item,
                                       boolean isSelected,
                                       int row,

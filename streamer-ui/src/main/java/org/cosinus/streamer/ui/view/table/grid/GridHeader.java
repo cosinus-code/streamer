@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.view.table.details;
+package org.cosinus.streamer.ui.view.table.grid;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,14 +29,14 @@ import static java.awt.Cursor.E_RESIZE_CURSOR;
 import static java.awt.event.MouseEvent.*;
 import static java.util.stream.IntStream.range;
 
-public class DetailHeader extends JTableHeader {
+public class GridHeader extends JTableHeader {
 
-    private static final Logger LOG = LogManager.getLogger(DetailHeader.class);
+    private static final Logger LOG = LogManager.getLogger(GridHeader.class);
 
     private int clickedColumn = -1;
     private int leftColIndex = -1;
 
-    public DetailHeader(TableColumnModel model) {
+    public GridHeader(TableColumnModel model) {
         super(model);
     }
 
@@ -134,7 +134,7 @@ public class DetailHeader extends JTableHeader {
         TableColumnModel model = getTable().getColumnModel();
         range(0, model.getColumnCount())
             .forEach(i -> {
-                DetailHeaderCell c = (DetailHeaderCell) model.getColumn(i).getHeaderRenderer();
+                GridHeaderCell c = (GridHeaderCell) model.getColumn(i).getHeaderRenderer();
                 boolean cellOver = over && cellIndex.map(index -> index == i).orElse(false);
                 c.setOver(cellOver);
             });
@@ -154,7 +154,7 @@ public class DetailHeader extends JTableHeader {
     }
 
     @Override
-    public DetailTable<?> getTable() {
-        return (DetailTable<?>) super.getTable();
+    public GridTable<?> getTable() {
+        return (GridTable<?>) super.getTable();
     }
 }

@@ -14,27 +14,29 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.view.table.details;
+package org.cosinus.streamer.ui.action;
 
-import org.cosinus.streamer.api.Streamable;
-import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.view.PanelLocation;
-import org.cosinus.streamer.ui.view.StreamerView;
-import org.cosinus.streamer.ui.view.StreamerViewCreator;
+import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
+import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.springframework.stereotype.Component;
 
-import static org.cosinus.streamer.ui.view.table.details.DetailView.DETAIL_VIEW_NAME;
+import static org.cosinus.streamer.ui.view.table.grid.GridView.GRID_VIEW_NAME;
 
 @Component
-public class DetailViewCreator implements StreamerViewCreator {
+public class ChangeToGridViewAction extends ChangeViewAction {
 
-    @Override
-    public StreamerView<?, ?> createStreamerView(PanelLocation location) {
-        return new DetailView<>(location);
+    public ChangeToGridViewAction(final StreamerViewHandler streamerViewHandler,
+                                  final LoadActionExecutor loadActionExecutor) {
+        super(streamerViewHandler, loadActionExecutor);
     }
 
     @Override
-    public String getViewName() {
-        return DETAIL_VIEW_NAME;
+    protected String getViewName() {
+        return GRID_VIEW_NAME;
+    }
+
+    @Override
+    public String getId() {
+        return "menu-view-grid";
     }
 }

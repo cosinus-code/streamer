@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cosinus.streamer.ui.view.table.details;
+package org.cosinus.streamer.ui.view.table.grid;
 
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
@@ -32,9 +32,9 @@ import java.util.stream.Stream;
 import static java.util.Optional.ofNullable;
 import static javax.swing.SwingUtilities.invokeLater;
 
-public class DetailStreamerEditor<T extends Streamable> implements StreamerEditor<T>, SaveWorkerModel<T> {
+public class GridStreamerEditor<T extends Streamable> implements StreamerEditor<T>, SaveWorkerModel<T> {
 
-    private final DetailView<T> view;
+    private final GridView<T> view;
 
     private final List<DetailEditor<T>> detailEditors;
 
@@ -44,7 +44,7 @@ public class DetailStreamerEditor<T extends Streamable> implements StreamerEdito
 
     private boolean dirty;
 
-    public DetailStreamerEditor(final DetailView<T> view) {
+    public GridStreamerEditor(final GridView<T> view) {
         this.view = view;
         this.detailEditors = IntStream.range(0, view.getParentStreamer().detailNames().size())
             .mapToObj(detailIndex -> new DetailEditor<>(this, detailIndex))

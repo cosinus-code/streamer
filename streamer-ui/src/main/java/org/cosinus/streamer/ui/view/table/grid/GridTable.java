@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.view.table.details;
+package org.cosinus.streamer.ui.view.table.grid;
 
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
@@ -44,7 +44,7 @@ import static java.util.Optional.ofNullable;
 import static javax.swing.SwingUtilities.invokeLater;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.ROW_HEIGHT;
 
-public class DetailTable<T extends Streamable> extends DataTable<T> implements ActionListener {
+public class GridTable<T extends Streamable> extends DataTable<T> implements ActionListener {
 
     @Autowired
     public ApplicationUIHandler uiHandler;
@@ -60,13 +60,13 @@ public class DetailTable<T extends Streamable> extends DataTable<T> implements A
 
     public PopupMenu popupHeader;
 
-    private final DetailView view;
+    private final GridView view;
 
-    public DetailTable(DetailView view) {
+    public GridTable(GridView view) {
         this.view = view;
     }
 
-    public DetailView getView() {
+    public GridView getView() {
         return view;
     }
 
@@ -114,7 +114,7 @@ public class DetailTable<T extends Streamable> extends DataTable<T> implements A
         TableColumnModel model = getColumnModel();
         IntStream.range(0, model.getColumnCount())
             .forEach(index -> {
-                model.getColumn(index).setHeaderRenderer(new DetailHeaderCell());
+                model.getColumn(index).setHeaderRenderer(new GridHeaderCell());
                 if (index > 0) {
                     setColVisible(index, isColumnVisible(index));
                 }
@@ -166,7 +166,7 @@ public class DetailTable<T extends Streamable> extends DataTable<T> implements A
 
     public TableCellRenderer getCellRenderer(int row,
                                              int column) {
-        return new DetailCellRenderer();
+        return new GridCellRenderer();
     }
 
     @Override
@@ -179,7 +179,7 @@ public class DetailTable<T extends Streamable> extends DataTable<T> implements A
 
     @Override
     protected JTableHeader createDefaultTableHeader() {
-        return new DetailHeader(getColumnModel());
+        return new GridHeader(getColumnModel());
     }
 
     @Override
@@ -200,13 +200,13 @@ public class DetailTable<T extends Streamable> extends DataTable<T> implements A
     }
 
     @Override
-    public DetailTableModel getTableModel() {
-        return (DetailTableModel) super.getTableModel();
+    public GridTableModel getTableModel() {
+        return (GridTableModel) super.getTableModel();
     }
 
     @Override
     protected DataTableModel<T> createDataTableModel() {
-        return new DetailTableModel<>();
+        return new GridTableModel<>();
     }
 
     public void actionPerformed(ActionEvent e) {

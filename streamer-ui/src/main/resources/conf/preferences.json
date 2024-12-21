@@ -50,21 +50,21 @@
     },
     "left-view": {
       "type": "text",
-      "value": "details",
+      "value": "grid",
       "values": [
         "icon",
         "list",
-        "details",
+        "grid",
         "tree"
       ]
     },
     "right-view": {
       "type": "text",
-      "value": "details",
+      "value": "grid",
       "values": [
         "icon",
         "list",
-        "details",
+        "grid",
         "tree"
       ]
     },

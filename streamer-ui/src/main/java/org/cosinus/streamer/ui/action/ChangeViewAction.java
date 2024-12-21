@@ -23,7 +23,7 @@ import org.cosinus.swing.action.ActionContext;
 import org.cosinus.swing.action.ActionInContext;
 
 /**
- * Change the streamer view type (icon, detail, etc.) of the current panel location.
+ * Change the streamer view type (icon, grid, etc.) of the current panel location.
  */
 public abstract class ChangeViewAction implements ActionInContext {
 

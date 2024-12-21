@@ -16,13 +16,12 @@
 
 package org.cosinus.streamer.ui.view;
 
-import org.cosinus.streamer.ui.view.table.details.DetailViewCreator;
+import org.cosinus.streamer.ui.view.table.grid.GridViewCreator;
 import org.cosinus.swing.preference.Preference;
 import org.cosinus.swing.preference.Preferences;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.function.Function;
 
 import static java.util.Arrays.stream;
 import static java.util.Optional.ofNullable;
@@ -52,7 +51,7 @@ public class StreamerViewHandler {
 
     public StreamerViewHandler(Preferences preferences,
                                Set<StreamerViewCreator> streamerViewCreators,
-                               DetailViewCreator defaultStreamerViewCreator) {
+                               GridViewCreator defaultStreamerViewCreator) {
         this.preferences = preferences;
         this.streamerViewCreatorsMap = streamerViewCreators
             .stream()

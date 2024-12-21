@@ -16,7 +16,7 @@
 package org.cosinus.streamer.ui.view;
 
 import org.cosinus.streamer.api.Streamable;
-import org.cosinus.streamer.ui.view.table.details.DetailStreamerEditor;
+import org.cosinus.streamer.ui.view.table.grid.GridStreamerEditor;
 import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.form.control.TextField;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,13 +40,13 @@ public class DetailEditor<T extends Streamable> extends TextField implements Foc
 
     private T itemToBeEdited;
 
-    private final DetailStreamerEditor<T> editor;
+    private final GridStreamerEditor<T> editor;
 
     private final int detailIndex;
 
     private boolean loading;
 
-    public DetailEditor(final DetailStreamerEditor<T> editor, int detailIndex) {
+    public DetailEditor(final GridStreamerEditor<T> editor, int detailIndex) {
         this.editor = editor;
         this.detailIndex = detailIndex;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.view.table.details;
+package org.cosinus.streamer.ui.view.table.grid;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,16 +34,16 @@ import static org.cosinus.swing.border.Borders.emptyBorder;
 import static org.cosinus.swing.border.Borders.lineBorder;
 import static org.cosinus.swing.color.SystemColor.BUTTON_BACKGROUND;
 
-public class DetailHeaderCell extends Label implements TableCellRenderer {
+public class GridHeaderCell extends Label implements TableCellRenderer {
 
-    private static final Logger LOG = LogManager.getLogger(DetailHeaderCell.class);
+    private static final Logger LOG = LogManager.getLogger(GridHeaderCell.class);
 
     protected boolean ascending, sorted, over;
 
     @Autowired
     private ApplicationUIHandler uiHandler;
 
-    public DetailHeaderCell() {
+    public GridHeaderCell() {
         init();
     }
 
@@ -91,7 +91,7 @@ public class DetailHeaderCell extends Label implements TableCellRenderer {
                                                    int rowIndex,
                                                    int colIndex) {
         try {
-            DetailTable table = (DetailTable) jtable;
+            GridTable table = (GridTable) jtable;
             if (table != null) {
                 sorted = table.getTableModel().getSortedColumn() == colIndex;
                 ascending = table.getTableModel().isSortAscending();

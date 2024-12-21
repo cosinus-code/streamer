@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.view.table.details;
+package org.cosinus.streamer.ui.view.table.grid;
 
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
@@ -28,13 +28,13 @@ import java.awt.*;
 
 import static java.util.Optional.ofNullable;
 
-public class DetailView<T extends Streamable> extends TableStreamerView<T> {
+public class GridView<T extends Streamable> extends TableStreamerView<T> {
 
-    public static final String DETAIL_VIEW_NAME = "detail";
+    public static final String GRID_VIEW_NAME = "grid";
 
     private WorkerListener<SaveWorkerModel<T>, T> saveListener;
 
-    public DetailView(PanelLocation location) {
+    public GridView(PanelLocation location) {
         super(location);
     }
 
@@ -66,17 +66,17 @@ public class DetailView<T extends Streamable> extends TableStreamerView<T> {
 
     @Override
     public String getName() {
-        return DETAIL_VIEW_NAME;
+        return GRID_VIEW_NAME;
     }
 
     @Override
     protected DataTable<T> createDataTable() {
-        return new DetailTable<>(this);
+        return new GridTable<>(this);
     }
 
     @Override
-    protected DetailStreamerEditor<T> createStreamerEditor() {
-        return new DetailStreamerEditor<>(this);
+    protected GridStreamerEditor<T> createStreamerEditor() {
+        return new GridStreamerEditor<>(this);
     }
 
     @Override
@@ -86,7 +86,7 @@ public class DetailView<T extends Streamable> extends TableStreamerView<T> {
 
     @Override
     public SaveWorkerModel<T> getSaveModel() {
-        return (DetailStreamerEditor<T>) streamerEditor;
+        return (GridStreamerEditor<T>) streamerEditor;
     }
 
     @Override

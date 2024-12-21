@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cosinus.streamer.ui.view.table.details;
+package org.cosinus.streamer.ui.view.table.grid;
 
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
@@ -30,7 +30,7 @@ import static java.util.Collections.singletonList;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 
-public class DetailTableModel<T extends Streamable> extends DataTableModel<T> {
+public class GridTableModel<T extends Streamable> extends DataTableModel<T> {
 
     @Autowired
     public Translator translator;
