@@ -74,7 +74,7 @@ public class MainSplit extends Split implements ActionListener {
             divider.setBorder(BorderFactory.createMatteBorder(10, 2, 10, 1,
                 divider.getBackground()));
             divider.addMouseListener(new SimpleMouseListener() {
-                public void mouseClicked(MouseEvent e) {
+                public void mousePressed(MouseEvent e) {
                     if (e.getButton() == BUTTON3) {
                         splitterPositionMenu.show(divider,
                             e.getX(),
