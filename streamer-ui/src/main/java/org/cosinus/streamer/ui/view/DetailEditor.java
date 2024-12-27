@@ -32,7 +32,7 @@ import java.awt.event.KeyEvent;
 import static java.awt.event.KeyEvent.VK_ENTER;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static java.util.Optional.ofNullable;
-import static org.cosinus.swing.border.Borders.emptyBorder;
+import static org.cosinus.streamer.ui.view.table.grid.GridCellRenderer.CELL_BORDER;
 import static org.cosinus.swing.border.Borders.emptyInsets;
 
 public class DetailEditor<T extends Streamable> extends TextField implements FocusListener {
@@ -55,7 +55,7 @@ public class DetailEditor<T extends Streamable> extends TextField implements Foc
         this.editor = editor;
         this.detailIndex = detailIndex;
 
-        setBorder(emptyBorder(0));
+        setBorder(CELL_BORDER);
         setMargin(emptyInsets());
         setFont(uiHandler.getLabelFont());
 
@@ -110,6 +110,7 @@ public class DetailEditor<T extends Streamable> extends TextField implements Foc
         ofNullable(itemToBeEdited.details().get(detailIndex))
             .map(Object::toString)
             .ifPresent(this::setText);
+        setCaretPosition(0);
         setEnabled(itemToBeEdited.canUpdateDetail(detailIndex));
     }
 

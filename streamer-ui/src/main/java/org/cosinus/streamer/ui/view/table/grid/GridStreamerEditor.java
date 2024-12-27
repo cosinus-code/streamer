@@ -56,7 +56,7 @@ public class GridStreamerEditor<T extends Streamable> implements StreamerEditor<
         this.itemToBeEdited = itemToBeEdited;
         final AtomicBoolean focused = new AtomicBoolean();
         detailEditors.forEach(detailEditor -> {
-            Rectangle detailRectangle = view.getCurrentDetailRectangle(detailEditor.getDetailIndex());
+            Rectangle detailRectangle = view.getCurrentCellRectangle(detailEditor.getDetailIndex());
             if (detailRectangle != null) {
                 detailEditor.setLoading(true);
                 detailEditor.loadItem(itemToBeEdited);

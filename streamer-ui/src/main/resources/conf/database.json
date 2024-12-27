@@ -1,7 +1,2 @@
 {
-    "c3": {
-        "url": "jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1522)))(CONNECT_DATA = (SERVER = DEDICATED)(SERVICE_NAME = XE)))",
-        "username": "CROSSNG_PILOT",
-        "password": "CROSSNG_PILOT"
-    }
 }

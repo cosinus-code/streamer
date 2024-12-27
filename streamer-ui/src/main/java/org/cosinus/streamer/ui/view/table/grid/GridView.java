@@ -96,13 +96,13 @@ public class GridView<T extends Streamable> extends TableStreamerView<T> {
             .orElse(false);
     }
 
-    public Rectangle getCurrentDetailRectangle(int detailIndex) {
+    public Rectangle getCurrentCellRectangle(int detailIndex) {
         int index = table.getCurrentIndex();
         int row = table.getTableModel().getRowForIndex(index);
 
         Rectangle rect = table.getCellRect(row, detailIndex, true);
-        int offsetIcon = detailIndex == 0 ? 23 : 3;
-        return new Rectangle(rect.x + offsetIcon, rect.y, rect.width - offsetIcon + 2, rect.height);
+        int offsetIcon = detailIndex == 0 ? 20 : 0;
+        return new Rectangle(rect.x + offsetIcon, rect.y, rect.width - offsetIcon, rect.height);
     }
 
 }

@@ -20,6 +20,7 @@ import org.cosinus.streamer.ui.view.table.TableCellRenderer;
 import org.cosinus.streamer.ui.view.table.ViewItem;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.util.Optional;
 
@@ -29,6 +30,10 @@ import static org.cosinus.swing.image.icon.IconSize.X16;
 
 public class GridCellRenderer extends TableCellRenderer<GridTable> {
 
+    public static final int CELL_HORIZONTAL_MARGIN = 3;
+
+    public static final Border CELL_BORDER = emptyBorder(0, CELL_HORIZONTAL_MARGIN, 0, CELL_HORIZONTAL_MARGIN);
+
     @Override
     public Component getCellComponent(JLabel label,
                                       GridTable table,
@@ -37,7 +42,7 @@ public class GridCellRenderer extends TableCellRenderer<GridTable> {
                                       int row,
                                       int column) {
 
-        setBorder(emptyBorder(0, 3, 0, 3));
+        setBorder(CELL_BORDER);
 
         label.setText(item.isTopItem() ?
             item.toString() :
