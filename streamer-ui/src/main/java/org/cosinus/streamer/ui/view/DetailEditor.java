@@ -19,6 +19,7 @@ import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.ui.view.table.grid.GridStreamerEditor;
 import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.form.control.TextField;
+import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.event.DocumentEvent;
@@ -31,12 +32,16 @@ import java.awt.event.KeyEvent;
 import static java.awt.event.KeyEvent.VK_ENTER;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static java.util.Optional.ofNullable;
+import static org.cosinus.swing.border.Borders.emptyBorder;
 import static org.cosinus.swing.border.Borders.emptyInsets;
 
 public class DetailEditor<T extends Streamable> extends TextField implements FocusListener {
 
     @Autowired
     private ErrorHandler errorHandler;
+
+    @Autowired
+    private ApplicationUIHandler uiHandler;
 
     private T itemToBeEdited;
 
@@ -49,6 +54,10 @@ public class DetailEditor<T extends Streamable> extends TextField implements Foc
     public DetailEditor(final GridStreamerEditor<T> editor, int detailIndex) {
         this.editor = editor;
         this.detailIndex = detailIndex;
+
+        setBorder(emptyBorder(0));
+        setMargin(emptyInsets());
+        setFont(uiHandler.getLabelFont());
 
         addFocusListener(this);
         addKeyListener(new KeyAdapter() {
@@ -93,8 +102,6 @@ public class DetailEditor<T extends Streamable> extends TextField implements Foc
 
         editor.getView().getContainer().add(this);
         validate();
-
-        updateForm();
     }
 
     public void loadItem(final T itemToBeEdited) {
@@ -104,10 +111,6 @@ public class DetailEditor<T extends Streamable> extends TextField implements Foc
             .map(Object::toString)
             .ifPresent(this::setText);
         setEnabled(itemToBeEdited.canUpdateDetail(detailIndex));
-    }
-
-    public void updateForm() {
-        setMargin(emptyInsets());
     }
 
     public int getDetailIndex() {

@@ -47,7 +47,7 @@ public class StreamerPanel extends Panel {
     @Autowired
     private FormatHandler formatHandler;
 
-    private final TextField addressLabel;
+    private final TextField addressTop;
 
     private final JLabel freeSpaceLabel;
 
@@ -56,7 +56,7 @@ public class StreamerPanel extends Panel {
     private StreamerView<?, ?> view;
 
     public StreamerPanel() {
-        this.addressLabel = new TextField();
+        this.addressTop = new TextField();
         this.freeSpaceMarker = new ProgressBar();
         this.freeSpaceLabel = new JLabel();
 
@@ -67,13 +67,13 @@ public class StreamerPanel extends Panel {
     public void initComponents() {
         super.initComponents();
 
-        addressLabel.setBorder(emptyBorder(2, 5, 2, 5));
-        addressLabel.setEditable(false);
-        addressLabel.setFont(uiHandler.getLabelFont());
+        addressTop.setBorder(emptyBorder(3, 5, 3, 5));
+        addressTop.setEditable(false);
+        addressTop.setFont(uiHandler.getLabelFont());
         uiHandler.getInactiveBackgroundColor()
-            .ifPresent(addressLabel::setBackground);
+            .ifPresent(addressTop::setBackground);
         uiHandler.getInactiveForegroundColor()
-            .ifPresent(addressLabel::setForeground);
+            .ifPresent(addressTop::setForeground);
 
         freeSpaceLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         uiHandler.getInactiveForegroundColor()
@@ -88,7 +88,7 @@ public class StreamerPanel extends Panel {
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(freesSpacePanel, NORTH);
         if (preferences.booleanPreference(ADDRESS_TOP)) {
-            topPanel.add(addressLabel, SOUTH);
+            topPanel.add(addressTop, SOUTH);
         }
 
         add(topPanel, NORTH);
@@ -121,7 +121,7 @@ public class StreamerPanel extends Panel {
     }
 
     public void setAddress(String address) {
-        addressLabel.setText(formatHandler.formatTextForLabel(addressLabel, address));
+        addressTop.setText(formatHandler.formatTextForLabel(addressTop, address));
     }
 
     public StreamerView<?, ?> getView() {

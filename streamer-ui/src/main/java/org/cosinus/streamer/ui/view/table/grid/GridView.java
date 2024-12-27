@@ -99,11 +99,10 @@ public class GridView<T extends Streamable> extends TableStreamerView<T> {
     public Rectangle getCurrentDetailRectangle(int detailIndex) {
         int index = table.getCurrentIndex();
         int row = table.getTableModel().getRowForIndex(index);
-        int column = table.getTableModel().getColumnForIndex(index);
 
         Rectangle rect = table.getCellRect(row, detailIndex, true);
-        int offsetIcon = column == 0 ? 21 : -2;
-        return new Rectangle(rect.x + offsetIcon, rect.y, rect.width - offsetIcon + 4, rect.height);
+        int offsetIcon = detailIndex == 0 ? 23 : 3;
+        return new Rectangle(rect.x + offsetIcon, rect.y, rect.width - offsetIcon + 2, rect.height);
     }
 
 }
