@@ -15,16 +15,22 @@
  */
 package org.cosinus.streamer.ui.view;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.ui.action.progress.ProgressModel;
 import org.cosinus.swing.form.CustomProgressBarUI;
 import org.cosinus.swing.form.ProgressBar;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.awt.*;
+
 import static javax.swing.SwingUtilities.invokeLater;
 import static org.cosinus.swing.border.Borders.emptyBorder;
 
 public class LoadingProgress extends ProgressBar {
+
+    private static final Logger LOG = LogManager.getLogger(LoadingProgress.class);
 
     @Autowired
     private ApplicationUIHandler uiHandler;
@@ -36,6 +42,15 @@ public class LoadingProgress extends ProgressBar {
         if (uiHandler.isLookAndFeelMac()) {
             setUI(new CustomProgressBarUI());
             setBorder(emptyBorder(0));
+        }
+    }
+
+    @Override
+    public void paint(Graphics g) {
+        try {
+            super.paint(g);
+        } catch (Exception ex) {
+            LOG.debug(ex.getMessage(), ex);
         }
     }
 

@@ -16,6 +16,8 @@
 
 package org.cosinus.streamer.ui.view;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.meta.StreamerHandler;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
@@ -42,6 +44,8 @@ import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.view.text.TextStreamerView.DIRTY_TEXT_MARKER;
 
 public abstract class StreamerView<T, V> extends Panel implements WorkerListener<LoadWorkerModel<T, V>, V> {
+
+    private static final Logger LOG = LogManager.getLogger(StreamerView.class);
 
     @Autowired
     protected StreamerViewHandler streamerViewHandler;
@@ -160,7 +164,11 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
 
     @Override
     public void workerStarted(LoadWorkerModel<T, V> loadWorkerModel) {
-        loadingIndicator.startLoading(loadWorkerModel.getTotalSizeToLoad());
+        try {
+            loadingIndicator.startLoading(loadWorkerModel.getTotalSizeToLoad());
+        } catch (Exception ex) {
+            LOG.debug("Failed to start loading indicator", ex);
+        }
         updateAddressBarAndStreamerPanel();
     }
 
