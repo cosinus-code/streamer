@@ -97,7 +97,11 @@ public class ImagePanel extends Panel implements LoadWorkerModel<byte[], Updatab
     private void drawBrokenImage(Graphics g) {
         if (finished) {
             getBrokenPhotoIcon()
-                .ifPresent(image -> g.drawImage(image, 0, 0, this));
+                .ifPresent(image -> {
+                    int x = (getWidth() - image.getWidth()) / 2;
+                    int y = (getHeight() - image.getHeight()) / 2;
+                    g.drawImage(image, x, y, this);
+                });
         } else if (binaryStreamer != null) {
             drawImageBackground(g);
         }
