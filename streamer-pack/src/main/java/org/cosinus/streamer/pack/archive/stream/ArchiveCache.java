@@ -19,13 +19,14 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.cosinus.streamer.pack.archive.ArchiveStreamEntry;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Interface for an archive cache
  */
 public interface ArchiveCache {
 
-    void add(ArchiveStreamEntry archiveEntry);
+    List<ArchiveStreamEntry> add(ArchiveStreamEntry archiveEntry);
 
     boolean contains(ArchiveEntry archiveEntry);
 

@@ -56,8 +56,11 @@ public class ArchiveHolder implements ArchiveCache {
     }
 
     @Override
-    public void add(ArchiveStreamEntry archiveEntry) {
+    public List<ArchiveStreamEntry> add(ArchiveStreamEntry archiveEntry) {
+        List<ArchiveStreamEntry> newEntries = new ArrayList<>();
+
         entriesMap.put(key(archiveEntry.toPath()), archiveEntry);
+        newEntries.add(archiveEntry);
 
         String parentPath = archiveEntry
             .getParentPath()
@@ -68,7 +71,11 @@ public class ArchiveHolder implements ArchiveCache {
             .computeIfAbsent(parentPath, key -> new TreeSet<>())
             .add(archiveEntry);
 
-        archiveEntry.getParentPath().ifPresent(this::checkPath);
+        archiveEntry.getParentPath()
+            .map(this::checkPath)
+            .ifPresent(newEntries::addAll);
+
+        return newEntries;
     }
 
     public void addAdditional(ArchiveStreamEntry archiveEntry) {
@@ -77,19 +84,29 @@ public class ArchiveHolder implements ArchiveCache {
         setDirty(true);
     }
 
-    private void checkPath(Path path) {
+    private List<ArchiveStreamEntry> checkPath(Path path) {
+        List<ArchiveStreamEntry> newEntries = new ArrayList<>();
+
         String entryKey = key(path.toString());
         if (!entriesMap.containsKey(entryKey)) {
             ArchiveStreamEntry missingEntry = new ArchiveStreamEntry(new VirtualDirectoryArchiveEntry(path.toString()));
             entriesMap.put(entryKey, missingEntry);
+            newEntries.add(missingEntry);
 
             Path parentPath = path.getParent();
-            if (parentPath != null && !parentPath.toString().equals(ARCHIVE_ROOT)) {
-                String parentKey = key(parentPath.toString());
-                entriesGroupedByParentMap.computeIfAbsent(parentKey, key -> new TreeSet<>()).add(missingEntry);
-                checkPath(parentPath);
+            String parentKey = ofNullable(parentPath)
+                .map(this::key)
+                .orElse(ARCHIVE_ROOT);
+            entriesGroupedByParentMap
+                .computeIfAbsent(parentKey, key -> new TreeSet<>())
+                .add(missingEntry);
+
+            if (!parentKey.equals(ARCHIVE_ROOT)) {
+                newEntries.addAll(checkPath(parentPath));
             }
         }
+
+        return newEntries;
     }
 
     public String key(Path path) {

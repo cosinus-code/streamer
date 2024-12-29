@@ -21,12 +21,15 @@ import org.cosinus.streamer.pack.archive.EntryInputStream;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.Spliterator;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static java.lang.Long.MAX_VALUE;
 import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 
 public class ArchiveSpliterator implements Spliterator<ArchiveStreamEntry> {
 
@@ -45,12 +48,15 @@ public class ArchiveSpliterator implements Spliterator<ArchiveStreamEntry> {
 
     @Override
     public boolean tryAdvance(final Consumer<? super ArchiveStreamEntry> action) {
-        Optional<ArchiveStreamEntry> entry = nextEntry();
-        if (archiveCache != null && !archiveCache.isLoaded()) {
-            entry.ifPresent(archiveCache::add);
-        }
-        entry.ifPresent(action);
-        return entry.isPresent();
+        Optional<ArchiveStreamEntry> nextEntry = nextEntry();
+        nextEntry.ifPresent(entry -> ofNullable(archiveCache)
+            .filter(not(ArchiveCache::isLoaded))
+            .map(archiveCache -> archiveCache.add(entry))
+            .map(List::stream)
+            .orElseGet(() -> Stream.of(entry))
+            .forEach(action));
+
+        return nextEntry.isPresent();
     }
 
     protected Optional<ArchiveStreamEntry> nextEntry() {
