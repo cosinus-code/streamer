@@ -31,7 +31,6 @@ import java.awt.event.MouseEvent;
 
 import static java.awt.event.MouseEvent.BUTTON3;
 import static java.util.stream.IntStream.range;
-import static org.cosinus.streamer.ui.preference.StreamerPreferences.KEEP_DIVIDER_RELATIVE_LOCATION;
 
 public class MainSplit extends Split implements ActionListener {
 
@@ -49,7 +48,7 @@ public class MainSplit extends Split implements ActionListener {
 
     public MainSplit() {
         super(MAIN_SPLITTER_NAME, DEFAULT_DIVIDER_LOCATION);
-        setKeepRelativeLocationOnResize(preferences.booleanPreference(KEEP_DIVIDER_RELATIVE_LOCATION));
+        setKeepRelativeLocationOnResize(true);
     }
 
     @Override
