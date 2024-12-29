@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.view.table.grid;
+package org.cosinus.streamer.ui.view.table.grid.header;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cosinus.swing.form.control.Label;
+import org.cosinus.streamer.ui.view.table.grid.GridTable;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
@@ -33,17 +35,19 @@ import static java.util.Optional.ofNullable;
 import static org.cosinus.swing.border.Borders.emptyBorder;
 import static org.cosinus.swing.border.Borders.lineBorder;
 import static org.cosinus.swing.color.SystemColor.BUTTON_BACKGROUND;
+import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
-public class GridHeaderCell extends Label implements TableCellRenderer {
+public class GridHeaderCell extends DefaultTableCellRenderer implements TableCellRenderer {
 
     private static final Logger LOG = LogManager.getLogger(GridHeaderCell.class);
 
     protected boolean ascending, sorted, over;
 
     @Autowired
-    private ApplicationUIHandler uiHandler;
+    protected ApplicationUIHandler uiHandler;
 
     public GridHeaderCell() {
+        injectContext(this);
         init();
     }
 
@@ -91,6 +95,8 @@ public class GridHeaderCell extends Label implements TableCellRenderer {
                                                    int rowIndex,
                                                    int colIndex) {
         try {
+            super.getTableCellRendererComponent(jtable, value, isSelected, hasFocus, rowIndex, colIndex);
+
             GridTable table = (GridTable) jtable;
             if (table != null) {
                 sorted = table.getTableModel().getSortedColumn() == colIndex;
@@ -109,11 +115,15 @@ public class GridHeaderCell extends Label implements TableCellRenderer {
         return this;
     }
 
-    protected void customizeCellRenderer(int colIndex) {
+    protected void customizeCellRenderer(int columnIndex) {
         setBackground(uiHandler.getColor(BUTTON_BACKGROUND));
         setCursor(uiHandler.getHandCursor());
-        setBorder(new CompoundBorder(
-            lineBorder(uiHandler.getInactiveCaptionColor(), 0, colIndex > 0 ? 1 : 0, 2, 0),
-            emptyBorder(2)));
+        setBorder(createHeaderCellBorder(columnIndex));
+    }
+
+    public Border createHeaderCellBorder(int columnIndex) {
+        return new CompoundBorder(
+            lineBorder(uiHandler.getInactiveCaptionColor(), 1, columnIndex > 0 ? 1 : 0, 1, 0),
+            emptyBorder(2));
     }
 }

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.view.table.grid;
+package org.cosinus.streamer.ui.view.table.grid.header;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cosinus.streamer.ui.view.table.grid.GridTable;
 
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;

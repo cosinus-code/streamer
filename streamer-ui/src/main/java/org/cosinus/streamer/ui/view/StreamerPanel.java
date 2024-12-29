@@ -26,12 +26,14 @@ import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicTextFieldUI;
 import java.awt.*;
 
 import static java.awt.BorderLayout.*;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.ADDRESS_TOP;
 import static org.cosinus.swing.border.Borders.emptyBorder;
+import static org.cosinus.swing.color.Colors.getDarkerColor;
 
 public class StreamerPanel extends Panel {
 
@@ -67,13 +69,12 @@ public class StreamerPanel extends Panel {
     public void initComponents() {
         super.initComponents();
 
-        addressTop.setBorder(emptyBorder(3, 5, 3, 5));
-        addressTop.setEditable(false);
+        addressTop.setUI(new BasicTextFieldUI());
         addressTop.setFont(uiHandler.getLabelFont());
-        uiHandler.getInactiveBackgroundColor()
+        addressTop.setBorder(emptyBorder(3, 5, 3, 5));
+        ofNullable(addressTop.getBackground())
+            .map(color -> getDarkerColor(color, 15))
             .ifPresent(addressTop::setBackground);
-        uiHandler.getInactiveForegroundColor()
-            .ifPresent(addressTop::setForeground);
 
         freeSpaceLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         uiHandler.getInactiveForegroundColor()

@@ -21,6 +21,7 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.streamer.ui.view.table.DataTable;
 import org.cosinus.streamer.ui.view.table.DataTableModel;
+import org.cosinus.streamer.ui.view.table.grid.header.GridHeader;
 import org.cosinus.swing.image.icon.IconHandler;
 import org.cosinus.swing.menu.CheckBoxMenuItem;
 import org.cosinus.swing.menu.PopupMenu;
@@ -30,19 +31,16 @@ import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableColumnModel;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
+import javax.swing.table.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import static java.util.Optional.ofNullable;
+import static java.util.stream.IntStream.range;
 import static javax.swing.SwingUtilities.invokeLater;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.ROW_HEIGHT;
+import static org.cosinus.streamer.ui.view.table.grid.GridCellRenderer.CELL_ICON_SIZE;
 
 public class GridTable<T extends Streamable> extends DataTable<T> implements ActionListener {
 
@@ -60,13 +58,13 @@ public class GridTable<T extends Streamable> extends DataTable<T> implements Act
 
     public PopupMenu popupHeader;
 
-    private final GridView view;
+    private final GridView<?> view;
 
-    public GridTable(GridView view) {
+    public GridTable(GridView<?> view) {
         this.view = view;
     }
 
-    public GridView getView() {
+    public GridView<?> getView() {
         return view;
     }
 
@@ -74,6 +72,7 @@ public class GridTable<T extends Streamable> extends DataTable<T> implements Act
     public void initComponents() {
         super.initComponents();
         setSelectionType();
+        setShowGrid(false);
 
         model.addTableModelListener(e -> invokeLater(() -> {
             int index = model.getCurrentIndex();
@@ -82,44 +81,36 @@ public class GridTable<T extends Streamable> extends DataTable<T> implements Act
             }
         }));
 
-        setSelectionModel(new DefaultListSelectionModel() {
-            @Override
-            public void setSelectionInterval(int rowIndex1, int rowIndex2) {
-                super.setSelectionInterval(rowIndex1, rowIndex2);
-                model.setCurrentIndex(rowIndex1);
-            }
-        });
-
-        setColumnModel(new DefaultTableColumnModel() {
-            @Override
-            public TableColumn getColumn(int columnIndex) {
-                try {
-                    return super.getColumn(columnIndex);
-                } catch (Exception e) {
-                    //TODO: sometimes it throws IndexOutOfBoundsException
-                    return new TableColumn();
-                }
-            }
-        });
+        //setAutoCreateRowSorter(true);
     }
 
     @Override
     public void reset(final Streamer<T> parentStreamer) {
         super.reset(parentStreamer);
-        setHeaderRenders();
+        getColumnModel().reset();
         setHeaderPopup();
+        setColumnVisibility();
     }
 
-    private void setHeaderRenders() {
-        TableColumnModel model = getColumnModel();
-        IntStream.range(0, model.getColumnCount())
-            .forEach(index -> {
-                model.getColumn(index).setHeaderRenderer(new GridHeaderCell());
-                if (index > 0) {
-                    setColVisible(index, isColumnVisible(index));
-                }
-            });
-        getTableHeader().setReorderingAllowed(false);
+    @Override
+    protected TableColumnModel createDefaultColumnModel() {
+        return new GridColumnModel();
+    }
+
+    @Override
+    protected ListSelectionModel createDefaultSelectionModel() {
+        return new DefaultListSelectionModel() {
+            @Override
+            public void setSelectionInterval(int rowIndex1, int rowIndex2) {
+                super.setSelectionInterval(rowIndex1, rowIndex2);
+                model.setCurrentIndex(rowIndex1);
+            }
+        };
+    }
+
+    @Override
+    public GridColumnModel getColumnModel() {
+        return (GridColumnModel) super.getColumnModel();
     }
 
     private void setSelectionType() {
@@ -131,7 +122,7 @@ public class GridTable<T extends Streamable> extends DataTable<T> implements Act
         ofNullable(getParentStreamer())
             .ifPresent(parentStreamer -> {
                 List<TranslatableName> detailNames = parentStreamer.detailNames();
-                IntStream.range(0, detailNames.size())
+                range(0, detailNames.size())
                     .mapToObj(index -> {
                         CheckBoxMenuItem checkbox = new CheckBoxMenuItem(
                             this, isColumnVisible(index), columnKey(index));
@@ -146,22 +137,14 @@ public class GridTable<T extends Streamable> extends DataTable<T> implements Act
         return applicationStorage.getBoolean(columnKey(index), true);
     }
 
-    public void setColVisible(int index,
-                              boolean visible) {
-        TableColumn column = getColumnModel().getColumn(index);
-        if (visible) {
-            column.setMaxWidth(10000);
-            column.setMinWidth(5);
-            column.setPreferredWidth(100);
-            column.setWidth(100);
-            column.setResizable(true);
-        } else {
-            column.setMaxWidth(0);
-            column.setMinWidth(0);
-            column.setPreferredWidth(0);
-            column.setWidth(0);
-            column.setResizable(false);
-        }
+    protected void setColumnVisibility() {
+        range(0, getColumnCount())
+                .filter(index -> index > 0)
+                .forEach(index -> setColVisible(index, isColumnVisible(index)));
+    }
+
+    public void setColVisible(int index, boolean visible) {
+        getColumnModel().setColVisible(index, visible);
     }
 
     public TableCellRenderer getCellRenderer(int row,
@@ -174,7 +157,7 @@ public class GridTable<T extends Streamable> extends DataTable<T> implements Act
         super.updateForm();
 
         setRowHeight(preferences.findIntPreference(ROW_HEIGHT)
-            .orElse(20));
+            .orElse(CELL_ICON_SIZE));
     }
 
     @Override
@@ -200,8 +183,8 @@ public class GridTable<T extends Streamable> extends DataTable<T> implements Act
     }
 
     @Override
-    public GridTableModel getTableModel() {
-        return (GridTableModel) super.getTableModel();
+    public GridTableModel<T> getTableModel() {
+        return (GridTableModel<T>) super.getTableModel();
     }
 
     @Override
@@ -224,7 +207,7 @@ public class GridTable<T extends Streamable> extends DataTable<T> implements Act
     }
 
     private String columnKey(int index) {
-        return storageKey("detail", "visible", Integer.toString(index));
+        return storageKey("grid", "visible", Integer.toString(index));
     }
 
     public PopupMenu getPopupHeader() {

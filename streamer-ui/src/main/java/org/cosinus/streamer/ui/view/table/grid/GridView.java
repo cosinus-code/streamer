@@ -27,6 +27,7 @@ import org.cosinus.streamer.ui.view.table.TableStreamerView;
 import java.awt.*;
 
 import static java.util.Optional.ofNullable;
+import static org.cosinus.streamer.ui.view.table.grid.GridCellRenderer.CELL_ICON_SIZE;
 
 public class GridView<T extends Streamable> extends TableStreamerView<T> {
 
@@ -101,7 +102,7 @@ public class GridView<T extends Streamable> extends TableStreamerView<T> {
         int row = table.getTableModel().getRowForIndex(index);
 
         Rectangle rect = table.getCellRect(row, detailIndex, true);
-        int offsetIcon = detailIndex == 0 ? 20 : 0;
+        int offsetIcon = detailIndex == 0 ? CELL_ICON_SIZE : 0;
         return new Rectangle(rect.x + offsetIcon, rect.y, rect.width - offsetIcon, rect.height);
     }
 
