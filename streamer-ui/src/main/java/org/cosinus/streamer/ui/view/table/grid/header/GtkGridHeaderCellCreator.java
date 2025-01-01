@@ -15,14 +15,11 @@
  */
 package org.cosinus.streamer.ui.view.table.grid.header;
 
-import org.cosinus.swing.boot.condition.ConditionalOnLinux;
-import org.springframework.stereotype.Component;
+import org.cosinus.swing.context.GtkSwingComponent;
 
 import javax.swing.table.TableCellRenderer;
 
-@Component
-//TODO: temporary, it should be @ConditionalOnGtkLookAndFeel
-@ConditionalOnLinux
+@GtkSwingComponent
 public class GtkGridHeaderCellCreator implements GridHeaderCellCreator {
 
     @Override

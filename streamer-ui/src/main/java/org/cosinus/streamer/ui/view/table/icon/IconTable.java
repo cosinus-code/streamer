@@ -122,7 +122,7 @@ public class IconTable<T extends Streamable> extends DataTable<T> {
     }
 
     public int getCellWidth() {
-        return getIconDimension() + (uiHandler.isLookAndFeelWindows() ? 8 : 42);
+        return getIconDimension() + (uiHandler.isLookAndFeelWindows() ? 8 : 52);
     }
 
     public int getCellHeight() {

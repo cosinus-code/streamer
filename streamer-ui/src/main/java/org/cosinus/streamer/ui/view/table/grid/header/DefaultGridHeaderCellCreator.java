@@ -15,16 +15,14 @@
  */
 package org.cosinus.streamer.ui.view.table.grid.header;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.stereotype.Component;
+import org.cosinus.swing.context.OnMissingBeanSwingComponent;
 
 import javax.swing.table.TableCellRenderer;
 
 /**
  * Default grid header cell creator
  */
-@Component
-@ConditionalOnMissingBean(GtkGridHeaderCellCreator.class)
+@OnMissingBeanSwingComponent(GridHeaderCellCreator.class)
 public class DefaultGridHeaderCellCreator implements GridHeaderCellCreator {
 
     @Override

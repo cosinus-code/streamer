@@ -1,7 +1,7 @@
 package org.cosinus.streamer.ui.view.table.grid;
 
 import org.cosinus.streamer.ui.view.table.grid.header.GridHeaderCellCreator;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.cosinus.swing.context.SwingAutowired;
 
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
@@ -15,7 +15,7 @@ import static org.cosinus.swing.context.ApplicationContextInjector.injectContext
  */
 public class GridColumnModel extends DefaultTableColumnModel {
 
-    @Autowired
+    @SwingAutowired
     protected GridHeaderCellCreator gridHeaderCellCreator;
 
     public GridColumnModel() {
