@@ -117,7 +117,8 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
                 showPreview ?
                     findIconWithPreview(size, createItemFile(item)) :
                     iconHandler.findIconByFile(createItemFile(item), size) :
-                uiHandler.getDefaultFileIcon());
+                iconHandler.findIconByName(ICON_FOLDER, size)
+                    .or(() -> uiHandler.getDefaultFileIcon()));
     }
 
     private Optional<Icon> findIconWithPreview(IconSize size, File itemFile) {

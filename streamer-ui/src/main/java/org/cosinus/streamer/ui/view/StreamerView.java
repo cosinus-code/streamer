@@ -18,6 +18,7 @@ package org.cosinus.streamer.ui.view;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.meta.StreamerHandler;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
@@ -196,7 +197,8 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
             getPanel().ifPresent(panel -> {
                 panel.setAddress(address);
                 ofNullable(this.getParentStreamer())
-                    .map(Streamer::getParent)
+                    .filter(Streamer::isParent)
+                    .map(ParentStreamer.class::cast)
                     .ifPresent(parent -> panel.setFreeSpace(
                         parent.getFreeSpace(),
                         parent.getTotalSpace()));

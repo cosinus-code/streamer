@@ -29,7 +29,7 @@ import java.util.stream.Stream;
 
 import static org.cosinus.swing.image.icon.IconProvider.ICON_NETWORK;
 
-@RootStreamer("FTP")
+@RootStreamer("Network")
 @ConditionalOnProperty(name = "streamer.ftp.enabled", matchIfMissing = true)
 public class FtpMainStreamer extends MainStreamer<FtpConnectionStreamer> {
 

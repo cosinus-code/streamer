@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.ui.view;
 
+import org.cosinus.swing.color.Colors;
 import org.cosinus.swing.form.Panel;
 import org.cosinus.swing.form.ProgressBar;
 import org.cosinus.swing.form.control.TextField;
@@ -73,7 +74,7 @@ public class StreamerPanel extends Panel {
         addressTop.setFont(uiHandler.getLabelFont());
         addressTop.setBorder(emptyBorder(3, 5, 3, 5));
         ofNullable(addressTop.getBackground())
-            .map(color -> getDarkerColor(color, 15))
+            .map(Colors::getDarkerColor)
             .ifPresent(addressTop::setBackground);
 
         freeSpaceLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -85,6 +86,10 @@ public class StreamerPanel extends Panel {
         freesSpacePanel.add(freeSpaceLabel, CENTER);
         freesSpacePanel.add(freeSpaceMarker, EAST);
         freesSpacePanel.setBorder(emptyBorder(3));
+
+        ofNullable(freesSpacePanel.getBackground())
+            .map(Colors::getDarkerColor)
+            .ifPresent(freesSpacePanel::setBackground);
 
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(freesSpacePanel, NORTH);
