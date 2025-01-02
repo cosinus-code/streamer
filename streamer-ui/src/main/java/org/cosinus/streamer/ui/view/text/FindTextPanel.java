@@ -35,6 +35,7 @@ import java.util.stream.Stream;
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.EAST;
 import static java.util.Optional.ofNullable;
+import static org.cosinus.swing.border.Borders.emptyBorder;
 
 /**
  * Panel for controls to find text
@@ -72,6 +73,8 @@ public class FindTextPanel extends FindPanel {
         findButtonsPanel.add(findPreviousButton);
         findButtonsPanel.add(findNextButton);
         findButtonsPanel.add(findResultLabel);
+
+        setBorder(emptyBorder(5, 5, 5, 0));
 
         add(findButtonsPanel, EAST);
     }

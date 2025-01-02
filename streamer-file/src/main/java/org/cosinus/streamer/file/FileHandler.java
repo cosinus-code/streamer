@@ -113,32 +113,6 @@ public class FileHandler {
         return mimeTypeResolver.isImageCompatible(path);
     }
 
-    public Optional<String> mimeType(Path path) {
-        return ofNullable(path)
-            .map(Path::toFile)
-            .filter(not(File::isDirectory))
-            .map(file -> ofNullable(getFileContentType(file.toPath()))
-                .orElseGet(() -> getFileMagicMatch(file)));
-    }
-
-    private String getFileContentType(Path path) {
-        try {
-            return Files.probeContentType(path);
-        } catch (IOException ex) {
-            LOG.error("Failed to probe the file content type for path: {}", path);
-            return null;
-        }
-    }
-
-    private String getFileMagicMatch(File file) {
-        try {
-            return Magic.getMagicMatch(file, true).getMimeType();
-        } catch (MagicMatchNotFoundException | MagicException | MagicParseException e) {
-            LOG.error("Failed to match a mime type for path: {}", file);
-            return null;
-        }
-    }
-
     public void reset() {
         fileStores = null;
     }

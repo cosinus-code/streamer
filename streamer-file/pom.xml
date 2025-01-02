@@ -28,11 +28,6 @@
             <artifactId>oshi-core</artifactId>
             <version>${oshi.version}</version>
         </dependency>
-        <dependency>
-            <groupId>net.sf.jmimemagic</groupId>
-            <artifactId>jmimemagic</artifactId>
-            <version>0.1.5</version>
-        </dependency>
     </dependencies>
 
 </project>

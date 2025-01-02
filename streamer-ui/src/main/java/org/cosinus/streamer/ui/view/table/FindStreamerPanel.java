@@ -81,7 +81,7 @@ public class FindStreamerPanel<S extends Streamer<S>> extends FindPanel {
         SpringGridLayout findLayout = new SpringGridLayout(this,
             2, 3,
             5, 0,
-            5, 0);
+            5, 5);
         setLayout(findLayout);
 
         add(findTextField.createAssociatedLabel(translator.translate("find-name")));
