@@ -20,6 +20,7 @@ import io.jenetics.jpx.WayPoint;
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.value.DateValue;
 import org.cosinus.streamer.api.value.DoubleValue;
+import org.cosinus.streamer.api.value.TextValue;
 import org.cosinus.streamer.api.value.Value;
 
 import java.nio.file.Path;
@@ -27,8 +28,10 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.List;
 
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.cosinus.streamer.gpx.GpxExpander.GPX_PROTOCOL;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_FILE;
 
 public class GpxPoint implements Streamable {
 
@@ -97,11 +100,11 @@ public class GpxPoint implements Streamable {
                 new DateValue(point.getTime()
                     .map(Instant::toEpochMilli)
                     .orElse(null)),
-                new DoubleValue(point.getLatitude().doubleValue()),
-                new DoubleValue(point.getLongitude().doubleValue()),
-                new DoubleValue(point.getElevation()
+                new TextValue(format("%.6f", point.getLatitude().doubleValue())),
+                new TextValue(format("%.6f", point.getLongitude().doubleValue())),
+                new TextValue(format("%.2f", point.getElevation()
                     .map(Length::doubleValue)
-                    .orElse(null)));
+                    .orElse(null))));
         }
     }
 
@@ -116,5 +119,10 @@ public class GpxPoint implements Streamable {
 
     public WayPoint getPoint() {
         return point;
+    }
+
+    @Override
+    public String getIconName() {
+        return ICON_FILE;
     }
 }
