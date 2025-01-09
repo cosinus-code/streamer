@@ -39,6 +39,7 @@ import static org.cosinus.swing.context.ApplicationContextInjector.injectContext
 public abstract class FileStreamer<T> implements Streamer<T> {
 
     protected static final String DETAIL_KEY_FREE_MEMORY = "detail_free_memory";
+    protected static final String DETAIL_KEY_TOTAL_MEMORY = "detail_total_memory";
 
     @Autowired
     protected FileMainStreamer fileMainStreamer;

@@ -15,9 +15,12 @@
  */
 package org.cosinus.streamer.file.system;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cosinus.swing.boot.condition.ConditionalOnMac;
 import org.cosinus.swing.exec.ProcessExecutor;
 import org.springframework.stereotype.Component;
+import oshi.SystemInfo;
 import oshi.software.os.OSFileStore;
 
 import java.util.Arrays;
@@ -35,10 +38,26 @@ import static java.util.stream.Collectors.toMap;
 @ConditionalOnMac
 public class MacFileSystem implements FileSystem {
 
+    private static final Logger LOG = LogManager.getLogger(MacFileSystem.class);
+
     private final ProcessExecutor processExecutor;
 
     public MacFileSystem(final ProcessExecutor processExecutor) {
         this.processExecutor = processExecutor;
+    }
+
+    @Override
+    public List<OSFileStore> getFileSystemRoots() {
+        try {
+            return new SystemInfo().getOperatingSystem().getFileSystem().getFileStores();
+        } catch (Exception ex) {
+            if (LOG.isDebugEnabled()) {
+                LOG.error("Failed to get file stores. Will fallback to command line.", ex);
+            } else {
+                LOG.warn("Failed to get file stores. Will fallback to command line: {}", ex.getMessage());
+            }
+            return getFileSystemRootsFromCommandLine();
+        }
     }
 
     /**
@@ -46,8 +65,7 @@ public class MacFileSystem implements FileSystem {
      *
      * @return A list of file system roots.
      */
-    @Override
-    public List<OSFileStore> getFileSystemRoots() {
+    private List<OSFileStore> getFileSystemRootsFromCommandLine() {
         return processExecutor.executeAndGetOutput("diskutil", "list")
             .map(output -> output.split("\\n\\n"))
             .stream()
@@ -76,5 +94,15 @@ public class MacFileSystem implements FileSystem {
                 property -> property[1].trim(),
                 (k1, k2) -> k1,
                 MacFileSystemRoot::new));
+    }
+
+    @Override
+    public boolean isHidden(OSFileStore fileStore) {
+        return fileStore.getMount().startsWith("/System/Volumes/");
+    }
+
+    @Override
+    public boolean isInternal(OSFileStore fileStore) {
+        return !fileStore.getMount().startsWith("/Volumes/");
     }
 }

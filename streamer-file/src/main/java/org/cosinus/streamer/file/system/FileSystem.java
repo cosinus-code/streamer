@@ -30,4 +30,8 @@ public interface FileSystem {
      * @return A list of file system roots.
      */
     List<OSFileStore> getFileSystemRoots();
+
+    boolean isHidden(OSFileStore fileStore);
+
+    boolean isInternal(OSFileStore fileStore);
 }

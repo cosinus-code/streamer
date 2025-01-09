@@ -16,29 +16,19 @@
 
 package org.cosinus.streamer.file;
 
-import net.sf.jmimemagic.Magic;
-import net.sf.jmimemagic.MagicException;
-import net.sf.jmimemagic.MagicMatchNotFoundException;
-import net.sf.jmimemagic.MagicParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.file.system.FileSystem;
 import org.cosinus.swing.io.MimeTypeResolver;
 import org.springframework.stereotype.Component;
-import oshi.SystemInfo;
 import oshi.software.os.OSFileStore;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
-
-import static java.util.Optional.ofNullable;
-import static java.util.function.Predicate.not;
 
 /**
  * Proxy for handling files.
@@ -90,16 +80,7 @@ public class FileHandler {
 
     public synchronized List<OSFileStore> getFileStores() {
         if (fileStores == null) {
-            try {
-                fileStores = new SystemInfo().getOperatingSystem().getFileSystem().getFileStores();
-            } catch (Exception ex) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.error("Failed to get file stores. Will fallback to command line.", ex);
-                } else {
-                    LOG.warn("Failed to get file stores. Will fallback to command line: {}", ex.getMessage());
-                }
-                fileStores = fileSystem.getFileSystemRoots();
-            }
+            fileStores = fileSystem.getFileSystemRoots();
         }
         return fileStores;
     }
@@ -115,5 +96,13 @@ public class FileHandler {
 
     public void reset() {
         fileStores = null;
+    }
+
+    public boolean isHidden(OSFileStore fileStore) {
+        return fileSystem.isHidden(fileStore);
+    }
+
+    public boolean isInternal(OSFileStore fileStore) {
+        return fileSystem.isInternal(fileStore);
     }
 }

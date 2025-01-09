@@ -75,7 +75,7 @@ public class FileRootStreamer extends FileParentStreamer {
 
     @Override
     public boolean isHidden() {
-        return fileStore.getMount().startsWith("/System/Volumes/");
+        return fileHandler.isHidden(fileStore);
     }
 
     @Override
@@ -99,7 +99,7 @@ public class FileRootStreamer extends FileParentStreamer {
     }
 
     public boolean isInternal() {
-        return !fileStore.getMount().startsWith("/Volumes/");
+        return fileHandler.isInternal(fileStore);
     }
 
     @Override
@@ -107,8 +107,9 @@ public class FileRootStreamer extends FileParentStreamer {
         if (details == null) {
             details = asList(
                 new TextValue(getName()),
-                new TextValue(formatHandler.formatMemorySize(getFreeSpace()) + "/" +
-                    formatHandler.formatMemorySize(getTotalSpace())));
+                new TextValue(formatHandler.formatMemorySize(getFreeSpace())),
+                new TextValue(formatHandler.formatMemorySize(getTotalSpace()))
+            );
         }
     }
 }
