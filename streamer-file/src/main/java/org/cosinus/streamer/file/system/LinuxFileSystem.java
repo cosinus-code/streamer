@@ -15,6 +15,7 @@
  */
 package org.cosinus.streamer.file.system;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.cosinus.swing.boot.condition.ConditionalOnLinux;
 import org.cosinus.swing.exec.ProcessExecutor;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.cosinus.streamer.file.system.MtpFileSystemRoot.MTP_PROTOCOL;
 import static org.cosinus.streamer.file.system.MtpFileSystemRoot.MTP_PROTOCOL_MARK;
@@ -69,8 +71,13 @@ public class LinuxFileSystem implements FileSystem {
             .map(output -> output.split("\\n"))
             .stream()
             .flatMap(Arrays::stream)
-            .collect(Collectors.toMap(output -> substringAfter(output, MTP_PROTOCOL_MARK).trim(),
-                output -> substringBetween(output, ":", MTP_PROTOCOL_MARK).trim(),
+            .filter(Objects::nonNull)
+            .map(output -> ImmutablePair.of(
+                substringAfter(output, MTP_PROTOCOL_MARK),
+                substringBetween(output, ":", MTP_PROTOCOL_MARK)))
+            .filter(pair -> pair.getKey() != null && pair.getValue() != null)
+            .collect(toMap(pair -> pair.getKey().trim(),
+                pair -> pair.getValue().trim(),
                 (key1, key2) -> key1));
     }
 
