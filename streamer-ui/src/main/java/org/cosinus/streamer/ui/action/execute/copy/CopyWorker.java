@@ -37,6 +37,7 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 
 /**
  * {@link Worker} for copying streamers from a source parent streamer to target parent streamer
@@ -59,6 +60,8 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
     private final OverallCopyListener overallCopyProgress;
 
     private long totalSize;
+
+    private long totalItems;
 
     public CopyWorker(CopyActionModel<S, T> copyModel) {
         super(copyModel, new CopyProgressModel());
@@ -97,7 +100,16 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
     @Override
     public void preparePipelineOpen(CopyStrategy pipelineStrategy,
                                     PipelineListener<S> pipelineListener) {
-        this.totalSize = source.computeSize(getStreamerFilter());
+        try (Stream<S> flatStreamers = source.flatStream(streamerFilter)) {
+            flatStreamers
+                .filter(not(Streamer::isParent))
+                .mapToLong(Streamer::getSize)
+                .forEach(size -> {
+                    this.totalSize += size;
+                    pipelineListener.onPreparingPipeline(++this.totalItems);
+                });
+        }
+
         long freeSpace = destination.getFreeSpace();
         if (totalSize > freeSpace && !copyStrategy.shouldContinueWhenNotEnoughFreeSpace()) {
             throw new AbortPipelineConsumeException("Not enough free space on destination: " +
@@ -157,6 +169,12 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
     }
 
     protected class OverallCopyListener implements PipelineListener<S> {
+
+        @Override
+        public void onPreparingPipeline(long totalItems) {
+            updateModel(() -> workerModel.setTotalItems(totalItems));
+        }
+
         @Override
         public void beforePipelineOpen() {
             updateModel(() -> workerModel.startTotalProgress(totalSize));

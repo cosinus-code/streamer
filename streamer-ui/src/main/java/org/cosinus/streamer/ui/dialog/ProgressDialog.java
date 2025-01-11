@@ -75,7 +75,7 @@ public abstract class ProgressDialog<M extends WorkerModel<M>> extends Dialog<Vo
     public void initComponents() {
         super.initComponents();
 
-        actionLabel = new JLabel(translator.translate("action_preparing"));
+        actionLabel = new JLabel(translator.translate("action_preparing", 0));
         cancelButton = new JButton(translator.translate("form_copy_cancel"));
         runInBackgroundButton = new JButton(translator.translate("form_copy_background"));
 

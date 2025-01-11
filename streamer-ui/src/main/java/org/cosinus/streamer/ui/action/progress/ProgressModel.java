@@ -33,6 +33,14 @@ public class ProgressModel {
 
     private long remainingTime;
 
+    public void setProgressTotalSize(long progressTotalSize) {
+        this.progressTotalSize = progressTotalSize;
+    }
+
+    public long getProgressTotalSize() {
+        return progressTotalSize;
+    }
+
     public void startProgress(long totalProgressSize) {
         startTime = System.currentTimeMillis();
         this.progressTotalSize = totalProgressSize;
@@ -62,6 +70,10 @@ public class ProgressModel {
                 (progressTotalSize - progressDone) * spentTime / (1000 * progressDone) :
                 0;
         }
+    }
+
+    public long getProgressDone() {
+        return progressDone;
     }
 
     public void finishProgress() {

@@ -32,6 +32,8 @@ public class CopyProgressModel implements WorkerModel<CopyProgressModel>
 
     private final ProgressModel streamerProgressModel;
 
+    private long totalItems;
+
     private Streamer<?> source;
 
     private Streamer<?> target;
@@ -44,6 +46,18 @@ public class CopyProgressModel implements WorkerModel<CopyProgressModel>
     @Override
     public void update(List<CopyProgressModel> items)
     {
+    }
+
+    public void setTotalItems(long totalItems) {
+        this.totalItems = totalItems;
+    }
+
+    public long getTotalItems() {
+        return totalItems;
+    }
+
+    public long getProgressDone() {
+        return totalProgressModel.getProgressDone();
     }
 
     public int getTotalProgress() {

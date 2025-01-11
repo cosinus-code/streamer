@@ -1,0 +1,7 @@
+{
+  "folder": ["grid", "icon", "tree"],
+  "image": ["image-viewer", "binary-viewer"],
+  "text": ["image-viewer", "binary-viewer"],
+  "binary": "binary-viewer",
+  "gpx": "interra"
+}

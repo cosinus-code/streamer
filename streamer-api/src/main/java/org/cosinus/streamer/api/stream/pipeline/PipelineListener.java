@@ -2,6 +2,9 @@ package org.cosinus.streamer.api.stream.pipeline;
 
 public interface PipelineListener<D> {
 
+    default void onPreparingPipeline(long preparedDataSize) {
+    }
+
     default void beforePipelineOpen() {
     }
 

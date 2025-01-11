@@ -87,10 +87,10 @@ public class CopyProgressDialog extends ProgressDialog<CopyProgressModel> {
     }
 
     protected void updateActionStatus(final CopyProgressModel progress) {
-        boolean preparingAction = progress.getTotalProgress() == 0;
+        boolean preparingAction = progress.getProgressDone() <= 0;
         itemProgressBar.setIndeterminate(preparingAction);
         String actionStatus = preparingAction ?
-            translator.translate("action_preparing") :
+            translator.translate("action_preparing", progress.getTotalItems()) :
             progress.getSpeed() == 0 ?
                 translator.translate("form_copying") :
                 translator.translate("form_copy_speed",

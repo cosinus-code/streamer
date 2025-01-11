@@ -106,11 +106,18 @@ public class DeleteWorker extends SimpleWorker<StreamersProgressModel>
         ParentStreamer<Streamer<?>> parentStreamer = deleteModel.getParentStreamer();
         StreamerFilter streamerFilter = deleteModel.getStreamerFilter();
         try (Stream<? extends Streamer<?>> flatStream = parentStreamer.flatStream(streamerFilter)) {
-            streamersToDeleteCount = flatStream.count();
+            flatStream.forEach(streamer ->
+                pipelineListener.onPreparingPipeline(++streamersToDeleteCount));
+            //streamersToDeleteCount = flatStream.count();
         }
     }
 
     private class DeleteListener implements PipelineListener<Streamer<?>> {
+        @Override
+        public void onPreparingPipeline(long preparedDataSize) {
+            updateModel(() -> workerModel.setProgressTotalSize(streamersToDeleteCount));
+        }
+
         @Override
         public void beforePipelineOpen()
         {

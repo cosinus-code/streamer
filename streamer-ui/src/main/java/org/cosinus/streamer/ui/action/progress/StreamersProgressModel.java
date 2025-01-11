@@ -42,8 +42,20 @@ public class StreamersProgressModel implements WorkerModel<StreamersProgressMode
         return currentStreamer;
     }
 
+    public long getProgressDone() {
+        return simpleProgressMode.getProgressDone();
+    }
+
     public int getProgress() {
         return simpleProgressMode.getProgressPercent();
+    }
+
+    public void setProgressTotalSize(long totalProgressSize) {
+        simpleProgressMode.setProgressTotalSize(totalProgressSize);
+    }
+
+    public long getProgressTotalSize() {
+        return simpleProgressMode.getProgressTotalSize();
     }
 
     public void startProgress(long totalProgressSize) {

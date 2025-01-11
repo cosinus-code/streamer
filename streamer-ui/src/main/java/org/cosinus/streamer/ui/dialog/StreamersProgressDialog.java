@@ -52,6 +52,7 @@ public class StreamersProgressDialog extends ProgressDialog<StreamersProgressMod
 
         progressBar = new JProgressBar();
         progressBar.setStringPainted(uiHandler.isProgressTextAllowed());
+        progressBar.setIndeterminate(true);
 
         JPanel pathsPanel = new JPanel(new GridLayout(2, 1, 5, 5));
         pathsPanel.add(actionLabel);
@@ -71,11 +72,18 @@ public class StreamersProgressDialog extends ProgressDialog<StreamersProgressMod
 
     @Override
     public void workerUpdated(StreamersProgressModel progressModel) {
-        actionLabel.setText(actionName);
-        Optional.ofNullable(progressModel.getCurrentStreamer())
-            .map(Streamer::getPath)
-            .map(path -> formatHandler.formatTextForLabel(lblStreamer, path.toString()))
-            .ifPresent(lblStreamer::setText);
-        progressBar.setValue(progressModel.getProgress());
+        if (progressModel.getProgressDone() <= 0) {
+            actionLabel.setText(translator.translate("action_preparing",
+                progressModel.getProgressTotalSize()));
+            progressBar.setIndeterminate(true);
+        } else {
+            actionLabel.setText(actionName);
+            Optional.ofNullable(progressModel.getCurrentStreamer())
+                .map(Streamer::getPath)
+                .map(path -> formatHandler.formatTextForLabel(lblStreamer, path.toString()))
+                .ifPresent(lblStreamer::setText);
+            progressBar.setIndeterminate(false);
+            progressBar.setValue(progressModel.getProgress());
+        }
     }
 }
