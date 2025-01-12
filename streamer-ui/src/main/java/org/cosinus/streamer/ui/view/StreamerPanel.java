@@ -73,9 +73,7 @@ public class StreamerPanel extends Panel {
         addressTop.setUI(new BasicTextFieldUI());
         addressTop.setFont(uiHandler.getLabelFont());
         addressTop.setBorder(emptyBorder(3, 5, 3, 5));
-        ofNullable(addressTop.getBackground())
-            .map(Colors::getDarkerColor)
-            .ifPresent(addressTop::setBackground);
+        addressTop.setOpaque(false);
 
         freeSpaceLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         uiHandler.getInactiveForegroundColor()
@@ -86,10 +84,7 @@ public class StreamerPanel extends Panel {
         freesSpacePanel.add(freeSpaceLabel, CENTER);
         freesSpacePanel.add(freeSpaceMarker, EAST);
         freesSpacePanel.setBorder(emptyBorder(3));
-
-        ofNullable(freesSpacePanel.getBackground())
-            .map(Colors::getDarkerColor)
-            .ifPresent(freesSpacePanel::setBackground);
+        freesSpacePanel.setOpaque(false);
 
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(freesSpacePanel, NORTH);
