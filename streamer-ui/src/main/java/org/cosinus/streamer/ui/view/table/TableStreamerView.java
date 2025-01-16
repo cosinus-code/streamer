@@ -142,8 +142,13 @@ public abstract class TableStreamerView<T extends Streamable> extends DefaultStr
     }
 
     @Override
-    public void selectCurrentContent() {
-        table.selectCurrentItem();
+    public void goNext() {
+        table.goNext();
+    }
+
+    @Override
+    public void addCurrentItemToSelectionAndGoNext() {
+        table.addCurrentItemToSelectionAndGoNext();
     }
 
     @Override

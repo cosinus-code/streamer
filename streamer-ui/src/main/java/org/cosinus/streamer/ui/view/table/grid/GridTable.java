@@ -175,7 +175,7 @@ public class GridTable<T extends Streamable> extends DataTable<T> implements Act
 
 
     @Override
-    public void selectCurrentIndex(int index) {
+    public void addIndexToSelection(int index) {
         getSelectionModel().addSelectionInterval(index, index);
         getTableModel().setCurrentIndex(index);
         scrollRectToVisible(getCellRect(index, 0, false));

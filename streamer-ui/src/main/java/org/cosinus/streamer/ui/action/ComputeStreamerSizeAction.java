@@ -16,6 +16,9 @@
 
 package org.cosinus.streamer.ui.action;
 
+import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.ui.action.execute.compute.ComputeStreamerSizeModel;
+import org.cosinus.streamer.ui.action.execute.compute.ComputeStreamerSizeExecutor;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.ActionContext;
 import org.cosinus.swing.action.ActionInContext;
@@ -24,36 +27,40 @@ import org.springframework.stereotype.Component;
 import javax.swing.*;
 import java.util.Optional;
 
-import static com.sun.jna.Platform.isMac;
-import static java.awt.event.KeyEvent.VK_HELP;
-import static java.awt.event.KeyEvent.VK_INSERT;
+import static java.awt.event.KeyEvent.VK_SPACE;
 
 /**
- * Select streamer action
+ * Compute streamer size action
  */
 @Component
-public class SelectStreamerAction implements ActionInContext {
+public class ComputeStreamerSizeAction implements ActionInContext {
 
-    public static final String SELECT_STREAMER_ACTION_ID = "select-streamer";
+    public static final String COMPUTE_STREAMER_SIZE_ACTION_ID = "compute-streamer-size";
 
     private final StreamerViewHandler streamerViewHandler;
 
-    public SelectStreamerAction(final StreamerViewHandler streamerViewHandler) {
+    private final ComputeStreamerSizeExecutor computeStreamerSizeExecutor;
+
+    public ComputeStreamerSizeAction(final StreamerViewHandler streamerViewHandler, ComputeStreamerSizeExecutor computeStreamerSizeExecutor) {
         this.streamerViewHandler = streamerViewHandler;
+        this.computeStreamerSizeExecutor = computeStreamerSizeExecutor;
     }
 
     @Override
     public void run(ActionContext context) {
-        streamerViewHandler.getCurrentView().addCurrentItemToSelectionAndGoNext();
+        if (streamerViewHandler.getCurrentView().getCurrentItem() instanceof Streamer<?> streamer) {
+            computeStreamerSizeExecutor.execute(new ComputeStreamerSizeModel(streamer));
+            streamerViewHandler.getCurrentView().goNext();
+        }
     }
 
     @Override
     public String getId() {
-        return SELECT_STREAMER_ACTION_ID;
+        return COMPUTE_STREAMER_SIZE_ACTION_ID;
     }
 
     @Override
     public Optional<KeyStroke> getKeyStroke() {
-        return Optional.of(KeyStroke.getKeyStroke(isMac() ? VK_HELP : VK_INSERT, 0));
+        return Optional.of(KeyStroke.getKeyStroke(VK_SPACE, 0));
     }
 }

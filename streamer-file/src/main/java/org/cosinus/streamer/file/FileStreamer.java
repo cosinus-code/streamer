@@ -171,6 +171,7 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     @Override
     public List<Value> details() {
         init();
+        details.set(2, new MemoryValue(getSize(), isSizeComputing()));
         return details;
     }
 
@@ -179,9 +180,13 @@ public abstract class FileStreamer<T> implements Streamer<T> {
             details = asList(
                 new TextValue(getName()),
                 new TextValue(getType()),
-                new MemoryValue(getSize()),
+                new MemoryValue(getSize(), isSizeComputing()),
                 new DateValue(lastModified()));
         }
+    }
+
+    protected boolean isSizeComputing() {
+        return false;
     }
 
     @Override
@@ -204,5 +209,10 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     @Override
     public int hashCode() {
         return Objects.hash(file);
+    }
+
+    @Override
+    public void reset() {
+        details = null;
     }
 }

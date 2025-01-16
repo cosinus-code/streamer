@@ -182,9 +182,9 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedS
         return new ArchiveSaveModel(this, archiveHolder);
     }
 
-    @Override
-    public long computeSize(StreamerFilter streamerFilter) {
-        return computeSize(streamerFilter, null);
+    public long computeSize() {
+        //TODO: to much "null"
+        return computeSize(null, null);
     }
 
     public long computeSize(final StreamerFilter streamerFilter, Path parentPath) {

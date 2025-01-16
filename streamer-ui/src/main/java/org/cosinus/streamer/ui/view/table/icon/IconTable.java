@@ -87,7 +87,7 @@ public class IconTable<T extends Streamable> extends DataTable<T> {
 
 
     @Override
-    public void selectCurrentIndex(int index) {
+    public void addIndexToSelection(int index) {
         //TODO: to add to selection
         setCurrentIndex(index);
     }

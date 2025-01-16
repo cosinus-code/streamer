@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.ui.action;
 
+import org.cosinus.streamer.api.StreamerSizeHandler;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
@@ -43,17 +44,22 @@ public class ReloadStreamerAction implements ActionInContext {
 
     private final StreamerViewHandler streamerViewHandler;
 
+    private final StreamerSizeHandler streamerSizeHandler;
+
     public ReloadStreamerAction(final LoadActionExecutor loadActionExecutor,
                                 final ApplicationUIHandler uiHandler,
-                                final StreamerViewHandler streamerViewHandler) {
+                                final StreamerViewHandler streamerViewHandler,
+                                final StreamerSizeHandler streamerSizeHandler) {
         this.loadActionExecutor = loadActionExecutor;
         this.uiHandler = uiHandler;
         this.streamerViewHandler = streamerViewHandler;
+        this.streamerSizeHandler = streamerSizeHandler;
     }
 
     @Override
     public void run(ActionContext context) {
         streamerViewHandler.getCurrentView().getParentStreamer().reset();
+        streamerSizeHandler.resetAllSizes();
         loadActionExecutor.execute(new LoadActionModel(
             streamerViewHandler.getCurrentLocation(),
             streamerViewHandler.getCurrentView().getParentStreamer(),

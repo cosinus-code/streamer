@@ -157,7 +157,7 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
 
             actionController.runActionByKeyStroke(keyEvent);
             if (actionController.isLetterKey(keyEvent)) {
-                if (!isAction(keyEvent.getWhen(), FIND_STREAMER_SPEED)) {
+                 if (!isAction(keyEvent.getWhen(), FIND_STREAMER_SPEED)) {
                     nameToFind = "";
                 }
                 nameToFind += (char) keyEvent.getKeyCode();
@@ -178,9 +178,15 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
         return action;
     }
 
-    public void selectCurrentItem() {
+    public void goNext() {
         if (getCurrentIndex() != getItemsCount() - 1) {
-            selectCurrentIndex(getCurrentIndex() + 1);
+            setCurrentIndex(getCurrentIndex() + 1);
+        }
+    }
+
+    public void addCurrentItemToSelectionAndGoNext() {
+        if (getCurrentIndex() != getItemsCount() - 1) {
+            addIndexToSelection(getCurrentIndex() + 1);
         }
     }
 
@@ -331,7 +337,7 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
 
     public abstract void setCurrentIndex(int index);
 
-    public abstract void selectCurrentIndex(int index);
+    public abstract void addIndexToSelection(int index);
 
     protected abstract DataTableModel<T> createDataTableModel();
 }

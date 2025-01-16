@@ -44,8 +44,7 @@ public class CopyProgressModel implements WorkerModel<CopyProgressModel>
     }
 
     @Override
-    public void update(List<CopyProgressModel> items)
-    {
+    public void update(List<CopyProgressModel> items) {
     }
 
     public void setTotalItems(long totalItems) {

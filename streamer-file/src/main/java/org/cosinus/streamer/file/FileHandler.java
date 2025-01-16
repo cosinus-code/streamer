@@ -18,8 +18,10 @@ package org.cosinus.streamer.file;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cosinus.streamer.api.StreamerSizeHandler;
 import org.cosinus.streamer.file.system.FileSystem;
 import org.cosinus.swing.io.MimeTypeResolver;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import oshi.software.os.OSFileStore;
 

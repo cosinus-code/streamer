@@ -19,13 +19,18 @@ package org.cosinus.streamer.file;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
+import org.cosinus.streamer.api.StreamerSizeHandler;
 import org.cosinus.streamer.api.error.SaveStreamerException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
 public class FileParentStreamer extends FileStreamer<FileStreamer<?>> implements ParentStreamer<FileStreamer<?>>
 {
+
+    @Autowired
+    private StreamerSizeHandler streamerSizeHandler;
 
     public FileParentStreamer(Path path) {
         super(path);
@@ -76,5 +81,15 @@ public class FileParentStreamer extends FileStreamer<FileStreamer<?>> implements
     @Override
     public String getType() {
         return null;
+    }
+
+    @Override
+    public long getSize() {
+        return streamerSizeHandler.getSize(this);
+    }
+
+    @Override
+    protected boolean isSizeComputing() {
+        return streamerSizeHandler.isStreamerSizeComputing(this);
     }
 }

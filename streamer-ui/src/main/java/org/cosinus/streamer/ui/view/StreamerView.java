@@ -236,7 +236,10 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
         return findPanel;
     }
 
-    public void selectCurrentContent() {
+    public void goNext() {
+    }
+
+    public void addCurrentItemToSelectionAndGoNext() {
     }
 
     public void goHome() {

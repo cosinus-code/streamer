@@ -88,7 +88,7 @@ public class ArchiveSaveModel<A extends ArchiveStreamer<?>> extends AbstractSave
 
     @Override
     public long totalItemsToSave() {
-        return archivePackStreamer.computeSize(null);
+        return archivePackStreamer.computeSize();
     }
 
     @Override

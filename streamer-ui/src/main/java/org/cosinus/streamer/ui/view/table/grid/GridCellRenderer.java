@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.ui.view.table.grid;
 
+import org.cosinus.streamer.api.value.Value;
 import org.cosinus.streamer.ui.view.table.TableCellRenderer;
 import org.cosinus.streamer.ui.view.table.ViewItem;
 
@@ -51,6 +52,9 @@ public class GridCellRenderer extends TableCellRenderer<GridTable> {
             ofNullable(item.getDetail(column))
                 .map(Object::toString)
                 .orElse(""));
+        ofNullable(item.getDetail(column))
+            .filter(Value::isNumeric)
+            .ifPresent(value -> label.setHorizontalAlignment(RIGHT));
 
         if (column == 0) {
             Optional<Icon> icon = item.isTopItem() ?

@@ -9,22 +9,26 @@ import static org.apache.commons.lang3.ObjectUtils.compare;
 
 public class MemoryValue extends LongValue {
 
+    private final boolean computing;
+
     @Autowired
     private FormatHandler formatHandler;
 
     public MemoryValue(Long value) {
-        super(value);
+        this(value, false);
     }
 
-    public MemoryValue(Object value) {
+    public MemoryValue(Long value, boolean computing) {
         super(value);
+        this.computing = computing;
     }
 
     @Override
     public String toString() {
-        return ofNullable(value)
+        String memorySize = ofNullable(value)
             .map(formatHandler::formatMemorySize)
             .orElse("");
+        return computing ? "...".concat(memorySize) : memorySize;
     }
 
     @Override

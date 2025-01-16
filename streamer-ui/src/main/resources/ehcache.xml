@@ -16,4 +16,6 @@
 
     <cache alias="spring.swing.icons" uses-template="default"/>
 
+    <cache alias="streamer.sizes" uses-template="default"/>
+
 </config>

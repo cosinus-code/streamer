@@ -21,6 +21,8 @@ import org.cosinus.streamer.api.worker.SaveWorkerModel;
 
 import java.util.stream.Stream;
 
+import static java.util.function.Predicate.not;
+
 public interface Streamer<T> extends Streamable {
 
     String DETAIL_KEY_NAME = "name";

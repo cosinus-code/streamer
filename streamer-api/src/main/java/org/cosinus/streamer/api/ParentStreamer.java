@@ -23,7 +23,6 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static java.util.function.Predicate.not;
 import static org.cosinus.streamer.api.StreamerFilter.ALL_STREAMERS;
 import static org.cosinus.streamer.api.stream.FlatStreamingStrategy.LEVEL_UP_BOTTOM;
 
@@ -82,14 +81,5 @@ public interface ParentStreamer<S extends Streamer> extends Streamer<S> {
 
     default S create(Path path, boolean parent) {
         return null;
-    }
-
-    default long computeSize(final StreamerFilter streamerFilter) {
-        try (Stream<S> flatStreamers = flatStream(streamerFilter)) {
-            return flatStreamers
-                .filter(not(Streamer::isParent))
-                .mapToLong(Streamer::getSize)
-                .sum();
-        }
     }
 }
