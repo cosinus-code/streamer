@@ -30,18 +30,30 @@ public class FindActionModel extends ActionModel {
 
     private final boolean findingLastStreamer;
 
+    private final boolean falloutToParentStreamer;
+
+    private final boolean falloutToDefaultStreamer;
+
+    private final String streamerUrlToFind;
+
     private final Consumer<Streamer<?>> streamerConsumer;
 
     public FindActionModel(final PanelLocation location) {
-        this(location, false, streamer -> {});
+        this(location, false, false, false, null, streamer -> {});
     }
 
     public FindActionModel(final PanelLocation location,
                            boolean findingLastStreamer,
+                           boolean falloutToParentStreamer,
+                           boolean falloutToDefaultStreamer,
+                           final String streamerUrlToFind,
                            final Consumer<Streamer<?>> streamerConsumer) {
         super(UUID.randomUUID().toString(), FIND_STREAMER_ACTION_ID, FIND_STREAMER_ACTION_ID);
         this.location = location;
         this.findingLastStreamer = findingLastStreamer;
+        this.falloutToParentStreamer = falloutToParentStreamer;
+        this.falloutToDefaultStreamer = falloutToDefaultStreamer;
+        this.streamerUrlToFind = streamerUrlToFind;
         this.streamerConsumer = streamerConsumer;
     }
 
@@ -53,12 +65,30 @@ public class FindActionModel extends ActionModel {
         return findingLastStreamer;
     }
 
+    public boolean isFalloutToParentStreamer() {
+        return falloutToParentStreamer;
+    }
+
+    public boolean isFalloutToDefaultStreamer() {
+        return falloutToDefaultStreamer;
+    }
+
     public Consumer<Streamer<?>> streamerConsumer() {
         return streamerConsumer;
     }
 
+    public String getStreamerUrlToFind() {
+        return streamerUrlToFind;
+    }
+
     public static FindActionModel findLastStreamerAndDo(final PanelLocation location,
                                                         final Consumer<Streamer<?>> consumer) {
-        return new FindActionModel(location, true, consumer);
+        return new FindActionModel(location, true, true, true, null, consumer);
+    }
+
+    public static FindActionModel finaStreamerAndDo(final PanelLocation location,
+                                                    String urlPath,
+                                                    final Consumer<Streamer<?>> consumer) {
+        return new FindActionModel(location, false, false, false, urlPath, consumer);
     }
 }

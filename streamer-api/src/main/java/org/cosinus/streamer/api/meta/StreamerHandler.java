@@ -35,7 +35,7 @@ public class StreamerHandler {
 
     private static final Logger LOG = LogManager.getLogger(StreamerHandler.class);
 
-    public static final String PACKER_SEPARATOR = "#";
+    public static final String EXPANDER_SEPARATOR = "#";
 
     private final MetaStreamer metaStreamer;
 
@@ -77,7 +77,7 @@ public class StreamerHandler {
 
     public Optional<Streamer> findStreamerForUrlPath(String urlPath) {
         try {
-            String[] paths = urlPath.split(PACKER_SEPARATOR);
+            String[] paths = urlPath.split(EXPANDER_SEPARATOR);
 
             if (paths.length < 2) {
                 return metaStreamer.findByUrlPath(urlPath)

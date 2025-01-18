@@ -52,9 +52,6 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
     protected StreamerViewHandler streamerViewHandler;
 
     @Autowired
-    protected StreamerHandler streamerHandler;
-
-    @Autowired
     protected StreamerViewStorage streamerViewStorage;
 
     @Autowired
@@ -170,7 +167,7 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
         } catch (Exception ex) {
             LOG.debug("Failed to start loading indicator", ex);
         }
-        updateAddressBarAndStreamerPanel();
+        requestFocus();
     }
 
     @Override
@@ -229,7 +226,12 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
     }
 
     public void setActive(boolean active) {
-        getPanel().ifPresent(panel -> panel.setEnabled(active));
+        getPanel().ifPresent(panel -> {
+            panel.setEnabled(active);
+            if (active) {
+                updateAddressBarAndStreamerPanel();
+            }
+        });
     }
 
     public Panel getFindPanel() {

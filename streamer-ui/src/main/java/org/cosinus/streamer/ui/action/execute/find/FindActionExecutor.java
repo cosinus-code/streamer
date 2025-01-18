@@ -58,13 +58,7 @@ public class FindActionExecutor extends WorkerExecutor<FindActionModel, FindWork
 
     @Override
     protected Worker<FindWorkerModel, Streamer<?>> createWorker(FindActionModel actionModel) {
-        Streamer<?> streamerToFind = !actionModel.isFindingLastStreamer() ? getStreamerToFind() : null;
-        return new FindWorker(actionModel, streamerToFind);
-    }
-
-    private Streamer<?> getStreamerToFind() {
-        //TODO
-        return null;
+        return new FindWorker(actionModel);
     }
 
     @Override

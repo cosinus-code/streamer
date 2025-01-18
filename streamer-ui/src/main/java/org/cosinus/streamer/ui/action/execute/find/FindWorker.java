@@ -19,12 +19,12 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
 import org.cosinus.streamer.api.meta.StreamerHandler;
 import org.cosinus.streamer.api.worker.Worker;
-import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerViewStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
 
+import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 
@@ -41,39 +41,48 @@ public class FindWorker extends Worker<FindWorkerModel, Streamer<?>> {
 
     private final FindActionModel findActionModel;
 
-    private final Streamer streamerToFind;
-
-    protected FindWorker(final FindActionModel findActionModel, final Streamer<?> streamerToFind) {
+    protected FindWorker(final FindActionModel findActionModel) {
         super(findActionModel, new FindWorkerModel());
         this.findActionModel = findActionModel;
-        this.streamerToFind = streamerToFind;
     }
 
     @Override
     protected void doWork() {
         checkWorkerStatus();
 
-        Streamer streamer = findStreamer()
+        Streamer<?> streamer = findStreamer()
             .map(binaryExpanderHandler::expandStreamer)
             .orElse(null);
 
         publish(streamer);
     }
 
-    private Optional<Streamer> findStreamer() {
-        return ofNullable(streamerToFind)
-            .or(() -> loadLastStreamer(findActionModel.getLocation()))
-            .or(() -> ofNullable(streamerHandler.getDefaultStreamer()))
+    private Optional<Streamer<?>> findStreamer() {
+        return getStreamerUrlPathToFind()
+            .flatMap(streamerHandler::findStreamerForUrlPath)
+            .or(this::getDefaultStreamer)
             .map(this::checkIfStreamerExist);
     }
 
-    private Optional<Streamer> loadLastStreamer(PanelLocation location) {
-        return streamerViewStorage.loadLastLoadedStreamer(location)
-            .map(urlPath -> streamerHandler.getStreamer(urlPath));
+    private Optional<Streamer<?>> getDefaultStreamer() {
+        return findActionModel.isFalloutToDefaultStreamer() ?
+            ofNullable(streamerHandler.getDefaultStreamer()) :
+            empty();
+    }
+
+    private Optional<String> getStreamerUrlPathToFind() {
+        return ofNullable(findActionModel.getStreamerUrlToFind())
+            .or(() -> findActionModel.isFindingLastStreamer() ?
+                streamerViewStorage.loadLastLoadedStreamer(findActionModel.getLocation()) :
+                empty());
     }
 
     private Streamer<?> checkIfStreamerExist(Streamer<?> streamerToCheck) {
-        return !streamerToCheck.exists() ? findFirstAncestorAlive(streamerToCheck) : streamerToCheck;
+        return streamerToCheck.exists() ?
+            streamerToCheck :
+            findActionModel.isFalloutToParentStreamer() ?
+                findFirstAncestorAlive(streamerToCheck) :
+                null;
     }
 
     private Streamer<?> findFirstAncestorAlive(Streamer streamer) {

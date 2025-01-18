@@ -16,18 +16,18 @@
 
 package org.cosinus.streamer.ui.view;
 
+import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.form.Panel;
 import org.cosinus.swing.form.control.Button;
 import org.cosinus.swing.form.control.TextField;
 import org.cosinus.swing.image.icon.IconHandler;
 import org.cosinus.swing.layout.SpringGridLayout;
+import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.stereotype.Component;
 
-import javax.swing.*;
-import java.awt.*;
-
-import static org.cosinus.swing.image.icon.IconProvider.ICON_BACK;
-import static org.cosinus.swing.image.icon.IconProvider.ICON_NEXT;
+import static org.cosinus.streamer.ui.action.FindAndLoadStreamerAction.findAndLoadStreamer;
+import static org.cosinus.streamer.ui.action.GoToParentStreamerAction.GO_TO_PARENT_ACTION;
+import static org.cosinus.swing.image.icon.IconProvider.*;
 import static org.cosinus.swing.image.icon.IconSize.X16;
 
 @Component
@@ -35,10 +35,18 @@ public class AddressBar extends Panel {
 
     private final IconHandler iconHandler;
 
+    private final ApplicationUIHandler uiHandler;
+
+    private final ActionController actionController;
+
     private TextField addressField;
 
-    public AddressBar(IconHandler iconHandler) {
+    public AddressBar(final IconHandler iconHandler,
+                      final ApplicationUIHandler uiHandler,
+                      final ActionController actionController) {
         this.iconHandler = iconHandler;
+        this.uiHandler = uiHandler;
+        this.actionController = actionController;
     }
 
     @Override
@@ -51,21 +59,28 @@ public class AddressBar extends Panel {
         Button nextButton = iconHandler.findIconByName(ICON_NEXT, X16)
             .map(Button::new)
             .orElseGet(() -> new Button(">"));
+        Button upButton = iconHandler.findIconByName(ICON_UP, X16)
+            .map(Button::new)
+            .orElseGet(() -> new Button("Λ"));
+
+        upButton.addAction(() -> actionController.runAction(GO_TO_PARENT_ACTION));
+        addressField.addAction(findAndLoadStreamer(addressField::getText));
 
         backButton.setFocusable(false);
         nextButton.setFocusable(false);
 
-        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-        buttonsPanel.add(backButton);
-        buttonsPanel.add(nextButton);
-
         SpringGridLayout layout = new SpringGridLayout(this,
-                                                       1, 3,
-                                                       1, 3,
-                                                       1, 3);
+            1, 4,
+            1, 3,
+            1, 3);
+
+        setOpaque(true);
+        setBackground(uiHandler.getControlColor());
+
         setLayout(layout);
         add(backButton);
         add(nextButton);
+        add(upButton);
         add(addressField);
         layout.pack();
     }

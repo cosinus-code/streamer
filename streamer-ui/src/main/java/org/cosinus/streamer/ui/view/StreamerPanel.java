@@ -16,7 +16,6 @@
 
 package org.cosinus.streamer.ui.view;
 
-import org.cosinus.swing.color.Colors;
 import org.cosinus.swing.form.Panel;
 import org.cosinus.swing.form.ProgressBar;
 import org.cosinus.swing.form.control.TextField;
@@ -32,9 +31,9 @@ import java.awt.*;
 
 import static java.awt.BorderLayout.*;
 import static java.util.Optional.ofNullable;
+import static org.cosinus.streamer.ui.action.FindAndLoadStreamerAction.findAndLoadStreamer;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.ADDRESS_TOP;
 import static org.cosinus.swing.border.Borders.emptyBorder;
-import static org.cosinus.swing.color.Colors.getDarkerColor;
 
 public class StreamerPanel extends Panel {
 
@@ -74,6 +73,7 @@ public class StreamerPanel extends Panel {
         addressTop.setFont(uiHandler.getLabelFont());
         addressTop.setBorder(emptyBorder(3, 5, 3, 5));
         addressTop.setOpaque(false);
+        addressTop.addAction(findAndLoadStreamer(addressTop::getText));
 
         freeSpaceLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         uiHandler.getInactiveForegroundColor()

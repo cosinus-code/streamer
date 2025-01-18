@@ -19,6 +19,7 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.WorkerModel;
 
 import java.util.List;
+import java.util.Objects;
 
 public class FindWorkerModel implements WorkerModel<Streamer<?>> {
 
@@ -28,6 +29,7 @@ public class FindWorkerModel implements WorkerModel<Streamer<?>> {
     public void update(List<Streamer<?>> items) {
         foundStreamer = items
             .stream()
+            .filter(Objects::nonNull)
             .findAny()
             .orElse(null);
     }
