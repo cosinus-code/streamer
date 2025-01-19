@@ -20,7 +20,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.meta.StreamerHandler;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.streamer.api.worker.WorkerListener;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
@@ -29,6 +28,8 @@ import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.form.Panel;
+import org.cosinus.swing.menu.MenuItem;
+import org.cosinus.swing.menu.PopupMenu;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -38,9 +39,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static java.awt.BorderLayout.CENTER;
-import static java.awt.BorderLayout.NORTH;
-import static java.awt.BorderLayout.SOUTH;
+import static java.awt.BorderLayout.*;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.view.text.TextStreamerView.DIRTY_TEXT_MARKER;
 
@@ -81,6 +80,8 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
 
     protected Streamer<T> parentStreamer;
 
+    private PopupMenu alternativeViewsPopup;
+
     public StreamerView(PanelLocation location) {
         this.id = UUID.randomUUID().toString();
         this.location = location;
@@ -99,6 +100,16 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
 
     public void reset(final Streamer<T> parentStreamer) {
         this.parentStreamer = parentStreamer;
+        alternativeViewsPopup = new PopupMenu();
+        streamerViewHandler.getAvailableViewNames(parentStreamer)
+            .stream()
+            .map(viewName -> new MenuItem(event -> {}, viewName))
+            .forEach(alternativeViewsPopup::add);
+        alternativeViewsPopup.translate();
+    }
+
+    public PopupMenu getAlternativeViewsPopup() {
+        return alternativeViewsPopup;
     }
 
     public String getId() {

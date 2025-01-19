@@ -18,6 +18,7 @@ package org.cosinus.streamer.ui.view;
 
 import org.cosinus.swing.form.Panel;
 import org.cosinus.swing.form.ProgressBar;
+import org.cosinus.swing.form.control.Button;
 import org.cosinus.swing.form.control.TextField;
 import org.cosinus.swing.format.FormatHandler;
 import org.cosinus.swing.preference.Preferences;
@@ -26,6 +27,7 @@ import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicButtonUI;
 import javax.swing.plaf.basic.BasicTextFieldUI;
 import java.awt.*;
 
@@ -54,6 +56,8 @@ public class StreamerPanel extends Panel {
     private final JLabel freeSpaceLabel;
 
     private final ProgressBar freeSpaceMarker;
+
+    private Button viewsButton;
 
     private StreamerView<?, ?> view;
 
@@ -86,13 +90,33 @@ public class StreamerPanel extends Panel {
         freesSpacePanel.setBorder(emptyBorder(3));
         freesSpacePanel.setOpaque(false);
 
+        viewsButton = new Button("⤵");
+        viewsButton.setUI(new BasicButtonUI());
+        viewsButton.setBorder(emptyBorder(3));
+        viewsButton.setCursor(uiHandler.getHandCursor());
+        viewsButton.addAction(this::showViewSelector);
+
+        JPanel addressTopPanel = new JPanel(new BorderLayout());
+        addressTopPanel.add(addressTop, CENTER);
+        addressTopPanel.add(viewsButton, EAST);
+
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(freesSpacePanel, NORTH);
         if (preferences.booleanPreference(ADDRESS_TOP)) {
-            topPanel.add(addressTop, SOUTH);
+            topPanel.add(addressTopPanel, SOUTH);
         }
 
         add(topPanel, NORTH);
+    }
+
+    public void showViewSelector() {
+        ofNullable(view.getAlternativeViewsPopup())
+            .ifPresent(popup -> {
+                popup.setVisible(true);
+                popup.show(viewsButton,
+                    viewsButton.getWidth() - popup.getWidth(),
+                    viewsButton.getHeight());
+            });
     }
 
     public void setView(StreamerView<?, ?> view) {

@@ -21,7 +21,6 @@ import org.cosinus.swing.form.Split;
 import org.cosinus.swing.listener.SimpleMouseListener;
 import org.cosinus.swing.menu.MenuItem;
 import org.cosinus.swing.menu.PopupMenu;
-import org.cosinus.swing.preference.Preferences;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
@@ -40,9 +39,6 @@ public class MainSplit extends Split implements ActionListener {
 
     @Autowired
     private ErrorHandler errorHandler;
-
-    @Autowired
-    private Preferences preferences;
 
     private PopupMenu splitterPositionMenu;
 

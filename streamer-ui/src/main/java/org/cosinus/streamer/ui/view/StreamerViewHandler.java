@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.ui.view;
 
+import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.view.table.grid.GridViewCreator;
 import org.cosinus.swing.preference.Preference;
 import org.cosinus.swing.preference.Preferences;
@@ -144,5 +145,10 @@ public class StreamerViewHandler {
             .map(panelsMap::get)
             .map(StreamerPanel::getView)
             .orElseThrow(() -> new RuntimeException("Cannot find the opposite view"));
+    }
+
+    public <T> List<String> getAvailableViewNames(Streamer<T> parentStreamer) {
+        //TODO
+        return List.of("view-name-1", "view-name-2", "view-name-3");
     }
 }
