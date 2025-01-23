@@ -92,6 +92,7 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
             ofNullable(actionModel.getStreamerViewNameToLoadIn())
                 .filter(viewName -> !streamerToLoad.isTextCompatible() || TEXT_EDITOR.equals(viewName))
                 .orElseGet(() -> getDefaultViewName(streamerToLoad)));
+        streamerViewHandler.setView(actionModel.getLocationToLoadTo(), streamerViewToLoadTo);
         streamerViewToLoadTo.setParentStreamer(streamerToLoad);
 
         actionModel.setStreamerViewToLoadTo(streamerViewToLoadTo);

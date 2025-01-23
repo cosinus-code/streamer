@@ -85,16 +85,16 @@ public class StreamerViewHandler {
         Optional<String> resolvedViewName = ofNullable(streamerViewName)
             .or(() -> getPreferredViewName(location));
 
-        StreamerView<T, V> view = resolvedViewName
+        return resolvedViewName
             .map(streamerViewCreatorsMap::get)
             //TODO: to avoid cast
             .map(streamerViewCreator -> (StreamerView<T, V>) streamerViewCreator.createStreamerView(location))
             .orElseGet(() -> (StreamerView<T, V>) defaultStreamerViewCreator.createStreamerView(location));
+    }
 
+    public <T, V> void setView(PanelLocation location, final StreamerView<T, V> view) {
         getPanel(location)
             .ifPresent(panel -> panel.setView(view));
-
-        return view;
     }
 
     protected Optional<String> getPreferredViewName(PanelLocation location) {

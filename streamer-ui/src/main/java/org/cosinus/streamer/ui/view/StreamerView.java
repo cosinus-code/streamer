@@ -103,7 +103,10 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
         alternativeViewsPopup = new PopupMenu();
         streamerViewHandler.getAvailableViewNames(parentStreamer)
             .stream()
-            .map(viewName -> new MenuItem(event -> {}, viewName))
+            .map(viewName -> new MenuItem(event ->
+                ofNullable(streamerViewHandler.getStreamerView(getCurrentLocation(), viewName))
+                    .ifPresent(view -> streamerViewHandler.setView(getCurrentLocation(), view)),
+                viewName))
             .forEach(alternativeViewsPopup::add);
         alternativeViewsPopup.translate();
     }

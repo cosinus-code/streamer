@@ -171,7 +171,6 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     @Override
     public List<Value> details() {
         init();
-        details.set(2, new MemoryValue(getSize(), isSizeComputing()));
         return details;
     }
 

@@ -21,9 +21,12 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.api.StreamerSizeHandler;
 import org.cosinus.streamer.api.error.SaveStreamerException;
+import org.cosinus.streamer.api.value.MemoryValue;
+import org.cosinus.streamer.api.value.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class FileParentStreamer extends FileStreamer<FileStreamer<?>> implements ParentStreamer<FileStreamer<?>>
@@ -91,5 +94,12 @@ public class FileParentStreamer extends FileStreamer<FileStreamer<?>> implements
     @Override
     protected boolean isSizeComputing() {
         return streamerSizeHandler.isStreamerSizeComputing(this);
+    }
+
+    @Override
+    public List<Value> details() {
+        List<Value> details = super.details();
+        details.set(2, new MemoryValue(getSize(), isSizeComputing()));
+        return details;
     }
 }

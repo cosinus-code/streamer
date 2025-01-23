@@ -17,11 +17,13 @@
 package org.cosinus.streamer.file;
 
 import org.cosinus.streamer.api.value.TextValue;
+import org.cosinus.streamer.api.value.Value;
 import org.cosinus.swing.format.FormatHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import oshi.software.os.OSFileStore;
 
 import java.nio.file.Paths;
+import java.util.List;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -100,6 +102,12 @@ public class FileRootStreamer extends FileParentStreamer {
 
     public boolean isInternal() {
         return fileHandler.isInternal(fileStore);
+    }
+
+    @Override
+    public List<Value> details() {
+        init();
+        return details;
     }
 
     @Override

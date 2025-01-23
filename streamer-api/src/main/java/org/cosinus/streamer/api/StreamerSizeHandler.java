@@ -36,13 +36,13 @@ public class StreamerSizeHandler {
         this.computingStreamerSize = new HashSet<>();
     }
 
-    @Cacheable(value = STREAMER_SIZES_CACHE_NAME, key = STREAMER_SIZE_KEY)
-    public long getSize(Streamer<?> streamer) {
+    @Cacheable(value = STREAMER_SIZES_CACHE_NAME, key = "#streamer.getId")
+    public long getSize(Streamer streamer) {
         return -1;
     }
 
-    @CachePut(value = STREAMER_SIZES_CACHE_NAME, key = STREAMER_SIZE_KEY)
-    public long cacheStreamerSize(Streamer<?> streamer, long size) {
+    @CachePut(value = STREAMER_SIZES_CACHE_NAME, key = "#streamer.getId")
+    public long cacheStreamerSize(Streamer streamer, long size) {
         return size;
     }
 
