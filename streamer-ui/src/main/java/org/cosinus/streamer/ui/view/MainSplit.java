@@ -28,8 +28,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 
-import static java.awt.event.MouseEvent.BUTTON3;
 import static java.util.stream.IntStream.range;
+import static javax.swing.SwingUtilities.isLeftMouseButton;
+import static javax.swing.SwingUtilities.isRightMouseButton;
 
 public class MainSplit extends Split implements ActionListener {
 
@@ -68,24 +69,39 @@ public class MainSplit extends Split implements ActionListener {
         if (divider != null) {
             divider.setBorder(BorderFactory.createMatteBorder(10, 2, 10, 1,
                 divider.getBackground()));
+        }
+        setDividerSize(3);
+        setFocusable(false);
+    }
+
+    @Override
+    protected void initListeners() {
+        super.initListeners();
+        if (divider != null) {
+            splitterPositionMenu = new PopupMenu();
+            range(2, 9)
+                .map(i -> i * 10)
+                .forEach(value -> splitterPositionMenu.add(new MenuItem(this,
+                    "popup-splitter-" + value)));
+
             divider.addMouseListener(new SimpleMouseListener() {
-                public void mousePressed(MouseEvent e) {
-                    if (e.getButton() == BUTTON3) {
+                @Override
+                public void mousePressed(MouseEvent event) {
+                    if (isRightMouseButton(event)) {
                         splitterPositionMenu.show(divider,
-                            e.getX(),
-                            e.getY());
+                            event.getX(),
+                            event.getY());
+                    }
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent event) {
+                    if (isLeftMouseButton(event) && event.getClickCount() == 2) {
+                        moveSplitter(50);
                     }
                 }
             });
         }
-        setDividerSize(3);
-
-        splitterPositionMenu = new PopupMenu();
-        range(2, 9)
-            .map(i -> i * 10)
-            .forEach(value -> splitterPositionMenu.add(new MenuItem(this,
-                "popup-splitter-" + value)));
-        setFocusable(false);
     }
 
     @Override
