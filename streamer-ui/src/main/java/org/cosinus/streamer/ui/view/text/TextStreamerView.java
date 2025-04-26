@@ -98,7 +98,9 @@ public class TextStreamerView extends StreamerView<String, String> {
 
     @Override
     public String getCurrentItemIdentifier() {
-        return null;
+        return ofNullable(parentStreamer)
+            .map(Streamer::getName)
+            .orElse(null);
     }
 
     @Override

@@ -128,7 +128,7 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
 
     private Optional<Icon> getPreviewIcon(File itemFile) {
         try {
-            return imageHandler.getPreviewImage(itemFile, PREVIEW_CELL_SIZE);
+            return imageHandler.getThumbnail(itemFile, PREVIEW_CELL_SIZE);
         } catch (IOException e) {
             LOG.error("Cannot create preview icon for item: " + itemFile);
             return Optional.empty();

@@ -167,9 +167,6 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
             }
         }
         super.processComponentKeyEvent(keyEvent);
-        if (actionController.isGoKey(keyEvent)) {
-            resetContentIdentifier();
-        }
     }
 
     private boolean isAction(long actionTime, int speed) {

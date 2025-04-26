@@ -117,7 +117,9 @@ public class ImageStreamerView extends StreamerView<byte[], UpdatableImage> {
 
     @Override
     public String getCurrentItemIdentifier() {
-        return "";
+        return ofNullable(parentStreamer)
+            .map(Streamer::getName)
+            .orElse(null);
     }
 
     @Override
