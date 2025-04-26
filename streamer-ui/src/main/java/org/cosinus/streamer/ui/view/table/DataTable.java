@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.awt.event.KeyEvent.KEY_PRESSED;
+import static java.awt.event.KeyEvent.KEY_RELEASED;
 import static java.awt.event.MouseEvent.*;
 import static java.lang.Math.abs;
 import static java.util.Arrays.stream;
@@ -105,9 +106,7 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
     @Override
     public void focusGained(FocusEvent e) {
         try {
-            if (streamerViewHandler.getCurrentLocation() != view.getCurrentLocation()) {
-                streamerViewHandler.setCurrentLocation(view.getCurrentLocation());
-            }
+            streamerViewHandler.setCurrentLocation(view.getCurrentLocation());
         } catch (Exception ex) {
             errorHandler.handleError(this, ex);
         }
@@ -155,7 +154,6 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
             ctrlDown = keyEvent.isControlDown();
             altDown = keyEvent.isAltDown();
 
-            actionController.runActionByKeyStroke(keyEvent);
             if (actionController.isLetterKey(keyEvent)) {
                  if (!isAction(keyEvent.getWhen(), FIND_STREAMER_SPEED)) {
                     nameToFind = "";
@@ -165,6 +163,9 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
                 resetContentIdentifier();
                 return;
             }
+        } else if (keyEvent.getID() == KEY_RELEASED) {
+            actionController.runActionByKeyStroke(keyEvent);
+            return;
         }
         super.processComponentKeyEvent(keyEvent);
     }

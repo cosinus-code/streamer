@@ -59,13 +59,14 @@ public class ImageStreamerView extends StreamerView<byte[], UpdatableImage> {
     public void initComponents() {
         super.initComponents();
 
-        imagePanel = new ImagePanel();
+        imagePanel = new ImagePanel(this);
         imagePanel.initHeaderPopup();
 
         JScrollPane scroll = new JScrollPane();
         scroll.setViewportView(imagePanel);
         streamerViewMainPanel.add(scroll, CENTER);
 
+        setFocusTraversalKeysEnabled(false);
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent keyEvent) {

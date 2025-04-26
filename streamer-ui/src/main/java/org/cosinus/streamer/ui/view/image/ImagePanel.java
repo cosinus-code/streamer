@@ -43,6 +43,8 @@ public class ImagePanel extends Panel implements LoadWorkerModel<byte[], Updatab
     @Autowired
     private transient ImageHandler imageHandler;
 
+    private final ImageStreamerView streamerView;
+
     private final transient Map<String, ImageSettings> imageSettingsMap;
 
     private PopupMenu popupImageSettings;
@@ -55,7 +57,9 @@ public class ImagePanel extends Panel implements LoadWorkerModel<byte[], Updatab
 
     private boolean finished;
 
-    public ImagePanel() {
+    public ImagePanel(final ImageStreamerView streamerView) {
+        this.streamerView = streamerView;
+
         imageSettingsMap = new LinkedHashMap<>();
         imageSettingsMap.put(IMAGE_SETTINGS_SPEED, SPEED);
         imageSettingsMap.put(IMAGE_SETTINGS_QUALITY, QUALITY);
@@ -164,6 +168,11 @@ public class ImagePanel extends Panel implements LoadWorkerModel<byte[], Updatab
                         mouseEvent.getX(),
                         mouseEvent.getY());
                 }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent mouseEvent) {
+                streamerView.requestFocusInWindow();
             }
         });
     }

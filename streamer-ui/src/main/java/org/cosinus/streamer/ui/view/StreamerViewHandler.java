@@ -66,8 +66,10 @@ public class StreamerViewHandler {
     }
 
     public void setCurrentLocation(PanelLocation currentLocation) {
-        this.currentLocation = currentLocation;
-        setActiveView(currentLocation);
+        if (this.currentLocation != currentLocation) {
+            this.currentLocation = currentLocation;
+            setActiveView(currentLocation);
+        }
     }
 
     public StreamerView<?, ?> getCurrentView() {
