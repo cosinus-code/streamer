@@ -154,6 +154,7 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
             ctrlDown = keyEvent.isControlDown();
             altDown = keyEvent.isAltDown();
 
+            actionController.runActionByKeyStroke(keyEvent);
             if (actionController.isLetterKey(keyEvent)) {
                  if (!isAction(keyEvent.getWhen(), FIND_STREAMER_SPEED)) {
                     nameToFind = "";
@@ -163,9 +164,6 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
                 resetContentIdentifier();
                 return;
             }
-        } else if (keyEvent.getID() == KEY_RELEASED) {
-            actionController.runActionByKeyStroke(keyEvent);
-            return;
         }
         super.processComponentKeyEvent(keyEvent);
     }

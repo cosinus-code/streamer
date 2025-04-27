@@ -57,7 +57,6 @@ public class GoToParentStreamerAction implements ActionInContext {
     @Override
     public void run(ActionContext context) {
         StreamerView<?, ?> currentStreamerView = streamerViewHandler.getCurrentView();
-        currentStreamerView.goHome();
         ofNullable(currentStreamerView.getParentStreamer())
             .map(Streamer::getParent)
             .map(parent -> new LoadActionModel(
