@@ -22,8 +22,6 @@ import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.FindPanel;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
-import org.cosinus.swing.error.ErrorHandler;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import java.awt.*;
@@ -41,9 +39,6 @@ public class TextStreamerView extends StreamerView<String, String> {
 
     public static final String DIRTY_TEXT_MARKER = "*";
 
-    @Autowired
-    public ErrorHandler errorHandler;
-
     private final TextStreamerEditor textEditor;
 
     private WorkerListener<SaveTextWorkerModel, String> saveListener;
@@ -59,6 +54,11 @@ public class TextStreamerView extends StreamerView<String, String> {
 
         JScrollPane scroll = new JScrollPane();
         scroll.setViewportView(textEditor);
+        ofNullable(textEditor.getBackground())
+            .map(Color::getRGB)
+            .map(Color::new)
+            .ifPresent(scroll.getViewport()::setBackground);
+
         streamerViewMainPanel.add(scroll, CENTER);
         textEditor.initComponent();
         this.saveListener = new WorkerListener<>() {

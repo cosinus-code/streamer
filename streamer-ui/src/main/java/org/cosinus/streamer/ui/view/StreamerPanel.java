@@ -32,6 +32,7 @@ import javax.swing.plaf.basic.BasicTextFieldUI;
 import java.awt.*;
 
 import static java.awt.BorderLayout.*;
+import static java.awt.Font.BOLD;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.action.FindAndLoadStreamerAction.findAndLoadStreamer;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.ADDRESS_TOP;
@@ -77,6 +78,7 @@ public class StreamerPanel extends Panel {
         addressTop.setFont(uiHandler.getLabelFont());
         addressTop.setBorder(emptyBorder(3, 5, 3, 5));
         addressTop.setOpaque(false);
+        addressTop.setFont(addressTop.getFont().deriveFont(BOLD));
         addressTop.addAction(findAndLoadStreamer(addressTop::getText));
 
         freeSpaceLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -90,9 +92,9 @@ public class StreamerPanel extends Panel {
         freesSpacePanel.setBorder(emptyBorder(3));
         freesSpacePanel.setOpaque(false);
 
-        viewsButton = new Button("⤵");
+        viewsButton = new Button("⏷");
         viewsButton.setUI(new BasicButtonUI());
-        viewsButton.setBorder(emptyBorder(3));
+        viewsButton.setBorder(emptyBorder(0, 0, 0, 5));
         viewsButton.setCursor(uiHandler.getHandCursor());
         viewsButton.addAction(this::showViewSelector);
 

@@ -208,7 +208,7 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
             getPanel().ifPresent(panel -> {
                 panel.setAddress(address);
                 ofNullable(this.getParentStreamer())
-                    .filter(Streamer::isParent)
+                    .map( parent -> parent.isParent() ? parent : parent.getParent())
                     .map(ParentStreamer.class::cast)
                     .ifPresent(parent -> panel.setFreeSpace(
                         parent.getFreeSpace(),
