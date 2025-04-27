@@ -102,6 +102,13 @@ public class GridTable<T extends Streamable> extends DataTable<T> implements Act
         return new DefaultListSelectionModel() {
             @Override
             public void setSelectionInterval(int rowIndex1, int rowIndex2) {
+                if (getTableModel().isTopVisible()) {
+                    if (rowIndex1 < rowIndex2 && rowIndex1 == 0) {
+                        rowIndex1++;
+                    } else if (rowIndex1 > rowIndex2 && rowIndex2 == 0) {
+                        rowIndex2++;
+                    }
+                }
                 super.setSelectionInterval(rowIndex1, rowIndex2);
                 model.setCurrentIndex(rowIndex1);
             }

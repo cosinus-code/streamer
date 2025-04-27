@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumnModel;
 
 import static java.util.stream.IntStream.range;
@@ -85,6 +86,28 @@ public class IconTable<T extends Streamable> extends DataTable<T> {
         repaint();
     }
 
+    @Override
+    protected TableColumnModel createDefaultColumnModel() {
+        return new DefaultTableColumnModel() {
+            @Override
+            protected ListSelectionModel createSelectionModel() {
+                return new DefaultListSelectionModel() {
+                    @Override
+                    public void setSelectionInterval(int columnIndex1, int columnIndex2) {
+                        if (getTableModel().isTopVisible() &&
+                            IconTable.this.getSelectionModel().isSelectedIndex(0)) {
+                            if (columnIndex1 < columnIndex2 && columnIndex1 == 0) {
+                                columnIndex1++;
+                            } else if (columnIndex1 > columnIndex2 && columnIndex2 == 0) {
+                                columnIndex2++;
+                            }
+                        }
+                        super.setSelectionInterval(columnIndex1, columnIndex2);
+                    }
+                };
+            }
+        };
+    }
 
     @Override
     public void addIndexToSelection(int index) {
