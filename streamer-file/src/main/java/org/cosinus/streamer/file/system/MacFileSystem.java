@@ -20,8 +20,6 @@ import org.apache.logging.log4j.Logger;
 import org.cosinus.swing.boot.condition.ConditionalOnMac;
 import org.cosinus.swing.exec.ProcessExecutor;
 import org.springframework.stereotype.Component;
-import oshi.SystemInfo;
-import oshi.software.os.OSFileStore;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,9 +45,9 @@ public class MacFileSystem implements FileSystem {
     }
 
     @Override
-    public List<OSFileStore> getFileSystemRoots() {
+    public List<? extends FileSystemRoot> getFileSystemRoots() {
         try {
-            return new SystemInfo().getOperatingSystem().getFileSystem().getFileStores();
+            return getDefaultFileSystemRoot();
         } catch (Exception ex) {
             if (LOG.isDebugEnabled()) {
                 LOG.error("Failed to get file stores. Will fallback to command line.", ex);
@@ -60,12 +58,16 @@ public class MacFileSystem implements FileSystem {
         }
     }
 
+    @Override
+    public void mount(FileSystemRoot fileSystemRoot) {
+    }
+
     /**
      * Get file system roots using the output of "diskutil" command
      *
      * @return A list of file system roots.
      */
-    private List<OSFileStore> getFileSystemRootsFromCommandLine() {
+    private List<MacFileSystemRoot> getFileSystemRootsFromCommandLine() {
         return processExecutor.executeAndGetOutput("diskutil", "list")
             .map(output -> output.split("\\n\\n"))
             .stream()
@@ -76,12 +78,12 @@ public class MacFileSystem implements FileSystem {
                 .reduce((first, second) -> second)
                 .orElse(null))
             .filter(Objects::nonNull)
-            .map(this::buildOSFileStore)
+            .map(this::buildFileSystemRoot)
             .filter(root -> ((MacFileSystemRoot) root).isValid())
             .toList();
     }
 
-    private OSFileStore buildOSFileStore(String volumeId) {
+    private MacFileSystemRoot buildFileSystemRoot(String volumeId) {
         return processExecutor.executeAndGetOutput("diskutil", "info", volumeId)
             .map(output -> output.split("\\n"))
             .stream()
@@ -94,15 +96,5 @@ public class MacFileSystem implements FileSystem {
                 property -> property[1].trim(),
                 (k1, k2) -> k1,
                 MacFileSystemRoot::new));
-    }
-
-    @Override
-    public boolean isHidden(OSFileStore fileStore) {
-        return fileStore.getMount().startsWith("/System/Volumes/");
-    }
-
-    @Override
-    public boolean isInternal(OSFileStore fileStore) {
-        return !fileStore.getMount().startsWith("/Volumes/");
     }
 }

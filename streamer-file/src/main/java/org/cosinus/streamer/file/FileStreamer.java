@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.file;
 
+import lombok.Getter;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.error.StreamerException;
@@ -47,7 +48,8 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     @Autowired
     protected FileHandler fileHandler;
 
-    protected final File file;
+    @Getter
+    protected File file;
 
     protected final List<TranslatableName> detailNames;
 
@@ -55,7 +57,9 @@ public abstract class FileStreamer<T> implements Streamer<T> {
 
     public FileStreamer(Path path) {
         injectContext(this);
-        this.file = path.toFile();
+        this.file = ofNullable(path)
+            .map(Path::toFile)
+            .orElse(null);
         detailNames = asList(
             new TranslatableName(DETAIL_KEY_NAME, null),
             new TranslatableName(DETAIL_KEY_TYPE, null),
@@ -63,21 +67,19 @@ public abstract class FileStreamer<T> implements Streamer<T> {
             new TranslatableName(DETAIL_KEY_TIME, null));
     }
 
-    public File getFile() {
-        return file;
-    }
-
     @Override
     public Path getPath() {
-        return file.toPath();
+        return ofNullable(file)
+            .map(File::toPath)
+            .orElse(null);
     }
 
     @Override
     public ParentStreamer<?> getParent() {
-        return ofNullable(file.toPath().getParent())
+        return ofNullable(getPath().getParent())
             .map(parentPath -> fileMainStreamer
                 .stream()
-                .filter(fileStreamer -> fileStreamer.getPath().equals(parentPath))
+                .filter(fileStreamer -> parentPath.equals(fileStreamer.getPath()))
                 .findFirst()
                 .map(ParentStreamer.class::cast)
                 .orElseGet(() -> new FileParentStreamer(parentPath)))

@@ -20,16 +20,22 @@ import oshi.software.os.OSFileStore;
 import java.io.File;
 import java.nio.file.Paths;
 
+import static org.cosinus.streamer.file.system.DriveVendor.SAMSUNG;
+import static org.cosinus.streamer.file.system.DriveVendor.findByName;
+import static org.cosinus.streamer.file.system.FileSystemDevice.*;
+
 /**
  * Implementation of {@link OSFileStore} built from the output of "gio mount -li" command line on Linux
  */
-public class MtpFileSystemRoot implements OSFileStore {
+public class MtpFileSystemRoot implements FileSystemRoot {
 
-    public static final String MTP_PROTOCOL = "mtp://";
+    public static final String MTP = "mtp";
+
+    public static final String MTP_PROTOCOL = MTP + "://";
 
     public static final String MTP_PROTOCOL_MARK = "-> " + MTP_PROTOCOL;
 
-    public static final String MTP_MOUNT_PREFIX = "mtp:host=";
+    public static final String MTP_MOUNT_PREFIX = MTP + ":host=";
 
     private final String key;
 
@@ -44,6 +50,11 @@ public class MtpFileSystemRoot implements OSFileStore {
         this.name = name;
         this.mountFile = Paths.get(mtpMountFolder, MTP_MOUNT_PREFIX + key).toFile();
         this.mount = mountFile.getAbsolutePath();
+    }
+
+    @Override
+    public String getId() {
+        return name;
     }
 
     @Override
@@ -62,13 +73,12 @@ public class MtpFileSystemRoot implements OSFileStore {
     }
 
     @Override
-    public String getLogicalVolume() {
-        return "";
+    public String getMountPoint() {
+        return mount;
     }
 
     @Override
-    public String getMount() {
-        return mount;
+    public void setMountPoint(String mountPoint) {
     }
 
     @Override
@@ -78,16 +88,11 @@ public class MtpFileSystemRoot implements OSFileStore {
 
     @Override
     public String getType() {
-        return "MTP";
+        return MTP;
     }
 
     @Override
-    public String getOptions() {
-        return "";
-    }
-
-    @Override
-    public String getUUID() {
+    public String getUuid() {
         return MTP_MOUNT_PREFIX + key;
     }
 
@@ -97,28 +102,20 @@ public class MtpFileSystemRoot implements OSFileStore {
     }
 
     @Override
-    public long getUsableSpace() {
-        return getFreeSpace();
+    public FileSystemDevice getDevice() {
+        return findByName(getName())
+            .map(DriveVendor::getDevice)
+            .orElse(REMOVABLE_FLASH);
+    }
+
+    @Override
+    public boolean isHidden() {
+        return false;
     }
 
     @Override
     public long getTotalSpace() {
         return new File(mount).getTotalSpace();
-    }
-
-    @Override
-    public long getFreeInodes() {
-        return 0;
-    }
-
-    @Override
-    public long getTotalInodes() {
-        return 0;
-    }
-
-    @Override
-    public boolean updateAttributes() {
-        return false;
     }
 
     public boolean isMounted() {

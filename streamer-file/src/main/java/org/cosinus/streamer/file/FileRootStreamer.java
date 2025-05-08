@@ -18,76 +18,93 @@ package org.cosinus.streamer.file;
 
 import org.cosinus.streamer.api.value.TextValue;
 import org.cosinus.streamer.api.value.Value;
+import org.cosinus.streamer.file.system.FileSystemDevice;
+import org.cosinus.streamer.file.system.FileSystemRoot;
 import org.cosinus.swing.format.FormatHandler;
 import org.springframework.beans.factory.annotation.Autowired;
-import oshi.software.os.OSFileStore;
 
+import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
-import static org.cosinus.swing.image.icon.IconProvider.ICON_STORAGE_EXTERNAL;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_STORAGE_INTERNAL;
 
 public class FileRootStreamer extends FileParentStreamer {
 
-    private final OSFileStore fileStore;
+    private final FileSystemRoot fileSystemRoot;
 
     @Autowired
-    private FormatHandler formatHandler;
+    protected FormatHandler formatHandler;
 
-    public FileRootStreamer(OSFileStore fileStore) {
-        super(Paths.get(fileStore.getMount()));
-        this.fileStore = fileStore;
+    public FileRootStreamer(final FileSystemRoot fileSystemRoot) {
+        super(ofNullable(fileSystemRoot.getMountPoint())
+            .map(Paths::get)
+            .orElse(null));
+        this.fileSystemRoot = fileSystemRoot;
+    }
+
+    @Override
+    public Stream<FileStreamer<?>> stream() {
+        if (!fileSystemRoot.isMounted()) {
+            fileHandler.mount(fileSystemRoot);
+            this.file = ofNullable(fileSystemRoot.getMountPoint())
+                .map(File::new)
+                .orElse(null);
+        }
+        return super.stream();
     }
 
     @Override
     public String getName() {
-        return ofNullable(super.getName())
+        return ofNullable(fileSystemRoot.getLabel())
             .filter(not(String::isEmpty))
-            .filter(name -> !name.equalsIgnoreCase(fileStore.getMount()))
-            .filter(name -> !name.equalsIgnoreCase(fileStore.getUUID()))
-            .or(() -> ofNullable(fileStore.getName())
+            .or(() -> ofNullable(super.getName())
                 .filter(not(String::isEmpty))
-                .filter(name -> !name.equals(fileStore.getVolume())))
-            .orElseGet(() -> formatHandler.formatShortMemorySize(fileStore.getTotalSpace()) + " Volume");
+                .filter(name -> !name.equalsIgnoreCase(fileSystemRoot.getMountPoint()))
+                .filter(name -> !name.equalsIgnoreCase(fileSystemRoot.getUuid())))
+            .or(() -> ofNullable(fileSystemRoot.getName())
+                .filter(not(String::isEmpty))
+                .filter(name -> !name.equals(fileSystemRoot.getVolume())))
+            .orElseGet(() -> formatHandler.formatShortMemorySize(fileSystemRoot.getTotalSpace()) + " Volume");
     }
 
     @Override
     public String getDescription() {
         return format("%s (%s %s)",
-            fileStore.getDescription(),
-            fileStore.getType(),
+            fileSystemRoot.getDescription(),
+            fileSystemRoot.getType(),
             getDevice());
     }
 
     private String getDevice() {
-        return ofNullable(fileStore.getVolume())
-            .filter(not(volume -> volume.contains(fileStore.getUUID())))
-            .orElseGet(fileStore::getMount);
+        return ofNullable(fileSystemRoot.getVolume())
+            .filter(not(volume -> volume.contains(fileSystemRoot.getUuid())))
+            .orElseGet(fileSystemRoot::getMountPoint);
     }
 
     @Override
     public String getType() {
-        return fileStore.getType();
+        return fileSystemRoot.getType();
     }
 
     @Override
     public boolean isHidden() {
-        return fileHandler.isHidden(fileStore);
+        return fileSystemRoot.isHidden();
     }
 
     @Override
     public long getFreeSpace() {
-        return fileStore.getFreeSpace();
+        return fileSystemRoot.getFreeSpace();
     }
 
     @Override
     public long getTotalSpace() {
-        return fileStore.getTotalSpace();
+        return fileSystemRoot.getTotalSpace();
     }
 
     @Override
@@ -97,11 +114,9 @@ public class FileRootStreamer extends FileParentStreamer {
 
     @Override
     public String getIconName() {
-        return isInternal() ? ICON_STORAGE_INTERNAL : ICON_STORAGE_EXTERNAL;
-    }
-
-    public boolean isInternal() {
-        return fileHandler.isInternal(fileStore);
+        return ofNullable(fileSystemRoot.getDevice())
+            .map(FileSystemDevice::getIconName)
+            .orElse(ICON_STORAGE_INTERNAL);
     }
 
     @Override
@@ -115,9 +130,15 @@ public class FileRootStreamer extends FileParentStreamer {
         if (details == null) {
             details = asList(
                 new TextValue(getName()),
+                new TextValue(getType()),
                 new TextValue(formatHandler.formatMemorySize(getFreeSpace())),
                 new TextValue(formatHandler.formatMemorySize(getTotalSpace()))
             );
         }
+    }
+
+    @Override
+    public boolean delete() {
+        return false;
     }
 }

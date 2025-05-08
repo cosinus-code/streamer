@@ -18,15 +18,18 @@ package org.cosinus.streamer.ui.view;
 
 import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.form.Panel;
-import org.cosinus.swing.form.control.Button;
+import org.cosinus.swing.form.control.SimpleButton;
 import org.cosinus.swing.form.control.TextField;
 import org.cosinus.swing.image.icon.IconHandler;
 import org.cosinus.swing.layout.SpringGridLayout;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.stereotype.Component;
 
+import java.awt.*;
+
 import static org.cosinus.streamer.ui.action.FindAndLoadStreamerAction.findAndLoadStreamer;
 import static org.cosinus.streamer.ui.action.GoToParentStreamerAction.GO_TO_PARENT_ACTION;
+import static org.cosinus.swing.border.Borders.emptyBorder;
 import static org.cosinus.swing.image.icon.IconProvider.*;
 import static org.cosinus.swing.image.icon.IconSize.X16;
 
@@ -53,21 +56,27 @@ public class AddressBar extends Panel {
     public void initComponents() {
         addressField = new TextField();
 
-        Button backButton = iconHandler.findIconByName(ICON_BACK, X16)
-            .map(Button::new)
-            .orElseGet(() -> new Button("<"));
-        Button nextButton = iconHandler.findIconByName(ICON_NEXT, X16)
-            .map(Button::new)
-            .orElseGet(() -> new Button(">"));
-        Button upButton = iconHandler.findIconByName(ICON_UP, X16)
-            .map(Button::new)
-            .orElseGet(() -> new Button("Λ"));
+        SimpleButton backButton = iconHandler.findIconByName(ICON_BACK, X16)
+            .map(SimpleButton::new)
+            .orElseGet(() -> new SimpleButton("<"));
+        SimpleButton nextButton = iconHandler.findIconByName(ICON_NEXT, X16)
+            .map(SimpleButton::new)
+            .orElseGet(() -> new SimpleButton(">"));
+        SimpleButton upButton = iconHandler.findIconByName(ICON_UP, X16)
+            .map(SimpleButton::new)
+            .orElseGet(() -> new SimpleButton("Λ"));
+
+        Dimension addressDimension = new Dimension(32, 32);
+        backButton.setPreferredSize(addressDimension);
+        nextButton.setPreferredSize(addressDimension);
+        upButton.setPreferredSize(addressDimension);
 
         upButton.addAction(() -> actionController.runAction(GO_TO_PARENT_ACTION));
         addressField.addAction(findAndLoadStreamer(addressField::getText));
 
         backButton.setFocusable(false);
         nextButton.setFocusable(false);
+        upButton.setFocusable(false);
 
         SpringGridLayout layout = new SpringGridLayout(this,
             1, 4,
@@ -77,11 +86,16 @@ public class AddressBar extends Panel {
         setOpaque(true);
         setBackground(uiHandler.getControlColor());
 
+        Panel addressPanel = new Panel(new BorderLayout());
+        addressPanel.setPreferredSize(addressDimension);
+        addressPanel.setBorder(emptyBorder(2, 1, 2, 3));
+        addressPanel.add(addressField);
+
         setLayout(layout);
         add(backButton);
         add(nextButton);
         add(upButton);
-        add(addressField);
+        add(addressPanel);
         layout.pack();
     }
 

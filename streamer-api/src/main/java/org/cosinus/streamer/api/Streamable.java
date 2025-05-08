@@ -46,9 +46,12 @@ public interface Streamable {
     }
 
     default String getName() {
-        return ofNullable(getPath().getFileName())
+        return ofNullable(getPath())
+            .map(Path::getFileName)
             .map(Path::toString)
-            .orElseGet(() -> getPath().toString());
+            .orElseGet(() -> ofNullable(getPath())
+                .map(Object::toString)
+                .orElse(""));
     }
 
     default String getUrlPath() {

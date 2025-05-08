@@ -29,8 +29,9 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class FileParentStreamer extends FileStreamer<FileStreamer<?>> implements ParentStreamer<FileStreamer<?>>
-{
+import static java.util.Optional.ofNullable;
+
+public class FileParentStreamer extends FileStreamer<FileStreamer<?>> implements ParentStreamer<FileStreamer<?>> {
 
     @Autowired
     private StreamerSizeHandler streamerSizeHandler;
@@ -41,8 +42,10 @@ public class FileParentStreamer extends FileStreamer<FileStreamer<?>> implements
 
     @Override
     public Stream<FileStreamer<?>> stream() {
-        return fileHandler.list(file.toPath())
-                .map(fileMainStreamer::create);
+        return ofNullable(getPath())
+            .map(fileHandler::list)
+            .orElseGet(Stream::empty)
+            .map(fileMainStreamer::create);
     }
 
     @Override

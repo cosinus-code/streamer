@@ -18,12 +18,10 @@ package org.cosinus.streamer.file;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cosinus.streamer.api.StreamerSizeHandler;
 import org.cosinus.streamer.file.system.FileSystem;
+import org.cosinus.streamer.file.system.FileSystemRoot;
 import org.cosinus.swing.io.MimeTypeResolver;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import oshi.software.os.OSFileStore;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -45,7 +43,7 @@ public class FileHandler {
 
     private final FileSystem fileSystem;
 
-    private List<OSFileStore> fileStores;
+    private List<? extends FileSystemRoot> fileSystemRoots;
 
     public FileHandler(final MimeTypeResolver mimeTypeResolver,
                        final FileSystem fileSystem) {
@@ -80,11 +78,11 @@ public class FileHandler {
         }
     }
 
-    public synchronized List<OSFileStore> getFileStores() {
-        if (fileStores == null) {
-            fileStores = fileSystem.getFileSystemRoots();
+    public synchronized List<? extends FileSystemRoot> getFileSystemRoots() {
+        if (fileSystemRoots == null) {
+            fileSystemRoots = fileSystem.getFileSystemRoots();
         }
-        return fileStores;
+        return fileSystemRoots;
     }
 
     public boolean isTextCompatible(Path path) {
@@ -97,14 +95,11 @@ public class FileHandler {
     }
 
     public void reset() {
-        fileStores = null;
+        fileSystemRoots = null;
     }
 
-    public boolean isHidden(OSFileStore fileStore) {
-        return fileSystem.isHidden(fileStore);
-    }
-
-    public boolean isInternal(OSFileStore fileStore) {
-        return fileSystem.isInternal(fileStore);
+    public void mount(final FileSystemRoot fileSystemRoot) {
+        fileSystem.mount(fileSystemRoot);
+        reset();
     }
 }

@@ -15,7 +15,7 @@
  */
 package org.cosinus.streamer.file.system;
 
-import oshi.software.os.OSFileStore;
+import oshi.SystemInfo;
 
 import java.util.List;
 
@@ -29,9 +29,19 @@ public interface FileSystem {
      *
      * @return A list of file system roots.
      */
-    List<OSFileStore> getFileSystemRoots();
+    List<? extends FileSystemRoot> getFileSystemRoots();
 
-    boolean isHidden(OSFileStore fileStore);
+    /**
+     * Get default file system roots on this machine.
+     *
+     * @return A list of file system roots.
+     */
+    default List<DefaultFileSystemRoot> getDefaultFileSystemRoot() {
+        return new SystemInfo().getOperatingSystem().getFileSystem().getFileStores()
+            .stream()
+            .map(DefaultFileSystemRoot::new)
+            .toList();
+    }
 
-    boolean isInternal(OSFileStore fileStore);
+    void mount(FileSystemRoot fileSystemRoot);
 }

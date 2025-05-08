@@ -21,11 +21,13 @@ import oshi.software.os.OSFileStore;
 import java.util.*;
 
 import static java.util.Optional.ofNullable;
+import static org.cosinus.streamer.file.system.FileSystemDevice.EXTERNAL_DRIVE;
+import static org.cosinus.streamer.file.system.FileSystemDevice.HARD_DRIVE;
 
 /**
  * Implementation of {@link OSFileStore} built from the output of "diskutil info <id>" command line on Mac
  */
-public class MacFileSystemRoot extends HashMap<String, String> implements OSFileStore {
+public class MacFileSystemRoot extends HashMap<String, String> implements FileSystemRoot {
     private static final String DISK_ROOT_NAME = "Volume Name";
     private static final String DISK_ROOT_MOUNT = "Mount Point";
     private static final String DISK_ROOT_TYPE = "Type (Bundle)";
@@ -43,9 +45,12 @@ public class MacFileSystemRoot extends HashMap<String, String> implements OSFile
 
     private Long freeSpace;
 
-    private Boolean internal;
-
     private Boolean mounted;
+
+    @Override
+    public String getId() {
+        return get(DISK_ROOT_NAME);
+    }
 
     @Override
     public String getName() {
@@ -63,13 +68,13 @@ public class MacFileSystemRoot extends HashMap<String, String> implements OSFile
     }
 
     @Override
-    public String getLogicalVolume() {
-        return "";
+    public String getMountPoint() {
+        return get(DISK_ROOT_MOUNT);
     }
 
     @Override
-    public String getMount() {
-        return get(DISK_ROOT_MOUNT);
+    public void setMountPoint(String mountPoint) {
+        put(DISK_ROOT_MOUNT, mountPoint);
     }
 
     @Override
@@ -83,12 +88,7 @@ public class MacFileSystemRoot extends HashMap<String, String> implements OSFile
     }
 
     @Override
-    public String getOptions() {
-        return "";
-    }
-
-    @Override
-    public String getUUID() {
+    public String getUuid() {
         return get(DISK_ROOT_UUID);
     }
 
@@ -101,11 +101,6 @@ public class MacFileSystemRoot extends HashMap<String, String> implements OSFile
     }
 
     @Override
-    public long getUsableSpace() {
-        return getFreeSpace();
-    }
-
-    @Override
     public long getTotalSpace() {
         if (totalSpace == null) {
             totalSpace = getRawLong(DISK_ROOT_TOTAL_SPACE);
@@ -114,18 +109,14 @@ public class MacFileSystemRoot extends HashMap<String, String> implements OSFile
     }
 
     @Override
-    public long getFreeInodes() {
-        return 0;
+    public boolean isHidden() {
+        return getMountPoint().startsWith("/System/Volumes/");
     }
 
     @Override
-    public long getTotalInodes() {
-        return 0;
-    }
-
-    @Override
-    public boolean updateAttributes() {
-        return false;
+    public FileSystemDevice getDevice() {
+        //internal = DISK_ROOT_INTERNAL.equals(get(DISK_ROOT_LOCATION));
+        return !getMountPoint().startsWith("/Volumes/") ? HARD_DRIVE : EXTERNAL_DRIVE;
     }
 
     public boolean isMounted() {
@@ -134,15 +125,9 @@ public class MacFileSystemRoot extends HashMap<String, String> implements OSFile
         }
         return mounted;
     }
-    public boolean isInternal() {
-        if (internal == null) {
-            internal = DISK_ROOT_INTERNAL.equals(get(DISK_ROOT_LOCATION));
-        }
-        return internal;
-    }
 
     public boolean isValid() {
-        return !StringUtils.isEmpty(getMount()) && isMounted();
+        return !StringUtils.isEmpty(getMountPoint()) && isMounted();
     }
 
     private long getRawLong(String propertyName) {
@@ -150,7 +135,7 @@ public class MacFileSystemRoot extends HashMap<String, String> implements OSFile
             .map(totalSpaceProperty -> totalSpaceProperty.split(" "))
             .map(rawFreeSpace -> rawFreeSpace[2].substring(1))
             .map(Long::parseLong)
-            .orElse(0L);
+            .orElse(-1L);
     }
 
 }

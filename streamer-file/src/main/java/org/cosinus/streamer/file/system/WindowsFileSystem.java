@@ -17,8 +17,6 @@ package org.cosinus.streamer.file.system;
 
 import org.cosinus.swing.boot.condition.ConditionalOnWindows;
 import org.springframework.stereotype.Component;
-import oshi.SystemInfo;
-import oshi.software.os.OSFileStore;
 
 import java.util.List;
 
@@ -31,17 +29,11 @@ import java.util.List;
 public class WindowsFileSystem implements FileSystem {
 
     @Override
-    public List<OSFileStore> getFileSystemRoots() {
-        return new SystemInfo().getOperatingSystem().getFileSystem().getFileStores();
+    public List<DefaultFileSystemRoot> getFileSystemRoots() {
+        return getDefaultFileSystemRoot();
     }
 
     @Override
-    public boolean isHidden(OSFileStore fileStore) {
-        return false;
-    }
-
-    @Override
-    public boolean isInternal(OSFileStore fileStore) {
-        return true;
+    public void mount(FileSystemRoot fileSystemRoot) {
     }
 }

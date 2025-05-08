@@ -21,9 +21,9 @@ import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.api.meta.MainStreamer;
 import org.cosinus.streamer.api.meta.RootStreamer;
 import org.cosinus.streamer.api.value.TranslatableName;
+import org.cosinus.streamer.file.system.FileSystemRoot;
 import org.cosinus.swing.exec.ProcessExecutor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import oshi.software.os.OSFileStore;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -79,14 +79,14 @@ public class FileMainStreamer extends MainStreamer<FileStreamer<?>> {
     }
 
     protected List<FileStreamer<?>> getRoots() {
-        return fileHandler.getFileStores()
+        return fileHandler.getFileSystemRoots()
             .stream()
             .map(this::createFileRootStreamer)
             .collect(Collectors.toList());
     }
 
-    protected FileRootStreamer createFileRootStreamer(OSFileStore fileStore) {
-        return new FileRootStreamer(fileStore);
+    protected FileRootStreamer createFileRootStreamer(FileSystemRoot fileSystemRoot) {
+        return new FileRootStreamer(fileSystemRoot);
     }
 
     public Optional<Streamer<?>> findByPath(Path path) {
@@ -143,6 +143,7 @@ public class FileMainStreamer extends MainStreamer<FileStreamer<?>> {
     public void init() {
         detailNames = asList(
             new TranslatableName(DETAIL_KEY_NAME, null),
+            new TranslatableName(DETAIL_KEY_TYPE, null),
             new TranslatableName(DETAIL_KEY_FREE_MEMORY, null),
             new TranslatableName(DETAIL_KEY_TOTAL_MEMORY, null)
         );
