@@ -69,6 +69,12 @@ public class FileHandler {
 
     public boolean isSameFile(Path path1, Path path2) {
         try {
+            if (path1 == null && path2 == null) {
+                return true;
+            }
+            if (path1 == null || path2 == null) {
+                return false;
+            }
             return path1.toFile().exists() &&
                 path2.toFile().exists() &&
                 Files.isSameFile(path1, path2);

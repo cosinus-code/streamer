@@ -21,9 +21,9 @@ import org.cosinus.streamer.api.worker.SaveWorkerModel;
 
 import java.util.stream.Stream;
 
-import static java.util.function.Predicate.not;
-
 public interface Streamer<T> extends Streamable {
+
+    String FILE_VIEW_ID = "file";
 
     String DETAIL_KEY_NAME = "name";
     String DETAIL_KEY_TYPE = "type";
@@ -31,6 +31,10 @@ public interface Streamer<T> extends Streamable {
     String DETAIL_KEY_TIME = "time";
 
     Stream<T> stream();
+
+    default String getViewId() {
+        return FILE_VIEW_ID;
+    }
 
     default StreamConsumer<T> streamConsumer() {
         return null;

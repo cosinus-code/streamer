@@ -197,7 +197,6 @@ public class LinuxFileSystem implements FileSystem {
                 of("gio", "mount", "-l"),
                 of("grep", MTP_PROTOCOL));
         } catch (ProcessExecutionException ex) {
-            LOG.error("Failed to get gio mount output", ex);
             return ofNullable(ex.getOutput());
         }
     }
@@ -212,7 +211,6 @@ public class LinuxFileSystem implements FileSystem {
                 .flatMap(Arrays::stream)
                 .reduce((first, second) -> second);
         } catch (ProcessExecutionException ex) {
-            LOG.error("Failed to get mount folder", ex);
             return ofNullable(ex.getOutput());
         }
     }

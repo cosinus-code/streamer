@@ -48,17 +48,23 @@ public class StreamerViewHandler {
 
     private final StreamerViewCreator defaultStreamerViewCreator;
 
+    private final ViewsMap viewsMap;
+
     private String preferredViewName;
 
-    public StreamerViewHandler(Preferences preferences,
-                               Set<StreamerViewCreator> streamerViewCreators,
-                               GridViewCreator defaultStreamerViewCreator) {
+    public StreamerViewHandler(final Preferences preferences,
+                               final Set<StreamerViewCreator> streamerViewCreators,
+                               final GridViewCreator defaultStreamerViewCreator,
+                               final ViewsMapProvider viewsMapProvider) {
         this.preferences = preferences;
         this.streamerViewCreatorsMap = streamerViewCreators
             .stream()
             .collect(toMap(StreamerViewCreator::getViewName, identity()));
         this.defaultStreamerViewCreator = defaultStreamerViewCreator;
         this.currentLocation = preferences.booleanPreference(SHOW_LEFT_VIEW) ? LEFT : RIGHT;
+        this.viewsMap = viewsMapProvider
+            .getViewsMap()
+            .orElseGet(ViewsMap::new);
     }
 
     public PanelLocation getCurrentLocation() {
@@ -149,8 +155,9 @@ public class StreamerViewHandler {
             .orElseThrow(() -> new RuntimeException("Cannot find the opposite view"));
     }
 
-    public <T> List<String> getAvailableViewNames(Streamer<T> parentStreamer) {
-        //TODO
-        return List.of("view-name-1", "view-name-2", "view-name-3");
+    public <T> List<String> getAvailableViewNames(Streamer<T> streamer) {
+        return ofNullable(streamer.getViewId())
+            .map(viewsMap::get)
+            .orElseGet(Collections::emptyList);
     }
 }

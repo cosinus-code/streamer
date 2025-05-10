@@ -1,17 +1,20 @@
 /*
- * Copyright 2020 Cosinus Software
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  * Copyright 2024 Cosinus Software
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *     http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 package org.cosinus.streamer.ui.action;
@@ -21,11 +24,10 @@ import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.ActionContext;
 import org.cosinus.swing.action.ActionInContext;
+import org.springframework.stereotype.Component;
 
-/**
- * Change the streamer view type (icon, grid, etc.) of the current panel location.
- */
-public abstract class ChangeViewAction implements ActionInContext {
+@Component
+public class ChangeViewAction implements ActionInContext {
 
     private final StreamerViewHandler streamerViewHandler;
 
@@ -39,7 +41,8 @@ public abstract class ChangeViewAction implements ActionInContext {
 
     @Override
     public void run(ActionContext context) {
-        if (streamerViewHandler.getCurrentView().getName().equals(getViewName())) {
+        String viewName = ((ChangeViewActionContext) context).viewName();
+        if (streamerViewHandler.getCurrentView().getName().equals(viewName)) {
             return;
         }
 
@@ -49,9 +52,12 @@ public abstract class ChangeViewAction implements ActionInContext {
             streamerViewHandler.getCurrentLocation(),
             streamerViewHandler.getCurrentView().getParentStreamer(),
             streamerViewHandler.getCurrentView().getCurrentItemIdentifier(),
-            getViewName()));
-        streamerViewHandler.setPreferredViewName(getViewName());
+            viewName));
+        streamerViewHandler.setPreferredViewName(viewName);
     }
 
-    protected abstract String getViewName();
+    @Override
+    public String getId() {
+        return "change-view";
+    }
 }

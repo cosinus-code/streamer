@@ -16,23 +16,24 @@
 
 package org.cosinus.streamer.ui.action;
 
-import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
-import org.cosinus.streamer.ui.view.StreamerViewHandler;
+import org.cosinus.swing.action.ActionContext;
+import org.cosinus.swing.action.ActionInContext;
 import org.springframework.stereotype.Component;
 
 import static org.cosinus.streamer.ui.view.table.icon.IconView.ICON_VIEW_NAME;
 
 @Component
-public class ChangeToIconViewAction extends ChangeViewAction {
+public class ChangeToIconViewAction implements ActionInContext {
 
-    public ChangeToIconViewAction(final StreamerViewHandler streamerViewHandler,
-                                  final LoadActionExecutor loadActionExecutor) {
-        super(streamerViewHandler, loadActionExecutor);
+    private final ChangeViewAction changeViewAction;
+
+    public ChangeToIconViewAction(final ChangeViewAction changeViewAction) {
+        this.changeViewAction = changeViewAction;
     }
 
     @Override
-    protected String getViewName() {
-        return ICON_VIEW_NAME;
+    public void run(ActionContext context) {
+        changeViewAction.run(new ChangeViewActionContext(ICON_VIEW_NAME));
     }
 
     @Override

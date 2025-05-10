@@ -22,12 +22,15 @@ import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.streamer.api.worker.WorkerListener;
+import org.cosinus.streamer.ui.action.ChangeViewAction;
+import org.cosinus.streamer.ui.action.ChangeViewActionContext;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.form.Panel;
+import org.cosinus.swing.image.icon.IconHandler;
 import org.cosinus.swing.menu.MenuItem;
 import org.cosinus.swing.menu.PopupMenu;
 import org.cosinus.swing.translate.Translator;
@@ -35,13 +38,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static java.awt.BorderLayout.*;
 import static java.util.Optional.ofNullable;
+import static org.cosinus.streamer.ui.view.View.findByName;
 import static org.cosinus.streamer.ui.view.text.TextStreamerView.DIRTY_TEXT_MARKER;
+import static org.cosinus.swing.image.icon.IconSize.X16;
 
 public abstract class StreamerView<T, V> extends Panel implements WorkerListener<LoadWorkerModel<T, V>, V> {
 
@@ -55,6 +61,12 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
 
     @Autowired
     protected LoadActionExecutor loadActionExecutor;
+
+    @Autowired
+    protected ChangeViewAction changeViewAction;
+
+    @Autowired
+    protected IconHandler iconHandler;
 
     @Autowired
     protected AddressBar addressBar;
@@ -103,12 +115,28 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
         alternativeViewsPopup = new PopupMenu();
         streamerViewHandler.getAvailableViewNames(parentStreamer)
             .stream()
-            .map(viewName -> new MenuItem(event ->
-                ofNullable(streamerViewHandler.getStreamerView(getCurrentLocation(), viewName))
-                    .ifPresent(view -> streamerViewHandler.setView(getCurrentLocation(), view)),
-                viewName))
+            .map(this::viewMenuItem)
             .forEach(alternativeViewsPopup::add);
         alternativeViewsPopup.translate();
+    }
+
+    private MenuItem viewMenuItem(String viewName) {
+        MenuItem menuItem = new MenuItem(viewAction(viewName), viewKey(viewName));
+        findByName(viewName)
+            .map(View::getIconName)
+            .flatMap(iconName -> iconHandler.findIconByName(iconName, X16))
+            .ifPresent(menuItem::setIcon);
+        return menuItem;
+    }
+
+    private String viewKey(String viewName) {
+        return findByName(viewName)
+            .map(View::getKey)
+            .orElse(viewName);
+    }
+
+    private ActionListener viewAction(String viewName) {
+        return event -> changeViewAction.run(new ChangeViewActionContext(viewName));
     }
 
     public PopupMenu getAlternativeViewsPopup() {
@@ -208,7 +236,7 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
             getPanel().ifPresent(panel -> {
                 panel.setAddress(address);
                 ofNullable(this.getParentStreamer())
-                    .map( parent -> parent.isParent() ? parent : parent.getParent())
+                    .map(parent -> parent.isParent() ? parent : parent.getParent())
                     .map(ParentStreamer.class::cast)
                     .ifPresent(parent -> panel.setFreeSpace(
                         parent.getFreeSpace(),

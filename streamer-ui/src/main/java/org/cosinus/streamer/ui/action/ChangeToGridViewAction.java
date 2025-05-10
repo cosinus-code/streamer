@@ -16,23 +16,24 @@
 
 package org.cosinus.streamer.ui.action;
 
-import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
-import org.cosinus.streamer.ui.view.StreamerViewHandler;
+import org.cosinus.swing.action.ActionContext;
+import org.cosinus.swing.action.ActionInContext;
 import org.springframework.stereotype.Component;
 
 import static org.cosinus.streamer.ui.view.table.grid.GridView.GRID_VIEW_NAME;
 
 @Component
-public class ChangeToGridViewAction extends ChangeViewAction {
+public class ChangeToGridViewAction implements ActionInContext {
 
-    public ChangeToGridViewAction(final StreamerViewHandler streamerViewHandler,
-                                  final LoadActionExecutor loadActionExecutor) {
-        super(streamerViewHandler, loadActionExecutor);
+    private final ChangeViewAction changeViewAction;
+
+    public ChangeToGridViewAction(final ChangeViewAction changeViewAction) {
+        this.changeViewAction = changeViewAction;
     }
 
     @Override
-    protected String getViewName() {
-        return GRID_VIEW_NAME;
+    public void run(ActionContext context) {
+        changeViewAction.run(new ChangeViewActionContext(GRID_VIEW_NAME));
     }
 
     @Override

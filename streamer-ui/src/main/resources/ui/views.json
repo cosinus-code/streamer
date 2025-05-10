@@ -1,7 +1,7 @@
 {
-  "folder": ["grid", "icon", "tree"],
+  "folder": ["icon", "grid", "list", "tree"],
+  "text": ["text-editor", "binary-viewer"],
   "image": ["image-viewer", "binary-viewer"],
-  "text": ["image-viewer", "binary-viewer"],
-  "binary": "binary-viewer",
-  "gpx": "interra"
+  "binary": ["binary-viewer"],
+  "gpx": ["icon", "grid", "gpx"]
 }

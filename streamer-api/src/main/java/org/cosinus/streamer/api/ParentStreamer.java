@@ -28,6 +28,8 @@ import static org.cosinus.streamer.api.stream.FlatStreamingStrategy.LEVEL_UP_BOT
 
 public interface ParentStreamer<S extends Streamer> extends Streamer<S> {
 
+    String FOLDER_VIEW_ID = "folder";
+
     /**
      * Get the flat stream of all sub-streamers
      *
@@ -81,5 +83,9 @@ public interface ParentStreamer<S extends Streamer> extends Streamer<S> {
 
     default S create(Path path, boolean parent) {
         return null;
+    }
+
+    default String getViewId() {
+        return FOLDER_VIEW_ID;
     }
 }
