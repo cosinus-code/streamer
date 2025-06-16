@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Cosinus Software
+ * Copyright 2025 Cosinus Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,8 +52,12 @@ public class DatabaseConnection implements Connection<ResultSet> {
 
     private final String currentSchema;
 
-    public DatabaseConnection(final java.sql.Connection connection,
-                              String currentSchema) {
+    private final String connectionName;
+
+    public DatabaseConnection(final String connectionName,
+                              final java.sql.Connection connection,
+                              final String currentSchema) {
+        this.connectionName = connectionName;
         this.connection = connection;
         this.context = using(connection);
         this.currentSchema = currentSchema;
@@ -62,6 +66,11 @@ public class DatabaseConnection implements Connection<ResultSet> {
 
     public String getCurrentSchema() {
         return currentSchema;
+    }
+
+    @Override
+    public String getKey() {
+        return connectionName;
     }
 
     @Override
@@ -132,7 +141,12 @@ public class DatabaseConnection implements Connection<ResultSet> {
     }
 
     @Override
-    public boolean save(String query) {
+    public boolean save(ResultSet remoteToSave) {
+        return false;
+    }
+
+    @Override
+    public boolean delete(ResultSet remote) {
         return false;
     }
 

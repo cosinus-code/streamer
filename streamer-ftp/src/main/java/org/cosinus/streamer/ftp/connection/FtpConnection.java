@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Cosinus Software
+ * Copyright 2025 Cosinus Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,11 @@ public class FtpConnection extends FTPClient implements Connection<FTPFile> {
     }
 
     @Override
+    public String getKey() {
+        return name;
+    }
+
+    @Override
     public Stream<FTPFile> stream(String query) {
         try {
             return Arrays.stream(listFiles(query));
@@ -70,12 +75,18 @@ public class FtpConnection extends FTPClient implements Connection<FTPFile> {
     }
 
     @Override
-    public boolean save(String query) {
+    public boolean save(FTPFile remoteToSave) {
         try {
-            return super.makeDirectory(query);
+            //TODO
+            return super.makeDirectory(remoteToSave.getName());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    @Override
+    public boolean delete(FTPFile remote) {
+        return false;
     }
 
     @Override

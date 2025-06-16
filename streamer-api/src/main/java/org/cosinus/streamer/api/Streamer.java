@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Cosinus Software
+ * Copyright 2025 Cosinus Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ public interface Streamer<T> extends Streamable {
     String DETAIL_KEY_TYPE = "type";
     String DETAIL_KEY_SIZE = "size";
     String DETAIL_KEY_TIME = "time";
+    String DETAIL_KEY_FREE_MEMORY = "detail_free_memory";
+    String DETAIL_KEY_TOTAL_MEMORY = "detail_total_memory";
 
     Stream<T> stream();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Cosinus Software
+ * Copyright 2025 Cosinus Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +29,11 @@ import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.streamer.ui.view.image.ImageStreamerView;
 import org.cosinus.swing.action.execute.ActionExecutor;
 import org.cosinus.swing.dialog.DialogHandler;
+import org.cosinus.swing.io.MimeTypeResolver;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.stereotype.Component;
 
+import java.nio.file.Path;
 import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
@@ -58,13 +60,16 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
 
     private final LoadImageExecutor loadImageExecutor;
 
+    private final MimeTypeResolver mimeTypeResolver;
+
     protected LoadActionExecutor(final WorkerListenerHandler workerListenerHandler,
                                  final StreamerViewHandler streamerViewHandler,
                                  final BinaryExpanderHandler binaryExpanderHandler,
                                  final DialogHandler dialogHandler,
                                  final Translator translator,
                                  final SaveWorkerExecutor saveWorkerExecutor,
-                                 final LoadImageExecutor loadImageExecutor) {
+                                 final LoadImageExecutor loadImageExecutor,
+                                 final MimeTypeResolver mimeTypeResolver) {
         super(workerListenerHandler);
         this.streamerViewHandler = streamerViewHandler;
         this.binaryExpanderHandler = binaryExpanderHandler;
@@ -72,6 +77,7 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
         this.translator = translator;
         this.saveWorkerExecutor = saveWorkerExecutor;
         this.loadImageExecutor = loadImageExecutor;
+        this.mimeTypeResolver = mimeTypeResolver;
     }
 
     @Override
@@ -119,14 +125,23 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
 
     private String getDefaultViewName(Streamer<?> streamerToLoad) {
         if (!streamerToLoad.isParent()) {
-            if (streamerToLoad.isImage()) {
+            if (isImageCompatible(streamerToLoad.getPath())) {
                 return IMAGE_VIEWER;
             }
-            if (streamerToLoad.isTextCompatible()) {
+            if (isTextCompatible(streamerToLoad.getPath())) {
                 return TEXT_EDITOR;
             }
         }
         return null;
+    }
+
+    private boolean isImageCompatible(Path path) {
+        return mimeTypeResolver.isImageCompatible(path);
+    }
+
+    private boolean isTextCompatible(Path path) {
+        return mimeTypeResolver.isTextCompatible(path) ||
+            mimeTypeResolver.hasUnknownMimeType(path);
     }
 
     @Override

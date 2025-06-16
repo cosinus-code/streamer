@@ -49,6 +49,11 @@
         </dependency>
         <dependency>
             <groupId>org.cosinuscode.streamer</groupId>
+            <artifactId>streamer-drive</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.cosinuscode.streamer</groupId>
             <artifactId>streamer-pack</artifactId>
             <version>${project.version}</version>
         </dependency>

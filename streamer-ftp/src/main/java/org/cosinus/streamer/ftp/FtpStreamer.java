@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Cosinus Software
+ * Copyright 2025 Cosinus Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,6 +66,11 @@ public abstract class FtpStreamer<T> implements RemoteStreamer<T, FTPFile, FtpCo
     }
 
     @Override
+    public FTPFile getRemote() {
+        return ftpFile;
+    }
+
+    @Override
     public long getSize() {
         return ftpFile.getSize();
     }
@@ -92,18 +97,13 @@ public abstract class FtpStreamer<T> implements RemoteStreamer<T, FTPFile, FtpCo
     }
 
     @Override
-    public String connectionName() {
+    public String connectionId() {
         return connectionName;
     }
 
     @Override
     public FtpConnectionPool connectionPool() {
         return ftpConnectionPool;
-    }
-
-    @Override
-    public boolean isFile() {
-        return true;
     }
 
     @Override

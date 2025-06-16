@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Cosinus Software
+ * Copyright 2025 Cosinus Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,4 +20,8 @@ public interface ConnectionPool<C extends Connection<R>, R> {
     C borrowConnection(String key);
 
     void returnConnection(String key, C connection);
+
+    default void returnConnection(C connection) {
+        returnConnection(connection.getKey(), connection);
+    }
 }

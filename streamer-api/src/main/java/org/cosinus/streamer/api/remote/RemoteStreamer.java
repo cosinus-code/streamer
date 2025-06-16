@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Cosinus Software
+ * Copyright 2025 Cosinus Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package org.cosinus.streamer.api.remote;
 
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.error.SaveStreamerException;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -26,20 +27,17 @@ import static java.util.Optional.ofNullable;
 
 public interface RemoteStreamer<T, R, C extends Connection<R>> extends Streamer<T> {
 
-    default String connectionName() {
-        return getName();
-    }
+    String connectionId();
 
     default Optional<C> getConnection() {
         return ofNullable(connectionPool())
-            .flatMap(connectionPool -> ofNullable(connectionName())
+            .flatMap(connectionPool -> ofNullable(connectionId())
                 .map(connectionPool::borrowConnection));
     }
 
     default void returnConnection(C connection) {
-        connectionPool().returnConnection(connectionName(), connection);
+        connectionPool().returnConnection(connectionId(), connection);
     }
-
 
     default Stream<R> streamFromRemote(Function<C, Stream<R>> streamSupplier) {
         return getConnection()
@@ -55,10 +53,10 @@ public interface RemoteStreamer<T, R, C extends Connection<R>> extends Streamer<
         }, this::noConnectionException);
     }
 
-    default <T> T getFromRemote(Function<C, T> remoteRunner) {
+    default <V> V getFromRemote(Function<C, V> remoteRunner) {
         return getConnection()
             .map(connection -> {
-                T result = remoteRunner.apply(connection);
+                V result = remoteRunner.apply(connection);
                 returnConnection(connection);
                 return result;
             })
@@ -66,10 +64,17 @@ public interface RemoteStreamer<T, R, C extends Connection<R>> extends Streamer<
     }
 
     private RuntimeException noConnectionException() {
-        return new RuntimeException("Cannot acquire connection: " + connectionName());
+        return new RuntimeException("Cannot acquire connection: " + connectionId());
+    }
+
+    @Override
+    default boolean delete() {
+        return getFromRemote(connection -> connection.delete(getRemote()));
     }
 
     ConnectionPool<C, R> connectionPool();
 
     String getStreamQuery();
+
+    R getRemote();
 }

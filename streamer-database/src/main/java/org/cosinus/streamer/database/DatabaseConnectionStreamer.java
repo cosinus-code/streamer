@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Cosinus Software
+ * Copyright 2025 Cosinus Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,5 +64,11 @@ public class DatabaseConnectionStreamer extends DatabaseParentStreamer<ParentStr
     @Override
     public String getStreamQuery() {
         return TABLE_SCHEMA;
+    }
+
+    @Override
+    public ResultSet getRemote() {
+        //TODO
+        return null;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Cosinus Software
+ * Copyright 2025 Cosinus Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.api.error.SaveStreamerException;
 import org.cosinus.streamer.api.stream.FlatStreamingSpliterator;
 import org.cosinus.streamer.api.stream.FlatStreamingStrategy;
+import org.cosinus.streamer.api.stream.StreamSupplier;
 
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -39,22 +40,31 @@ public interface RemoteParentStreamer<S extends Streamer<?>, R, C extends Connec
         return getConnection()
             .map(connection -> StreamSupport
                 .stream(new FlatStreamingSpliterator<>(strategy,
-                    connection
-                        .stream(getStreamQuery())
-                        .map(this::createFromRemote)
-                        .filter(streamerFilter),
-                    streamer -> connection
-                        .stream(((RemoteStreamer<S, R, C>) streamer).getStreamQuery())
-                        .map(this::createFromRemote)), false)
+                    streamFromConnection(connection).filter(streamerFilter),
+                    streamSupplier(connection)), false)
                 .onClose(() -> returnConnection(connection)))
             .orElseGet(Stream::empty);
     }
 
+    private Stream<S> streamFromConnection(final C connection) {
+        return connection
+            .stream(getStreamQuery())
+            .map(this::createFromRemote);
+    }
+
+    private StreamSupplier<S> streamSupplier(final C connection) {
+        return streamer -> {
+            RemoteParentStreamer<S, R, C> remoteStreamer = (RemoteParentStreamer<S, R, C>) streamer;
+            return connection
+                .stream(remoteStreamer.getStreamQuery())
+                .map(remoteStreamer::createFromRemote);
+        };
+    }
+
     @Override
     default void save() {
-        //TODO
         runRemote(connection -> {
-            if (!connection.save(getStreamQuery())) {
+            if (!connection.save(getRemote())) {
                 throw new SaveStreamerException("Failed to save streamer:" + getPath().toString());
             }
         });

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Cosinus Software
+ * Copyright 2025 Cosinus Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,5 +58,7 @@ public class CopyBinaryListener implements PipelineListener<byte[]> {
     @Override
     public void afterPipelineClose(boolean pipelineFailed) {
         copyWorker.updateModel(workerModel::finishStreamerProgress);
+        source.finalizeStreaming();
+        target.finalizeStreaming();
     }
 }

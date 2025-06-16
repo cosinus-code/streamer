@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Cosinus Software
+ * Copyright 2025 Cosinus Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package org.cosinus.streamer.api.stream.consumer;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.function.Consumer;
@@ -25,6 +28,8 @@ import java.util.stream.Stream;
 import static java.util.Optional.ofNullable;
 
 public interface StreamConsumer<T> extends Consumer<T>, AutoCloseable {
+
+    Logger LOG = LogManager.getLogger(StreamConsumer.class);
 
     int RETRY_MAX_ATTEMPTS = 1;
 
@@ -45,6 +50,7 @@ public interface StreamConsumer<T> extends Consumer<T>, AutoCloseable {
         try {
             accept(data);
         } catch (UncheckedIOException ex) {
+            LOG.error("Error while consuming data: {}", data, ex);
             if (retryCount < retryMaxAttempts && retry != null && retry.get()) {
                 acceptWithRetry(data, retry, ++retryCount, retryMaxAttempts);
             } else {

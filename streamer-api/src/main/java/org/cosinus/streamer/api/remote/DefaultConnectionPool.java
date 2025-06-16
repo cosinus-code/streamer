@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Cosinus Software
+ * Copyright 2025 Cosinus Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,8 @@ import org.cosinus.streamer.api.error.StreamerException;
  * @param <C> the type of connection
  * @param <R> the type of remote objects streamed by connection
  */
-public abstract class DefaultConnectionPool<C extends Connection<R>, R> extends GenericKeyedObjectPool<String, C>
+public abstract class DefaultConnectionPool<C extends Connection<R>, R>
+    extends GenericKeyedObjectPool<String, C>
     implements ConnectionPool<C, R> {
 
     public DefaultConnectionPool(final KeyedPooledObjectFactory<String, C> factory) {

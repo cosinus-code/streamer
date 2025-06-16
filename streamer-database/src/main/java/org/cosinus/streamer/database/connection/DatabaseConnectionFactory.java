@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Cosinus Software
+ * Copyright 2025 Cosinus Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,16 @@
  */
 package org.cosinus.streamer.database.connection;
 
-import oracle.jdbc.OracleDriver;
-import org.apache.commons.pool2.BaseKeyedPooledObjectFactory;
-import org.apache.commons.pool2.DestroyMode;
-import org.apache.commons.pool2.PooledObject;
-import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.api.error.StreamerException;
+import org.cosinus.streamer.api.remote.AbstractConnectionFactory;
 import org.cosinus.streamer.database.model.DatabaseConnectionModel;
 import org.cosinus.streamer.database.model.DatabaseModelProvider;
+import org.cosinus.streamer.database.resultset.ResultSet;
 import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.util.Map;
 
 import static java.sql.DriverManager.getConnection;
@@ -36,7 +32,7 @@ import static java.util.Optional.ofNullable;
 
 
 @Component
-public class DatabaseConnectionFactory extends BaseKeyedPooledObjectFactory<String, DatabaseConnection> {
+public class DatabaseConnectionFactory extends AbstractConnectionFactory<String, DatabaseConnection, ResultSet> {
 
     private static final Logger LOG = LogManager.getLogger(DatabaseConnectionFactory.class);
 
@@ -48,36 +44,24 @@ public class DatabaseConnectionFactory extends BaseKeyedPooledObjectFactory<Stri
 
     @Override
     public DatabaseConnection create(String connectionName) throws Exception {
+        //TODO: register driver only if not yet registered
         //DriverManager.registerDriver(new OracleDriver());
         DatabaseConnectionModel databaseConnectionModel = getDatabaseConnectionModel(connectionName);
         Connection connection = getConnection(
             databaseConnectionModel.url(), databaseConnectionModel.username(), databaseConnectionModel.password());
-        LOG.info("Connected to database: " + databaseConnectionModel.url());
+        LOG.info("Connected to database: {}", databaseConnectionModel.url());
 
-        return new DatabaseConnection(connection, databaseConnectionModel.username());
+        return new DatabaseConnection(connectionName, connection, databaseConnectionModel.username());
     }
 
     @Override
-    public PooledObject<DatabaseConnection> wrap(final DatabaseConnection databaseConnection) {
-        return new DefaultPooledObject<>(databaseConnection);
+    public boolean validateConnection(final DatabaseConnection connection) {
+        return connection.isValid();
     }
 
     @Override
-    public boolean validateObject(String key, final PooledObject<DatabaseConnection> pooledConnection) {
-        return ofNullable(pooledConnection)
-            .map(PooledObject::getObject)
-            .map(DatabaseConnection::isValid)
-            .orElse(false);
-    }
-
-    @Override
-    public void destroyObject(String connectionName,
-                              final PooledObject<DatabaseConnection> pooledConnection,
-                              final DestroyMode destroyMode) {
-
-        ofNullable(pooledConnection)
-            .map(PooledObject::getObject)
-            .ifPresent(DatabaseConnection::close);
+    public void destroyConnection(final DatabaseConnection connection) {
+        connection.close();
     }
 
 

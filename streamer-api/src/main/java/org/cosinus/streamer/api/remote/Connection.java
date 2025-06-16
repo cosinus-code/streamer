@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Cosinus Software
+ * Copyright 2025 Cosinus Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,15 @@ import java.util.stream.Stream;
 
 public interface Connection<R> extends AutoCloseable {
 
+    String getKey();
+
     Stream<R> stream(String query);
 
     InputStream inputStream(String query);
 
     OutputStream outputStream(String query, boolean append);
 
-    boolean save(String query);
+    boolean save(R remoteToSave);
+
+    boolean delete(R remote);
 }

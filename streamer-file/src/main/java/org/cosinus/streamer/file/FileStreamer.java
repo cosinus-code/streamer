@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Cosinus Software
+ * Copyright 2025 Cosinus Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,9 +38,6 @@ import static org.cosinus.streamer.file.FileMainStreamer.FILE_PROTOCOL;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 public abstract class FileStreamer<T> implements Streamer<T> {
-
-    protected static final String DETAIL_KEY_FREE_MEMORY = "detail_free_memory";
-    protected static final String DETAIL_KEY_TOTAL_MEMORY = "detail_total_memory";
 
     @Autowired
     protected FileMainStreamer fileMainStreamer;

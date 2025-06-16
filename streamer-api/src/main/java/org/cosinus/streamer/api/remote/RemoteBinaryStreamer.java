@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Cosinus Software
+ * Copyright 2025 Cosinus Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,27 +27,40 @@ public interface RemoteBinaryStreamer<R, C extends Connection<R>>
 
     @Override
     default InputStream inputStream() {
-        String connectionKey = connectionName();
+        String connectionKey = connectionId();
         ConnectionPool<C, R> connectionPool = connectionPool();
         if (connectionKey == null || connectionPool == null) {
             return null;
         }
 
         return ofNullable(connectionPool.borrowConnection(connectionKey))
-            .map(connection -> connection.inputStream(getStreamQuery()))
+            .map(this::getInputStream)
             .orElse(null);
     }
 
     @Override
     default OutputStream outputStream(boolean append) {
-        String connectionKey = connectionName();
+        String connectionKey = connectionId();
         ConnectionPool<C, R> connectionPool = connectionPool();
         if (connectionKey == null || connectionPool == null) {
             return null;
         }
 
         return ofNullable(connectionPool.borrowConnection(connectionKey))
-            .map(connection -> connection.outputStream(getStreamQuery(), append))
+            .map(connection -> getOutputStream(connection, append))
             .orElse(null);
+    }
+
+    default InputStream getInputStream(C connection) {
+        return connection.inputStream(getStreamQuery());
+    }
+
+    default OutputStream getOutputStream(C connection, boolean append) {
+        return connection.outputStream(getStreamQuery(), append);
+    }
+
+    @Override
+    default boolean isFile() {
+        return true;
     }
 }

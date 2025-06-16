@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Cosinus Software
+ * Copyright 2025 Cosinus Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,11 @@ import org.cosinus.streamer.api.stream.binary.BinaryStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import static org.cosinus.swing.format.FormatHandler.MEGA_INT;
+
 public interface BinaryStreamer extends Streamer<byte[]> {
 
-    int DEFAULT_TRANSFER_RATE = 8192;
+    int DEFAULT_TRANSFER_RATE = MEGA_INT;
 
     @Override
     default BinaryStream stream() {
@@ -42,5 +44,8 @@ public interface BinaryStreamer extends Streamer<byte[]> {
 
     default int getTransferRate() {
         return DEFAULT_TRANSFER_RATE;
+    }
+
+    default void finalizeStreaming() {
     }
 }

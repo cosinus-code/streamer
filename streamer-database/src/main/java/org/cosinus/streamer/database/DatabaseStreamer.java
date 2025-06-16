@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Cosinus Software
+ * Copyright 2025 Cosinus Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,15 +29,11 @@ import java.nio.file.Path;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 import static org.cosinus.streamer.database.DatabaseMainStreamer.DATABASE_PROTOCOL;
-import static org.cosinus.streamer.database.connection.DatabaseConnection.COLUMN_NAME;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 public abstract class DatabaseStreamer implements RemoteStreamer<DatabaseRecord, ResultSet, DatabaseConnection> {
@@ -92,7 +88,7 @@ public abstract class DatabaseStreamer implements RemoteStreamer<DatabaseRecord,
     }
 
     @Override
-    public String connectionName() {
+    public String connectionId() {
         return connectionName;
     }
 
@@ -104,6 +100,12 @@ public abstract class DatabaseStreamer implements RemoteStreamer<DatabaseRecord,
     @Override
     public Path getPath() {
         return getParent().getPath().resolve(getName());
+    }
+
+    @Override
+    public ResultSet getRemote() {
+        //TODO
+        return null;
     }
 
     @Override

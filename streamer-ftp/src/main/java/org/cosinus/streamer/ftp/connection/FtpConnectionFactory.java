@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Cosinus Software
+ * Copyright 2025 Cosinus Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,26 +17,23 @@ package org.cosinus.streamer.ftp.connection;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPClientConfig;
-import org.apache.commons.net.ftp.FTPReply;
-import org.apache.commons.pool2.BaseKeyedPooledObjectFactory;
-import org.apache.commons.pool2.PooledObject;
-import org.apache.commons.pool2.impl.DefaultPooledObject;
+import org.apache.commons.net.ftp.FTPFile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.api.error.StreamerException;
+import org.cosinus.streamer.api.remote.AbstractConnectionFactory;
 import org.cosinus.streamer.ftp.model.FtpConfiguration;
 import org.cosinus.streamer.ftp.model.FtpConfigurationProvider;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.net.ftp.FTPReply.isPositiveCompletion;
 
 @Component
-public class FtpConnectionFactory extends BaseKeyedPooledObjectFactory<String, FtpConnection> {
+public class FtpConnectionFactory extends AbstractConnectionFactory<String, FtpConnection, FTPFile> {
 
     private static final Logger LOG = LogManager.getLogger(FtpConnectionFactory.class);
     private final Map<String, FtpConfiguration> ftpConfigurationsMap;
@@ -64,7 +61,7 @@ public class FtpConnectionFactory extends BaseKeyedPooledObjectFactory<String, F
                 replyCode);
             return null;
         }
-        LOG.info("Connected to FTP server " + ftpConfiguration.host());
+        LOG.info("Connected to FTP server {}", ftpConfiguration.host());
         LOG.info(ftpConnection.getReplyString());
 
         if (!ftpConnection.login(ftpConfiguration.username(), ftpConfiguration.password())) {
@@ -86,17 +83,8 @@ public class FtpConnectionFactory extends BaseKeyedPooledObjectFactory<String, F
     }
 
     @Override
-    public PooledObject<FtpConnection> wrap(FtpConnection ftpConnection) {
-        return new DefaultPooledObject<>(ftpConnection);
-    }
-
-    @Override
-    public boolean validateObject(String name, PooledObject<FtpConnection> pooledFtpConnection) {
-        return Optional.ofNullable(pooledFtpConnection)
-            .map(PooledObject::getObject)
-            .map(this::runValidateCommand)
-            .map(FTPReply::isPositiveCompletion)
-            .orElse(false);
+    public boolean validateConnection(FtpConnection ftpConnection) {
+        return isPositiveCompletion(runValidateCommand(ftpConnection));
     }
 
     protected int runValidateCommand(FtpConnection ftpConnection) {
@@ -109,24 +97,20 @@ public class FtpConnectionFactory extends BaseKeyedPooledObjectFactory<String, F
     }
 
     @Override
-    public void destroyObject(String name, PooledObject<FtpConnection> pooledConnection) {
-        ofNullable(pooledConnection)
-            .map(PooledObject::getObject)
-            .ifPresent(connection -> {
-                try {
-                    if (connection.isConnected()) {
-                        connection.logout();
-                    }
-                } catch (IOException io) {
-                    LOG.error("FTP logout failed", io);
-                } finally {
-                    try {
-                        connection.disconnect();
-                    } catch (IOException io) {
-                        LOG.error("FTP disconnect failed", io);
-                    }
-                }
-            });
+    public void destroyConnection(FtpConnection ftpConnection) {
+        try {
+            if (ftpConnection.isConnected()) {
+                ftpConnection.logout();
+            }
+        } catch (IOException io) {
+            LOG.error("FTP logout failed", io);
+        } finally {
+            try {
+                ftpConnection.disconnect();
+            } catch (IOException io) {
+                LOG.error("FTP disconnect failed", io);
+            }
+        }
     }
 
     public FtpConfiguration getFtpConnectionConfig(String name) {
