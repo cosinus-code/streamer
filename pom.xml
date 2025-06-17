@@ -39,7 +39,7 @@
         <dependencies>
             <dependency>
                 <groupId>org.cosinuscode.swing</groupId>
-                <artifactId>spring-swing-dependencies</artifactId>
+                <artifactId>spring-swing-boot-starter</artifactId>
                 <version>${spring-swing.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
