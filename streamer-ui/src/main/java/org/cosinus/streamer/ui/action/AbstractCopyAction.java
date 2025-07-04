@@ -39,7 +39,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
  */
 public abstract class AbstractCopyAction<M extends CopyActionModel> implements ActionInContext {
 
-    private static final String PACK_CONFIRMATION_UI = "copyConfirmationDialog.json";
+    private static final String COPY_CONFIRMATION_UI = "copyConfirmationDialog.json";
 
     protected final Preferences preferences;
 
@@ -106,7 +106,7 @@ public abstract class AbstractCopyAction<M extends CopyActionModel> implements A
     }
 
     protected <S extends Streamer<S>, T extends Streamer<T>> Dialog<M> copyConfirmationDialog( final M copyAction) {
-        return dialogHandler.createDialog(applicationFrame, PACK_CONFIRMATION_UI, copyAction);
+        return dialogHandler.createDialog(applicationFrame, COPY_CONFIRMATION_UI, copyAction);
     }
 
 

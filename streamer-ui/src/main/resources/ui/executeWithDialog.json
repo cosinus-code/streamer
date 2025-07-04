@@ -1,0 +1,26 @@
+{
+  "fields": [
+    {
+      "id": "applications",
+      "label": "",
+      "type": "list"
+    },
+    {
+      "id": "set-as-default",
+      "label": "set-as-default",
+      "type": "boolean"
+    }
+  ],
+  "buttons": [
+    {
+      "id": "cancel",
+      "label": "cancel",
+      "action": "cancel"
+    },
+    {
+      "id": "ok",
+      "label": "ok",
+      "action": "ok"
+    }
+  ]
+}

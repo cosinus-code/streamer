@@ -21,13 +21,18 @@ import org.cosinus.swing.boot.condition.ConditionalOnMac;
 import org.cosinus.swing.exec.ProcessExecutor;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toMap;
+import static org.apache.commons.io.FilenameUtils.getExtension;
 
 /**
  * Implementation of {@link FileSystem} for Mac
@@ -96,5 +101,28 @@ public class MacFileSystem implements FileSystem {
                 property -> property[1].trim(),
                 (k1, k2) -> k1,
                 MacFileSystemRoot::new));
+    }
+
+    public Set<Application> findCompatibleApplicationsToExecuteFile(File file) {
+        String fileExtension = getExtension(file.getName());
+        final AtomicBoolean matchBlock = new AtomicBoolean(false);
+        return processExecutor.executeAndGetOutput("/System/Library/Frameworks/" +
+                "CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister", "-dump")
+            .map(output -> output.split("\\n"))
+            .stream()
+            .flatMap(Arrays::stream)
+            .map(line -> {
+                if (matchBlock.get() && line.trim().startsWith("path:")) {
+                    matchBlock.set(false);
+                    return line.trim().substring(6);
+                }
+                if (line.contains("bindings") && line.toLowerCase().contains("." + fileExtension.toLowerCase())) {
+                    matchBlock.set(true);
+                }
+                return null;
+            })
+            .filter(Objects::nonNull)
+            .map(applicationName -> new Application(applicationName, applicationName))
+            .collect(Collectors.toSet());
     }
 }

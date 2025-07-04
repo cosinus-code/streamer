@@ -24,15 +24,20 @@ import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.error.JsonConvertException;
 import org.cosinus.swing.error.ProcessExecutionException;
 import org.cosinus.swing.exec.ProcessExecutor;
+import org.cosinus.swing.translate.Translator;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.Files.probeContentType;
+import static java.nio.file.Files.readAllLines;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
 import static java.util.function.Predicate.not;
@@ -44,6 +49,7 @@ import static org.cosinus.streamer.file.system.MtpFileSystemRoot.MTP_PROTOCOL_MA
 import static org.cosinus.swing.error.ProcessExecutionException.PERMISSION_DENIED;
 import static org.cosinus.swing.exec.Command.commands;
 import static org.cosinus.swing.exec.Command.of;
+import static org.cosinus.swing.image.icon.IconSize.X32;
 
 /**
  * Implementation of {@link FileSystem} for Linux
@@ -52,6 +58,7 @@ import static org.cosinus.swing.exec.Command.of;
 @ConditionalOnLinux
 public class LinuxFileSystem implements FileSystem {
 
+    private final Translator translator;
     Logger LOG = LogManager.getLogger(LinuxFileSystem.class);
 
     private static final Set<String> IGNORED_FILESYSTEMS = Set.of("swap", "vfat");
@@ -63,10 +70,12 @@ public class LinuxFileSystem implements FileSystem {
     private final ErrorHandler errorHandler;
 
     public LinuxFileSystem(final ProcessExecutor processExecutor,
-                           final ObjectMapper objectMapper, ErrorHandler errorHandler) {
+                           final ObjectMapper objectMapper,
+                           final ErrorHandler errorHandler, Translator translator) {
         this.processExecutor = processExecutor;
         this.objectMapper = objectMapper;
         this.errorHandler = errorHandler;
+        this.translator = translator;
     }
 
     @Override
@@ -95,7 +104,7 @@ public class LinuxFileSystem implements FileSystem {
             return mergeFileSystemRoots(defaultFileSystemRoot, linuxFileSystemRoot);
         }
         if (v instanceof LinuxFileSystemRoot linuxFileSystemRoot &&
-            u instanceof DefaultFileSystemRoot defaultFileSystemRoot){
+            u instanceof DefaultFileSystemRoot defaultFileSystemRoot) {
             return mergeFileSystemRoots(defaultFileSystemRoot, linuxFileSystemRoot);
         }
         return u instanceof LinuxFileSystemRoot ? v : u;
@@ -213,5 +222,75 @@ public class LinuxFileSystem implements FileSystem {
         } catch (ProcessExecutionException ex) {
             return ofNullable(ex.getOutput());
         }
+    }
+
+    @Override
+    public Set<Application> findCompatibleApplicationsToExecuteFile(File file) {
+        try {
+            String mimeType = probeContentType(file.toPath());
+            return Stream.of("/usr/share/applications",
+                    System.getProperty("user.home") + "/.local/share/applications")
+                .map(File::new)
+                .filter(File::exists)
+                .filter(File::isDirectory)
+                .map(applicationFolder -> applicationFolder
+                    .listFiles((d, name) -> name.endsWith(".desktop")))
+                .filter(Objects::nonNull)
+                .flatMap(Arrays::stream)
+                .map(desktopFile -> getApplicationForDesktopFile(desktopFile, mimeType))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        } catch (IOException e) {
+            throw new UncheckedIOException(format("Failed to read the mimetype for file: %s", file), e);
+        }
+    }
+
+    private Application getApplicationForDesktopFile(File desktopFile, String mimeType) {
+        try {
+            List<String> lines = readAllLines(desktopFile.toPath());
+            boolean supportsMime = lines
+                .stream()
+                .anyMatch(line -> line.startsWith("MimeType=") && line.contains(mimeType));
+
+            if (!supportsMime) {
+                return null;
+            }
+
+            String name = findValue(lines, "Name");
+            String translatedName = translator.getLocale()
+                .map(locale -> ofNullable(findValue(lines, "Name[%s]".formatted(locale.toString())))
+                    .orElseGet(() -> findValue(lines, "Name[%s]".formatted(locale.getCountry()))))
+                .orElse(null);
+            String comment = findValue(lines, "Comment");
+            String translatedComment = translator.getLocale()
+                .map(locale -> ofNullable(findValue(lines, "Comment[%s]".formatted(locale.toString())))
+                    .orElseGet(() -> findValue(lines, "Comment[%s]".formatted(locale.getCountry()))))
+                .orElse(null);
+            boolean runInterminal = ofNullable(findValue(lines, "Terminal"))
+                .map(Boolean::parseBoolean)
+                .orElse(false);
+            String iconName = findValue(lines, "Icon");
+            String executable = findValue(lines, "Exec");
+            if (name == null || executable == null) {
+                return null;
+            }
+
+            return new Application(name, executable, translatedName,
+                comment, translatedComment, iconName, X32, runInterminal);
+
+        } catch (IOException ex) {
+            LOG.error("Failed to read desktop file: {}", desktopFile.getAbsolutePath(), ex);
+            return null;
+        }
+    }
+
+    private String findValue(List<String> lines, String name) {
+        String prefix = name + "=";
+        return lines.stream()
+            .filter(line -> line.startsWith(prefix))
+            .findFirst()
+            .map(line -> line.substring(prefix.length()))
+            .map(String::trim)
+            .orElse(null);
     }
 }

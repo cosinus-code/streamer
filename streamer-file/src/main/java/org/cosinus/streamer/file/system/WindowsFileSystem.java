@@ -18,7 +18,9 @@ package org.cosinus.streamer.file.system;
 import org.cosinus.swing.boot.condition.ConditionalOnWindows;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Implementation of {@link FileSystem} for Windows
@@ -35,5 +37,10 @@ public class WindowsFileSystem implements FileSystem {
 
     @Override
     public void mount(FileSystemRoot fileSystemRoot) {
+    }
+
+    @Override
+    public Set<Application> findCompatibleApplicationsToExecuteFile(File file) {
+        return Set.of();
     }
 }

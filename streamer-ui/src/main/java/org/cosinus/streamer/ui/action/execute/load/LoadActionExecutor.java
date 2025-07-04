@@ -29,7 +29,7 @@ import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.streamer.ui.view.image.ImageStreamerView;
 import org.cosinus.swing.action.execute.ActionExecutor;
 import org.cosinus.swing.dialog.DialogHandler;
-import org.cosinus.swing.io.MimeTypeResolver;
+import org.cosinus.swing.mimetype.MimeTypeResolver;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.stereotype.Component;
 

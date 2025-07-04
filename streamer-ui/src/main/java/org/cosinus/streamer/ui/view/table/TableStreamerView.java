@@ -19,27 +19,34 @@ package org.cosinus.streamer.ui.view.table;
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
+import org.cosinus.streamer.ui.menu.MenuHandler;
 import org.cosinus.streamer.ui.view.DefaultStreamerView;
 import org.cosinus.streamer.ui.view.FindPanel;
 import org.cosinus.streamer.ui.view.PanelLocation;
+import org.cosinus.swing.menu.PopupMenu;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.List;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.lang.Math.max;
 import static java.util.Optional.ofNullable;
+import static org.cosinus.streamer.ui.action.CreateStreamerAction.CREATE_STREAMER_ACTION_ID;
 
 public abstract class TableStreamerView<T extends Streamable> extends DefaultStreamerView<T> {
+
+    @Autowired
+    private MenuHandler menuHandler;
 
     protected DataTable<T> table;
 
     private JScrollPane scroll;
+
+    protected PopupMenu popupContextMenu;
 
     protected TableStreamerView(PanelLocation location) {
         super(location);
@@ -59,15 +66,13 @@ public abstract class TableStreamerView<T extends Streamable> extends DefaultStr
             .map(Color::getRGB)
             .map(Color::new)
             .ifPresent(scroll.getViewport()::setBackground);
-        scroll.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                table.requestFocus();
-            }
-        });
         streamerViewMainPanel.add(scroll, CENTER);
 
         addComponentListener(new ResizeListener());
+
+        popupContextMenu = menuHandler.createPopupMenu(
+            CREATE_STREAMER_ACTION_ID);
+        menuHandler.addContextMenu(scroll, popupContextMenu);
 
         super.initComponents();
     }
@@ -192,6 +197,7 @@ public abstract class TableStreamerView<T extends Streamable> extends DefaultStr
     public void translate() {
         super.translate();
         table.translate();
+        popupContextMenu.translate();
     }
 
     private class ResizeListener extends ComponentAdapter {

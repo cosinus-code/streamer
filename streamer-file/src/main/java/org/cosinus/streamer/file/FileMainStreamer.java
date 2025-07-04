@@ -25,7 +25,10 @@ import org.cosinus.streamer.file.system.FileSystemRoot;
 import org.cosinus.swing.exec.ProcessExecutor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
+import java.awt.*;
 import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
@@ -34,8 +37,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
-import static org.cosinus.streamer.file.FileStreamer.DETAIL_KEY_FREE_MEMORY;
-import static org.cosinus.streamer.file.FileStreamer.DETAIL_KEY_TOTAL_MEMORY;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_COMPUTER;
 
 @RootStreamer("Filesystem")
@@ -131,7 +132,12 @@ public class FileMainStreamer extends MainStreamer<FileStreamer<?>> {
 
     @Override
     public void execute(Path path) {
-        processExecutor.executeFile(path.toFile());
+        try {
+            Desktop.getDesktop().open(path.toFile());
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        //processExecutor.executeFile(path.toFile());
     }
 
     @Override

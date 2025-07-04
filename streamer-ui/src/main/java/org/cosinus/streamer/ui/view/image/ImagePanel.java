@@ -17,11 +17,14 @@
 package org.cosinus.streamer.ui.view.image;
 
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.ui.action.ExecuteStreamerWithAction;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
+import org.cosinus.streamer.ui.menu.MenuHandler;
 import org.cosinus.swing.form.Panel;
 import org.cosinus.swing.image.ImageHandler;
 import org.cosinus.swing.image.ImageSettings;
 import org.cosinus.swing.image.UpdatableImage;
+import org.cosinus.swing.menu.Menu;
 import org.cosinus.swing.menu.PopupMenu;
 import org.cosinus.swing.menu.RadioButtonMenuItem;
 import org.cosinus.swing.resource.ClasspathResourceResolver;
@@ -34,18 +37,18 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.util.LinkedHashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 
 import static java.awt.Color.black;
 import static java.awt.event.MouseEvent.BUTTON3;
 import static java.util.Optional.ofNullable;
-import static org.cosinus.swing.image.ImageSettings.QUALITY;
-import static org.cosinus.swing.image.ImageSettings.SPEED;
-import static org.cosinus.swing.image.ImageSettings.SPEED_QUALITY_BALANCE;
+import static org.cosinus.streamer.ui.action.CreateStreamerAction.CREATE_STREAMER_ACTION_ID;
+import static org.cosinus.streamer.ui.action.DeleteStreamerAction.DELETE_STREAMER_ACTION_NAME;
+import static org.cosinus.streamer.ui.action.ExecuteStreamerAction.EXECUTE_STREAMER_ACTION_ID;
+import static org.cosinus.streamer.ui.action.ExecuteStreamerWithAction.EXECUTE_STREAMER_WITH_ACTION_ID;
+import static org.cosinus.streamer.ui.menu.MenuHandler.SEPARATOR;
+import static org.cosinus.swing.image.ImageSettings.*;
 
 public class ImagePanel extends Panel implements LoadWorkerModel<byte[], UpdatableImage>, ActionListener {
 
@@ -53,17 +56,25 @@ public class ImagePanel extends Panel implements LoadWorkerModel<byte[], Updatab
     public static final String IMAGE_SETTINGS_QUALITY = "image-settings-quality";
     public static final String IMAGE_SETTINGS_BALANCED = "image-settings-balanced";
 
+    public static final String IMAGE_QUALITY = "image-quality";
+
     @Autowired
     private transient ClasspathResourceResolver resourceResolver;
 
     @Autowired
     private transient ImageHandler imageHandler;
 
+    @Autowired
+    private MenuHandler menuHandler;
+
+    @Autowired
+    private ExecuteStreamerWithAction executeStreamerWithAction;
+
     private final ImageStreamerView streamerView;
 
     private final transient Map<String, ImageSettings> imageSettingsMap;
 
-    private PopupMenu popupImageSettings;
+    private PopupMenu popupContextMenu;
 
     private transient Streamer<byte[]> binaryStreamer;
 
@@ -165,13 +176,23 @@ public class ImagePanel extends Panel implements LoadWorkerModel<byte[], Updatab
     }
 
     public void initHeaderPopup() {
-        popupImageSettings = new PopupMenu();
+        popupContextMenu = menuHandler.createPopupMenu(
+            EXECUTE_STREAMER_ACTION_ID,
+            EXECUTE_STREAMER_WITH_ACTION_ID,
+            SEPARATOR,
+            DELETE_STREAMER_ACTION_NAME);
+
+        Menu imageQualityMenu = new Menu(IMAGE_QUALITY);
+        popupContextMenu.add(imageQualityMenu);
+        menuHandler.addContextMenu(this, popupContextMenu);
+
         ButtonGroup popupImageSettingsGroup = new ButtonGroup();
         imageSettingsMap.entrySet()
             .stream()
-            .map(entry -> new RadioButtonMenuItem(this, entry.getValue().equals(imageSettings), entry.getKey()))
+            .map(entry ->
+                new RadioButtonMenuItem(this, entry.getValue().equals(imageSettings), entry.getKey()))
             .forEach(menuItem -> {
-                popupImageSettings.add(menuItem);
+                imageQualityMenu.add(menuItem);
                 popupImageSettingsGroup.add(menuItem);
             });
         translate();
@@ -180,7 +201,7 @@ public class ImagePanel extends Panel implements LoadWorkerModel<byte[], Updatab
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton() == BUTTON3) {
-                    popupImageSettings.show(ImagePanel.this,
+                    popupContextMenu.show(ImagePanel.this,
                         mouseEvent.getX(),
                         mouseEvent.getY());
                 }
@@ -203,6 +224,6 @@ public class ImagePanel extends Panel implements LoadWorkerModel<byte[], Updatab
 
     @Override
     public void translate() {
-        popupImageSettings.translate();
+        popupContextMenu.translate();
     }
 }

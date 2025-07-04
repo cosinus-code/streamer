@@ -21,7 +21,7 @@ import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.remote.RemoteParentStreamer;
 import org.cosinus.streamer.google.drive.connection.GoogleDriveConnection;
-import org.cosinus.swing.io.MimeTypeResolver;
+import org.cosinus.swing.mimetype.MimeTypeResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.file.Path;
@@ -30,7 +30,6 @@ import static java.lang.String.join;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.google.drive.connection.GoogleDriveConnection.*;
-import static org.cosinus.swing.format.FormatHandler.MEGA;
 
 public class GoogleDriveParentStreamer
     extends GoogleDriveStreamer<GoogleDriveStreamer<?>>

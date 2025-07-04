@@ -18,26 +18,24 @@ package org.cosinus.streamer.ui.view.table;
 
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.ui.menu.MenuHandler;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.form.Table;
+import org.cosinus.swing.menu.PopupMenu;
 import org.cosinus.swing.store.ApplicationStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.awt.event.KeyEvent.KEY_PRESSED;
-import static java.awt.event.KeyEvent.KEY_RELEASED;
 import static java.awt.event.MouseEvent.*;
 import static java.lang.Math.abs;
 import static java.util.Arrays.stream;
@@ -48,7 +46,11 @@ import static java.util.stream.IntStream.range;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.isLeftMouseButton;
 import static javax.swing.SwingUtilities.isRightMouseButton;
+import static org.cosinus.streamer.ui.action.CreateStreamerAction.CREATE_STREAMER_ACTION_ID;
+import static org.cosinus.streamer.ui.action.DeleteStreamerAction.DELETE_STREAMER_ACTION_NAME;
 import static org.cosinus.streamer.ui.action.ExecuteStreamerAction.EXECUTE_STREAMER_ACTION_ID;
+import static org.cosinus.streamer.ui.action.ExecuteStreamerWithAction.EXECUTE_STREAMER_WITH_ACTION_ID;
+import static org.cosinus.streamer.ui.menu.MenuHandler.SEPARATOR;
 
 public abstract class DataTable<T extends Streamable> extends Table implements FocusListener {
 
@@ -66,6 +68,9 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
     @Autowired
     protected ApplicationStorage applicationStorage;
 
+    @Autowired
+    private MenuHandler menuHandler;
+
     protected StreamerView<T, T> view;
 
     //TODO
@@ -78,6 +83,8 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
     private int lastWidth, lastHeight;
 
     protected DataTableModel<T> model;
+
+    protected PopupMenu popupContextMenu;
 
     @Override
     public void initComponents() {
@@ -101,6 +108,15 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
         addFocusListener(this);
         getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
             .put(getKeyStroke(KeyEvent.VK_ENTER, 0), "no-action");
+
+        popupContextMenu = menuHandler.createPopupMenu(
+            EXECUTE_STREAMER_ACTION_ID,
+            EXECUTE_STREAMER_WITH_ACTION_ID,
+            SEPARATOR,
+            DELETE_STREAMER_ACTION_NAME,
+            SEPARATOR,
+            CREATE_STREAMER_ACTION_ID);
+        menuHandler.addContextMenu(this, popupContextMenu);
     }
 
     @Override
@@ -314,6 +330,7 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
     @Override
     public void translate() {
         getTableModel().translate();
+        popupContextMenu.translate();
     }
 
     public void setCurrentIndex(int index, boolean silent) {

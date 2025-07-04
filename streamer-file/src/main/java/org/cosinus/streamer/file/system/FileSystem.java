@@ -17,7 +17,9 @@ package org.cosinus.streamer.file.system;
 
 import oshi.SystemInfo;
 
+import java.io.File;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Custom interface for filesystem related functionality
@@ -44,4 +46,6 @@ public interface FileSystem {
     }
 
     void mount(FileSystemRoot fileSystemRoot);
+
+    Set<Application> findCompatibleApplicationsToExecuteFile(File file);
 }

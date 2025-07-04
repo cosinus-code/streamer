@@ -20,7 +20,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.file.system.FileSystem;
 import org.cosinus.streamer.file.system.FileSystemRoot;
-import org.cosinus.swing.io.MimeTypeResolver;
+import org.cosinus.swing.mimetype.MimeTypeResolver;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
