@@ -117,6 +117,12 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
             SEPARATOR,
             CREATE_STREAMER_ACTION_ID);
         menuHandler.addContextMenu(this, popupContextMenu);
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                requestFocus();
+            }
+        });
     }
 
     @Override

@@ -30,6 +30,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 import static java.awt.BorderLayout.CENTER;
@@ -66,6 +68,12 @@ public abstract class TableStreamerView<T extends Streamable> extends DefaultStr
             .map(Color::getRGB)
             .map(Color::new)
             .ifPresent(scroll.getViewport()::setBackground);
+        scroll.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                table.requestFocus();
+            }
+        });
         streamerViewMainPanel.add(scroll, CENTER);
 
         addComponentListener(new ResizeListener());

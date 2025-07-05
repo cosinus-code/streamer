@@ -3,7 +3,9 @@
     {
       "id": "applications",
       "label": "",
-      "type": "list"
+      "type": "list",
+      "width": 300,
+      "height": 400
     },
     {
       "id": "set-as-default",

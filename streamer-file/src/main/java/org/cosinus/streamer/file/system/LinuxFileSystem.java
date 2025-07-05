@@ -248,7 +248,7 @@ public class LinuxFileSystem implements FileSystem {
     private Application getApplicationForDesktopFile(File desktopFile, String mimeType) {
         try {
             List<String> lines = readAllLines(desktopFile.toPath());
-            boolean supportsMime = lines
+            boolean supportsMime = mimeType != null && lines
                 .stream()
                 .anyMatch(line -> line.startsWith("MimeType=") && line.contains(mimeType));
 
