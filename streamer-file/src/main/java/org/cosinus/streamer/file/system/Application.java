@@ -17,106 +17,105 @@
 
 package org.cosinus.streamer.file.system;
 
+import static java.util.Arrays.stream;
+import static java.util.Optional.ofNullable;
+import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
+
+import java.io.File;
+import java.util.Objects;
+import java.util.Set;
+import javax.swing.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.exec.CommandLine;
 import org.cosinus.swing.form.control.ControlValue;
 import org.cosinus.swing.image.icon.IconProvider;
 import org.cosinus.swing.image.icon.IconSize;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.swing.*;
-import java.io.File;
-import java.util.Objects;
-import java.util.Set;
-
-import static java.util.Arrays.stream;
-import static java.util.Optional.ofNullable;
-import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
-
 @Getter
 @Setter
 public class Application implements ControlValue {
 
-    private static final Set<String> FILE_OPTIONS = Set.of("%f", "%F", "%u", "%U");
+  private static final Set<String> FILE_OPTIONS = Set.of("%f", "%F", "%u", "%U");
 
-    @Autowired
-    private IconProvider iconProvider;
+  @Autowired
+  private IconProvider iconProvider;
 
-    private final String name;
+  private final String name;
 
-    private final String executable;
+  private final String executable;
 
-    private final String translatedName;
+  private final String translatedName;
 
-    private final String comment;
+  private final String comment;
 
-    private final String translatedComment;
+  private final String translatedComment;
 
-    private final String iconName;
+  private final String iconName;
 
-    private final IconSize iconSize;
+  private final IconSize iconSize;
 
-    private final boolean runInTerminal;
+  private final boolean runInTerminal;
 
-    public Application(String name, String executable) {
-        this(name, executable, null, null, null, null, null, false);
+  public Application(String name, String executable) {
+    this(name, executable, null, null, null, null, null, false);
+  }
+
+  public Application(String name,
+                     String executable,
+                     String translatedName,
+                     String comment,
+                     String translatedComment,
+                     String iconName,
+                     IconSize iconSize,
+                     boolean runInTerminal) {
+    injectContext(this);
+    this.name = name;
+    this.executable = executable;
+    this.translatedName = translatedName;
+    this.comment = comment;
+    this.translatedComment = translatedComment;
+    this.iconName = iconName;
+    this.iconSize = iconSize;
+    this.runInTerminal = runInTerminal;
+  }
+
+  public String[] getCommandToExecuteFile(File file) {
+    return stream(CommandLine.parse(executable).toStrings())
+        .map(option -> FILE_OPTIONS.contains(option) ? file.getAbsolutePath() : option)
+        .toArray(String[]::new);
+  }
+
+  @Override
+  public Icon getIcon() {
+    return ofNullable(iconName)
+        .flatMap(name -> iconProvider.findIconByName(name, iconSize))
+        .orElse(null);
+  }
+
+  @Override
+  public String getTooltip() {
+    return ofNullable(translatedComment)
+        .orElse(comment);
+  }
+
+  @Override
+  public String toString() {
+    return ofNullable(translatedName)
+        .orElse(name);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof Application that)) {
+      return false;
     }
+    return Objects.equals(name, that.name);
+  }
 
-    public Application(String name,
-                       String executable,
-                       String translatedName,
-                       String comment,
-                       String translatedComment,
-                       String iconName,
-                       IconSize iconSize,
-                       boolean runInTerminal) {
-        injectContext(this);
-        this.name = name;
-        this.executable = executable;
-        this.translatedName = translatedName;
-        this.comment = comment;
-        this.translatedComment = translatedComment;
-        this.iconName = iconName;
-        this.iconSize = iconSize;
-        this.runInTerminal = runInTerminal;
-    }
-
-    public String[] getCommandToExecuteFile(File file) {
-        return stream(executable.split("\\s+"))
-            .map(option -> FILE_OPTIONS.contains(option) ? file.getAbsolutePath() : option)
-            .toArray(String[]::new);
-    }
-
-    @Override
-    public Icon getIcon() {
-        return ofNullable(iconName)
-            .flatMap(name -> iconProvider.findIconByName(name, iconSize))
-            .orElse(null);
-    }
-
-    @Override
-    public String getTooltip() {
-        return ofNullable(translatedComment)
-            .orElse(comment);
-    }
-
-    @Override
-    public String toString() {
-        return ofNullable(translatedName)
-            .orElse(name);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof Application that)) {
-            return false;
-        }
-        return Objects.equals(name, that.name) &&
-            Objects.equals(executable, that.executable);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, executable);
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(name);
+  }
 }

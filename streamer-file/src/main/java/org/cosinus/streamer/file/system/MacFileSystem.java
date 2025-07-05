@@ -15,10 +15,19 @@
  */
 package org.cosinus.streamer.file.system;
 
+import java.util.Collections;
+import java.util.Map;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cosinus.swing.boot.condition.ConditionalOnMac;
 import org.cosinus.swing.exec.ProcessExecutor;
+import org.cosinus.swing.image.icon.IconSize;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -31,6 +40,8 @@ import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
 import static java.util.function.Predicate.not;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 
@@ -39,11 +50,22 @@ import static org.apache.commons.io.FilenameUtils.getExtension;
  */
 @Component
 @ConditionalOnMac
-public class MacFileSystem implements FileSystem {
+public class MacFileSystem implements FileSystem, ApplicationContextAware {
 
     private static final Logger LOG = LogManager.getLogger(MacFileSystem.class);
 
+    private static final String NAME = "name";
+    private static final String PATH = "path";
+    private static final String EXECUTABLE = "executable";
+    private static final String ICONS = "icons";
+    private static final String LOCALIZED_DESCRIPTION = "localizedDescription";
+    private static final String BUNDLE_ID = "bundle id";
+    private static final String CLAIMED_UTI = "claimed utis";
+    private static final String BINDINGS = "bindings";
+
     private final ProcessExecutor processExecutor;
+
+    private Map<String, Set<Application>> applicationsMap;
 
     public MacFileSystem(final ProcessExecutor processExecutor) {
         this.processExecutor = processExecutor;
@@ -54,11 +76,6 @@ public class MacFileSystem implements FileSystem {
         try {
             return getDefaultFileSystemRoot();
         } catch (Exception ex) {
-            if (LOG.isDebugEnabled()) {
-                LOG.error("Failed to get file stores. Will fallback to command line.", ex);
-            } else {
-                LOG.warn("Failed to get file stores. Will fallback to command line: {}", ex.getMessage());
-            }
             return getFileSystemRootsFromCommandLine();
         }
     }
@@ -103,7 +120,16 @@ public class MacFileSystem implements FileSystem {
                 MacFileSystemRoot::new));
     }
 
+    @Override
     public Set<Application> findCompatibleApplicationsToExecuteFile(File file) {
+        return processExecutor.executeAndGetOutput(
+            "mdls", "-name", "kMDItemContentType", "-raw", file.getAbsolutePath())
+            .map(uti -> uti.endsWith("%") ? uti.substring(0, uti.length() - 1) : uti)
+            .map(applicationsMap::get)
+            .orElseGet(Collections::emptySet);
+    }
+
+    public Set<Application> findCompatibleApplicationsToExecuteFile1(File file) {
         String fileExtension = getExtension(file.getName());
         final AtomicBoolean matchBlock = new AtomicBoolean(false);
         return processExecutor.executeAndGetOutput("/System/Library/Frameworks/" +
@@ -116,7 +142,7 @@ public class MacFileSystem implements FileSystem {
                     matchBlock.set(false);
                     return line.trim().substring(6);
                 }
-                if (line.contains("bindings") && line.toLowerCase().contains("." + fileExtension.toLowerCase())) {
+                if (line.startsWith("bindings:") && line.toLowerCase().contains("." + fileExtension.toLowerCase())) {
                     matchBlock.set(true);
                 }
                 return null;
@@ -124,5 +150,69 @@ public class MacFileSystem implements FileSystem {
             .filter(Objects::nonNull)
             .map(applicationName -> new Application(applicationName, applicationName))
             .collect(Collectors.toSet());
+    }
+
+    private Map<String, Set<Application>> buildApplicationsMap() {
+        List<Map<String, String>> entries = processExecutor.executeAndGetOutput(
+            "/System/Library/Frameworks/CoreServices.framework/Frameworks/" +
+                "LaunchServices.framework/Support/lsregister", "-dump")
+            .map(output -> output.split("---+\\n"))
+            .stream()
+            .flatMap(Arrays::stream)
+            .map(this::toKeyValuesMap)
+            .toList();
+
+        Map<String, Application> applicationMap = entries
+            .stream()
+            .filter(keyValuesMap -> keyValuesMap.containsKey(PATH))
+            .filter(keyValuesMap -> keyValuesMap.containsKey(BUNDLE_ID))
+            .collect(toMap(
+                keyValuesMap -> keyValuesMap.get(BUNDLE_ID),
+                this::builApplication));
+
+        return entries
+            .stream()
+            .filter(keyValuesMap -> keyValuesMap.containsKey(BUNDLE_ID))
+            .filter(keyValuesMap -> keyValuesMap.containsKey(CLAIMED_UTI))
+            .flatMap(keyValuesMap ->
+                stream(keyValuesMap.get(CLAIMED_UTI).split(",\\s*"))
+                    .map(uri -> new ImmutablePair<>(
+                        uri,
+                        applicationMap.get(keyValuesMap.get(BUNDLE_ID)))))
+            .collect(groupingBy(
+                Pair::getKey,
+                mapping(Pair::getValue, Collectors.toSet())));
+    }
+
+    private Map<String, String> toKeyValuesMap(String rawApplication) {
+        return stream(rawApplication.split("\\n"))
+            .filter(line -> !line.startsWith(" "))
+            .map(line -> line.split(":\\s+"))
+            .filter(linePieces -> linePieces.length > 1)
+            .collect(toMap(
+                linePieces -> linePieces[0].trim().toLowerCase(),
+                linePieces -> linePieces[1].trim()));
+    }
+
+    private Application builApplication(Map<String, String> keyValueMap) {
+        String applicationPath = keyValueMap.get(PATH).substring(
+            0, keyValueMap.get(PATH).lastIndexOf(" ("));
+
+        return new Application(
+            keyValueMap.get(NAME),
+            "\"" + applicationPath + "/" + keyValueMap.get(EXECUTABLE) + "\" %f",
+            keyValueMap.get(LOCALIZED_DESCRIPTION),
+            keyValueMap.get(NAME),
+            keyValueMap.get(LOCALIZED_DESCRIPTION),
+            applicationPath + "/" + keyValueMap.get(ICONS),
+            IconSize.X32,
+            false);
+    }
+
+    @Override
+    public void setApplicationContext(@NotNull ApplicationContext applicationContext) throws BeansException {
+        new Thread(() -> {
+            applicationsMap = buildApplicationsMap();
+        }).start();
     }
 }
