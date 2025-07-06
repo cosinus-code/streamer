@@ -15,8 +15,6 @@
  */
 package org.cosinus.streamer.file.system;
 
-import java.util.Collections;
-import java.util.Map;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -31,19 +29,13 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
+import static java.util.function.Function.identity;
 import static java.util.function.Predicate.not;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.mapping;
-import static java.util.stream.Collectors.toMap;
-import static org.apache.commons.io.FilenameUtils.getExtension;
+import static java.util.stream.Collectors.*;
 
 /**
  * Implementation of {@link FileSystem} for Mac
@@ -121,41 +113,32 @@ public class MacFileSystem implements FileSystem, ApplicationContextAware {
     }
 
     @Override
-    public Set<Application> findCompatibleApplicationsToExecuteFile(File file) {
+    public Map<String, Application> findCompatibleApplicationsToExecuteFile(File file) {
         return processExecutor.executeAndGetOutput(
-            "mdls", "-name", "kMDItemContentType", "-raw", file.getAbsolutePath())
+                "mdls", "-name", "kMDItemContentType", "-raw", file.getAbsolutePath())
             .map(uti -> uti.endsWith("%") ? uti.substring(0, uti.length() - 1) : uti)
             .map(applicationsMap::get)
-            .orElseGet(Collections::emptySet);
+            .map(applications -> applications
+                .stream()
+                .collect(toMap(Application::getId, identity())))
+            .orElseGet(Collections::emptyMap);
     }
 
-    public Set<Application> findCompatibleApplicationsToExecuteFile1(File file) {
-        String fileExtension = getExtension(file.getName());
-        final AtomicBoolean matchBlock = new AtomicBoolean(false);
-        return processExecutor.executeAndGetOutput("/System/Library/Frameworks/" +
-                "CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister", "-dump")
-            .map(output -> output.split("\\n"))
-            .stream()
-            .flatMap(Arrays::stream)
-            .map(line -> {
-                if (matchBlock.get() && line.trim().startsWith("path:")) {
-                    matchBlock.set(false);
-                    return line.trim().substring(6);
-                }
-                if (line.startsWith("bindings:") && line.toLowerCase().contains("." + fileExtension.toLowerCase())) {
-                    matchBlock.set(true);
-                }
-                return null;
-            })
-            .filter(Objects::nonNull)
-            .map(applicationName -> new Application(applicationName, applicationName))
-            .collect(Collectors.toSet());
+    @Override
+    public String getDefaultApplicationIdToExecuteFile(File file) {
+        //TODO
+        return null;
+    }
+
+    @Override
+    public void setDefaultApplicationToExecuteFile(String applicationId, File file) {
+        //TODO
     }
 
     private Map<String, Set<Application>> buildApplicationsMap() {
         List<Map<String, String>> entries = processExecutor.executeAndGetOutput(
-            "/System/Library/Frameworks/CoreServices.framework/Frameworks/" +
-                "LaunchServices.framework/Support/lsregister", "-dump")
+                "/System/Library/Frameworks/CoreServices.framework/Frameworks/" +
+                    "LaunchServices.framework/Support/lsregister", "-dump")
             .map(output -> output.split("---+\\n"))
             .stream()
             .flatMap(Arrays::stream)
@@ -164,21 +147,21 @@ public class MacFileSystem implements FileSystem, ApplicationContextAware {
 
         Map<String, Application> applicationMap = entries
             .stream()
-            .filter(keyValuesMap -> keyValuesMap.containsKey(PATH))
-            .filter(keyValuesMap -> keyValuesMap.containsKey(BUNDLE_ID))
+            .filter(keyValueMap -> keyValueMap.containsKey(PATH))
+            .filter(keyValueMap -> keyValueMap.containsKey(BUNDLE_ID))
             .collect(toMap(
                 keyValuesMap -> keyValuesMap.get(BUNDLE_ID),
                 this::builApplication));
 
         return entries
             .stream()
-            .filter(keyValuesMap -> keyValuesMap.containsKey(BUNDLE_ID))
-            .filter(keyValuesMap -> keyValuesMap.containsKey(CLAIMED_UTI))
-            .flatMap(keyValuesMap ->
-                stream(keyValuesMap.get(CLAIMED_UTI).split(",\\s*"))
+            .filter(keyValueMap -> keyValueMap.containsKey(BUNDLE_ID))
+            .filter(keyValueMap -> keyValueMap.containsKey(CLAIMED_UTI))
+            .flatMap(keyValueMap ->
+                stream(keyValueMap.get(CLAIMED_UTI).split(",\\s*"))
                     .map(uri -> new ImmutablePair<>(
                         uri,
-                        applicationMap.get(keyValuesMap.get(BUNDLE_ID)))))
+                        applicationMap.get(keyValueMap.get(BUNDLE_ID)))))
             .collect(groupingBy(
                 Pair::getKey,
                 mapping(Pair::getValue, Collectors.toSet())));
@@ -199,6 +182,7 @@ public class MacFileSystem implements FileSystem, ApplicationContextAware {
             0, keyValueMap.get(PATH).lastIndexOf(" ("));
 
         return new Application(
+            keyValueMap.get(BUNDLE_ID),
             keyValueMap.get(NAME),
             "\"" + applicationPath + "/" + keyValueMap.get(EXECUTABLE) + "\" %f",
             keyValueMap.get(LOCALIZED_DESCRIPTION),

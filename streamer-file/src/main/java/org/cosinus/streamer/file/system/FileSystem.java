@@ -19,6 +19,7 @@ import oshi.SystemInfo;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -47,5 +48,9 @@ public interface FileSystem {
 
     void mount(FileSystemRoot fileSystemRoot);
 
-    Set<Application> findCompatibleApplicationsToExecuteFile(File file);
+    Map<String, Application> findCompatibleApplicationsToExecuteFile(File file);
+
+    String getDefaultApplicationIdToExecuteFile(File file);
+
+    void setDefaultApplicationToExecuteFile(String applicationId, File file);
 }

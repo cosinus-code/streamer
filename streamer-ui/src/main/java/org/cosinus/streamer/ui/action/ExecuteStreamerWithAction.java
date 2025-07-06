@@ -20,7 +20,7 @@ package org.cosinus.streamer.ui.action;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.file.system.Application;
 import org.cosinus.streamer.file.system.FileSystem;
-import org.cosinus.streamer.ui.menu.ExecuteWithUiModel;
+import org.cosinus.streamer.ui.menu.ExecuteStreamerModel;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.ActionContext;
@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.Set;
 
 import static java.util.Optional.ofNullable;
@@ -77,19 +78,27 @@ public class ExecuteStreamerWithAction implements ActionInContext {
     }
 
     public void openFile(final File file) {
-        Set<Application> compatibleApplications = fileSystem.findCompatibleApplicationsToExecuteFile(file);
-        if (compatibleApplications.isEmpty()) {
+        Map<String, Application> compatibleApplicationsMap = fileSystem.findCompatibleApplicationsToExecuteFile(file);
+        if (compatibleApplicationsMap.isEmpty()) {
             dialogHandler.showInfo("No compatible applications found.");
             return;
         }
 
-        ExecuteWithUiModel executeWithUiModel = new ExecuteWithUiModel(compatibleApplications);
+        String defaultApplicationId = fileSystem.getDefaultApplicationIdToExecuteFile(file);
+        ExecuteStreamerModel executeStreamerModel = new ExecuteStreamerModel(
+            compatibleApplicationsMap.values(),
+            compatibleApplicationsMap.get(defaultApplicationId));
+
         dialogHandler
-            .showDialog(() -> dialogHandler.createDialog(applicationFrame, OPEN_WITH_DIALOG, executeWithUiModel))
+            .showDialog(() -> dialogHandler.createDialog(applicationFrame, OPEN_WITH_DIALOG, executeStreamerModel))
             .response()
-            .map(ExecuteWithUiModel::getSelectedApplication)
-            .ifPresent(application ->
-                processExecutor.execute(application.isRunInTerminal(), application.getCommandToExecuteFile(file)));
+            .map(ExecuteStreamerModel::getSelectedApplication)
+            .ifPresent(application -> {
+                if (executeStreamerModel.isSetAsDefault()) {
+                    fileSystem.setDefaultApplicationToExecuteFile(application.getId(), file);
+                }
+                processExecutor.execute(application.isRunInTerminal(), application.getCommandToExecuteFile(file));
+            });
     }
 
     @Override

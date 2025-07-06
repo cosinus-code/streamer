@@ -20,7 +20,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+
+import static java.util.Collections.emptyMap;
 
 /**
  * Implementation of {@link FileSystem} for Windows
@@ -40,7 +42,17 @@ public class WindowsFileSystem implements FileSystem {
     }
 
     @Override
-    public Set<Application> findCompatibleApplicationsToExecuteFile(File file) {
-        return Set.of();
+    public Map<String, Application> findCompatibleApplicationsToExecuteFile(File file) {
+        return emptyMap();
+    }
+
+    @Override
+    public String getDefaultApplicationIdToExecuteFile(File file) {
+        return null;
+    }
+
+    @Override
+    public void setDefaultApplicationToExecuteFile(String applicationId, File file) {
+
     }
 }

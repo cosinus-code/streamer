@@ -42,6 +42,8 @@ public class Application implements ControlValue {
   @Autowired
   private IconProvider iconProvider;
 
+  private final String id;
+
   private final String name;
 
   private final String executable;
@@ -58,11 +60,12 @@ public class Application implements ControlValue {
 
   private final boolean runInTerminal;
 
-  public Application(String name, String executable) {
-    this(name, executable, null, null, null, null, null, false);
+  public Application(String id, String name, String executable) {
+    this(id, name, executable, null, null, null, null, null, false);
   }
 
-  public Application(String name,
+  public Application(String id,
+                     String name,
                      String executable,
                      String translatedName,
                      String comment,
@@ -71,6 +74,7 @@ public class Application implements ControlValue {
                      IconSize iconSize,
                      boolean runInTerminal) {
     injectContext(this);
+    this.id = id;
     this.name = name;
     this.executable = executable;
     this.translatedName = translatedName;

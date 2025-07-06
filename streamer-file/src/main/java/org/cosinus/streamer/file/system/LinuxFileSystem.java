@@ -24,6 +24,7 @@ import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.error.JsonConvertException;
 import org.cosinus.swing.error.ProcessExecutionException;
 import org.cosinus.swing.exec.ProcessExecutor;
+import org.cosinus.swing.mimetype.MimeTypeResolver;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.stereotype.Component;
 
@@ -31,13 +32,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.probeContentType;
 import static java.nio.file.Files.readAllLines;
+import static java.util.Arrays.stream;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
 import static java.util.function.Predicate.not;
@@ -59,6 +60,7 @@ import static org.cosinus.swing.image.icon.IconSize.X32;
 public class LinuxFileSystem implements FileSystem {
 
     private final Translator translator;
+    private final MimeTypeResolver mimeTypeResolver;
     Logger LOG = LogManager.getLogger(LinuxFileSystem.class);
 
     private static final Set<String> IGNORED_FILESYSTEMS = Set.of("swap", "vfat");
@@ -71,11 +73,12 @@ public class LinuxFileSystem implements FileSystem {
 
     public LinuxFileSystem(final ProcessExecutor processExecutor,
                            final ObjectMapper objectMapper,
-                           final ErrorHandler errorHandler, Translator translator) {
+                           final ErrorHandler errorHandler, Translator translator, MimeTypeResolver mimeTypeResolver) {
         this.processExecutor = processExecutor;
         this.objectMapper = objectMapper;
         this.errorHandler = errorHandler;
         this.translator = translator;
+        this.mimeTypeResolver = mimeTypeResolver;
     }
 
     @Override
@@ -225,7 +228,7 @@ public class LinuxFileSystem implements FileSystem {
     }
 
     @Override
-    public Set<Application> findCompatibleApplicationsToExecuteFile(File file) {
+    public Map<String, Application> findCompatibleApplicationsToExecuteFile(File file) {
         try {
             String mimeType = probeContentType(file.toPath());
             return Stream.of("/usr/share/applications",
@@ -239,9 +242,33 @@ public class LinuxFileSystem implements FileSystem {
                 .flatMap(Arrays::stream)
                 .map(desktopFile -> getApplicationForDesktopFile(desktopFile, mimeType))
                 .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
+                .collect(toMap(Application::getId, identity()));
         } catch (IOException e) {
             throw new UncheckedIOException(format("Failed to read the mimetype for file: %s", file), e);
+        }
+    }
+
+    @Override
+    public String getDefaultApplicationIdToExecuteFile(File file) {
+        try {
+            String mimeType = probeContentType(file.toPath());
+            return processExecutor.executeAndGetOutput("xdg-mime", "query", "default", mimeType)
+                .flatMap(applicationId -> stream(applicationId.split("\\n")).findFirst())
+                .orElse(null);
+        } catch (IOException e) {
+            throw new UncheckedIOException(
+                format("Failed to get the default application to execute the file: %s", file), e);
+        }
+    }
+
+    @Override
+    public void setDefaultApplicationToExecuteFile(String applicationId, File file) {
+        try {
+            String mimeType = probeContentType(file.toPath());
+            processExecutor.execute("xdg-mime", "default", applicationId, mimeType);
+        } catch (IOException e) {
+            throw new UncheckedIOException(
+                format("Failed to set the application %s as default to execute file: %s", applicationId, file), e);
         }
     }
 
@@ -275,7 +302,8 @@ public class LinuxFileSystem implements FileSystem {
                 return null;
             }
 
-            return new Application(name, executable, translatedName,
+            String id = desktopFile.getName();
+            return new Application(id, name, executable, translatedName,
                 comment, translatedComment, iconName, X32, runInterminal);
 
         } catch (IOException ex) {
