@@ -1,6 +1,11 @@
 {
   "fields": [
     {
+      "id": "default-application",
+      "type": "list",
+      "label": ""
+    },
+    {
       "id": "applications",
       "label": "",
       "type": "list",

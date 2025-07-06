@@ -43,7 +43,7 @@ public class ExecuteStreamerModel implements UIModel {
 
     @Override
     public Set<String> keys() {
-        return Set.of("applications", "set-as-default");
+        return Set.of("default-application", "applications", "set-as-default");
     }
 
     @Override
@@ -75,7 +75,13 @@ public class ExecuteStreamerModel implements UIModel {
 
     @Override
     public Object[] getValues(String key) {
-        return compatibleApplications.toArray(Application[]::new);
+        if (key.equals("applications")) {
+            return compatibleApplications.toArray(Application[]::new);
+        }
+        if (key.equals("default-application")) {
+            return new Application[]{defaultApplication};
+        }
+        return null;
     }
 
     public Application getSelectedApplication() {
