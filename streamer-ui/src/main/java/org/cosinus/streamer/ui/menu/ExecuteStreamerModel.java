@@ -27,6 +27,17 @@ import static java.util.Optional.ofNullable;
 
 public class ExecuteStreamerModel implements UIModel {
 
+    private static final String DEFAULT_APPLICATION = "default-application";
+
+    private static final String COMPATIBLE_APPLICATIONS = "compatible-applications";
+
+    private static final String SET_AS_DEFAULT_APPLICATION = "set-as-default-application";
+
+    private static final Set<String> KEYS = Set.of(
+        DEFAULT_APPLICATION,
+        COMPATIBLE_APPLICATIONS,
+        SET_AS_DEFAULT_APPLICATION);
+
     private final Collection<Application> compatibleApplications;
 
     private final Application defaultApplication;
@@ -43,15 +54,15 @@ public class ExecuteStreamerModel implements UIModel {
 
     @Override
     public Set<String> keys() {
-        return Set.of("default-application", "applications", "set-as-default");
+        return KEYS;
     }
 
     @Override
     public void putValue(String key, Object value) {
-        if (key.equals("applications")) {
+        if (key.equals(COMPATIBLE_APPLICATIONS)) {
             selectedApplication = (Application) value;
         }
-        if (key.equals("set-as-default")) {
+        if (key.equals(SET_AS_DEFAULT_APPLICATION)) {
             ofNullable(value)
                 .filter(Boolean.class::isInstance)
                 .map(Boolean.class::cast)
@@ -61,13 +72,13 @@ public class ExecuteStreamerModel implements UIModel {
 
     @Override
     public Object getValue(String key) {
-        if (key.equals("applications")) {
+        if (key.equals(COMPATIBLE_APPLICATIONS)) {
             return compatibleApplications
                 .stream()
                 .findFirst()
                 .orElse(null);
         }
-        if (key.equals("default-application")) {
+        if (key.equals(DEFAULT_APPLICATION)) {
             return defaultApplication;
         }
         return null;
@@ -75,10 +86,10 @@ public class ExecuteStreamerModel implements UIModel {
 
     @Override
     public Object[] getValues(String key) {
-        if (key.equals("applications")) {
+        if (key.equals(COMPATIBLE_APPLICATIONS)) {
             return compatibleApplications.toArray(Application[]::new);
         }
-        if (key.equals("default-application")) {
+        if (key.equals(DEFAULT_APPLICATION)) {
             return new Application[]{defaultApplication};
         }
         return null;

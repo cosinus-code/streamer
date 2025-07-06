@@ -6,15 +6,15 @@
       "label": ""
     },
     {
-      "id": "applications",
+      "id": "compatible-applications",
       "label": "",
       "type": "list",
       "width": 300,
       "height": 400
     },
     {
-      "id": "set-as-default",
-      "label": "set-as-default",
+      "id": "set-as-default-application",
+      "label": "set-as-default-application",
       "type": "boolean"
     }
   ],
