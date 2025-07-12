@@ -1,22 +1,14 @@
 #! /bin/bash
+basedir=$(dirname "$0")
+source "$basedir/echo-it.sh"
+cd "$basedir" || exit
 
-#
-# Copyright 2025 Cosinus Software
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-
-mvn clean package
-cp -a streamer-ui/output/.  ${STREAMER_HOME:-~/streamer}
-#cp streamer-ui/output/org.streamer.root.policy /usr/share/polkit-1/actions
-#cp streamer-ui/output/image/streamer.png /usr/share/icons
+show-info "Packaging Streamer..."
+cd streamer-ui
+if mvn clean package spring-boot:repackage; then
+  show-info "Deploying Streamer..."
+  cp -a output/.  ${STREAMER_HOME:-~/streamer}
+  #cp output/org.streamer.root.policy /usr/share/polkit-1/actions
+  #cp output/image/streamer.png /usr/share/icons
+  show-info "Streamer was deployed in ${STREAMER_HOME:-~/streamer}"
+fi

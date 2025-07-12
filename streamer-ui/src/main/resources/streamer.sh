@@ -17,5 +17,5 @@ fi
 -jar -Dswing.aatext=true -Dapplication.dir=$APPLICATION_DIR \
 $APPLICATION_DIR/streamer.jar \
 -splash-progress \
--splash-progress-color=127,206,0 \
+-splash-progress-color=50,167,237 \
 -splash-progress-y=250
