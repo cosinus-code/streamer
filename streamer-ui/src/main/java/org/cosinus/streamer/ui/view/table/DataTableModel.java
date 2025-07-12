@@ -126,7 +126,7 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
     }
 
     public void setSortColumn(int column, boolean ascending) {
-        if (column >= 0 && column < getItemsCount()) {
+        if (column >= 0 && column < getColumnCount()) {
             comparator.sort(column, ascending);
         }
     }
@@ -167,7 +167,7 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
 
     @Override
     public void update(List<T> items) {
-        if (!items.isEmpty() && !(items.get(0) instanceof Streamable)) {
+        if (!items.isEmpty() && items.get(0) == null) {
             //TODO: this is just an workaround
             return;
         }
@@ -175,7 +175,6 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
         items
             .stream()
             .filter(Objects::nonNull)
-            .filter(streamable -> Streamable.class.isAssignableFrom(streamable.getClass()))
             .map(Streamable.class::cast)
             .filter(streamable -> !streamable.isHidden() || showHidden)
             .map(ViewItem::new)
