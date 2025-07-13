@@ -32,8 +32,8 @@ import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.form.Panel;
 import org.cosinus.swing.form.control.Label;
 import org.cosinus.swing.image.icon.IconHandler;
-import org.cosinus.swing.menu.MenuItem;
 import org.cosinus.swing.menu.PopupMenu;
+import org.cosinus.swing.menu.RadioButtonMenuItem;
 import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,11 +44,9 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import static java.awt.BorderLayout.*;
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Stream.empty;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_STATUS;
 import static org.cosinus.streamer.ui.view.View.findByName;
 import static org.cosinus.streamer.ui.view.text.TextStreamerView.DIRTY_TEXT_MARKER;
@@ -126,13 +124,16 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
         alternativeViewsPopup = new PopupMenu();
         streamerViewHandler.getAvailableViewNames(parentStreamer)
             .stream()
-            .map(this::viewMenuItem)
+            .map(this::createViewMenuItem)
             .forEach(alternativeViewsPopup::add);
         alternativeViewsPopup.translate();
     }
 
-    private MenuItem viewMenuItem(String viewName) {
-        MenuItem menuItem = new MenuItem(viewAction(viewName), viewKey(viewName));
+    private RadioButtonMenuItem createViewMenuItem(String viewName) {
+        RadioButtonMenuItem menuItem = new RadioButtonMenuItem(
+            changeViewAction(viewName),
+            getName().equals(viewName),
+            viewKey(viewName));
         findByName(viewName)
             .map(View::getIconName)
             .flatMap(iconName -> iconHandler.findIconByName(iconName, X16))
@@ -146,7 +147,7 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
             .orElse(viewName);
     }
 
-    private ActionListener viewAction(String viewName) {
+    private ActionListener changeViewAction(String viewName) {
         return event -> changeViewAction.run(new ChangeViewActionContext(viewName));
     }
 

@@ -43,14 +43,12 @@ public class ChangeViewAction implements ActionInContext {
             return;
         }
 
-        //TODO: maybe this can be done without a load action, but only changing the view
-        // and recreating the corresponding view model
         loadActionExecutor.execute(new LoadActionModel(
             streamerViewHandler.getCurrentLocation(),
             streamerViewHandler.getCurrentView().getParentStreamer(),
             streamerViewHandler.getCurrentView().getCurrentItemIdentifier(),
             viewName));
-        streamerViewHandler.setPreferredViewName(viewName);
+        streamerViewHandler.setPreferredViewName(streamerViewHandler.getCurrentLocation(), viewName);
     }
 
     @Override

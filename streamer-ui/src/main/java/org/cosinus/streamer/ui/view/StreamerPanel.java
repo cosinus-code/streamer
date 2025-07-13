@@ -20,16 +20,16 @@ import org.cosinus.streamer.ui.menu.FavoritesHandler;
 import org.cosinus.streamer.ui.menu.MenuHandler;
 import org.cosinus.swing.form.Panel;
 import org.cosinus.swing.form.ProgressBar;
-import org.cosinus.swing.form.control.Button;
+import org.cosinus.swing.form.control.NoBorderButton;
 import org.cosinus.swing.form.control.TextField;
 import org.cosinus.swing.format.FormatHandler;
+import org.cosinus.swing.image.icon.IconHandler;
 import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.translate.Translator;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicButtonUI;
 import javax.swing.plaf.basic.BasicTextFieldUI;
 import java.awt.*;
 
@@ -41,6 +41,7 @@ import static org.cosinus.streamer.ui.action.FindAndLoadStreamerAction.findAndLo
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.ADDRESS_TOP;
 import static org.cosinus.swing.border.Borders.emptyBorder;
 import static org.cosinus.swing.color.SystemColor.*;
+import static org.cosinus.swing.image.icon.IconSize.X16;
 
 public class StreamerPanel extends Panel {
 
@@ -56,10 +57,16 @@ public class StreamerPanel extends Panel {
     private Translator translator;
 
     @Autowired
+    private IconHandler iconHandler;
+
+    @Autowired
     private FormatHandler formatHandler;
 
     @Autowired
     private FavoritesHandler favoritesHandler;
+
+    @Autowired
+    private StreamerViewHandler streamerViewHandler;
 
     @Autowired
     private MenuHandler menuHandler;
@@ -70,9 +77,11 @@ public class StreamerPanel extends Panel {
 
     private final ProgressBar freeSpaceMarker;
 
-    private Button addAsFavoriteButton;
+    private NoBorderButton showViewsButton;
 
-    private Button showFavoritesButton;
+    private NoBorderButton addAsFavoriteButton;
+
+    private NoBorderButton showFavoritesButton;
 
     private StreamerView<?, ?> view;
 
@@ -100,26 +109,19 @@ public class StreamerPanel extends Panel {
             .ifPresent(freeSpaceLabel::setForeground);
         freeSpaceLabel.setVisible(false);
 
-        JPanel freesSpacePanel = new JPanel(new BorderLayout(5, 5));
-        freesSpacePanel.add(freeSpaceLabel, CENTER);
-        freesSpacePanel.add(freeSpaceMarker, EAST);
-        freesSpacePanel.setBorder(emptyBorder(3));
-        freesSpacePanel.setOpaque(false);
-
-        addAsFavoriteButton = new Button("★");
-        addAsFavoriteButton.setUI(new BasicButtonUI());
-        addAsFavoriteButton.setBorder(emptyBorder(0, 0, 0, 5));
-        addAsFavoriteButton.setCursor(uiHandler.getHandCursor());
-        addAsFavoriteButton.addAction(this::addCurrentAddressAsFavorite);
-
-        showFavoritesButton = new Button("⏷");
-        showFavoritesButton.setUI(new BasicButtonUI());
-        showFavoritesButton.setBorder(emptyBorder(0, 0, 0, 5));
-        showFavoritesButton.setCursor(uiHandler.getHandCursor());
-        showFavoritesButton.addAction(this::showFavoritesSelector);
+        showViewsButton = new NoBorderButton("⏷", this::showViewsSelector);
+        addAsFavoriteButton = new NoBorderButton("★", this::addCurrentAddressAsFavorite);
+        showFavoritesButton = new NoBorderButton("⏷", this::showFavoritesSelector);
         showFavoritesButton.setToolTipText(translator.translate("show-favorite-addresses"));
 
-        JPanel favoritesPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        JPanel freesSpacePanel = new JPanel(new BorderLayout(5, 5));
+        freesSpacePanel.setBorder(emptyBorder(3, 5, 3, 3));
+        freesSpacePanel.add(showViewsButton, WEST);
+        freesSpacePanel.add(freeSpaceLabel, CENTER);
+        freesSpacePanel.add(freeSpaceMarker, EAST);
+        freesSpacePanel.setOpaque(false);
+
+        JPanel favoritesPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         favoritesPanel.add(addAsFavoriteButton);
         favoritesPanel.add(showFavoritesButton);
 
@@ -137,6 +139,7 @@ public class StreamerPanel extends Panel {
     }
 
     private void addCurrentAddressAsFavorite() {
+        view.requestFocus();
         if (favoritesHandler.isFavorite(addressTop.getText())) {
             favoritesHandler.removeFavorite(addressTop.getText());
         } else {
@@ -147,6 +150,7 @@ public class StreamerPanel extends Panel {
     }
 
     public void showFavoritesSelector() {
+        view.requestFocus();
         ofNullable(menuHandler.getFavoritesPopup())
             .ifPresent(popup -> {
                 popup.setVisible(true);
@@ -156,13 +160,12 @@ public class StreamerPanel extends Panel {
             });
     }
 
-    public void showViewSelector() {
+    public void showViewsSelector() {
+        view.requestFocus();
         ofNullable(view.getAlternativeViewsPopup())
             .ifPresent(popup -> {
                 popup.setVisible(true);
-                popup.show(showFavoritesButton,
-                    showFavoritesButton.getWidth() - popup.getWidth(),
-                    showFavoritesButton.getHeight());
+                popup.show(showViewsButton, 0, showFavoritesButton.getHeight() + 5);
             });
     }
 
@@ -178,6 +181,11 @@ public class StreamerPanel extends Panel {
         this.view = view;
         this.view.initComponents();
 
+        showViewsButton.setIcon(ofNullable(view.getName())
+            .flatMap(View::findByName)
+            .map(View::getIconName)
+            .flatMap(iconName -> iconHandler.findIconByName(iconName, X16))
+            .orElse(null));
         revalidate();
     }
 

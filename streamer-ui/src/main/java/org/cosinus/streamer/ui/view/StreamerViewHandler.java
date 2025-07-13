@@ -50,7 +50,7 @@ public class StreamerViewHandler {
 
     private final ViewsMap viewsMap;
 
-    private String preferredViewName;
+    private final Map<PanelLocation, String> preferredViewNames;
 
     public StreamerViewHandler(final Preferences preferences,
                                final Set<StreamerViewCreator> streamerViewCreators,
@@ -65,6 +65,7 @@ public class StreamerViewHandler {
         this.viewsMap = viewsMapProvider
             .getViewsMap()
             .orElseGet(ViewsMap::new);
+        this.preferredViewNames = new HashMap<>();
     }
 
     public PanelLocation getCurrentLocation() {
@@ -106,14 +107,14 @@ public class StreamerViewHandler {
     }
 
     protected Optional<String> getPreferredViewName(PanelLocation location) {
-        return ofNullable(preferredViewName)
+        return ofNullable(preferredViewNames.get(location))
             .or(() -> preferences.findPreference(LEFT == location ? LEFT_VIEW : RIGHT_VIEW)
                 .map(Preference::getRealValue)
                 .map(Object::toString));
     }
 
-    public void setPreferredViewName(String preferredViewName) {
-        this.preferredViewName = preferredViewName;
+    public void setPreferredViewName(PanelLocation location, String preferredViewNames) {
+        this.preferredViewNames.put(location, preferredViewNames);
     }
 
     public StreamerPanel createStreamerPanel(PanelLocation location) {
