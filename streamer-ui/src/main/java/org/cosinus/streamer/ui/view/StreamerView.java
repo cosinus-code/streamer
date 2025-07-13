@@ -182,9 +182,9 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
         add(streamerViewMainPanel, CENTER);
 
         statusBar = new Label(" ");
+        statusBar.setBorder(emptyBorder(0, 3, 0, 3));
         if (preferences.booleanPreference(SHOW_STATUS)) {
             Panel streamerVieBottomPanel = new Panel(new BorderLayout());
-            streamerVieBottomPanel.setBorder(emptyBorder(0, 3, 0, 3));
             streamerVieBottomPanel.add(statusBar, NORTH);
             streamerVieBottomPanel.add(loadingIndicator, SOUTH);
             add(streamerVieBottomPanel, SOUTH);
