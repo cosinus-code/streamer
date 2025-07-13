@@ -35,9 +35,14 @@ import static java.util.Optional.ofNullable;
  * Text streamer view
  */
 public class TextStreamerView extends StreamerView<String, String> {
+
     public static final String TEXT_EDITOR = "text-editor";
 
     public static final String DIRTY_TEXT_MARKER = "*";
+
+    public static final String STATUS_TEXT_SIZE = "status-text-size";
+
+    public static final String STATUS_DIRTY_TEXT_SIZE = "status-dirty-text-size";
 
     private final TextStreamerEditor textEditor;
 
@@ -60,6 +65,7 @@ public class TextStreamerView extends StreamerView<String, String> {
             .ifPresent(scroll.getViewport()::setBackground);
 
         streamerViewMainPanel.add(scroll, CENTER);
+
         textEditor.initComponent();
         this.saveListener = new WorkerListener<>() {
             @Override
@@ -160,5 +166,12 @@ public class TextStreamerView extends StreamerView<String, String> {
     @Override
     protected FindPanel createFindTextPanel() {
         return new FindTextPanel(textEditor);
+    }
+
+    @Override
+    public String getStatus() {
+        return translator.translate(
+            textEditor.isDirty() ? STATUS_DIRTY_TEXT_SIZE : STATUS_TEXT_SIZE,
+            textEditor.getText().length());
     }
 }

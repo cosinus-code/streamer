@@ -41,6 +41,9 @@ import static org.cosinus.streamer.ui.action.CreateStreamerAction.CREATE_STREAME
 
 public abstract class TableStreamerView<T extends Streamable> extends DefaultStreamerView<T> {
 
+    public static final String STATUS_ITEMS_COUNT_KEY = "status-items-count";
+    public static final String STATUS_SELECTED_ITEMS_COUNT_KEY = "status-selected-items-count";
+
     @Autowired
     private MenuHandler menuHandler;
 
@@ -190,6 +193,16 @@ public abstract class TableStreamerView<T extends Streamable> extends DefaultStr
         }
     }
 
+    @Override
+    public String getStatus() {
+        int selectedItemsCount = table.getSelectedItems().size();
+        return selectedItemsCount > 0 ?
+            translator.translate(
+                STATUS_SELECTED_ITEMS_COUNT_KEY, selectedItemsCount, getDataTableModel().getLoadedSize()) :
+            translator.translate(
+                STATUS_ITEMS_COUNT_KEY, getDataTableModel().getLoadedSize());
+    }
+
     public DataTableModel<T> getDataTableModel() {
         return (DataTableModel<T>) table.getModel();
     }
@@ -206,6 +219,7 @@ public abstract class TableStreamerView<T extends Streamable> extends DefaultStr
         super.translate();
         table.translate();
         popupContextMenu.translate();
+        updateStatus();
     }
 
     private class ResizeListener extends ComponentAdapter {

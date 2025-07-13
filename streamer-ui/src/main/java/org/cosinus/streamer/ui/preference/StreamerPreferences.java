@@ -44,7 +44,7 @@ public interface StreamerPreferences {
     String LAST_CONTENT = "last-content";
     String TOOLBAR_FILE = "toolbar-file";
     String TOOLBAR_SYSTEMS = "toolbar-systems";
-    String STATUS = "status";
+    String SHOW_STATUS = "show-status";
     String ICON_TAB = "icon-tab";
     String PACKET_SIZE = "packet-size";
     String GENERAL_FONT = "general-font";

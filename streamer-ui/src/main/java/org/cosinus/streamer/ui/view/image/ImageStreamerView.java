@@ -56,6 +56,8 @@ public class ImageStreamerView extends StreamerView<byte[], UpdatableImage> {
 
     public static final String IMAGE_VIEWER = "image-viewer";
 
+    public static final String STATUS_CURRENT_IMAGE_POSITION = "status-current-image-position";
+
     @Autowired
     private ActionController actionController;
 
@@ -66,6 +68,10 @@ public class ImageStreamerView extends StreamerView<byte[], UpdatableImage> {
     private LoadImageExecutor loadImageExecutor;
 
     private ImagePanel imagePanel;
+
+    private List<BinaryStreamer> imageStreamers;
+
+    private int currentImagePosition;
 
     public ImageStreamerView(PanelLocation location) {
         super(location);
@@ -155,9 +161,16 @@ public class ImageStreamerView extends StreamerView<byte[], UpdatableImage> {
     }
 
     @Override
-    public void reset(Streamer<byte[]> parentStreamer) {
-        imagePanel.reset(parentStreamer);
-        super.reset(parentStreamer);
+    public void reset(Streamer<byte[]> binaryStreamer) {
+        imagePanel.reset(binaryStreamer);
+        super.reset(binaryStreamer);
+        imageStreamers = binaryStreamer.getParent()
+            .stream()
+            .filter(Objects::nonNull)
+            .filter(Streamer::isImage)
+            .map(Streamer::binaryStreamer)
+            .toList();
+        currentImagePosition = imageStreamers.indexOf(binaryStreamer) + 1;
     }
 
     @Override
@@ -170,6 +183,13 @@ public class ImageStreamerView extends StreamerView<byte[], UpdatableImage> {
     public void workerFinished(LoadWorkerModel<byte[], UpdatableImage> loadWorkerModel) {
         super.workerFinished(loadWorkerModel);
         imagePanel.finish();
+    }
+
+    @Override
+    public String getStatus() {
+        return translator.translate(STATUS_CURRENT_IMAGE_POSITION,
+            currentImagePosition,
+            imageStreamers.size());
     }
 
     private void showNextImage() {
@@ -213,11 +233,8 @@ public class ImageStreamerView extends StreamerView<byte[], UpdatableImage> {
     }
 
     private Optional<BinaryStreamer> getSiblingImageInOrder(Streamer<byte[]> binaryStreamer, boolean ascending, boolean relative) {
-        return binaryStreamer.getParent()
+        return imageStreamers
             .stream()
-            .filter(Objects::nonNull)
-            .filter(Streamer::isImage)
-            .map(Streamer::binaryStreamer)
             .filter(streamer -> !relative || areStreamsOrdered(binaryStreamer, streamer, ascending))
             .reduce((current, next) -> areStreamsOrdered(current, next, ascending) ? current : next);
     }

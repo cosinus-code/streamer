@@ -17,7 +17,6 @@
 package org.cosinus.streamer.ui.view.image;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.action.ExecuteStreamerWithAction;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.menu.MenuHandler;
 import org.cosinus.swing.form.Panel;
@@ -43,7 +42,6 @@ import java.util.List;
 import static java.awt.Color.black;
 import static java.awt.event.MouseEvent.BUTTON3;
 import static java.util.Optional.ofNullable;
-import static org.cosinus.streamer.ui.action.CreateStreamerAction.CREATE_STREAMER_ACTION_ID;
 import static org.cosinus.streamer.ui.action.DeleteStreamerAction.DELETE_STREAMER_ACTION_NAME;
 import static org.cosinus.streamer.ui.action.ExecuteStreamerAction.EXECUTE_STREAMER_ACTION_ID;
 import static org.cosinus.streamer.ui.action.ExecuteStreamerWithAction.EXECUTE_STREAMER_WITH_ACTION_ID;
@@ -66,9 +64,6 @@ public class ImagePanel extends Panel implements LoadWorkerModel<byte[], Updatab
 
     @Autowired
     private MenuHandler menuHandler;
-
-    @Autowired
-    private ExecuteStreamerWithAction executeStreamerWithAction;
 
     private final ImageStreamerView streamerView;
 

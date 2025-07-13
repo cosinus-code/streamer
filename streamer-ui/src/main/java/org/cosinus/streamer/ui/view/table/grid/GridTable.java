@@ -111,6 +111,7 @@ public class GridTable<T extends Streamable> extends DataTable<T> implements Act
                 }
                 super.setSelectionInterval(rowIndex1, rowIndex2);
                 model.setCurrentIndex(rowIndex1);
+                view.updateStatus();
             }
         };
     }
@@ -187,6 +188,7 @@ public class GridTable<T extends Streamable> extends DataTable<T> implements Act
         getTableModel().setCurrentIndex(index);
         scrollRectToVisible(getCellRect(index, 0, false));
         repaint();
+        view.updateStatus();
     }
 
     @Override

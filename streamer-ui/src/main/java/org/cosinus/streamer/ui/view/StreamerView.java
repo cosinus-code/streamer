@@ -30,9 +30,11 @@ import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.form.Panel;
+import org.cosinus.swing.form.control.Label;
 import org.cosinus.swing.image.icon.IconHandler;
 import org.cosinus.swing.menu.MenuItem;
 import org.cosinus.swing.menu.PopupMenu;
+import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -42,16 +44,23 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static java.awt.BorderLayout.*;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Stream.empty;
+import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_STATUS;
 import static org.cosinus.streamer.ui.view.View.findByName;
 import static org.cosinus.streamer.ui.view.text.TextStreamerView.DIRTY_TEXT_MARKER;
+import static org.cosinus.swing.border.Borders.emptyBorder;
 import static org.cosinus.swing.image.icon.IconSize.X16;
 
 public abstract class StreamerView<T, V> extends Panel implements WorkerListener<LoadWorkerModel<T, V>, V> {
 
     private static final Logger LOG = LogManager.getLogger(StreamerView.class);
+
+    @Autowired
+    private Preferences preferences;
 
     @Autowired
     protected StreamerViewHandler streamerViewHandler;
@@ -93,6 +102,8 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
     protected Streamer<T> parentStreamer;
 
     private PopupMenu alternativeViewsPopup;
+
+    private Label statusBar;
 
     public StreamerView(PanelLocation location) {
         this.id = UUID.randomUUID().toString();
@@ -169,7 +180,17 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
 
         this.loadingIndicator = createLoadingIndicator();
         add(streamerViewMainPanel, CENTER);
-        add(loadingIndicator, SOUTH);
+
+        statusBar = new Label(" ");
+        if (preferences.booleanPreference(SHOW_STATUS)) {
+            Panel streamerVieBottomPanel = new Panel(new BorderLayout());
+            streamerVieBottomPanel.setBorder(emptyBorder(0, 3, 0, 3));
+            streamerVieBottomPanel.add(statusBar, NORTH);
+            streamerVieBottomPanel.add(loadingIndicator, SOUTH);
+            add(streamerVieBottomPanel, SOUTH);
+        } else {
+            add(loadingIndicator, SOUTH);
+        }
 
         updateForm();
     }
@@ -215,6 +236,7 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
     @Override
     public void workerUpdated(LoadWorkerModel<T, V> loadWorkerModel) {
         loadingIndicator.updateLoading(loadWorkerModel.getLoadedSize(), loadWorkerModel.getTotalSizeToLoad());
+        updateStatus();
     }
 
     @Override
@@ -243,6 +265,10 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
                         parent.getTotalSpace()));
             });
         });
+    }
+
+    public void setStatus(String status) {
+        statusBar.setText(status);
     }
 
     public boolean isDirty() {
@@ -307,6 +333,12 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
     protected FindPanel createFindTextPanel() {
         return null;
     }
+
+    public void updateStatus() {
+        setStatus(getStatus());
+    }
+
+    public abstract String getStatus();
 
     public abstract String getName();
 

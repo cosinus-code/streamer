@@ -97,6 +97,7 @@ public class TextStreamerEditor extends TextEditor implements LoadWorkerModel<St
     public void setDirty(boolean dirty) {
         super.setDirty(dirty);
         view.updateAddressBarAndStreamerPanel();
+        view.updateStatus();
     }
 
     @Override
