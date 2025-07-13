@@ -17,6 +17,7 @@
 
 package org.cosinus.streamer.ui.menu;
 
+import org.cosinus.streamer.ui.action.FindAndLoadStreamerAction;
 import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.menu.MenuItem;
 import org.cosinus.swing.menu.PopupMenu;
@@ -36,8 +37,14 @@ public class MenuHandler {
 
     private final ActionController actionController;
 
-    public MenuHandler(final ActionController actionController) {
+    private final FavoritesHandler favoritesHandler;
+
+    private PopupMenu favoritesPopup;
+
+    public MenuHandler(final ActionController actionController,
+                       final FavoritesHandler favoritesHandler) {
         this.actionController = actionController;
+        this.favoritesHandler = favoritesHandler;
     }
 
     public PopupMenu createPopupMenu(String... actionIds) {
@@ -76,5 +83,24 @@ public class MenuHandler {
                 }
             }
         });
+    }
+
+    public PopupMenu getFavoritesPopup() {
+        if (favoritesPopup == null) {
+            favoritesPopup = new PopupMenu();
+            initFavoritesPopup();
+        }
+        return favoritesPopup;
+    }
+
+    public void initFavoritesPopup() {
+        favoritesPopup.removeAll();
+        favoritesHandler.getFavorites()
+            .stream()
+            .map(favorite -> new MenuItem(
+                e -> new FindAndLoadStreamerAction(() -> favorite).run(),
+                favorite))
+            .forEach(favoritesPopup::add);
+        favoritesPopup.translate();
     }
 }
