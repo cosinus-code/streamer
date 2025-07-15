@@ -125,7 +125,7 @@ public abstract class ArchiveStreamer<T> implements Streamer<T> {
     }
 
     @Override
-    public boolean delete() {
+    public boolean delete(boolean moveToTrash) {
         return archivePackStreamer.delete(archiveEntry);
     }
 

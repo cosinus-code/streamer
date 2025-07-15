@@ -15,10 +15,13 @@
  */
 package org.cosinus.streamer.file.system;
 
+import com.sun.jna.platform.FileUtils;
 import org.cosinus.swing.boot.condition.ConditionalOnWindows;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.Map;
 
@@ -54,5 +57,15 @@ public class WindowsFileSystem implements FileSystem {
     @Override
     public void setDefaultApplicationToExecuteFile(String applicationId, File file) {
 
+    }
+
+    @Override
+    public boolean moveToTrash(File file) {
+        try {
+            FileUtils.getInstance().moveToTrash(file);
+            return true;
+        } catch (IOException ex) {
+            throw new UncheckedIOException(ex);
+        }
     }
 }

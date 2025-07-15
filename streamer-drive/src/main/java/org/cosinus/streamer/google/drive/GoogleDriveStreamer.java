@@ -120,8 +120,8 @@ public abstract class GoogleDriveStreamer<T> implements RemoteStreamer<T, File, 
     }
 
     @Override
-    public boolean delete() {
-        return RemoteStreamer.super.delete();
+    public boolean delete(boolean moveToTrash) {
+        return RemoteStreamer.super.delete(moveToTrash);
     }
 
     @Override

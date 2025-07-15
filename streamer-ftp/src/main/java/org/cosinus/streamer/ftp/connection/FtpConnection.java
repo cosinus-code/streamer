@@ -85,7 +85,7 @@ public class FtpConnection extends FTPClient implements Connection<FTPFile> {
     }
 
     @Override
-    public boolean delete(FTPFile remote) {
+    public boolean delete(FTPFile remote, boolean moveToTrash) {
         return false;
     }
 

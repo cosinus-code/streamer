@@ -15,6 +15,7 @@
  */
 package org.cosinus.streamer.file.system;
 
+import com.sun.jna.platform.FileUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -29,6 +30,8 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -133,6 +136,16 @@ public class MacFileSystem implements FileSystem, ApplicationContextAware {
     @Override
     public void setDefaultApplicationToExecuteFile(String applicationId, File file) {
         //TODO
+    }
+
+    @Override
+    public boolean moveToTrash(File file) {
+        try {
+            FileUtils.getInstance().moveToTrash(file);
+            return true;
+        } catch (IOException ex) {
+            throw new UncheckedIOException(ex);
+        }
     }
 
     private Map<String, Set<Application>> buildApplicationsMap() {

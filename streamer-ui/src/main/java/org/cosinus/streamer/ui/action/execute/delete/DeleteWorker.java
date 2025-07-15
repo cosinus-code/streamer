@@ -82,7 +82,7 @@ public class DeleteWorker extends SimpleWorker<StreamersProgressModel>
     public StreamConsumer<Streamer<?>> openPipelineOutputStream(PipelineStrategy pipelineStrategy)
     {
         return streamerToDelete -> {
-            if (streamerToDelete.exists() && !streamerToDelete.delete()) {
+            if (streamerToDelete.exists() && !streamerToDelete.delete(deleteModel.isMoveToTrash())) {
                 throw new ActionException("act-delete-cannot", streamerToDelete.getPath());
             }
         };
@@ -108,7 +108,6 @@ public class DeleteWorker extends SimpleWorker<StreamersProgressModel>
         try (Stream<? extends Streamer<?>> flatStream = parentStreamer.flatStream(streamerFilter)) {
             flatStream.forEach(streamer ->
                 pipelineListener.onPreparingPipeline(++streamersToDeleteCount));
-            //streamersToDeleteCount = flatStream.count();
         }
     }
 

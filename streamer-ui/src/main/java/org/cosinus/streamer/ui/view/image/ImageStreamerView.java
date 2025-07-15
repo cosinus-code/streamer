@@ -246,7 +246,7 @@ public class ImageStreamerView extends StreamerView<byte[], UpdatableImage> {
     private void deleteCurrentImage() {
         ofNullable(imagePanel.getParentStreamer())
             .ifPresent(binaryStreamer -> {
-                binaryStreamer.delete();
+                binaryStreamer.delete(true);
                 getNextSibling()
                     .or(this::getLastSibling)
                     .map(streamer -> new LoadImageActionModel(streamer, this))

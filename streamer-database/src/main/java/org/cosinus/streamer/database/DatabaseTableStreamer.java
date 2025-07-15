@@ -107,7 +107,7 @@ public class DatabaseTableStreamer extends DatabaseStreamer {
     }
 
     @Override
-    public boolean delete() {
+    public boolean delete(boolean moveToTrash) {
         runRemote(connection -> connection.dropTable(tableName));
         return true;
     }

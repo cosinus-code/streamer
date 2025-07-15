@@ -54,7 +54,7 @@ public class MoveWorker<S extends Streamer<S>, T extends Streamer<T>> extends Co
     protected void copyStreamer(S streamerToCopy, T streamerToCopyTo) {
         super.copyStreamer(streamerToCopy, streamerToCopyTo);
         if (!streamerToCopy.isParent()) {
-            streamerToCopy.delete();
+            streamerToCopy.delete(false);
         }
     }
 
@@ -63,6 +63,6 @@ public class MoveWorker<S extends Streamer<S>, T extends Streamer<T>> extends Co
         super.onWorkerDoneBeforeFinishing();
         source.flatStream(LEVEL_BOTTOM_UP, getStreamerFilter())
             .filter(Streamer::exists)
-            .forEach(Streamer::delete);
+            .forEach(streamer -> streamer.delete(false));
     }
 }

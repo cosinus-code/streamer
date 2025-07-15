@@ -47,8 +47,8 @@ public abstract class ExpandedStreamer<T> implements Streamer<T> {
     }
 
     @Override
-    public boolean delete() {
-        return binaryStreamer.delete();
+    public boolean delete(boolean moveToTrash) {
+        return binaryStreamer.delete(moveToTrash);
     }
 
     @Override

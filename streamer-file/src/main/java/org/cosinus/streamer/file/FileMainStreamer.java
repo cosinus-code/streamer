@@ -22,13 +22,9 @@ import org.cosinus.streamer.api.meta.MainStreamer;
 import org.cosinus.streamer.api.meta.RootStreamer;
 import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.streamer.file.system.FileSystemRoot;
-import org.cosinus.swing.exec.ProcessExecutor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
-import java.awt.*;
 import java.io.File;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
@@ -47,14 +43,10 @@ public class FileMainStreamer extends MainStreamer<FileStreamer<?>> {
 
     private final FileHandler fileHandler;
 
-    private final ProcessExecutor processExecutor;
-
     private List<TranslatableName> detailNames;
 
-    public FileMainStreamer(FileHandler fileHandler,
-                            ProcessExecutor processExecutor) {
+    public FileMainStreamer(FileHandler fileHandler) {
         this.fileHandler = fileHandler;
-        this.processExecutor = processExecutor;
     }
 
     @Override
@@ -132,12 +124,7 @@ public class FileMainStreamer extends MainStreamer<FileStreamer<?>> {
 
     @Override
     public void execute(Path path) {
-        try {
-            Desktop.getDesktop().open(path.toFile());
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-        //processExecutor.executeFile(path.toFile());
+        fileHandler.open(path.toFile());
     }
 
     @Override

@@ -18,14 +18,15 @@ package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.delete.DeleteActionModel;
+import org.cosinus.streamer.ui.action.execute.delete.DeleteStreamerExecutor;
 import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.ActionContext;
 import org.cosinus.swing.action.ActionInContext;
-import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.translate.Translator;
+import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
@@ -48,18 +49,22 @@ public class DeleteStreamerAction implements ActionInContext {
 
     private final Translator translator;
 
-    private final ActionExecutors actionExecutors;
+    private final DeleteStreamerExecutor deleteExecutor;
 
     private final StreamerViewHandler streamerViewHandler;
 
+    private final ApplicationUIHandler uiHandler;
+
     public DeleteStreamerAction(final DialogHandler dialogHandler,
                                 final Translator translator,
-                                final ActionExecutors actionExecutors,
-                                final StreamerViewHandler streamerViewHandler) {
+                                final DeleteStreamerExecutor deleteExecutor,
+                                final StreamerViewHandler streamerViewHandler,
+                                final ApplicationUIHandler uiHandler) {
         this.dialogHandler = dialogHandler;
         this.translator = translator;
-        this.actionExecutors = actionExecutors;
+        this.deleteExecutor = deleteExecutor;
         this.streamerViewHandler = streamerViewHandler;
+        this.uiHandler = uiHandler;
     }
 
     @Override
@@ -73,37 +78,31 @@ public class DeleteStreamerAction implements ActionInContext {
 
     private <S extends Streamer<S>> void deleteFromParentStreamer() {
         final StreamerView<S, S> currentView = (StreamerView<S, S>) streamerViewHandler.getCurrentView();
-        ParentStreamerViewContext<S> streamerViewContext = new ParentStreamerViewContext<>(currentView);
 
+        ParentStreamerViewContext<S> streamerViewContext = new ParentStreamerViewContext<>(currentView);
         if (streamerViewContext.getSelectedItems().isEmpty()) {
             return;
         }
 
-        DeleteActionModel<S> deleteAction = delete(getId(), getActionName(), streamerViewContext);
-//        //TODO: to clarify streamer permissions
+        DeleteActionModel<S> deleteAction = createDeleteActionModel(streamerViewContext);
+
+          //TODO: to clarify streamer permissions
 //        if (!deleteAction.getStreamer().canWriteTo(actionContext.getCurrentView().getLoadedStreamer())) {
 //            dialogHandler.showInfo(translator.translate("act_copy_delete_not_allowed"));
 //            return;
-//        }
-//
-//        if (deleteAction.getStreamersToDelete().size() == 1) {
-//            Streamer streamerToDelete = deleteAction.getStreamersToDelete().get(0);
-//            if (!streamerToDelete.isParent() && deleteApproved(streamerToDelete)) {
-//                if (!actionContext.getCurrentStreamer().delete(streamerToDelete)) {
-//                    dialogHandler.showInfo(translator.translate("act-delete-cannot", streamerToDelete));
-//                    return;
-//                }
-//                actionContext.getCurrentView().reload();
-//                return;
-//            }
 //        }
 
         if (dialogHandler.confirm(applicationFrame,
             translator.translate("act-delete-are-you-sure-streamers"),
             getActionName(),
             YES_NO_CANCEL_OPTION)) {
-            actionExecutors.execute(deleteAction);
+            deleteExecutor.execute(deleteAction);
         }
+    }
+
+    protected <S extends Streamer<S>> DeleteActionModel<S> createDeleteActionModel(
+        final ParentStreamerViewContext<S> streamerViewContext) {
+        return delete(getId(), getActionName(), streamerViewContext);
     }
 
     public String getActionName() {
@@ -117,6 +116,6 @@ public class DeleteStreamerAction implements ActionInContext {
 
     @Override
     public Optional<KeyStroke> getKeyStroke() {
-        return Optional.of(KeyStroke.getKeyStroke(VK_DELETE, 0));
+        return Optional.of(uiHandler.getControlDownKeyStroke(VK_DELETE));
     }
 }

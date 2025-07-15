@@ -68,8 +68,8 @@ public interface RemoteStreamer<T, R, C extends Connection<R>> extends Streamer<
     }
 
     @Override
-    default boolean delete() {
-        return getFromRemote(connection -> connection.delete(getRemote()));
+    default boolean delete(boolean moveToTrash) {
+        return getFromRemote(connection -> connection.delete(getRemote(), moveToTrash));
     }
 
     ConnectionPool<C, R> connectionPool();

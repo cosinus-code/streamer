@@ -102,7 +102,7 @@ public interface Streamable {
         return false;
     }
 
-    default boolean delete() {
+    default boolean delete(boolean moveToTrash) {
         return false;
     }
 

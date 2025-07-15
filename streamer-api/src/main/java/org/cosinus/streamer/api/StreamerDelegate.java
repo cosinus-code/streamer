@@ -44,8 +44,8 @@ public abstract class StreamerDelegate<T, S extends Streamer<?>> implements Stre
     }
 
     @Override
-    public boolean delete() {
-        return delegate.delete();
+    public boolean delete(boolean moveToTrash) {
+        return delegate.delete(moveToTrash);
     }
 
     @Override

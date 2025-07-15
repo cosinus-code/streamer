@@ -148,8 +148,8 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     }
 
     @Override
-    public boolean delete() {
-        return file.delete() && !file.exists();
+    public boolean delete(boolean moveToTrash) {
+        return fileHandler.delete(file, moveToTrash) && !file.exists();
     }
 
     @Override

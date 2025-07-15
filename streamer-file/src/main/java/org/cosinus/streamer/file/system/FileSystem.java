@@ -53,4 +53,6 @@ public interface FileSystem {
     String getDefaultApplicationIdToExecuteFile(File file);
 
     void setDefaultApplicationToExecuteFile(String applicationId, File file);
+
+    boolean moveToTrash(File file);
 }

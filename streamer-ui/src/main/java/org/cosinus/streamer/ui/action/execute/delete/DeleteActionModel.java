@@ -22,7 +22,6 @@ import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
 import org.cosinus.swing.action.execute.ActionModel;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,11 +30,11 @@ import java.util.UUID;
  */
 public class DeleteActionModel<S extends Streamer<S>> extends ActionModel {
 
-    private List<Streamer<S>> streamersToDelete = new ArrayList<>();
-
     private StreamerFilter streamerFilter;
 
     private ParentStreamer<S> parentStreamer;
+
+    private boolean moveToTrash;
 
     public DeleteActionModel(String actionId, String actionName) {
         super(UUID.randomUUID().toString(), actionId, actionName);
@@ -49,8 +48,12 @@ public class DeleteActionModel<S extends Streamer<S>> extends ActionModel {
     }
 
     public DeleteActionModel<S> deleteStreamers(List<Streamer<S>> streamersToDelete) {
-        this.streamersToDelete = streamersToDelete;
         this.streamerFilter = streamersToDelete::contains;
+        return this;
+    }
+
+    public DeleteActionModel<S> moveToTrash() {
+        moveToTrash = true;
         return this;
     }
 
@@ -65,5 +68,9 @@ public class DeleteActionModel<S extends Streamer<S>> extends ActionModel {
     public DeleteActionModel<S> from(ParentStreamer<S> parentStreamer) {
         this.parentStreamer = parentStreamer;
         return this;
+    }
+
+    public boolean isMoveToTrash() {
+        return moveToTrash;
     }
 }

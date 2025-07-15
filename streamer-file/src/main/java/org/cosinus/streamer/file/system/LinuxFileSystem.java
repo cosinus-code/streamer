@@ -272,6 +272,12 @@ public class LinuxFileSystem implements FileSystem {
         }
     }
 
+    @Override
+    public boolean moveToTrash(File file) {
+        processExecutor.execute("gio", "trash", file.getAbsolutePath());
+        return true;
+    }
+
     private Application getApplicationForDesktopFile(File desktopFile, String mimeType) {
         try {
             List<String> lines = readAllLines(desktopFile.toPath());

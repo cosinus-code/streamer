@@ -31,5 +31,5 @@ public interface Connection<R> extends AutoCloseable {
 
     boolean save(R remoteToSave);
 
-    boolean delete(R remote);
+    boolean delete(R remote, boolean moveToTrash);
 }

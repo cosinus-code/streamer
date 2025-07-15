@@ -146,7 +146,7 @@ public class DatabaseConnection implements Connection<ResultSet> {
     }
 
     @Override
-    public boolean delete(ResultSet remote) {
+    public boolean delete(ResultSet remote, boolean moveToTrash) {
         return false;
     }
 

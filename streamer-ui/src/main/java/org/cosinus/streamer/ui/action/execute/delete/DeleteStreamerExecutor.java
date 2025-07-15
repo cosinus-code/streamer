@@ -36,7 +36,7 @@ import static org.cosinus.streamer.ui.action.DeleteStreamerAction.DELETE_STREAME
  * Implementation of {@link ActionExecutor} for deleting streamers based on {@link DeleteWorker}
  */
 @Component
-public class DeleteWorkerExecutor
+public class DeleteStreamerExecutor
     extends WorkerExecutor<DeleteActionModel, StreamersProgressModel, StreamersProgressModel> {
 
     protected final ProgressFormHandler progressFormHandler;
@@ -45,10 +45,10 @@ public class DeleteWorkerExecutor
 
     private final StreamerViewHandler streamerViewHandler;
 
-    protected DeleteWorkerExecutor(final ProgressFormHandler progressFormHandler,
-                                   final WorkerListenerHandler workerListenerHandler,
-                                   final LoadActionExecutor loadActionExecutor,
-                                   final StreamerViewHandler streamerViewHandler) {
+    protected DeleteStreamerExecutor(final ProgressFormHandler progressFormHandler,
+                                     final WorkerListenerHandler workerListenerHandler,
+                                     final LoadActionExecutor loadActionExecutor,
+                                     final StreamerViewHandler streamerViewHandler) {
         super(workerListenerHandler);
         this.progressFormHandler = progressFormHandler;
         this.loadActionExecutor = loadActionExecutor;
@@ -56,7 +56,8 @@ public class DeleteWorkerExecutor
     }
 
     @Override
-    protected void registerWorkerListeners(DeleteActionModel deleteAction, StreamersProgressModel workerModel) {
+    protected void registerWorkerListeners(final DeleteActionModel deleteAction,
+                                           final StreamersProgressModel workerModel) {
         super.registerWorkerListeners(deleteAction, workerModel);
 
         workerListenerHandler.register(StreamersProgressModel.class, deleteAction.getExecutionId(),

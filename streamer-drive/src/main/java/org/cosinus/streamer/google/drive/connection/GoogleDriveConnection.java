@@ -186,7 +186,11 @@ public class GoogleDriveConnection implements Connection<File> {
     }
 
     @Override
-    public boolean delete(File fileToDelete) {
+    public boolean delete(File fileToDelete, boolean moveToTrash) {
+        if (!moveToTrash) {
+            throw new UnsupportedOperationException("Not implemented");
+        }
+
         try {
             client.files()
                 .update(fileToDelete.getId(), new File().setTrashed(true))
