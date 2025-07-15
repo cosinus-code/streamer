@@ -45,6 +45,7 @@ import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.action.DeleteStreamerAction.DELETE_STREAMER_ACTION_NAME;
 import static org.cosinus.streamer.ui.action.ExecuteStreamerAction.EXECUTE_STREAMER_ACTION_ID;
 import static org.cosinus.streamer.ui.action.ExecuteStreamerWithAction.EXECUTE_STREAMER_WITH_ACTION_ID;
+import static org.cosinus.streamer.ui.action.MoveToTrashStreamerAction.MOVE_TO_TRASH_STREAMER_ACTION_NAME;
 import static org.cosinus.streamer.ui.menu.MenuHandler.SEPARATOR;
 import static org.cosinus.swing.image.ImageSettings.*;
 
@@ -175,6 +176,7 @@ public class ImagePanel extends Panel implements LoadWorkerModel<byte[], Updatab
             EXECUTE_STREAMER_ACTION_ID,
             EXECUTE_STREAMER_WITH_ACTION_ID,
             SEPARATOR,
+            MOVE_TO_TRASH_STREAMER_ACTION_NAME,
             DELETE_STREAMER_ACTION_NAME);
 
         Menu imageQualityMenu = new Menu(IMAGE_QUALITY);

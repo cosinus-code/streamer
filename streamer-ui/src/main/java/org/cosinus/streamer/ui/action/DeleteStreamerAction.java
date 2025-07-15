@@ -92,12 +92,16 @@ public class DeleteStreamerAction implements ActionInContext {
 //            return;
 //        }
 
-        if (dialogHandler.confirm(applicationFrame,
+        if (!askForConfirmation() || dialogHandler.confirm(applicationFrame,
             translator.translate("act-delete-are-you-sure-streamers"),
             getActionName(),
             YES_NO_CANCEL_OPTION)) {
             deleteExecutor.execute(deleteAction);
         }
+    }
+
+    protected boolean askForConfirmation() {
+        return true;
     }
 
     protected <S extends Streamer<S>> DeleteActionModel<S> createDeleteActionModel(

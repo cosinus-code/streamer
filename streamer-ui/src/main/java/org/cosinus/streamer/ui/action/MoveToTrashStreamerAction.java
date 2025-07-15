@@ -49,6 +49,11 @@ public class MoveToTrashStreamerAction extends DeleteStreamerAction {
     }
 
     @Override
+    protected boolean askForConfirmation() {
+        return false;
+    }
+
+    @Override
     protected <S extends Streamer<S>> DeleteActionModel<S> createDeleteActionModel(
         final ParentStreamerViewContext<S> streamerViewContext) {
         return super.createDeleteActionModel(streamerViewContext)

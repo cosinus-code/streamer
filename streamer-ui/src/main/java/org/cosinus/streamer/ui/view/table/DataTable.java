@@ -50,6 +50,7 @@ import static org.cosinus.streamer.ui.action.CreateStreamerAction.CREATE_STREAME
 import static org.cosinus.streamer.ui.action.DeleteStreamerAction.DELETE_STREAMER_ACTION_NAME;
 import static org.cosinus.streamer.ui.action.ExecuteStreamerAction.EXECUTE_STREAMER_ACTION_ID;
 import static org.cosinus.streamer.ui.action.ExecuteStreamerWithAction.EXECUTE_STREAMER_WITH_ACTION_ID;
+import static org.cosinus.streamer.ui.action.MoveToTrashStreamerAction.MOVE_TO_TRASH_STREAMER_ACTION_NAME;
 import static org.cosinus.streamer.ui.menu.MenuHandler.SEPARATOR;
 
 public abstract class DataTable<T extends Streamable> extends Table implements FocusListener {
@@ -113,6 +114,7 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
             EXECUTE_STREAMER_ACTION_ID,
             EXECUTE_STREAMER_WITH_ACTION_ID,
             SEPARATOR,
+            MOVE_TO_TRASH_STREAMER_ACTION_NAME,
             DELETE_STREAMER_ACTION_NAME,
             SEPARATOR,
             CREATE_STREAMER_ACTION_ID);
