@@ -17,7 +17,6 @@
 package org.cosinus.streamer.google.drive;
 
 import com.google.api.services.drive.model.File;
-import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.value.TextValue;
 import org.cosinus.streamer.api.value.Value;
 import org.cosinus.swing.format.FormatHandler;
@@ -38,8 +37,8 @@ public class GoogleDriveUserStreamer extends GoogleDriveParentStreamer {
 
     protected List<Value> details;
 
-    public GoogleDriveUserStreamer(ParentStreamer<?> parent, String userId) {
-        super(new File(), Paths.get(userId), parent, userId);
+    public GoogleDriveUserStreamer(String userId) {
+        super(new File(), Paths.get(userId), userId);
         getConnection().ifPresent(connection -> {
             this.totalSpace = connection.getTotalSpace();
             this.freeSpace = connection.getFreeSpace();

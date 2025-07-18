@@ -75,10 +75,11 @@ public class FtpConnection extends FTPClient implements Connection<FTPFile> {
     }
 
     @Override
-    public boolean save(FTPFile remoteToSave) {
+    public FTPFile save(FTPFile remoteToSave) {
         try {
             //TODO
-            return super.makeDirectory(remoteToSave.getName());
+            super.makeDirectory(remoteToSave.getName());
+            return null;
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

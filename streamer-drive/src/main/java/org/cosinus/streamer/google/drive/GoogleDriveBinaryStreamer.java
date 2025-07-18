@@ -17,7 +17,6 @@
 package org.cosinus.streamer.google.drive;
 
 import com.google.api.services.drive.model.File;
-import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.remote.RemoteBinaryStreamer;
 import org.cosinus.streamer.google.drive.connection.GoogleDriveConnection;
 import org.cosinus.streamer.google.drive.connection.GoogleDriveOutputStream;
@@ -36,8 +35,8 @@ public class GoogleDriveBinaryStreamer
 
     private GoogleDriveConnection outputStreamConnection;
 
-    public GoogleDriveBinaryStreamer(File file, Path path, ParentStreamer<?> parent, String userId) {
-        super(file, path, parent, userId);
+    public GoogleDriveBinaryStreamer(File file, Path path, String userId) {
+        super(file, path, userId);
     }
 
     @Override

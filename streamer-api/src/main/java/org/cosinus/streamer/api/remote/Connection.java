@@ -29,7 +29,7 @@ public interface Connection<R> extends AutoCloseable {
 
     OutputStream outputStream(String query, boolean append);
 
-    boolean save(R remoteToSave);
+    R save(R remoteToSave);
 
     boolean delete(R remote, boolean moveToTrash);
 }

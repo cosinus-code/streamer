@@ -141,8 +141,8 @@ public class DatabaseConnection implements Connection<ResultSet> {
     }
 
     @Override
-    public boolean save(ResultSet remoteToSave) {
-        return false;
+    public ResultSet save(ResultSet remoteToSave) {
+        return null;
     }
 
     @Override

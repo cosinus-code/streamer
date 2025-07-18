@@ -22,6 +22,7 @@ import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.remote.ConnectionPool;
 import org.cosinus.streamer.api.remote.RemoteStreamer;
 import org.cosinus.streamer.api.value.*;
+import org.cosinus.streamer.google.drive.connection.GoogleDriveCache;
 import org.cosinus.streamer.google.drive.connection.GoogleDriveConnection;
 import org.cosinus.streamer.google.drive.connection.GoogleDriveConnectionPool;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,13 +41,14 @@ public abstract class GoogleDriveStreamer<T> implements RemoteStreamer<T, File, 
     @Autowired
     protected GoogleDriveConnectionPool googleDriveConnectionPool;
 
+    @Autowired
+    protected GoogleDriveCache cache;
+
     protected final File file;
 
     protected final Path path;
 
     protected final String userId;
-
-    protected ParentStreamer<?> parent;
 
     protected final List<TranslatableName> detailNames;
 
@@ -54,11 +56,10 @@ public abstract class GoogleDriveStreamer<T> implements RemoteStreamer<T, File, 
 
     protected boolean exists = true;
 
-    public GoogleDriveStreamer(File file, Path path, ParentStreamer<?> parent, String userId) {
+    public GoogleDriveStreamer(File file, Path path, String userId) {
         injectContext(this);
         this.file = file;
         this.path = path;
-        this.parent = parent;
         this.userId = userId;
         this.detailNames = asList(
             new TranslatableName(DETAIL_KEY_NAME, null),
@@ -116,12 +117,11 @@ public abstract class GoogleDriveStreamer<T> implements RemoteStreamer<T, File, 
 
     @Override
     public ParentStreamer<?> getParent() {
-        return parent;
-    }
-
-    @Override
-    public boolean delete(boolean moveToTrash) {
-        return RemoteStreamer.super.delete(moveToTrash);
+        return ofNullable(path.getParent())
+            .flatMap(parentPath -> cache.findCachedFile(parentPath)
+                .or(() -> getFromRemote(connection -> connection.findFileByPath(parentPath)))
+                .map(parentFile -> new GoogleDriveParentStreamer(parentFile, parentPath, userId)))
+            .orElseGet(() -> new GoogleDriveUserStreamer(userId));
     }
 
     @Override

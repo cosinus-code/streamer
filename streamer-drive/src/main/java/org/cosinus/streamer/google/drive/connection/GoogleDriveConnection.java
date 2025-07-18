@@ -33,18 +33,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static com.google.api.client.googleapis.media.MediaHttpUploader.CONTENT_LENGTH_HEADER;
 import static com.google.api.client.googleapis.media.MediaHttpUploader.CONTENT_TYPE_HEADER;
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.cosinus.streamer.google.drive.connection.GoogleDriveConnectionFactory.GSON_FACTORY;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 public class GoogleDriveConnection implements Connection<File> {
 
     private static final Logger LOG = LogManager.getLogger(GoogleDriveConnection.class);
+
+    public static final String DRIVE = "drive";
 
     public static final String PROPERTY_UPLOAD_TYPE = "uploadType";
 
@@ -56,8 +61,31 @@ public class GoogleDriveConnection implements Connection<File> {
 
     public static final String HEADER_CONTENT_RANGE = "bytes %d-%d/%d";
 
+    public static final String FOLDER_MIME_TYPE = "application/vnd.google-apps.folder";
+
+    public static final String FILE_MIME_TYPE = "application/octet-stream";
+
+    public static final String STORAGE_QUOTA_FIELDS = "storageQuota(limit,usage)";
+
+    public static final String FILE_FIELDS = "id,name,mimeType,parents,size,modifiedTime";
+
+    public static final String FILES_FIELDS = "files(%s)".formatted(FILE_FIELDS);
+
+    public static final String QUERY_FOR_PARENT = "parents in '%s'";
+
+    public static final String QUERY_FOR_NAME = "name = '%s'";
+
+    public static final String QUERY_NO_TRASH = "trashed = false";
+
+    public static final String AND = " and ";
+
+    public static final String ROOT_PARENT_ID = "root";
+
     @Autowired
     private ApplicationProperties applicationProperties;
+
+    @Autowired
+    private GoogleDriveCache cache;
 
     private final AuthorizationCodeInstalledApp googleAuthenticator;
 
@@ -124,9 +152,10 @@ public class GoogleDriveConnection implements Connection<File> {
 
     public StorageQuota storageQuota() {
         try {
-            return client.about()
+            return client
+                .about()
                 .get()
-                .setFields("storageQuota(limit,usage)")
+                .setFields(STORAGE_QUOTA_FIELDS)
                 .execute().getStorageQuota();
         } catch (IOException ex) {
             LOG.error("Failed to get Google Drive storage quota.", ex);
@@ -137,11 +166,12 @@ public class GoogleDriveConnection implements Connection<File> {
     @Override
     public Stream<File> stream(String query) {
         try {
-            List<File> files = client.files()
+            List<File> files = client
+                .files()
                 .list()
-                .setSpaces("drive")
+                .setSpaces(DRIVE)
                 .setQ(query)
-                .setFields("files(id,name,mimeType,parents,size,modifiedTime)")
+                .setFields(FILES_FIELDS)
                 .execute()
                 .getFiles();
             files.forEach(this::populateFile);
@@ -152,15 +182,83 @@ public class GoogleDriveConnection implements Connection<File> {
         }
     }
 
-    private void populateFile(File file) {
+    public Optional<File> findFileByPath(Path path) {
+        return findFilesByName(path.getFileName().toString())
+            .stream()
+            .filter(file -> isFileCorrespondingToPath(file, path))
+            .findFirst()
+            .map(this::populateFile);
+    }
+
+    private boolean isFileCorrespondingToPath(final File file, final Path path) {
+        if (isRootPath(path) && isRootFile(file)) {
+            return true;
+        }
+        if (isRootPath(path) || !file.getName().equals(path.getFileName().toString())) {
+            return false;
+        }
+
+        String parentId = file
+            .getParents()
+            .stream()
+            .findFirst()
+            .orElse(null);
+        File parentFile = findFilesById(parentId);
+        Path parentPath = path.getParent();
+
+        boolean isFileCorrespondingToPath = isFileCorrespondingToPath(parentFile, parentPath);
+        if (isFileCorrespondingToPath) {
+            cache.cacheFile(path, file);
+        }
+        return isFileCorrespondingToPath;
+    }
+
+    private boolean isRootPath(Path path) {
+        return path == null || path.getFileName().toString().equals(userId);
+    }
+
+    private boolean isRootFile(File file) {
+        return isEmpty(file.getParents());
+    }
+
+    public File findFilesById(String fileId) {
+        try {
+            return populateFile(client
+                .files()
+                .get(fileId)
+                .setFields(FILE_FIELDS)
+                .execute());
+        } catch (IOException e) {
+            throw new UncheckedIOException("Failed to search Google Drive files by id", e);
+        }
+    }
+
+    public List<File> findFilesByName(String fileName) {
+        try {
+            return client
+                .files()
+                .list()
+                .setSpaces(DRIVE)
+                .setQ(QUERY_FOR_NAME.formatted(fileName))
+                .setFields(FILES_FIELDS)
+                .execute()
+                .getFiles();
+        } catch (IOException e) {
+            throw new UncheckedIOException("Failed to search Google Drive files by name", e);
+        }
+    }
+
+    private File populateFile(File file) {
         file.put(PROPERTY_TOTAL_SPACE, getTotalSpace());
         file.put(PROPERTY_FREE_SPACE, getFreeSpace());
+        return file;
     }
 
     @Override
     public InputStream inputStream(String fileId) {
         try {
-            return client.files()
+            return client
+                .files()
                 .get(fileId)
                 .executeMediaAsInputStream();
         } catch (IOException e) {
@@ -174,27 +272,32 @@ public class GoogleDriveConnection implements Connection<File> {
     }
 
     @Override
-    public boolean save(File fileToSave) {
+    public File save(File fileToSave) {
         try {
-            client.files()
+            return client
+                .files()
                 .create(fileToSave)
+                .setFields(FILE_FIELDS)
                 .execute();
         } catch (IOException e) {
             throw new UncheckedIOException("Failed to create Google Drive file: " + fileToSave.getName(), e);
         }
-        return true;
     }
 
     @Override
     public boolean delete(File fileToDelete, boolean moveToTrash) {
-        if (!moveToTrash) {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
         try {
-            client.files()
-                .update(fileToDelete.getId(), new File().setTrashed(true))
-                .execute();
+            if (moveToTrash) {
+                client
+                    .files()
+                    .update(fileToDelete.getId(), new File().setTrashed(true))
+                    .execute();
+            } else {
+                client
+                    .files()
+                    .delete(fileToDelete.getId())
+                    .execute();
+            }
         } catch (IOException e) {
             throw new UncheckedIOException("Failed to delete Google Drive file: " + fileToDelete.getName(), e);
         }

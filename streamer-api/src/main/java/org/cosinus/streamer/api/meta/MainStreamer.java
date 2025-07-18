@@ -68,7 +68,8 @@ public abstract class MainStreamer<S extends Streamer<?>> implements ParentStrea
     @Override
     public Optional<Streamer<?>> findByUrlPath(String urlPath) {
         return urlToPath(urlPath)
-            .flatMap(this::findByPath);
+            .map(path -> findByPath(path)
+                .orElse(this));
     }
 
     public Optional<Path> urlToPath(String urlPath) {

@@ -16,7 +16,6 @@
 package org.cosinus.streamer.api.remote;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.error.SaveStreamerException;
 
 import java.util.Optional;
 import java.util.function.Consumer;

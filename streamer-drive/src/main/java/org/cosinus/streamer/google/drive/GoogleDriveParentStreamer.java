@@ -17,17 +17,17 @@
 package org.cosinus.streamer.google.drive;
 
 import com.google.api.services.drive.model.File;
-import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.error.SaveStreamerException;
 import org.cosinus.streamer.api.remote.RemoteParentStreamer;
 import org.cosinus.streamer.google.drive.connection.GoogleDriveConnection;
 import org.cosinus.swing.mimetype.MimeTypeResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.file.Path;
+import java.util.Collections;
 
 import static java.lang.String.join;
-import static java.util.Collections.singletonList;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.google.drive.connection.GoogleDriveConnection.*;
 
@@ -35,17 +35,7 @@ public class GoogleDriveParentStreamer
     extends GoogleDriveStreamer<GoogleDriveStreamer<?>>
     implements RemoteParentStreamer<GoogleDriveStreamer<?>, File, GoogleDriveConnection> {
 
-    public static final String FOLDER_MIME_TYPE = "application/vnd.google-apps.folder";
-
-    public static final String FILE_MIME_TYPE = "application/octet-stream";
-
-    public static final String QUERY_FOR_PARENT = "parents in '%s'";
-
-    public static final String QUERY_NO_TRASH = "trashed = false";
-
-    public static final String AND = " and ";
-
-    public static final String ROOT_PARENT_ID = "root";
+    public final static String LOCAL = "local";
 
     @Autowired
     private MimeTypeResolver mimeTypeResolver;
@@ -54,8 +44,8 @@ public class GoogleDriveParentStreamer
 
     protected long freeSpace;
 
-    public GoogleDriveParentStreamer(File file, Path path, ParentStreamer<?> parent, String userId) {
-        super(file, path, parent, userId);
+    public GoogleDriveParentStreamer(File file, Path path, String userId) {
+        super(file, path, userId);
         this.totalSpace = ofNullable(file.get(PROPERTY_TOTAL_SPACE))
             .filter(Long.class::isInstance)
             .map(Long.class::cast)
@@ -68,22 +58,50 @@ public class GoogleDriveParentStreamer
     }
 
     @Override
-    public GoogleDriveStreamer<?> createFromRemote(File remoteFile) {
-        return FOLDER_MIME_TYPE.equals(remoteFile.getMimeType()) ?
-            new GoogleDriveParentStreamer(remoteFile, path.resolve(remoteFile.getName()), this, userId) :
-            new GoogleDriveBinaryStreamer(remoteFile, path.resolve(remoteFile.getName()), this, userId);
+    public GoogleDriveStreamer<?> createFromRemote(File file) {
+        return createFromRemoteFileWithPath(file, path.resolve(file.getName()));
+    }
+
+    public GoogleDriveStreamer<?> createFromRemoteFileWithPath(File file, Path path) {
+        boolean localFile = ofNullable(file.get(LOCAL))
+            .map(Object::toString)
+            .map(Boolean::parseBoolean)
+            .orElse(false);
+        if (!localFile) {
+            cache.cacheFile(path, file);
+        }
+        return FOLDER_MIME_TYPE.equals(file.getMimeType()) ?
+            new GoogleDriveParentStreamer(file, path, userId) :
+            new GoogleDriveBinaryStreamer(file, path, userId);
+    }
+
+    @Override
+    public void save() {
+        File file = getFromRemote(connection -> connection.save(getRemote()));
+        if (file == null) {
+            throw new SaveStreamerException("Failed to save streamer:" + getPath().toString());
+        }
+
+        cache.cacheFile(path, file);
+    }
+
+    @Override
+    public GoogleDriveStreamer<?> create(Path path, boolean parent) {
+        File remoteFile = createLocalFile(path, parent, file.getId());
+        GoogleDriveStreamer<?> streamer = createFromRemote(remoteFile);
+        streamer.setExists(false);
+        return streamer;
     }
 
     @Override
     public GoogleDriveStreamer<?> create(Path path, Streamer<?> source) {
-        if (!path.startsWith(this.path)) {
-            //TODO: temporary
-            throw new IllegalArgumentException("Path '" + path + "' is not a child of '" + this.path + "'");
-        }
-        File remoteFile = new File()
-            .setName(path.getFileName().toString())
-            .setParents(singletonList(this.file.getId()))
-            .setMimeType(source.isParent() ? FOLDER_MIME_TYPE : getMimeTypeForPath(path));
+        String parentId = ofNullable(path.getParent())
+            .flatMap(parentPath -> cache.findCachedFile(parentPath)
+                .map(File::getId)
+                .or(() -> getFromRemote(connection -> connection.findFileByPath(parentPath)
+                    .map(File::getId))))
+            .orElse(ROOT_PARENT_ID);
+        File remoteFile = createLocalFile(path, source.isParent(), parentId);
         if (!source.isParent()) {
             remoteFile.set(PROPERTY_TOTAL_TO_UPLOAD, source.getSize());
         }
@@ -92,6 +110,18 @@ public class GoogleDriveParentStreamer
         GoogleDriveStreamer<?> streamer = createFromRemote(remoteFile);
         streamer.setExists(false);
         return streamer;
+    }
+
+    private File createLocalFile(Path path, boolean isParent, String parentId) {
+        File localFile = new File()
+            .setName(path.getFileName().toString())
+            .setParents(ofNullable(parentId)
+                .map(Collections::singletonList)
+                .orElse(null))
+            .setMimeType(isParent ? FOLDER_MIME_TYPE : getMimeTypeForPath(path));
+
+        localFile.put(LOCAL, true);
+        return localFile;
     }
 
     private String getMimeTypeForPath(Path path) {

@@ -16,12 +16,15 @@
 
 package org.cosinus.streamer.google.drive;
 
+import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.meta.MainStreamer;
 import org.cosinus.streamer.api.meta.RootStreamer;
 import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.streamer.google.drive.connection.GoogleDriveUsersProvider;
 
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
@@ -44,7 +47,7 @@ public class GoogleDriveMainStreamer extends MainStreamer<GoogleDriveUserStreame
     public Stream<GoogleDriveUserStreamer> stream() {
         return googleDriveUserIds
             .stream()
-            .map(userId -> new GoogleDriveUserStreamer(this, userId));
+            .map(GoogleDriveUserStreamer::new);
     }
 
     @Override
@@ -55,6 +58,21 @@ public class GoogleDriveMainStreamer extends MainStreamer<GoogleDriveUserStreame
     @Override
     public String getProtocol() {
         return DRIVE_PROTOCOL;
+    }
+
+    @Override
+    public Optional<Streamer<?>> findByPath(Path path) {
+        return googleDriveUserIds
+            .stream()
+            .filter(path::startsWith)
+            .findFirst()
+            .map(GoogleDriveUserStreamer::new)
+            .map(googleDriveUserStreamer -> path.getNameCount() > 1 ?
+                googleDriveUserStreamer
+                    .getFromRemote(connection -> connection.findFileByPath(path))
+                    .map(file -> googleDriveUserStreamer.createFromRemoteFileWithPath(file, path))
+                    .orElse(null) :
+                googleDriveUserStreamer);
     }
 
     @Override
@@ -70,5 +88,4 @@ public class GoogleDriveMainStreamer extends MainStreamer<GoogleDriveUserStreame
             new TranslatableName(DETAIL_KEY_TOTAL_MEMORY, null)
         );
     }
-
 }
