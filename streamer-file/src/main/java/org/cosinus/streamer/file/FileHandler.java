@@ -154,4 +154,8 @@ public class FileHandler {
             throw new UncheckedIOException(e);
         }
     }
+
+    public void copyPermissions(File fileSource, File fileTarget) {
+        fileSystem.copyPermissions(fileSource, fileTarget);
+    }
 }

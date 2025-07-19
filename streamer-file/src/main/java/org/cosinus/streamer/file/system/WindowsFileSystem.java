@@ -68,4 +68,9 @@ public class WindowsFileSystem implements FileSystem {
             throw new UncheckedIOException(ex);
         }
     }
+
+    @Override
+    public void copyPermissions(File fileSource, File fileTarget) {
+
+    }
 }

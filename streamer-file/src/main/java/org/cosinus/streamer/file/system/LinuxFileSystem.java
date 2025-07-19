@@ -278,6 +278,12 @@ public class LinuxFileSystem implements FileSystem {
         return true;
     }
 
+    @Override
+    public void copyPermissions(File fileSource, File fileTarget) {
+        processExecutor.execute(
+            "chmod", "--reference=" + fileSource.getAbsolutePath(), fileTarget.getAbsolutePath());
+    }
+
     private Application getApplicationForDesktopFile(File desktopFile, String mimeType) {
         try {
             List<String> lines = readAllLines(desktopFile.toPath());

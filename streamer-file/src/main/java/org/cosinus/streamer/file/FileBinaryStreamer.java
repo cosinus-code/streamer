@@ -62,13 +62,20 @@ public class FileBinaryStreamer extends FileStreamer<byte[]> implements BinarySt
     }
 
     @Override
-    public boolean isTextCompatible()
-    {
+    public boolean isTextCompatible() {
         return fileHandler.isTextCompatible(getPath());
     }
 
     @Override
     public boolean isImage() {
         return fileHandler.isImage(getPath());
+    }
+
+    @Override
+    public void finalizeCopy(final BinaryStreamer source) {
+        File sourceFile = source.getPath().toFile();
+        if (sourceFile.exists()) {
+            fileHandler.copyPermissions(sourceFile, file);
+        }
     }
 }

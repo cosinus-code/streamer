@@ -48,4 +48,7 @@ public interface BinaryStreamer extends Streamer<byte[]> {
 
     default void finalizeStreaming() {
     }
+
+    default void finalizeCopy(BinaryStreamer source) {
+    }
 }

@@ -20,7 +20,6 @@ import oshi.SystemInfo;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Custom interface for filesystem related functionality
@@ -55,4 +54,6 @@ public interface FileSystem {
     void setDefaultApplicationToExecuteFile(String applicationId, File file);
 
     boolean moveToTrash(File file);
+
+    void copyPermissions(File fileSource, File fileTarget);
 }

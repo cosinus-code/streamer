@@ -148,6 +148,11 @@ public class MacFileSystem implements FileSystem, ApplicationContextAware {
         }
     }
 
+    @Override
+    public void copyPermissions(File fileSource, File fileTarget) {
+
+    }
+
     private Map<String, Set<Application>> buildApplicationsMap() {
         List<Map<String, String>> entries = processExecutor.executeAndGetOutput(
                 "/System/Library/Frameworks/CoreServices.framework/Frameworks/" +
