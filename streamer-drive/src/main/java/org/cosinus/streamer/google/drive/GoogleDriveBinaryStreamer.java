@@ -19,7 +19,6 @@ package org.cosinus.streamer.google.drive;
 import com.google.api.services.drive.model.File;
 import org.cosinus.streamer.api.remote.RemoteBinaryStreamer;
 import org.cosinus.streamer.google.drive.connection.GoogleDriveConnection;
-import org.cosinus.streamer.google.drive.connection.GoogleDriveOutputStream;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -53,7 +52,7 @@ public class GoogleDriveBinaryStreamer
 
     @Override
     public OutputStream getOutputStream(GoogleDriveConnection connection, boolean append) {
-        OutputStream outputStream = new GoogleDriveOutputStream(file, connection, append);
+        OutputStream outputStream = RemoteBinaryStreamer.super.getOutputStream(connection, append);
         this.outputStreamConnection = connection;
         return outputStream;
     }

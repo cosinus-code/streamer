@@ -136,7 +136,7 @@ public class DatabaseConnection implements Connection<ResultSet> {
     }
 
     @Override
-    public OutputStream outputStream(String query, boolean append) {
+    public OutputStream outputStream(ResultSet resultSet, String query, boolean append) {
         return null;
     }
 

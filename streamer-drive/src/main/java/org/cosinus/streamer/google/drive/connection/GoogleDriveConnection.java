@@ -18,28 +18,24 @@ package org.cosinus.streamer.google.drive.connection;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.About.StorageQuota;
 import com.google.api.services.drive.model.File;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.api.remote.Connection;
+import org.cosinus.streamer.google.drive.connection.GoogleDriveClient.Builder;
 import org.cosinus.swing.context.ApplicationProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static com.google.api.client.googleapis.media.MediaHttpUploader.CONTENT_LENGTH_HEADER;
-import static com.google.api.client.googleapis.media.MediaHttpUploader.CONTENT_TYPE_HEADER;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.cosinus.streamer.google.drive.connection.GoogleDriveConnectionFactory.GSON_FACTORY;
@@ -93,7 +89,7 @@ public class GoogleDriveConnection implements Connection<File> {
 
     private final String userId;
 
-    private Drive client;
+    private GoogleDriveClient client;
 
     private Credential googleCredentials;
 
@@ -116,7 +112,7 @@ public class GoogleDriveConnection implements Connection<File> {
             this.googleCredentials = googleAuthenticator.authorize(userId);
         }
         LOG.info("Google Drive credentials initialized for user {}", userId);
-        this.client = new Drive.Builder(httpTransport, GSON_FACTORY, googleCredentials)
+        this.client = new Builder(httpTransport, GSON_FACTORY, googleCredentials)
             .setApplicationName(applicationProperties.getName())
             .build();
         this.storageQuota = storageQuota();
@@ -151,35 +147,27 @@ public class GoogleDriveConnection implements Connection<File> {
     }
 
     public StorageQuota storageQuota() {
-        try {
-            return client
-                .about()
-                .get()
-                .setFields(STORAGE_QUOTA_FIELDS)
-                .execute().getStorageQuota();
-        } catch (IOException ex) {
-            LOG.error("Failed to get Google Drive storage quota.", ex);
-            return null;
-        }
+        return client
+            .about()
+            .get()
+            .setFields(STORAGE_QUOTA_FIELDS)
+            .execute()
+            .getStorageQuota();
     }
 
     @Override
     public Stream<File> stream(String query) {
-        try {
-            List<File> files = client
-                .files()
-                .list()
-                .setSpaces(DRIVE)
-                .setQ(query)
-                .setFields(FILES_FIELDS)
-                .execute()
-                .getFiles();
-            files.forEach(this::populateFile);
+        List<File> files = client
+            .files()
+            .list()
+            .setSpaces(DRIVE)
+            .setQ(query)
+            .setFields(FILES_FIELDS)
+            .execute()
+            .getFiles();
+        files.forEach(this::populateFile);
 
-            return files.stream();
-        } catch (IOException e) {
-            throw new UncheckedIOException("Failed to stream Google Drive files", e);
-        }
+        return files.stream();
     }
 
     public Optional<File> findFileByPath(Path path) {
@@ -221,156 +209,81 @@ public class GoogleDriveConnection implements Connection<File> {
         return isEmpty(file.getParents());
     }
 
-    public File findFilesById(String fileId) {
-        try {
-            return populateFile(client
-                .files()
-                .get(fileId)
-                .setFields(FILE_FIELDS)
-                .execute());
-        } catch (IOException e) {
-            throw new UncheckedIOException("Failed to search Google Drive files by id", e);
-        }
-    }
-
-    public List<File> findFilesByName(String fileName) {
-        try {
-            return client
-                .files()
-                .list()
-                .setSpaces(DRIVE)
-                .setQ(QUERY_FOR_NAME.formatted(fileName))
-                .setFields(FILES_FIELDS)
-                .execute()
-                .getFiles();
-        } catch (IOException e) {
-            throw new UncheckedIOException("Failed to search Google Drive files by name", e);
-        }
-    }
-
     private File populateFile(File file) {
         file.put(PROPERTY_TOTAL_SPACE, getTotalSpace());
         file.put(PROPERTY_FREE_SPACE, getFreeSpace());
         return file;
     }
 
-    @Override
-    public InputStream inputStream(String fileId) {
-        try {
-            return client
+    public File findFilesById(String fileId) {
+            return populateFile(client
                 .files()
                 .get(fileId)
-                .executeMediaAsInputStream();
-        } catch (IOException e) {
-            throw new UncheckedIOException("Failed to create Google Drive input stream for file: " + fileId, e);
-        }
+                .setFields(FILE_FIELDS)
+                .execute());
     }
 
-    @Override
-    public OutputStream outputStream(String query, boolean append) {
-        return null;
+    public List<File> findFilesByName(String fileName) {
+        return client
+            .files()
+            .list()
+            .setSpaces(DRIVE)
+            .setQ(QUERY_FOR_NAME.formatted(fileName))
+            .setFields(FILES_FIELDS)
+            .execute()
+            .getFiles();
     }
 
     @Override
     public File save(File fileToSave) {
-        try {
-            return client
-                .files()
-                .create(fileToSave)
-                .setFields(FILE_FIELDS)
-                .execute();
-        } catch (IOException e) {
-            throw new UncheckedIOException("Failed to create Google Drive file: " + fileToSave.getName(), e);
-        }
+        return client
+            .files()
+            .create(fileToSave)
+            .setFields(FILE_FIELDS)
+            .execute();
     }
 
     @Override
     public boolean delete(File fileToDelete, boolean moveToTrash) {
-        try {
-            if (moveToTrash) {
-                client
-                    .files()
-                    .update(fileToDelete.getId(), new File().setTrashed(true))
-                    .execute();
-            } else {
-                client
-                    .files()
-                    .delete(fileToDelete.getId())
-                    .execute();
-            }
-        } catch (IOException e) {
-            throw new UncheckedIOException("Failed to delete Google Drive file: " + fileToDelete.getName(), e);
+        if (moveToTrash) {
+            client
+                .files()
+                .update(fileToDelete.getId(), new File().setTrashed(true))
+                .execute();
+        } else {
+            client
+                .files()
+                .delete(fileToDelete.getId())
+                .execute();
         }
         return true;
     }
 
-    public File createFileAndStartResumableUpload(File fileToCreate) {
-        try {
-            long totalToUpload = ofNullable(fileToCreate.get(PROPERTY_TOTAL_TO_UPLOAD))
-                .map(Object::toString)
-                .map(Long::parseLong)
-                .orElse(-1L);
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.set(CONTENT_TYPE_HEADER, fileToCreate.getMimeType());
-            headers.set(CONTENT_LENGTH_HEADER, totalToUpload);
-
-            return new CreateResumableFileUpload(client, fileToCreate)
-                .setRequestHeaders(headers)
-                .execute();
-        } catch (IOException e) {
-            throw new UncheckedIOException("Failed to create Google Drive file for upload: " + fileToCreate.getName(), e);
-        }
+    @Override
+    public InputStream inputStream(String fileId) {
+        return client
+            .files()
+            .get(fileId)
+            .executeMediaAsInputStream();
     }
 
-    public void resumeUpload(File fileToUpdate, byte[] bytes) {
-        try (FileUploadRequest request = new FileUploadRequest(client, fileToUpdate, bytes)) {
-            long totalBytesCountToUpload = ofNullable(fileToUpdate.get(PROPERTY_TOTAL_TO_UPLOAD))
-                .map(Object::toString)
-                .map(Long::parseLong)
-                .orElseThrow(() -> new IOException("Unknown upload size for file: " + fileToUpdate.getName()));
+    @Override
+    public OutputStream outputStream(File file, String query, boolean append) {
+        return client
+            .files()
+            //TODO: getResumableUpload(file) when append == true
+            .createResumableUpload(file)
+            .setUploadHeaders()
+            .executeAndGetOutputStream(this);
+    }
 
-            long currentUploadedBytesCount = ofNullable(fileToUpdate.getSize())
-                .orElse(0L);
-
-            long bytesCountToUpload = currentUploadedBytesCount + bytes.length > totalBytesCountToUpload ?
-                totalBytesCountToUpload - currentUploadedBytesCount :
-                bytes.length;
-
-            String contentRange = HEADER_CONTENT_RANGE.formatted(
-                currentUploadedBytesCount,
-                currentUploadedBytesCount + bytesCountToUpload - 1,
-                totalBytesCountToUpload);
-
-            request
-                .setContentLength(bytesCountToUpload)
-                .setContentRange(contentRange)
-                .setThrowExceptionOnExecuteError(false)
-                .execute();
-
-            if (request.isSuccessStatusCode()) {
-                return;
-            }
-
-            if (request.getResponseStatusCode() != 308) {
-                throw new IOException("Failed to upload content for file: %s. Status code: %d"
-                    .formatted(fileToUpdate.getName(), request.getResponseStatusCode()));
-            }
-
-            long bytesCountReceivedByServer = ofNullable(request.getResponseRange())
-                .map(rangeHeader -> rangeHeader.substring(rangeHeader.indexOf('-') + 1))
-                .map(Long::parseLong)
-                .map(range -> range + 1)
-                .orElse(-1L);
-
-            if (bytesCountReceivedByServer >= 0 && bytesCountToUpload > bytesCountReceivedByServer) {
-                throw new IOException("The server received less bytes than expected: %d received but %d was sent"
-                    .formatted(bytesCountReceivedByServer, bytesCountToUpload));
-            }
-            fileToUpdate.setSize(currentUploadedBytesCount + bytesCountToUpload);
-        } catch (IOException e) {
-            throw new UncheckedIOException("Failed to upload content to Google Drive file: " + fileToUpdate.getName(), e);
-        }
+    public void uploadBytesToFile(final File fileToUpdate, final byte[] bytes) {
+        client
+            .files()
+            .resumeUpload(fileToUpdate, bytes)
+            .setResumeUploadHeaders()
+            .setThrowExceptionOnExecuteError(false)
+            .execute();
     }
 
     @Override

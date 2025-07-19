@@ -28,35 +28,30 @@ public class GoogleDriveOutputStream extends OutputStream {
 
     private final GoogleDriveConnection connection;
 
-    private final boolean append;
-
     private final File file;
 
-    public GoogleDriveOutputStream(final File file,
-                                   final GoogleDriveConnection connection,
-                                   boolean append) {
+    public GoogleDriveOutputStream(final GoogleDriveConnection connection,
+                                   final File file) {
         this.connection = connection;
-        this.append = append;
-        //TODO: connection.getFileAndStartResumableUpload(file)
-        this.file = connection.createFileAndStartResumableUpload(file);
+        this.file = file;
     }
 
     @Override
     public void write(int b) throws IOException {
-        updateResumableFile(new byte[]{(byte) b});
+        uploadBytes(new byte[]{(byte) b});
     }
 
     @Override
     public void write(byte @NotNull [] bytes) throws IOException {
-        updateResumableFile(bytes);
+        uploadBytes(bytes);
     }
 
     @Override
     public void write(byte @NotNull [] bytes, int off, int len) throws IOException {
-        updateResumableFile(subarray(bytes, off, off + len));
+        uploadBytes(subarray(bytes, off, off + len));
     }
 
-    private void updateResumableFile(byte[] bytes) throws IOException {
-        connection.resumeUpload(file, bytes);
+    protected void uploadBytes(byte[] bytes) throws IOException {
+        connection.uploadBytesToFile(file, bytes);
     }
 }

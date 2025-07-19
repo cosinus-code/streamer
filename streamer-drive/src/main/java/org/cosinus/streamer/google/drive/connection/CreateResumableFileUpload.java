@@ -16,14 +16,21 @@
 
 package org.cosinus.streamer.google.drive.connection;
 
+import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveRequest;
 import com.google.api.services.drive.model.File;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UncheckedIOException;
 
+import static com.google.api.client.googleapis.media.MediaHttpUploader.CONTENT_LENGTH_HEADER;
+import static com.google.api.client.googleapis.media.MediaHttpUploader.CONTENT_TYPE_HEADER;
 import static com.google.api.client.http.HttpMethods.POST;
+import static java.util.Optional.ofNullable;
+import static org.cosinus.streamer.google.drive.connection.GoogleDriveConnection.PROPERTY_TOTAL_TO_UPLOAD;
 import static org.cosinus.streamer.google.drive.connection.GoogleDriveConnection.PROPERTY_UPLOAD_TYPE;
 import static org.cosinus.streamer.google.drive.connection.GoogleDriveUploadType.RESUMABLE;
 
@@ -35,7 +42,7 @@ public class CreateResumableFileUpload extends DriveRequest<File> {
 
     public static final String UPLOAD_URL = "uploadUrl";
 
-    private File file;
+    private final File file;
 
     private String uploadUrl;
 
@@ -53,9 +60,32 @@ public class CreateResumableFileUpload extends DriveRequest<File> {
     }
 
     @Override
-    public File execute() throws IOException {
-        executeUnparsed();
-        file.put(UPLOAD_URL, uploadUrl);
-        return file;
+    public File execute() {
+        try {
+            executeUnparsed();
+            file.put(UPLOAD_URL, uploadUrl);
+            return file;
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    public OutputStream executeAndGetOutputStream(GoogleDriveConnection connection) {
+        execute();
+        return new GoogleDriveOutputStream(connection, file);
+    }
+
+    public CreateResumableFileUpload setUploadHeaders() {
+        long totalToUpload = ofNullable(file.get(PROPERTY_TOTAL_TO_UPLOAD))
+            .map(Object::toString)
+            .map(Long::parseLong)
+            .orElse(-1L);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(CONTENT_TYPE_HEADER, file.getMimeType());
+        headers.set(CONTENT_LENGTH_HEADER, totalToUpload);
+
+        super.setRequestHeaders(headers);
+        return this;
     }
 }

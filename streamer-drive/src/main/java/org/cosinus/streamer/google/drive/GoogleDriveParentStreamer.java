@@ -101,13 +101,13 @@ public class GoogleDriveParentStreamer
                 .or(() -> getFromRemote(connection -> connection.findFileByPath(parentPath)
                     .map(File::getId))))
             .orElse(ROOT_PARENT_ID);
-        File remoteFile = createLocalFile(path, source.isParent(), parentId);
+        File localFile = createLocalFile(path, source.isParent(), parentId);
         if (!source.isParent()) {
-            remoteFile.set(PROPERTY_TOTAL_TO_UPLOAD, source.getSize());
+            localFile.set(PROPERTY_TOTAL_TO_UPLOAD, source.getSize());
         }
-        remoteFile.put(PROPERTY_TOTAL_SPACE, totalSpace);
-        remoteFile.put(PROPERTY_FREE_SPACE, freeSpace);
-        GoogleDriveStreamer<?> streamer = createFromRemote(remoteFile);
+        localFile.put(PROPERTY_TOTAL_SPACE, totalSpace);
+        localFile.put(PROPERTY_FREE_SPACE, freeSpace);
+        GoogleDriveStreamer<?> streamer = createFromRemote(localFile);
         streamer.setExists(false);
         return streamer;
     }

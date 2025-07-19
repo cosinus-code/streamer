@@ -64,7 +64,7 @@ public class FtpConnection extends FTPClient implements Connection<FTPFile> {
     }
 
     @Override
-    public OutputStream outputStream(String query, boolean append) {
+    public OutputStream outputStream(FTPFile file, String query, boolean append) {
         try {
             return append ?
                 appendFileStream(query) :

@@ -56,7 +56,7 @@ public interface RemoteBinaryStreamer<R, C extends Connection<R>>
     }
 
     default OutputStream getOutputStream(C connection, boolean append) {
-        return connection.outputStream(getStreamQuery(), append);
+        return connection.outputStream(getRemote(), getStreamQuery(), append);
     }
 
     @Override

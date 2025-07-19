@@ -16,28 +16,37 @@
 
 package org.cosinus.streamer.google.drive.connection;
 
-import com.google.api.client.http.*;
-import com.google.api.services.drive.Drive;
+import com.google.api.client.http.HttpRequest;
 import com.google.api.services.drive.model.File;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 
-import static org.cosinus.streamer.google.drive.connection.CreateResumableFileUpload.UPLOAD_URL;
+import static java.util.Optional.ofNullable;
+import static org.cosinus.streamer.google.drive.connection.GoogleDriveConnection.HEADER_CONTENT_RANGE;
+import static org.cosinus.streamer.google.drive.connection.GoogleDriveConnection.PROPERTY_TOTAL_TO_UPLOAD;
 
-public class FileUploadRequest implements AutoCloseable{
+public class FileUploadRequest {
 
     private final HttpRequest request;
 
-    private HttpResponse response;
+    private final File fileToUpdate;
 
-    public FileUploadRequest(final Drive client, File fileToUpdate, final byte[] bytes) throws IOException {
-        GenericUrl uploadUrl = new GenericUrl((String) fileToUpdate.get(UPLOAD_URL));
-        HttpContent content = new ByteArrayContent(fileToUpdate.getMimeType(), bytes);
-        this.request = client.getRequestFactory().buildPutRequest(uploadUrl, content);
+    private final int bytesCount;
+
+    private long bytesCountToUpload;
+
+    private long currentUploadedBytesCount;
+
+    public FileUploadRequest(final HttpRequest request, final File fileToUpdate, final int bytesCount) throws IOException {
+        this.request = request;
+        this.fileToUpdate = fileToUpdate;
+        this.bytesCount = bytesCount;
     }
 
-    public FileUploadRequest setContentLength(Long contentLength) {
-        request.getHeaders().setContentLength(contentLength);
+    public FileUploadRequest setContentLength(long bytesCountToUpload) {
+        request.getHeaders().setContentLength(bytesCountToUpload);
+        this.bytesCountToUpload = bytesCountToUpload;
         return this;
     }
 
@@ -51,35 +60,53 @@ public class FileUploadRequest implements AutoCloseable{
         return this;
     }
 
-    public FileUploadRequest execute() throws IOException {
-        response = request.execute();
+    public FileUploadRequest setResumeUploadHeaders() {
+        long totalBytesCountToUpload = ofNullable(fileToUpdate.get(PROPERTY_TOTAL_TO_UPLOAD))
+            .map(Object::toString)
+            .map(Long::parseLong)
+            .orElseThrow(() -> new GoogleDriveException("Unknown upload size for file: " + fileToUpdate.getName()));
+
+        currentUploadedBytesCount = ofNullable(fileToUpdate.getSize())
+            .orElse(0L);
+
+        long bytesCountToUpload = currentUploadedBytesCount + bytesCount > totalBytesCountToUpload ?
+            totalBytesCountToUpload - currentUploadedBytesCount :
+            bytesCount;
+        setContentLength(bytesCountToUpload);
+
+        String contentRange = HEADER_CONTENT_RANGE.formatted(
+            currentUploadedBytesCount,
+            currentUploadedBytesCount + bytesCountToUpload - 1,
+            totalBytesCountToUpload);
+        setContentRange(contentRange);
+
         return this;
     }
 
-    public boolean isSuccessStatusCode() {
-        return response.isSuccessStatusCode();
-    }
-
-    public int getResponseStatusCode() {
-        return response.getStatusCode();
-    }
-
-    public String getResponseLocation() {
-        return response.getHeaders().getLocation();
-    }
-
-    public String getResponseRange() {
-        return response.getHeaders().getRange();
-    }
-
-    @Override
-    public void close() {
-        if (response != null) {
-            try {
-                response.disconnect();
-            } catch (IOException e) {
-                // ignore
+    public void execute() {
+        try (FileUploadResponse response = new FileUploadResponse(request.execute())) {
+            if (response.isSuccessStatusCode()) {
+                return;
             }
+
+            if (response.getResponseStatusCode() != 308) {
+                throw new GoogleDriveException("Failed to upload content for file: %s. Status code: %d"
+                    .formatted(fileToUpdate.getName(), response.getResponseStatusCode()));
+            }
+
+            long bytesCountReceivedByServer = ofNullable(response.getResponseRange())
+                .map(rangeHeader -> rangeHeader.substring(rangeHeader.indexOf('-') + 1))
+                .map(Long::parseLong)
+                .map(range -> range + 1)
+                .orElse(-1L);
+
+            if (bytesCountReceivedByServer >= 0 && bytesCountToUpload > bytesCountReceivedByServer) {
+                throw new GoogleDriveException("The server received less bytes than expected: %d received but %d was sent"
+                    .formatted(bytesCountReceivedByServer, bytesCountToUpload));
+            }
+            fileToUpdate.setSize(currentUploadedBytesCount + bytesCountToUpload);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
     }
 }
