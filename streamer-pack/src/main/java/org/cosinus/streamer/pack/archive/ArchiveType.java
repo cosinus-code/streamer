@@ -43,7 +43,10 @@ public enum ArchiveType {
     ZIP(org.apache.commons.compress.archivers.ArchiveStreamFactory.ZIP, ZIP_ARCHIVE_ENTRY_CREATOR),
     SEVEN_Z(org.apache.commons.compress.archivers.ArchiveStreamFactory.SEVEN_Z,
         SEVEN_Z_ARCHIVE_ENTRY_CREATOR,
-        SEVEN_Z_ARCHIVE_INPUT_STREAM_CREATOR);
+        SEVEN_Z_ARCHIVE_INPUT_STREAM_CREATOR),
+    RAR(org.cosinus.streamer.pack.archive.ArchiveExpander.RAR,
+        RAR_ARCHIVE_ENTRY_CREATOR,
+        RAR_ARCHIVE_INPUT_STREAM_CREATOR);
 
     private final String name;
 

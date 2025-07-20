@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.pack.archive;
+package org.cosinus.streamer.pack.archive.sevenz;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
+import org.cosinus.streamer.pack.archive.EntryInputStream;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -34,7 +34,9 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static java.util.Optional.empty;
+import static java.util.stream.Stream.concat;
 import static org.apache.commons.io.FilenameUtils.separatorsToUnix;
+import static org.cosinus.streamer.pack.archive.ArchiveExpander.RAR;
 import static org.cosinus.streamer.pack.archive.ArchiveExpander.TGZ;
 
 @Component
@@ -63,11 +65,9 @@ public class ArchiveStreamerFactory extends ArchiveStreamFactory {
 
     public ArchiveType detectArchiverType(final BinaryStreamer binaryStreamer) {
         String extension = FilenameUtils.getExtension(binaryStreamer.getName());
-        return getInputStreamArchiveNames()
-            .stream()
+        return concat(getInputStreamArchiveNames().stream(), Stream.of(TGZ, RAR))
             .filter(archiveName -> archiveName.equals(extension))
             .findFirst()
-            .or(() -> TGZ.equals(extension) ? Optional.of(TGZ) : empty())
             .or(() -> binaryStreamer.getName().contains(".tar.") ? Optional.of(TAR) : empty())
             .or(() -> {
                 try (InputStream bufferedInputStream = new BufferedInputStream(binaryStreamer.inputStream())) {

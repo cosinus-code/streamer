@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.pack.archive;
+package org.cosinus.streamer.pack.archive.sevenz;
 
 public class SevenZEntryOutputStream {
 }

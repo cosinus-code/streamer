@@ -25,13 +25,15 @@ import static org.apache.commons.compress.archivers.ArchiveStreamFactory.*;
 import static org.cosinus.streamer.pack.archive.ArchiveExpander.TGZ;
 import static org.cosinus.streamer.pack.archive.ArchiveExpander.WAR;
 import static org.cosinus.streamer.pack.archive.ArchiveExpander.EAR;
+import static org.cosinus.streamer.pack.archive.ArchiveExpander.RAR;
 
-@Expander({TAR, TGZ, ZIP, JAR, SEVEN_Z, JAR, AR, CPIO, DUMP, WAR, EAR})
+@Expander({TAR, TGZ, ZIP, JAR, SEVEN_Z, JAR, AR, CPIO, DUMP, WAR, EAR, RAR})
 public class ArchiveExpander implements BinaryExpander<ArchiveStreamer> {
 
     public static final String TGZ = "tgz";
     public static final String WAR = "war";
     public static final String EAR = "ear";
+    public static final String RAR = "rar";
 
     @Override
     public ExpandedStreamer<ArchiveStreamer> expand(BinaryStreamer binaryStreamer) {

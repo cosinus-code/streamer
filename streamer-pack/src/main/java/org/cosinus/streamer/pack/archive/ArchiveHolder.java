@@ -57,7 +57,7 @@ public class ArchiveHolder implements ArchiveCache {
 
     @Override
     public List<ArchiveStreamEntry> add(ArchiveStreamEntry archiveEntry) {
-        List<ArchiveStreamEntry> newEntries = new ArrayList<>();
+        Set<ArchiveStreamEntry> newEntries = new TreeSet<>();
 
         entriesMap.put(key(archiveEntry.toPath()), archiveEntry);
         newEntries.add(archiveEntry);
@@ -75,7 +75,7 @@ public class ArchiveHolder implements ArchiveCache {
             .map(this::checkPath)
             .ifPresent(newEntries::addAll);
 
-        return newEntries;
+        return new ArrayList<>(newEntries);
     }
 
     public void addAdditional(ArchiveStreamEntry archiveEntry) {
@@ -84,8 +84,8 @@ public class ArchiveHolder implements ArchiveCache {
         setDirty(true);
     }
 
-    private List<ArchiveStreamEntry> checkPath(Path path) {
-        List<ArchiveStreamEntry> newEntries = new ArrayList<>();
+    private Set<ArchiveStreamEntry> checkPath(Path path) {
+        Set<ArchiveStreamEntry> newEntries = new TreeSet<>();
 
         String entryKey = key(path.toString());
         if (!entriesMap.containsKey(entryKey)) {

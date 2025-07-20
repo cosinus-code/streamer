@@ -22,9 +22,7 @@ import java.util.Date;
 
 import static org.apache.commons.io.FilenameUtils.separatorsToUnix;
 
-public class VirtualDirectoryArchiveEntry implements ArchiveEntry {
-
-    public final String name;
+public record VirtualDirectoryArchiveEntry(String name) implements ArchiveEntry {
 
     public VirtualDirectoryArchiveEntry(String name) {
         String unixName = separatorsToUnix(name);

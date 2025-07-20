@@ -15,6 +15,8 @@
  */
 package org.cosinus.streamer.pack.archive;
 
+import com.github.junrar.Archive;
+import com.github.junrar.exception.RarException;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.arj.ArjArchiveEntry;
 import org.apache.commons.compress.archivers.dump.DumpArchiveEntry;
@@ -26,6 +28,8 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.cosinus.streamer.api.error.StreamerException;
+import org.cosinus.streamer.pack.archive.rar.RarEntryInputStream;
+import org.cosinus.streamer.pack.archive.sevenz.SevenZEntryInputStream;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,6 +38,8 @@ import java.nio.file.Path;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import static java.nio.file.Files.newByteChannel;
+import static java.nio.file.StandardOpenOption.READ;
 import static java.util.Optional.ofNullable;
 
 public final class ArchiveEntryCreators {
@@ -78,7 +84,10 @@ public final class ArchiveEntryCreators {
             .filter(File::exists)
             .map(file -> {
                 try {
-                    return new SevenZFile(file);
+                    return new SevenZFile.Builder()
+                        .setSeekableByteChannel(newByteChannel(path, READ))
+                        .setDefaultName(file.getAbsolutePath())
+                        .get();
                 } catch (IOException e) {
                     throw new StreamerException("Cannot create 7Z file from file: " + file.getPath(), e);
                 }
@@ -98,6 +107,24 @@ public final class ArchiveEntryCreators {
                 }
             })
             .map(ArchiveEntryInputStream::new)
+            .orElse(null);
+
+    public static final BiFunction<String, Long, ArchiveEntry> RAR_ARCHIVE_ENTRY_CREATOR =
+        //TODO
+        (archiveName, size) -> null;
+
+    public static final Function<Path, EntryInputStream> RAR_ARCHIVE_INPUT_STREAM_CREATOR = path ->
+        ofNullable(path)
+            .map(Path::toFile)
+            .filter(File::exists)
+            .map(file -> {
+                try {
+                    return new Archive(new FileInputStream(file));
+                } catch (RarException | IOException e) {
+                    throw new StreamerException("Cannot create TGZ input stream from file: " + file.getPath(), e);
+                }
+            })
+            .map(RarEntryInputStream::new)
             .orElse(null);
 
     private ArchiveEntryCreators() {

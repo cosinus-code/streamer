@@ -14,7 +14,8 @@
     <name>Streamer Pack</name>
 
     <properties>
-        <commons-compress.version>1.20</commons-compress.version>
+        <commons-compress.version>1.27.1</commons-compress.version>
+        <junrar.version>7.5.5</junrar.version>
         <xz.version>1.8</xz.version>
     </properties>
 
@@ -28,6 +29,15 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
             <version>${commons-compress.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.junrar</groupId>
+            <artifactId>junrar</artifactId>
+            <version>${junrar.version}</version>
         </dependency>
         <dependency>
             <groupId>org.tukaani</groupId>
