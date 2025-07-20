@@ -22,10 +22,13 @@ import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.cosinus.streamer.api.error.StreamerException;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.function.BiFunction;
@@ -81,6 +84,20 @@ public final class ArchiveEntryCreators {
                 }
             })
             .map(SevenZEntryInputStream::new)
+            .orElse(null);
+
+    public static final Function<Path, EntryInputStream> TGZ_ARCHIVE_INPUT_STREAM_CREATOR = path ->
+        ofNullable(path)
+            .map(Path::toFile)
+            .filter(File::exists)
+            .map(file -> {
+                try {
+                    return new TarArchiveInputStream(new GzipCompressorInputStream(new FileInputStream(file)));
+                } catch (IOException e) {
+                    throw new StreamerException("Cannot create TGZ input stream from file: " + file.getPath(), e);
+                }
+            })
+            .map(ArchiveEntryInputStream::new)
             .orElse(null);
 
     private ArchiveEntryCreators() {

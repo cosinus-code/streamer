@@ -35,6 +35,7 @@ import java.util.stream.StreamSupport;
 
 import static java.util.Optional.empty;
 import static org.apache.commons.io.FilenameUtils.separatorsToUnix;
+import static org.cosinus.streamer.pack.archive.ArchiveExpander.TGZ;
 
 @Component
 public class ArchiveStreamerFactory extends ArchiveStreamFactory {
@@ -66,6 +67,7 @@ public class ArchiveStreamerFactory extends ArchiveStreamFactory {
             .stream()
             .filter(archiveName -> archiveName.equals(extension))
             .findFirst()
+            .or(() -> TGZ.equals(extension) ? Optional.of(TGZ) : empty())
             .or(() -> binaryStreamer.getName().contains(".tar.") ? Optional.of(TAR) : empty())
             .or(() -> {
                 try (InputStream bufferedInputStream = new BufferedInputStream(binaryStreamer.inputStream())) {
