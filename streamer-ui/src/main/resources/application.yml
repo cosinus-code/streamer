@@ -9,3 +9,37 @@ spring:
   cache:
     jcache:
       config: classpath:ehcache.xml
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: false
+  cloud:
+    openfeign:
+      client:
+        config:
+          strava:
+            url: https://www.strava.com
+      oauth2:
+        enabled: true
+        clientRegistrationId: strava
+  security:
+    oauth2:
+      client:
+        registration:
+          strava:
+            clientId: 169183
+            clientSecret: 9ae35c1f0c5f04dcf083d0b79f19947d0947446f
+            authorization-grant-type: authorization_code
+#            scope: profile:read_all,activity:read_all,activity:write
+            scope: "activity:read_all"
+            client-authentication-method: client_secret_post
+        provider:
+          strava:
+            authorization-uri: https://www.strava.com/oauth/authorize
+            token-uri: https://www.strava.com/oauth/token
+            user-info-uri: https://www.strava.com/api/v3/athlete
+        receiver:
+          enabled: true
+          port: 8889
+        storing:
+          location: strava
+

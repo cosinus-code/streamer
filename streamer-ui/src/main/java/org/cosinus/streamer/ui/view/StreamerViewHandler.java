@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.ui.view;
 
+import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.view.table.grid.GridViewCreator;
 import org.cosinus.swing.preference.Preference;
@@ -28,6 +29,7 @@ import static java.util.Arrays.stream;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
+import static org.cosinus.streamer.api.ParentStreamer.FOLDER_VIEW_ID;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.*;
 import static org.cosinus.streamer.ui.view.PanelLocation.LEFT;
 import static org.cosinus.streamer.ui.view.PanelLocation.RIGHT;
@@ -92,6 +94,7 @@ public class StreamerViewHandler {
 
     public <T, V> StreamerView<T, V> getStreamerView(PanelLocation location, String streamerViewName) {
         Optional<String> resolvedViewName = ofNullable(streamerViewName)
+            .filter(viewName -> !viewName.equals(FOLDER_VIEW_ID))
             .or(() -> getPreferredViewName(location));
 
         return resolvedViewName

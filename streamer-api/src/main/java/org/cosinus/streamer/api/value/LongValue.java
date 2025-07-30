@@ -59,7 +59,7 @@ public class LongValue extends Value {
     @Override
     public int compareTo(@NotNull Value other) {
         if (other instanceof LongValue longValue) {
-            return Long.compare(value, longValue.value);
+            return compare(value, longValue.value);
         }
         return compare(this, other);
     }

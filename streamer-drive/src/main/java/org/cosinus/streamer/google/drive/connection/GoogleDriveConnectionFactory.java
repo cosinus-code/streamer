@@ -30,6 +30,7 @@ import org.cosinus.streamer.api.remote.AbstractConnectionFactory;
 import org.cosinus.streamer.google.drive.GoogleDriveComponent;
 import org.cosinus.swing.resource.FilesystemResourceResolver;
 import org.cosinus.swing.resource.ResourceLocator;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -60,8 +61,12 @@ public class GoogleDriveConnectionFactory extends AbstractConnectionFactory<Stri
 
     private final FilesystemResourceResolver resourceResolver;
 
-    public GoogleDriveConnectionFactory(final FilesystemResourceResolver resourceResolver) {
+    private final int localServerPort;
+
+    public GoogleDriveConnectionFactory(final FilesystemResourceResolver resourceResolver,
+                                        @Value("${google.local.port:8888}") int localServerPort) {
         this.resourceResolver = resourceResolver;
+        this.localServerPort = localServerPort;
     }
 
     @Override
@@ -113,7 +118,7 @@ public class GoogleDriveConnectionFactory extends AbstractConnectionFactory<Stri
 
             LocalServerReceiver receiver = new LocalServerReceiver
                 .Builder()
-                .setPort(8888)
+                .setPort(localServerPort)
                 .build();
             return new AuthorizationCodeInstalledApp(flow, receiver);
         }

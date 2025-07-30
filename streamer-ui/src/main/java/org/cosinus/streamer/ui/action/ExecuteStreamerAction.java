@@ -64,6 +64,14 @@ public class ExecuteStreamerAction implements ActionInContext {
                     return;
                 }
 
+                if (!streamerToExecute.getPath().toFile().exists()) {
+                    loadActionExecutor.execute(new LoadActionModel(
+                        streamerView.getCurrentLocation(),
+                        streamerToExecute,
+                        streamerView.getCurrentItemIdentifier(), true));
+                    return;
+                }
+
                 streamerToExecute.getParent().execute(streamerToExecute.getPath());
             });
     }

@@ -25,12 +25,17 @@ import java.util.List;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.io.FilenameUtils.getExtension;
+import static org.cosinus.streamer.api.Streamer.DETAIL_KEY_NAME;
 
 public interface Streamable {
 
     Path getPath();
 
-    String getProtocol();
+    default String getProtocol() {
+        return ofNullable(getParent())
+            .map(Streamable::getProtocol)
+            .orElse(null);
+    }
 
     default String getId() {
         return ofNullable(getPath())
@@ -119,7 +124,7 @@ public interface Streamable {
     }
 
     default List<TranslatableName> detailNames() {
-        return singletonList(new TranslatableName("name", null));
+        return singletonList(new TranslatableName(DETAIL_KEY_NAME, null));
     }
 
     default List<Value> details() {

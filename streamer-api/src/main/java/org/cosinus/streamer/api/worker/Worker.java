@@ -103,8 +103,12 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
 
     @Override
     protected void process(List<T> items) {
-        workerModel.update(items);
-        workerListenerHandler.workerUpdated(getId(), workerModel);
+        try {
+            workerModel.update(items);
+            workerListenerHandler.workerUpdated(getId(), workerModel);
+        } catch (Exception ex) {
+            errorHandler.handleError(ex);
+        }
     }
 
     protected void logUserAbort() {

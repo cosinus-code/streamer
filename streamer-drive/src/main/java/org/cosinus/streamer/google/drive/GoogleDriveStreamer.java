@@ -135,6 +135,7 @@ public abstract class GoogleDriveStreamer<T> implements RemoteStreamer<T, File, 
         return details;
     }
 
+    @Override
     public void init() {
         if (details == null) {
             details = asList(

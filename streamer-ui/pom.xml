@@ -66,6 +66,11 @@
             <artifactId>streamer-database</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.cosinuscode.streamer</groupId>
+            <artifactId>streamer-strava</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

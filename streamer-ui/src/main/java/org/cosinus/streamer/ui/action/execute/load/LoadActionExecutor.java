@@ -125,6 +125,9 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
 
     private String getDefaultViewName(Streamer<?> streamerToLoad) {
         if (!streamerToLoad.isParent()) {
+            if (streamerToLoad.getViewId() != null) {
+                return streamerToLoad.getViewId();
+            }
             if (isImageCompatible(streamerToLoad.getPath())) {
                 return IMAGE_VIEWER;
             }

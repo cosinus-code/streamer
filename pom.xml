@@ -16,6 +16,7 @@
         <module>streamer-database</module>
         <module>streamer-geo</module>
         <module>streamer-drive</module>
+        <module>streamer-strava</module>
     </modules>
     <packaging>pom</packaging>
     <name>Streamer Parent</name>
@@ -26,6 +27,7 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
         <spring-swing.version>2.0.0-SNAPSHOT</spring-swing.version>
+        <spring-cloud.version>4.3.0</spring-cloud.version>
         <commons-net.version>3.8.0</commons-net.version>
         <commons-pool.version>2.11.1</commons-pool.version>
         <commons-exec.version>1.5.0</commons-exec.version>
@@ -44,6 +46,16 @@
                 <version>${spring-swing.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-openfeign-core</artifactId>
+                <version>${spring-cloud.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-openfeign</artifactId>
+                <version>${spring-cloud.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-net</groupId>

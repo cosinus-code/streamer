@@ -13,49 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.cosinus.streamer.api.value;
 
+import org.cosinus.swing.format.FormatHandler;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static java.util.Optional.ofNullable;
-import static java.util.function.Predicate.not;
 import static org.apache.commons.lang3.ObjectUtils.compare;
 
-public class DoubleValue extends Value {
+public class ElevationValue extends LongValue {
 
-    protected Double value;
+    @Autowired
+    private FormatHandler formatHandler;
 
-    public DoubleValue(Double value) {
-        this.value = value;
+    public ElevationValue(Double value) {
+        this(ofNullable(value)
+            .map(Double::longValue)
+            .orElse(null));
     }
 
-    public DoubleValue(Object value) {
-        setValue(value);
-    }
-
-    @Override
-    public boolean isNumeric() {
-        return true;
-    }
-
-    @Override
-    public void setValue(Object value) {
-        this.value = ofNullable(value)
-            .map(Object::toString)
-            .filter(not(String::isEmpty))
-            .map(Double::parseDouble)
-            .orElse(null);
+    public ElevationValue(Long value) {
+        super(value);
     }
 
     @Override
-    public Double value() {
-        return value;
+    public String toString() {
+        return ofNullable(value)
+            .map(formatHandler::formatElevation)
+            .orElse("");
     }
 
     @Override
     public int compareTo(@NotNull Value other) {
-        if (other instanceof DoubleValue doubleValue) {
-            return compare(value, doubleValue.value);
+        if (other instanceof ElevationValue elevation) {
+            return compare(value, elevation.value);
         }
         return compare(this, other);
     }

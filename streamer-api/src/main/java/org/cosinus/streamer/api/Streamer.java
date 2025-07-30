@@ -35,7 +35,7 @@ public interface Streamer<T> extends Streamable {
     Stream<T> stream();
 
     default String getViewId() {
-        return FILE_VIEW_ID;
+        return null;
     }
 
     default StreamConsumer<T> streamConsumer() {

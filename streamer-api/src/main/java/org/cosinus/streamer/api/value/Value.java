@@ -17,6 +17,7 @@ package org.cosinus.streamer.api.value;
 
 import java.util.Objects;
 
+import static java.util.Optional.ofNullable;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 public abstract class Value implements Comparable<Value> {
@@ -33,6 +34,8 @@ public abstract class Value implements Comparable<Value> {
 
     @Override
     public String toString() {
-        return Objects.toString(value());
+        return ofNullable(value())
+            .map(Object::toString)
+            .orElse("");
     }
 }
