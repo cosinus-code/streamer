@@ -17,69 +17,34 @@
 
 package org.cosinus.streamer.strava;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.cosinus.streamer.api.BinaryStreamer;
-import org.cosinus.streamer.api.value.IntegerValue;
-import org.cosinus.streamer.api.value.TextValue;
+import org.cosinus.streamer.api.JsonStreamer;
 import org.cosinus.streamer.api.value.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UncheckedIOException;
-import java.nio.file.Path;
 import java.util.List;
 
-import static java.util.Arrays.asList;
-
-public abstract class StravaJsonStreamer extends StravaStreamer<byte[]> implements BinaryStreamer {
+public abstract class StravaJsonStreamer extends StravaStreamer<byte[]> implements JsonStreamer {
 
     @Autowired
     protected ObjectMapper objectMapper;
 
-    private List<Value> details;
+    protected List<Value> details;
 
     protected StravaJsonStreamer(final StravaUserStreamer stravaUserStreamer) {
         super(stravaUserStreamer);
     }
 
     @Override
-    public InputStream inputStream() {
-        try {
-            byte[] bytes = objectMapper
-                .writerWithDefaultPrettyPrinter()
-                .writeValueAsBytes(getSource());
-
-            return new ByteArrayInputStream(bytes);
-        } catch (JsonProcessingException ex) {
-            throw new UncheckedIOException(ex);
-        }
-    }
-
-    @Override
-    public OutputStream outputStream(boolean append) {
-        return null;
-    }
-
-    @Override
-    public Path getPath() {
-        return getParent().getPath().resolve(getName());
-    }
-
-    @Override
     public List<Value> details() {
         if (details == null) {
-            details = asList(
-                new TextValue(getName()),
-                new IntegerValue(getCount())
-            );
+            reset();
         }
         return details;
     }
 
-    protected abstract Long getCount();
-
-    protected abstract Object getSource();
+    @Override
+    public ObjectMapper getObjectMapper() {
+        return objectMapper;
+    }
 }

@@ -18,15 +18,15 @@
 package org.cosinus.streamer.strava.activity.laps;
 
 import org.cosinus.streamer.api.ParentStreamer;
+import org.cosinus.streamer.api.value.IntegerValue;
+import org.cosinus.streamer.api.value.TextValue;
 import org.cosinus.streamer.strava.StravaJsonStreamer;
-import org.cosinus.streamer.strava.StravaUserStreamer;
 import org.cosinus.streamer.strava.activity.StravaActivityStreamer;
 import org.cosinus.streamer.strava.model.ActivityLap;
 
-import java.nio.file.Path;
-import java.util.stream.Stream;
+import java.util.List;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.Arrays.asList;
 import static org.cosinus.streamer.strava.activity.laps.StravaActivityLapsExpander.STRAVA_ACTIVITY_LAPS;
 
 public class StravaActivityLapsBinaryStreamer extends StravaJsonStreamer {
@@ -38,6 +38,8 @@ public class StravaActivityLapsBinaryStreamer extends StravaJsonStreamer {
     private final StravaActivityStreamer stravaActivityStreamer;
 
     private final long stravaActivityId;
+
+    private List<ActivityLap> activityLaps;
 
     public StravaActivityLapsBinaryStreamer(final StravaActivityStreamer stravaActivityStreamer) {
         super(stravaActivityStreamer.getStravaUserStreamer());
@@ -51,14 +53,8 @@ public class StravaActivityLapsBinaryStreamer extends StravaJsonStreamer {
     }
 
     @Override
-    public Path getPath() {
-        return getParent().getPath().resolve(ACTIVITY_LAPS);
-    }
-
-    @Override
-    protected Object getSource() {
-        return getActivityLapsStream()
-            .collect(toList());
+    public Object getSource() {
+        return getActivityLaps();
     }
 
     @Override
@@ -76,13 +72,20 @@ public class StravaActivityLapsBinaryStreamer extends StravaJsonStreamer {
         return LAPS_ICON_NAME;
     }
 
-    public Stream<ActivityLap> getActivityLapsStream() {
-        return invokeStravaClient(stravaClient -> stravaClient.getActivityLaps(stravaActivityId))
-            .stream();
+    public List<ActivityLap> getActivityLaps() {
+        if (activityLaps == null) {
+            activityLaps = invokeStravaClient(stravaClient ->
+                stravaClient.getActivityLaps(stravaActivityId));
+        }
+        return activityLaps;
     }
 
     @Override
-    protected Long getCount() {
-        return null;
+    public void reset() {
+        details = asList(
+            new TextValue(getName()),
+            new IntegerValue(null)
+        );
+        activityLaps = null;
     }
 }

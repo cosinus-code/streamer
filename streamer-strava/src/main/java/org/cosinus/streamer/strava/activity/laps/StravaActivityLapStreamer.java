@@ -18,15 +18,22 @@
 package org.cosinus.streamer.strava.activity.laps;
 
 import org.cosinus.streamer.api.ParentStreamer;
-import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.value.ElevationValue;
+import org.cosinus.streamer.api.value.PaceValue;
+import org.cosinus.streamer.api.value.TextValue;
+import org.cosinus.streamer.strava.StravaJsonStreamer;
 import org.cosinus.streamer.strava.model.ActivityLap;
+import org.cosinus.swing.format.FormatHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.nio.file.Path;
-import java.util.stream.Stream;
-
+import static java.util.Arrays.asList;
+import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.strava.activity.laps.StravaActivityLapsBinaryStreamer.LAPS_ICON_NAME;
 
-public class StravaActivityLapStreamer implements Streamer<ActivityLapStreamable> {
+public class StravaActivityLapStreamer extends StravaJsonStreamer {
+
+    @Autowired
+    private FormatHandler formatHandler;
 
     private final StravaActivityLapsStreamer stravaActivityLapsStreamer;
 
@@ -34,23 +41,14 @@ public class StravaActivityLapStreamer implements Streamer<ActivityLapStreamable
 
     public StravaActivityLapStreamer(final StravaActivityLapsStreamer stravaActivityLapsStreamer,
                                      final ActivityLap activityLap) {
+        super(stravaActivityLapsStreamer.binaryStreamer().getStravaUserStreamer());
         this.stravaActivityLapsStreamer = stravaActivityLapsStreamer;
         this.activityLap = activityLap;
     }
 
     @Override
-    public Stream<ActivityLapStreamable> stream() {
-        return Stream.empty();
-    }
-
-    @Override
     public String getName() {
         return activityLap.getName();
-    }
-
-    @Override
-    public Path getPath() {
-        return getParent().getPath().resolve(getName());
     }
 
     @Override
@@ -60,6 +58,28 @@ public class StravaActivityLapStreamer implements Streamer<ActivityLapStreamable
 
     @Override
     public ParentStreamer<?> getParent() {
-        return stravaActivityLapsStreamer.getParent();
+        return stravaActivityLapsStreamer;
+    }
+
+    @Override
+    public Object getSource() {
+        return activityLap;
+    }
+
+    protected Double getPace() {
+        return ofNullable(activityLap.getAverageSpeed())
+            .map(averageSpeed -> 1000 / (60 * averageSpeed))
+            .orElse(null);
+    }
+
+    @Override
+    public void reset() {
+        details = asList(
+            new TextValue(formatHandler.formatIndexAsString(
+                activityLap.getLapIndex(),
+                stravaActivityLapsStreamer.getLapsCount())),
+            new PaceValue(getPace()),
+            new ElevationValue(activityLap.getTotalElevationGain())
+        );
     }
 }

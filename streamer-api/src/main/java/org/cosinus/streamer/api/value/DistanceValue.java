@@ -23,34 +23,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.compare;
 
-public class DistanceValue extends LongValue {
-
-    private final boolean computing;
+public class DistanceValue extends DoubleValue {
 
     @Autowired
     private FormatHandler formatHandler;
 
     public DistanceValue(Double value) {
-        this(ofNullable(value)
-            .map(Double::longValue)
-            .orElse(null));
-    }
-
-    public DistanceValue(Long value) {
-        this(value, false);
-    }
-
-    public DistanceValue(Long value, boolean computing) {
         super(value);
-        this.computing = computing;
     }
 
     @Override
     public String toString() {
-        String distance = ofNullable(value)
+        return ofNullable(value)
             .map(formatHandler::formatDistance)
             .orElse("");
-        return computing ? "...".concat(distance) : distance;
     }
 
     @Override

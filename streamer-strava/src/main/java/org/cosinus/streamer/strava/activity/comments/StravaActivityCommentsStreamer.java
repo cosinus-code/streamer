@@ -18,6 +18,7 @@
 package org.cosinus.streamer.strava.activity.comments;
 
 import org.cosinus.streamer.api.BinaryStreamer;
+import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.expand.ExpandedStreamer;
 import org.cosinus.streamer.api.value.TranslatableName;
 
@@ -27,9 +28,10 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
-import static org.cosinus.streamer.api.ParentStreamer.FOLDER_VIEW_ID;
 
-public class StravaActivityCommentsStreamer extends ExpandedStreamer<StravaActivityCommentStreamer> {
+public class StravaActivityCommentsStreamer
+    extends ExpandedStreamer<StravaActivityCommentStreamer>
+    implements ParentStreamer<StravaActivityCommentStreamer> {
 
     public static final String DETAIL_KEY_COMMENT = "comment";
 
@@ -46,7 +48,8 @@ public class StravaActivityCommentsStreamer extends ExpandedStreamer<StravaActiv
 
     @Override
     public Stream<StravaActivityCommentStreamer> stream() {
-        return binaryStreamer().getActivityCommentsStream()
+        return binaryStreamer().getActivityComments()
+            .stream()
             .map(comment -> new StravaActivityCommentStreamer(this, comment));
     }
 

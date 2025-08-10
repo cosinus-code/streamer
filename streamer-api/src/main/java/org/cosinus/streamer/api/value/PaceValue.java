@@ -23,25 +23,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.compare;
 
-public class ElevationValue extends DoubleValue {
+public class PaceValue extends DoubleValue {
 
     @Autowired
     private FormatHandler formatHandler;
 
-    public ElevationValue(Double value) {
+    public PaceValue(Double value) {
         super(value);
     }
 
     @Override
     public String toString() {
         return ofNullable(value)
-            .map(formatHandler::formatElevation)
+            .map(formatHandler::formatPace)
             .orElse("");
     }
 
     @Override
     public int compareTo(@NotNull Value other) {
-        if (other instanceof ElevationValue elevation) {
+        if (other instanceof PaceValue elevation) {
             return compare(value, elevation.value);
         }
         return compare(this, other);

@@ -72,72 +72,72 @@ public class Activity implements Serializable {
     private Gear gear;
 
     @JsonProperty("moving_time")
-    private long movingTime;
+    private Long movingTime;
 
     @JsonProperty("elapsed_time")
-    private long elapsedTime;
+    private Long elapsedTime;
 
     @JsonProperty("total_elevation_gain")
-    private long totalElevationGain;
+    private Double totalElevationGain;
 
     @JsonProperty("kudos_count")
-    private long kudosCount;
+    private Long kudosCount;
 
     @JsonProperty("comment_count")
-    private long commentCount;
+    private Integer commentCount;
 
     @JsonProperty("athlete_count")
-    private long athleteCount;
+    private Long athleteCount;
 
     @JsonProperty("photo_count")
-    private long photoCount;
+    private Long photoCount;
 
     private String visibility;
 
     @JsonProperty("average_speed")
-    private double averageSpeed;
+    private Double averageSpeed;
 
     @JsonProperty("max_speed")
-    private double maxSpeed;
+    private Double maxSpeed;
 
     @JsonProperty("average_cadence")
-    private double averageCadence;
+    private Double averageCadence;
 
     @JsonProperty("average_watts")
-    private double averageWatts;
+    private Double averageWatts;
 
     @JsonProperty("max_watts")
-    private double maxWatts;
+    private Double maxWatts;
 
     @JsonProperty("weighted_average_watts")
-    private double weightedAverageWatts;
+    private Double weightedAverageWatts;
 
     @JsonProperty("device_watts")
     private boolean deviceWatts;
 
     @JsonProperty("kilojoules")
-    private double kiloJoules;
+    private Double kiloJoules;
 
     @JsonProperty("has_heartrate")
     private boolean hasHeartRate;
 
     @JsonProperty("average_heartrate")
-    private double averageHeartRate;
+    private Double averageHeartRate;
 
     @JsonProperty("max_heartrate")
-    private double maxHeartRate;
+    private Double maxHeartRate;
 
     @JsonProperty("display_hide_heartrate_option")
     private boolean displayHideHeartrateOption;
 
     @JsonProperty("elev_high")
-    private double elevationHigh;
+    private Double elevationHigh;
 
     @JsonProperty("elev_low")
-    private double elevationLow;
+    private Double elevationLow;
 
     @JsonProperty("upload_id")
-    private long uploadId;
+    private Long uploadId;
 
     @JsonProperty("has_kudoed")
     private boolean hasKudoed;

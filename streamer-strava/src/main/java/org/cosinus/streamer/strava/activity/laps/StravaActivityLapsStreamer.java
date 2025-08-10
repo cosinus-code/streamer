@@ -18,23 +18,42 @@
 package org.cosinus.streamer.strava.activity.laps;
 
 import org.cosinus.streamer.api.BinaryStreamer;
+import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.expand.ExpandedStreamer;
+import org.cosinus.streamer.api.value.TranslatableName;
 
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.cosinus.streamer.api.ParentStreamer.FOLDER_VIEW_ID;
+import static java.util.Arrays.asList;
+import static org.cosinus.streamer.strava.activity.StravaActivitiesYearStreamer.DETAIL_KEY_ELEVATION;
 
-public class StravaActivityLapsStreamer extends ExpandedStreamer<StravaActivityLapStreamer> {
+public class StravaActivityLapsStreamer
+    extends ExpandedStreamer<StravaActivityLapStreamer>
+    implements ParentStreamer<StravaActivityLapStreamer> {
+
+    public static final String DETAIL_KEY_INDEX = "index";
+
+    public static final String DETAIL_KEY_PACE = "pace";
+
+
+    private final List<TranslatableName> detailNames;
 
     public StravaActivityLapsStreamer(final BinaryStreamer binaryStreamer) {
         super(binaryStreamer);
+        this.detailNames = asList(
+            new TranslatableName(DETAIL_KEY_INDEX, null),
+            new TranslatableName(DETAIL_KEY_PACE, null),
+            new TranslatableName(DETAIL_KEY_ELEVATION, null)
+        );
     }
 
     @Override
     public Stream<StravaActivityLapStreamer> stream() {
-        return binaryStreamer().getActivityLapsStream()
+        return binaryStreamer().getActivityLaps()
+            .stream()
             .map(activityLap -> new StravaActivityLapStreamer(this, activityLap));
     }
 
@@ -49,6 +68,11 @@ public class StravaActivityLapsStreamer extends ExpandedStreamer<StravaActivityL
     }
 
     @Override
+    public List<TranslatableName> detailNames() {
+        return detailNames;
+    }
+
+    @Override
     public Optional<StravaActivityLapStreamer> find(String path) {
         return Optional.empty();
     }
@@ -56,5 +80,9 @@ public class StravaActivityLapsStreamer extends ExpandedStreamer<StravaActivityL
     @Override
     public OutputStream outputStream(boolean append) {
         return null;
+    }
+
+    public int getLapsCount() {
+        return binaryStreamer().getActivityLaps().size();
     }
 }

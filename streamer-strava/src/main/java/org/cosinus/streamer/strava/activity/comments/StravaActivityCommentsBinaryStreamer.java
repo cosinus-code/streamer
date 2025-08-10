@@ -18,14 +18,18 @@
 package org.cosinus.streamer.strava.activity.comments;
 
 import org.cosinus.streamer.api.ParentStreamer;
+import org.cosinus.streamer.api.value.IntegerValue;
+import org.cosinus.streamer.api.value.TextValue;
 import org.cosinus.streamer.strava.StravaJsonStreamer;
 import org.cosinus.streamer.strava.activity.StravaActivityStreamer;
+import org.cosinus.streamer.strava.model.Activity;
 import org.cosinus.streamer.strava.model.ActivityComment;
 
-import java.nio.file.Path;
-import java.util.stream.Stream;
+import java.util.List;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.strava.activity.comments.StravaActivityCommentsExpander.STRAVA_ACTIVITY_COMMENTS;
 
 public class StravaActivityCommentsBinaryStreamer extends StravaJsonStreamer {
@@ -37,6 +41,8 @@ public class StravaActivityCommentsBinaryStreamer extends StravaJsonStreamer {
     private final StravaActivityStreamer stravaActivityStreamer;
 
     private final long stravaActivityId;
+
+    private List<ActivityComment> activityComments;
 
     public StravaActivityCommentsBinaryStreamer(final StravaActivityStreamer stravaActivityStreamer) {
         super(stravaActivityStreamer.getStravaUserStreamer());
@@ -50,14 +56,8 @@ public class StravaActivityCommentsBinaryStreamer extends StravaJsonStreamer {
     }
 
     @Override
-    public Path getPath() {
-        return getParent().getPath().resolve(ACTIVITY_COMMENTS);
-    }
-
-    @Override
-    protected Object getSource() {
-        return getActivityCommentsStream()
-            .collect(toList());
+    public Object getSource() {
+        return getActivityComments();
     }
 
     @Override
@@ -75,13 +75,27 @@ public class StravaActivityCommentsBinaryStreamer extends StravaJsonStreamer {
         return COMMENTS_ICON_NAME;
     }
 
-    public Stream<ActivityComment> getActivityCommentsStream() {
-        return invokeStravaClient(stravaClient -> stravaClient.getActivityComments(stravaActivityId))
-            .stream();
+    public List<ActivityComment> getActivityComments() {
+        if (activityComments == null) {
+            activityComments = getCommentsCount() > 0 ?
+                invokeStravaClient(stravaClient -> stravaClient.getActivityComments(stravaActivityId)) :
+                emptyList();
+        }
+        return activityComments;
+    }
+
+    public int getCommentsCount() {
+        return ofNullable(stravaActivityStreamer.getActivity())
+            .map(Activity::getCommentCount)
+            .orElse(0);
     }
 
     @Override
-    protected Long getCount() {
-        return stravaActivityStreamer.getActivity().getCommentCount();
+    public void reset() {
+        details = asList(
+            new TextValue(getName()),
+            new IntegerValue(getCommentsCount())
+        );
+        activityComments = null;
     }
 }

@@ -21,14 +21,11 @@ import lombok.Getter;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.value.*;
 import org.cosinus.streamer.strava.StravaFolderStreamer;
-import org.cosinus.streamer.strava.StravaMainStreamer;
 import org.cosinus.streamer.strava.StravaStreamer;
 import org.cosinus.streamer.strava.StravaUserStreamer;
 import org.cosinus.streamer.strava.activity.comments.StravaActivityCommentsBinaryStreamer;
 import org.cosinus.streamer.strava.activity.laps.StravaActivityLapsBinaryStreamer;
-import org.cosinus.streamer.strava.activity.laps.StravaActivityLapsStreamer;
 import org.cosinus.streamer.strava.model.Activity;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -131,7 +128,7 @@ public class StravaActivityStreamer extends StravaFolderStreamer<StravaStreamer>
             details = asList(
                 new TextValue(getName()),
                 new TextValue(getType()),
-                new DistanceValue(getSize()),
+                new DistanceValue(activity.getDistance()),
                 new DistanceValue(activity.getTotalElevationGain()),
                 new DateValue(lastModified()));
         }

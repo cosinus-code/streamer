@@ -17,24 +17,17 @@
 
 package org.cosinus.streamer.strava;
 
-import lombok.Getter;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 
-import java.nio.file.Path;
-
 public abstract class StravaFolderStreamer<S extends Streamer>
     extends StravaStreamer<S> implements ParentStreamer<S> {
-
-    @Getter
-    protected final StravaUserStreamer stravaUserStreamer;
 
     protected final String folderName;
 
     public StravaFolderStreamer(final StravaUserStreamer stravaUserStreamer,
                                 final String folderName) {
         super(stravaUserStreamer);
-        this.stravaUserStreamer = stravaUserStreamer;
         this.folderName = folderName;
     }
 
@@ -49,8 +42,12 @@ public abstract class StravaFolderStreamer<S extends Streamer>
     }
 
     @Override
-    public Path getPath() {
-        return getParent().getPath().resolve(folderName);
+    public String getName() {
+        return folderName;
     }
 
+    @Override
+    public String getIconName() {
+        return folderName;
+    }
 }

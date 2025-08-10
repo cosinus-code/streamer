@@ -17,12 +17,13 @@
 
 package org.cosinus.streamer.strava;
 
+import lombok.Getter;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.strava.client.StravaClient;
 import org.cosinus.streamer.strava.client.StravaClientInvoker;
-import org.cosinus.streamer.strava.statististics.StravaStatisticsBinaryStreamer;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.nio.file.Path;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -33,15 +34,29 @@ public abstract class StravaStreamer<T> implements Streamer<T> {
     @Autowired
     protected StravaClientInvoker stravaClientInvoker;
 
+    @Getter
+    protected final StravaUserStreamer stravaUserStreamer;
+
     protected final String userName;
 
     protected StravaStreamer(final StravaUserStreamer stravaUserStreamer) {
         injectContext(this);
+        this.stravaUserStreamer = stravaUserStreamer;
         this.userName = stravaUserStreamer.getName();
     }
 
-    protected <T> T invokeStravaClient(Function<StravaClient, T> stravaClientCall) {
+    protected <V> V invokeStravaClient(Function<StravaClient, V> stravaClientCall) {
         return stravaClientInvoker.invoke(userName, stravaClientCall);
+    }
+
+    @Override
+    public String getName() {
+        return "";
+    }
+
+    @Override
+    public Path getPath() {
+        return getParent().getPath().resolve(getName());
     }
 
     @Override
@@ -56,5 +71,4 @@ public abstract class StravaStreamer<T> implements Streamer<T> {
     public int hashCode() {
         return Objects.hashCode(getName());
     }
-
 }

@@ -18,19 +18,14 @@
 package org.cosinus.streamer.strava.activity.comments;
 
 import org.cosinus.streamer.api.ParentStreamer;
-import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.value.DateValue;
 import org.cosinus.streamer.api.value.TextValue;
-import org.cosinus.streamer.api.value.Value;
+import org.cosinus.streamer.strava.StravaJsonStreamer;
 import org.cosinus.streamer.strava.model.ActivityComment;
-
-import java.nio.file.Path;
-import java.util.List;
-import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 
-public class StravaActivityCommentStreamer implements Streamer<ActivityCommentStreamable> {
+public class StravaActivityCommentStreamer extends StravaJsonStreamer {
 
     public static final String COMMENT_ICON_NAME = "format-justify-left";
 
@@ -38,32 +33,25 @@ public class StravaActivityCommentStreamer implements Streamer<ActivityCommentSt
 
     private final ActivityComment activityComment;
 
-    private List<Value> details;
-
     public StravaActivityCommentStreamer(final StravaActivityCommentsStreamer stravaActivityCommentsStreamer,
                                          final ActivityComment activityComment) {
+        super(stravaActivityCommentsStreamer.binaryStreamer().getStravaUserStreamer());
         this.stravaActivityCommentsStreamer = stravaActivityCommentsStreamer;
         this.activityComment = activityComment;
     }
 
     @Override
-    public Stream<ActivityCommentStreamable> stream() {
-        return Stream.empty();
+    public String getName() {
+        return activityComment.getText();
     }
 
-    @Override
-    public String getName() {
+    protected String getAuthorFullName() {
         return activityComment.getAthlete().getFirstname() + " " + activityComment.getAthlete().getLastname();
     }
 
     @Override
-    public Path getPath() {
-        return getParent().getPath().resolve(getName());
-    }
-
-    @Override
     public ParentStreamer<?> getParent() {
-        return stravaActivityCommentsStreamer.getParent();
+        return stravaActivityCommentsStreamer;
     }
 
     @Override
@@ -72,15 +60,16 @@ public class StravaActivityCommentStreamer implements Streamer<ActivityCommentSt
     }
 
     @Override
-    public List<Value> details() {
-        if (details == null) {
-            details = asList(
-                new TextValue(activityComment.getText()),
-                new TextValue(getName()),
-                new DateValue(activityComment.getCreatedAt())
-            );
-        }
-        return details;
+    public Object getSource() {
+        return activityComment;
     }
 
+    @Override
+    public void reset() {
+        details = asList(
+            new TextValue(activityComment.getText()),
+            new TextValue(getAuthorFullName()),
+            new DateValue(activityComment.getCreatedAt())
+        );
+    }
 }
