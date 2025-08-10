@@ -29,18 +29,8 @@ public abstract class StravaJsonStreamer extends StravaStreamer<byte[]> implemen
     @Autowired
     protected ObjectMapper objectMapper;
 
-    protected List<Value> details;
-
     protected StravaJsonStreamer(final StravaUserStreamer stravaUserStreamer) {
         super(stravaUserStreamer);
-    }
-
-    @Override
-    public List<Value> details() {
-        if (details == null) {
-            reset();
-        }
-        return details;
     }
 
     @Override

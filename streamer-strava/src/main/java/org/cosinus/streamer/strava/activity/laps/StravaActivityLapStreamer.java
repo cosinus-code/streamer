@@ -28,7 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
-import static org.cosinus.streamer.strava.activity.laps.StravaActivityLapsBinaryStreamer.LAPS_ICON_NAME;
+import static org.cosinus.streamer.strava.activity.laps.StravaActivityLapsJsonStreamer.LAPS_ICON_NAME;
 
 public class StravaActivityLapStreamer extends StravaJsonStreamer {
 

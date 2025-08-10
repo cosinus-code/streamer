@@ -25,7 +25,7 @@ import org.cosinus.streamer.strava.activity.StravaActivitiesStreamer;
 import org.cosinus.streamer.strava.client.StravaClient;
 import org.cosinus.streamer.strava.client.StravaClientInvoker;
 import org.cosinus.streamer.strava.model.AthleteProfile;
-import org.cosinus.streamer.strava.statististics.StravaStatisticsBinaryStreamer;
+import org.cosinus.streamer.strava.statististics.StravaStatisticsJsonStreamer;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.file.Path;
@@ -117,7 +117,7 @@ public class StravaUserStreamer implements ParentStreamer<StravaStreamer> {
     public Stream<StravaStreamer> stream() {
         return Stream.of(
             new StravaActivitiesStreamer(this),
-            new StravaStatisticsBinaryStreamer(this)
+            new StravaStatisticsJsonStreamer(this)
         );
     }
 

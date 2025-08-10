@@ -22,9 +22,7 @@ import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.expand.ExpandedStreamer;
 import org.cosinus.streamer.api.value.TranslatableName;
 
-import java.io.OutputStream;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
@@ -58,28 +56,13 @@ public class StravaActivityLapsStreamer
     }
 
     @Override
-    public StravaActivityLapsBinaryStreamer binaryStreamer() {
-        return (StravaActivityLapsBinaryStreamer) super.binaryStreamer();
-    }
-
-    @Override
-    public String getViewId() {
-        return FOLDER_VIEW_ID;
+    public StravaActivityLapsJsonStreamer binaryStreamer() {
+        return (StravaActivityLapsJsonStreamer) super.binaryStreamer();
     }
 
     @Override
     public List<TranslatableName> detailNames() {
         return detailNames;
-    }
-
-    @Override
-    public Optional<StravaActivityLapStreamer> find(String path) {
-        return Optional.empty();
-    }
-
-    @Override
-    public OutputStream outputStream(boolean append) {
-        return null;
     }
 
     public int getLapsCount() {

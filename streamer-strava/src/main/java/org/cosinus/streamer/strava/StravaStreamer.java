@@ -19,11 +19,13 @@ package org.cosinus.streamer.strava;
 
 import lombok.Getter;
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.value.Value;
 import org.cosinus.streamer.strava.client.StravaClient;
 import org.cosinus.streamer.strava.client.StravaClientInvoker;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -38,6 +40,8 @@ public abstract class StravaStreamer<T> implements Streamer<T> {
     protected final StravaUserStreamer stravaUserStreamer;
 
     protected final String userName;
+
+    protected List<Value> details;
 
     protected StravaStreamer(final StravaUserStreamer stravaUserStreamer) {
         injectContext(this);
@@ -57,6 +61,14 @@ public abstract class StravaStreamer<T> implements Streamer<T> {
     @Override
     public Path getPath() {
         return getParent().getPath().resolve(getName());
+    }
+
+    @Override
+    public List<Value> details() {
+        if (details == null) {
+            reset();
+        }
+        return details;
     }
 
     @Override

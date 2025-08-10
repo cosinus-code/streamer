@@ -25,7 +25,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.cosinus.streamer.strava.statististics.StravaStatisticsBinaryStreamer.STATISTICS_ICON_NAME;
+import static org.cosinus.streamer.strava.statististics.StravaStatisticsJsonStreamer.STATISTICS_ICON_NAME;
 
 public class StravaStatisticStreamable implements Streamable {
 

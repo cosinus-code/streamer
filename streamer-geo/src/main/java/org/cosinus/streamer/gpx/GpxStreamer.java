@@ -88,16 +88,6 @@ public class GpxStreamer extends ExpandedStreamer<GpxPoint> implements Streamer<
     }
 
     @Override
-    public Optional<GpxPoint> find(String path) {
-        return Optional.empty();
-    }
-
-    @Override
-    public OutputStream outputStream(boolean append) {
-        return null;
-    }
-
-    @Override
     public String getProtocol() {
         return GPX_PROTOCOL;
     }

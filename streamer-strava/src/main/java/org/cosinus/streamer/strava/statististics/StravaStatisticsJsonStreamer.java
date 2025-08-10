@@ -17,30 +17,24 @@
 
 package org.cosinus.streamer.strava.statististics;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.ParentStreamer;
-import org.cosinus.streamer.strava.StravaStreamer;
+import org.cosinus.streamer.api.value.TextValue;
+import org.cosinus.streamer.strava.StravaJsonStreamer;
 import org.cosinus.streamer.strava.StravaUserStreamer;
 import org.cosinus.streamer.strava.client.StravaClientInvoker;
 import org.cosinus.streamer.strava.model.AthleteStatistic;
 import org.cosinus.streamer.strava.model.AthleteStatistics;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Objects;
 
-import static org.cosinus.streamer.api.ParentStreamer.FOLDER_VIEW_ID;
+import static java.util.Collections.singletonList;
 import static org.cosinus.streamer.strava.statististics.StravaStatisticsExpander.STRAVA_STATISTICS;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
-public class StravaStatisticsBinaryStreamer extends StravaStreamer<byte[]> implements BinaryStreamer {
+public class StravaStatisticsJsonStreamer extends StravaJsonStreamer {
 
     public static final String STATISTICS = "Statistics";
 
@@ -49,16 +43,13 @@ public class StravaStatisticsBinaryStreamer extends StravaStreamer<byte[]> imple
     @Autowired
     protected StravaClientInvoker stravaClientInvoker;
 
-    @Autowired
-    protected ObjectMapper objectMapper;
-
     protected final StravaUserStreamer stravaUserStreamer;
 
     protected final String userName;
 
     protected AthleteStatistics athleteStatistics;
 
-    public StravaStatisticsBinaryStreamer(final StravaUserStreamer stravaUserStreamer) {
+    public StravaStatisticsJsonStreamer(final StravaUserStreamer stravaUserStreamer) {
         super(stravaUserStreamer);
         injectContext(this);
         this.stravaUserStreamer = stravaUserStreamer;
@@ -88,19 +79,6 @@ public class StravaStatisticsBinaryStreamer extends StravaStreamer<byte[]> imple
     @Override
     public String getType() {
         return STRAVA_STATISTICS;
-    }
-
-    @Override
-    public InputStream inputStream() {
-        try {
-            byte[] bytes = objectMapper
-                .writerWithDefaultPrettyPrinter()
-                .writeValueAsBytes(getAthleteStatistics());
-
-            return new ByteArrayInputStream(bytes);
-        } catch (JsonProcessingException ex) {
-            throw new UncheckedIOException(ex);
-        }
     }
 
     public AthleteStatistics getAthleteStatistics() {
@@ -182,12 +160,13 @@ public class StravaStatisticsBinaryStreamer extends StravaStreamer<byte[]> imple
     }
 
     @Override
-    public OutputStream outputStream(boolean append) {
-        return null;
+    public void reset() {
+        details = singletonList(new TextValue(getName()));
+        athleteStatistics = null;
     }
 
     @Override
-    public String getViewId() {
-        return FOLDER_VIEW_ID;
+    public Object getSource() {
+        return getAthleteStatistics();
     }
 }

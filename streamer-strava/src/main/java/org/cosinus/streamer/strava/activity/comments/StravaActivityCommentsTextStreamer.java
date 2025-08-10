@@ -20,19 +20,19 @@ package org.cosinus.streamer.strava.activity.comments;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.value.IntegerValue;
 import org.cosinus.streamer.api.value.TextValue;
-import org.cosinus.streamer.strava.StravaJsonStreamer;
+import org.cosinus.streamer.strava.StravaStreamer;
 import org.cosinus.streamer.strava.activity.StravaActivityStreamer;
 import org.cosinus.streamer.strava.model.Activity;
 import org.cosinus.streamer.strava.model.ActivityComment;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
-import static org.cosinus.streamer.strava.activity.comments.StravaActivityCommentsExpander.STRAVA_ACTIVITY_COMMENTS;
 
-public class StravaActivityCommentsBinaryStreamer extends StravaJsonStreamer {
+public class StravaActivityCommentsTextStreamer extends StravaStreamer<String> {
 
     public static final String ACTIVITY_COMMENTS = "Comments";
 
@@ -44,25 +44,29 @@ public class StravaActivityCommentsBinaryStreamer extends StravaJsonStreamer {
 
     private List<ActivityComment> activityComments;
 
-    public StravaActivityCommentsBinaryStreamer(final StravaActivityStreamer stravaActivityStreamer) {
+    public StravaActivityCommentsTextStreamer(final StravaActivityStreamer stravaActivityStreamer) {
         super(stravaActivityStreamer.getStravaUserStreamer());
         this.stravaActivityStreamer = stravaActivityStreamer;
         this.stravaActivityId = stravaActivityStreamer.getActivity().getId();
     }
 
     @Override
+    public Stream<String> stream() {
+        return getActivityComments()
+            .stream()
+            .map(this::buildCommentLine);
+    }
+
+    protected String buildCommentLine(ActivityComment comment) {
+        return "%s %s: %s".formatted(
+            comment.getAthlete().getFirstname(),
+            comment.getAthlete().getLastname(),
+            comment.getText());
+    }
+
+    @Override
     public String getName() {
         return ACTIVITY_COMMENTS;
-    }
-
-    @Override
-    public Object getSource() {
-        return getActivityComments();
-    }
-
-    @Override
-    public String getType() {
-        return STRAVA_ACTIVITY_COMMENTS;
     }
 
     @Override

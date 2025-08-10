@@ -81,7 +81,7 @@ public class Activity implements Serializable {
     private Double totalElevationGain;
 
     @JsonProperty("kudos_count")
-    private Long kudosCount;
+    private Integer kudosCount;
 
     @JsonProperty("comment_count")
     private Integer commentCount;

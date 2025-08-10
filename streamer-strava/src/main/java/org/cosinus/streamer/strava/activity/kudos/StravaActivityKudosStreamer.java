@@ -15,7 +15,7 @@
  *
  */
 
-package org.cosinus.streamer.strava.activity.comments;
+package org.cosinus.streamer.strava.activity.kudos;
 
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.ParentStreamer;
@@ -25,35 +25,29 @@ import org.cosinus.streamer.api.value.TranslatableName;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
-public class StravaActivityCommentsStreamer
-    extends ExpandedStreamer<StravaActivityCommentStreamer>
-    implements ParentStreamer<StravaActivityCommentStreamer> {
-
-    public static final String DETAIL_KEY_COMMENT = "comment";
+public class StravaActivityKudosStreamer
+    extends ExpandedStreamer<StravaActivityKudoStreamer>
+    implements ParentStreamer<StravaActivityKudoStreamer> {
 
     private final List<TranslatableName> detailNames;
 
-    public StravaActivityCommentsStreamer(final BinaryStreamer binaryStreamer) {
+    public StravaActivityKudosStreamer(final BinaryStreamer binaryStreamer) {
         super(binaryStreamer);
-        this.detailNames = asList(
-            new TranslatableName(DETAIL_KEY_COMMENT, null),
-            new TranslatableName(DETAIL_KEY_NAME, null),
-            new TranslatableName(DETAIL_KEY_TIME, null)
-        );
+        this.detailNames = singletonList(new TranslatableName(DETAIL_KEY_NAME, null));
     }
 
     @Override
-    public Stream<StravaActivityCommentStreamer> stream() {
-        return binaryStreamer().getActivityComments()
+    public Stream<StravaActivityKudoStreamer> stream() {
+        return binaryStreamer().getActivityKudos()
             .stream()
-            .map(comment -> new StravaActivityCommentStreamer(this, comment));
+            .map(kudo -> new StravaActivityKudoStreamer(this, kudo));
     }
 
     @Override
-    public StravaActivityCommentsJsonStreamer binaryStreamer() {
-        return (StravaActivityCommentsJsonStreamer) super.binaryStreamer();
+    public StravaActivityKudosJsonStreamer binaryStreamer() {
+        return (StravaActivityKudosJsonStreamer) super.binaryStreamer();
     }
 
     @Override

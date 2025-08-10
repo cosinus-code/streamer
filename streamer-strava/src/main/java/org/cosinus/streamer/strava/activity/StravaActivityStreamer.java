@@ -23,8 +23,10 @@ import org.cosinus.streamer.api.value.*;
 import org.cosinus.streamer.strava.StravaFolderStreamer;
 import org.cosinus.streamer.strava.StravaStreamer;
 import org.cosinus.streamer.strava.StravaUserStreamer;
-import org.cosinus.streamer.strava.activity.comments.StravaActivityCommentsBinaryStreamer;
-import org.cosinus.streamer.strava.activity.laps.StravaActivityLapsBinaryStreamer;
+import org.cosinus.streamer.strava.activity.comments.StravaActivityCommentsJsonStreamer;
+import org.cosinus.streamer.strava.activity.comments.StravaActivityCommentsTextStreamer;
+import org.cosinus.streamer.strava.activity.kudos.StravaActivityKudosJsonStreamer;
+import org.cosinus.streamer.strava.activity.laps.StravaActivityLapsJsonStreamer;
 import org.cosinus.streamer.strava.model.Activity;
 
 import java.nio.file.Path;
@@ -46,8 +48,6 @@ public class StravaActivityStreamer extends StravaFolderStreamer<StravaStreamer>
 
     private final List<TranslatableName> detailNames;
 
-    protected List<Value> details;
-
     public StravaActivityStreamer(final StravaUserStreamer stravaUserStreamer,
                                   final StravaActivitiesYearStreamer stravaActivitiesYearStreamer,
                                   final Activity activity) {
@@ -64,8 +64,9 @@ public class StravaActivityStreamer extends StravaFolderStreamer<StravaStreamer>
     @Override
     public Stream<StravaStreamer> stream() {
         return Stream.of(
-            new StravaActivityLapsBinaryStreamer(this),
-            new StravaActivityCommentsBinaryStreamer(this)
+            new StravaActivityLapsJsonStreamer(this),
+            new StravaActivityCommentsJsonStreamer(this),
+            new StravaActivityKudosJsonStreamer(this)
         );
     }
 
@@ -117,21 +118,13 @@ public class StravaActivityStreamer extends StravaFolderStreamer<StravaStreamer>
     }
 
     @Override
-    public List<Value> details() {
-        init();
-        return details;
-    }
-
-    @Override
-    public void init() {
-        if (details == null) {
-            details = asList(
-                new TextValue(getName()),
-                new TextValue(getType()),
-                new DistanceValue(activity.getDistance()),
-                new DistanceValue(activity.getTotalElevationGain()),
-                new DateValue(lastModified()));
-        }
+    public void reset() {
+        details = asList(
+            new TextValue(getName()),
+            new TextValue(getType()),
+            new DistanceValue(activity.getDistance()),
+            new DistanceValue(activity.getTotalElevationGain()),
+            new DateValue(lastModified()));
     }
 
     @Override

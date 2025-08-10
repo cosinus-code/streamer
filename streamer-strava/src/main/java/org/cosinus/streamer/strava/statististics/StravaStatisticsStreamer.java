@@ -17,8 +17,6 @@
 
 package org.cosinus.streamer.strava.statististics;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.expand.ExpandedStreamer;
 import org.cosinus.streamer.api.value.TranslatableName;
@@ -26,15 +24,13 @@ import org.cosinus.streamer.strava.model.AthleteStatistics;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static org.cosinus.streamer.api.ParentStreamer.FOLDER_VIEW_ID;
-import static org.cosinus.streamer.strava.statististics.StravaStatisticsBinaryStreamer.STATISTICS_ICON_NAME;
+import static org.cosinus.streamer.strava.statististics.StravaStatisticsJsonStreamer.STATISTICS_ICON_NAME;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 public class StravaStatisticsStreamer extends ExpandedStreamer<StravaStatisticStreamable> {
@@ -85,18 +81,8 @@ public class StravaStatisticsStreamer extends ExpandedStreamer<StravaStatisticSt
     }
 
     @Override
-    public StravaStatisticsBinaryStreamer binaryStreamer() {
-        return (StravaStatisticsBinaryStreamer) super.binaryStreamer();
-    }
-
-    @Override
-    public Optional<StravaStatisticStreamable> find(String path) {
-        return Optional.empty();
-    }
-
-    @Override
-    public OutputStream outputStream(boolean append) {
-        return null;
+    public StravaStatisticsJsonStreamer binaryStreamer() {
+        return (StravaStatisticsJsonStreamer) super.binaryStreamer();
     }
 
     @Override
@@ -113,6 +99,4 @@ public class StravaStatisticsStreamer extends ExpandedStreamer<StravaStatisticSt
     public List<TranslatableName> detailNames() {
         return detailNames;
     }
-
-
 }

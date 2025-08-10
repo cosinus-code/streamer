@@ -29,7 +29,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static org.cosinus.streamer.strava.activity.laps.StravaActivityLapsExpander.STRAVA_ACTIVITY_LAPS;
 
-public class StravaActivityLapsBinaryStreamer extends StravaJsonStreamer {
+public class StravaActivityLapsJsonStreamer extends StravaJsonStreamer {
 
     public static final String ACTIVITY_LAPS = "Laps";
 
@@ -41,7 +41,7 @@ public class StravaActivityLapsBinaryStreamer extends StravaJsonStreamer {
 
     private List<ActivityLap> activityLaps;
 
-    public StravaActivityLapsBinaryStreamer(final StravaActivityStreamer stravaActivityStreamer) {
+    public StravaActivityLapsJsonStreamer(final StravaActivityStreamer stravaActivityStreamer) {
         super(stravaActivityStreamer.getStravaUserStreamer());
         this.stravaActivityStreamer = stravaActivityStreamer;
         this.stravaActivityId = stravaActivityStreamer.getActivity().getId();

@@ -18,6 +18,7 @@
 package org.cosinus.streamer.strava.activity;
 
 import org.cosinus.streamer.api.ParentStreamer;
+import org.cosinus.streamer.api.value.TextValue;
 import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.streamer.strava.StravaFolderStreamer;
 import org.cosinus.streamer.strava.StravaUserStreamer;
@@ -30,6 +31,7 @@ import java.util.stream.StreamSupport;
 import static java.lang.String.valueOf;
 import static java.time.LocalDateTime.now;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.cosinus.swing.util.DateUtils.*;
 
 public class StravaActivitiesYearStreamer extends StravaFolderStreamer<StravaActivityStreamer> {
@@ -78,5 +80,10 @@ public class StravaActivitiesYearStreamer extends StravaFolderStreamer<StravaAct
     @Override
     public List<TranslatableName> detailNames() {
         return detailNames;
+    }
+
+    @Override
+    public void reset() {
+        details = singletonList(new TextValue(getName()));
     }
 }

@@ -24,6 +24,8 @@ import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.Optional;
 
+import static java.util.Optional.empty;
+
 /**
  * Pack streamer interface
  */
@@ -81,7 +83,11 @@ public abstract class ExpandedStreamer<T> implements Streamer<T> {
         return binaryStreamer.getUrlPath();
     }
 
-    public abstract Optional<T> find(String path);
+    public Optional<T> find(String path) {
+        return empty();
+    }
 
-    public abstract OutputStream outputStream(boolean append);
+    public OutputStream outputStream(boolean append) {
+        return null;
+    }
 }
