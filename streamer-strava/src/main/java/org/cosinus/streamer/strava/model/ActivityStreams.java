@@ -17,55 +17,33 @@
 
 package org.cosinus.streamer.strava.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
+
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static java.util.Optional.ofNullable;
 
-@Getter
-@Setter
 @JsonInclude(NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Club {
+public class ActivityStreams extends LinkedHashMap<ActivityStreamType, ActivityStream<?>> {
 
-    private Long id;
+    @JsonIgnore
+    public <T> List<T> getDataStream(ActivityStreamType type) {
+        return (List<T>) getDataStream(type, type.getDataClass());
+    }
 
-    @JsonProperty("resource_state")
-    private int resourceState;
-
-    private String name;
-
-    @JsonProperty("profile_medium")
-    private String profileMedium;
-
-    private String profile;
-
-    @JsonProperty("cover_photo")
-    private String coverPhoto;
-
-    @JsonProperty("cover_photo_small")
-    private String coverPhotoSmall;
-
-    @JsonProperty("sport_type")
-    private SportType sportType;
-
-    private String city;
-
-    private String state;
-
-    private String country;
-
-    private boolean isPrivate;
-
-    @JsonProperty("member_count")
-    private Long memberCount;
-
-    private boolean featured;
-
-    private boolean verified;
-
-    private String url;
+    private <T> List<T> getDataStream(ActivityStreamType type, Class<T> dataClass) {
+        return ofNullable(get(type))
+            .map(ActivityStream::getData)
+            .stream()
+            .flatMap(Collection::stream)
+            .filter(dataClass::isInstance)
+            .map(dataClass::cast)
+            .toList();
+    }
 }

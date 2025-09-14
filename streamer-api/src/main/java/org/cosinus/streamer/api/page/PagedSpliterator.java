@@ -15,10 +15,7 @@
  *
  */
 
-package org.cosinus.streamer.strava.stream;
-
-import org.cosinus.streamer.strava.client.StravaClientInvoker;
-import org.cosinus.streamer.strava.model.Activity;
+package org.cosinus.streamer.api.page;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -27,36 +24,26 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 
 import static java.lang.Long.MAX_VALUE;
+import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
-public class StravaActivitySpliterator implements Spliterator<Activity> {
+public class PagedSpliterator<T> implements Spliterator<T> {
 
     private static final int PAGE_SIZE = 200;
 
-    private final String userId;
+    private final PageSupplier<T> pageSupplier;
 
-    private final StravaClientInvoker stravaClientInvoker;
-
-    private final Queue<Activity> activities;
-
-    private final long startTime;
-
-    private final long endTime;
+    private final Queue<T> activities;
 
     private int page = 1;
 
-    public StravaActivitySpliterator(final String userId,
-                                     final StravaClientInvoker stravaClientInvoker,
-                                     final long startTime,
-                                     final long endTime) {
-        this.userId = userId;
-        this.stravaClientInvoker = stravaClientInvoker;
-        this.startTime = startTime;
-        this.endTime = endTime;
+    public PagedSpliterator(final PageSupplier<T> pageSupplier) {
+        injectContext(this);
+        this.pageSupplier = pageSupplier;
         this.activities = new LinkedList<>();
     }
 
     @Override
-    public boolean tryAdvance(final Consumer<? super Activity> action) {
+    public boolean tryAdvance(final Consumer<? super T> action) {
         if (activities.isEmpty()) {
             activities.addAll(getActivities());
         }
@@ -70,7 +57,7 @@ public class StravaActivitySpliterator implements Spliterator<Activity> {
     }
 
     @Override
-    public Spliterator<Activity> trySplit() {
+    public Spliterator<T> trySplit() {
         return null;
     }
 
@@ -84,8 +71,7 @@ public class StravaActivitySpliterator implements Spliterator<Activity> {
         return ORDERED | NONNULL;
     }
 
-    protected List<Activity> getActivities() {
-        return stravaClientInvoker.invoke(userId, stravaClient ->
-            stravaClient.getActivities(startTime, endTime, PAGE_SIZE, page++));
+    protected List<T> getActivities() {
+        return pageSupplier.call(PAGE_SIZE, page++);
     }
 }

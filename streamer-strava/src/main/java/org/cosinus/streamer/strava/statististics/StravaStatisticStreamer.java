@@ -27,7 +27,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static org.cosinus.streamer.strava.statististics.StravaStatisticsJsonStreamer.STATISTICS_ICON_NAME;
 
-public class StravaStatisticStreamable implements Streamable {
+public class StravaStatisticStreamer implements Streamable {
 
     private final String statisticName;
 
@@ -35,8 +35,8 @@ public class StravaStatisticStreamable implements Streamable {
 
     private List<Value> details;
 
-    public StravaStatisticStreamable(final String statisticName,
-                                     final AthleteStatistic athleteStatistic) {
+    public StravaStatisticStreamer(final String statisticName,
+                                   final AthleteStatistic athleteStatistic) {
         this.statisticName = statisticName;
         this.athleteStatistic = athleteStatistic;
     }

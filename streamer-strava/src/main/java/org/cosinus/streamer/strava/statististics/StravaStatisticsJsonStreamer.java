@@ -72,11 +72,6 @@ public class StravaStatisticsJsonStreamer extends StravaJsonStreamer {
     }
 
     @Override
-    public String getIconName() {
-        return STATISTICS_ICON_NAME;
-    }
-
-    @Override
     public String getType() {
         return STRAVA_STATISTICS;
     }

@@ -23,49 +23,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 @Getter
 @Setter
 @JsonInclude(NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Club {
+public class ActivityStream<T> {
 
-    private Long id;
+    private List<T> data;
 
-    @JsonProperty("resource_state")
-    private int resourceState;
+    @JsonProperty("series_type")
+    private String seriesType;
 
-    private String name;
+    @JsonProperty("original_size")
+    private Long originalSize;
 
-    @JsonProperty("profile_medium")
-    private String profileMedium;
-
-    private String profile;
-
-    @JsonProperty("cover_photo")
-    private String coverPhoto;
-
-    @JsonProperty("cover_photo_small")
-    private String coverPhotoSmall;
-
-    @JsonProperty("sport_type")
-    private SportType sportType;
-
-    private String city;
-
-    private String state;
-
-    private String country;
-
-    private boolean isPrivate;
-
-    @JsonProperty("member_count")
-    private Long memberCount;
-
-    private boolean featured;
-
-    private boolean verified;
-
-    private String url;
+    private String resolution;
 }

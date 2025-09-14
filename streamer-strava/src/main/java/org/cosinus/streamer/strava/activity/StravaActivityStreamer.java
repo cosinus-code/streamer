@@ -19,12 +19,15 @@ package org.cosinus.streamer.strava.activity;
 
 import lombok.Getter;
 import org.cosinus.streamer.api.ParentStreamer;
-import org.cosinus.streamer.api.value.*;
-import org.cosinus.streamer.strava.StravaFolderStreamer;
+import org.cosinus.streamer.api.value.DateValue;
+import org.cosinus.streamer.api.value.DistanceValue;
+import org.cosinus.streamer.api.value.TextValue;
+import org.cosinus.streamer.api.value.TranslatableName;
+import org.cosinus.streamer.strava.StravaParentStreamer;
 import org.cosinus.streamer.strava.StravaStreamer;
 import org.cosinus.streamer.strava.StravaUserStreamer;
 import org.cosinus.streamer.strava.activity.comments.StravaActivityCommentsJsonStreamer;
-import org.cosinus.streamer.strava.activity.comments.StravaActivityCommentsTextStreamer;
+import org.cosinus.streamer.strava.activity.gpx.StravaActivityGpxStreamer;
 import org.cosinus.streamer.strava.activity.kudos.StravaActivityKudosJsonStreamer;
 import org.cosinus.streamer.strava.activity.laps.StravaActivityLapsJsonStreamer;
 import org.cosinus.streamer.strava.model.Activity;
@@ -37,7 +40,7 @@ import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
-public class StravaActivityStreamer extends StravaFolderStreamer<StravaStreamer> {
+public class StravaActivityStreamer extends StravaParentStreamer<StravaStreamer<?>> {
 
     public static final String DETAIL_KEY_COUNT = "count";
 
@@ -62,11 +65,12 @@ public class StravaActivityStreamer extends StravaFolderStreamer<StravaStreamer>
     }
 
     @Override
-    public Stream<StravaStreamer> stream() {
+    public Stream<StravaStreamer<?>> stream() {
         return Stream.of(
             new StravaActivityLapsJsonStreamer(this),
             new StravaActivityCommentsJsonStreamer(this),
-            new StravaActivityKudosJsonStreamer(this)
+            new StravaActivityKudosJsonStreamer(this),
+            new StravaActivityGpxStreamer(this)
         );
     }
 
@@ -92,8 +96,7 @@ public class StravaActivityStreamer extends StravaFolderStreamer<StravaStreamer>
         return activity.getDescription();
     }
 
-    @Override
-    public long lastModified() {
+    public long getStartDate() {
         return activity.getStartDate().getTime();
     }
 
@@ -124,7 +127,7 @@ public class StravaActivityStreamer extends StravaFolderStreamer<StravaStreamer>
             new TextValue(getType()),
             new DistanceValue(activity.getDistance()),
             new DistanceValue(activity.getTotalElevationGain()),
-            new DateValue(lastModified()));
+            new DateValue(getStartDate()));
     }
 
     @Override

@@ -19,21 +19,19 @@ package org.cosinus.streamer.strava;
 
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.value.TextValue;
 
-public abstract class StravaFolderStreamer<S extends Streamer>
+import static java.util.Collections.singletonList;
+
+public abstract class StravaParentStreamer<S extends Streamer>
     extends StravaStreamer<S> implements ParentStreamer<S> {
 
     protected final String folderName;
 
-    public StravaFolderStreamer(final StravaUserStreamer stravaUserStreamer,
+    public StravaParentStreamer(final StravaUserStreamer stravaUserStreamer,
                                 final String folderName) {
         super(stravaUserStreamer);
         this.folderName = folderName;
-    }
-
-    @Override
-    public String getProtocol() {
-        return stravaUserStreamer.getProtocol();
     }
 
     @Override
@@ -49,5 +47,10 @@ public abstract class StravaFolderStreamer<S extends Streamer>
     @Override
     public String getIconName() {
         return folderName;
+    }
+
+    @Override
+    public void reset() {
+        details = singletonList(new TextValue(getName()));
     }
 }

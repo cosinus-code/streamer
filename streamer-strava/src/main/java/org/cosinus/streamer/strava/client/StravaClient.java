@@ -39,14 +39,21 @@ public interface StravaClient {
                           @RequestParam int trainer, @RequestParam int commute);
 
     @GetMapping("/athlete/activities")
-    List<Activity> getActivities(@RequestParam long after, @RequestParam long before,
-                                 @RequestParam("per_page") int pageSize, @RequestParam int page);
+    List<Activity> getCurrentAthleteActivities(@RequestParam long after, @RequestParam long before,
+                                               @RequestParam("per_page") int pageSize, @RequestParam int page);
+
+    @GetMapping("/athlete/friends")
+    List<Activity> getCurrentAthleteFriends(@RequestParam("per_page") int pageSize, @RequestParam int page);
+
+    @GetMapping("/athletes/clubs")
+    List<Club> getCurrentAthleteClubs(@RequestParam("per_page") int pageSize, @RequestParam int page);
 
     @GetMapping("/athletes/{id}/stats")
     AthleteStatistics getAthleteStatistics(@PathVariable long id);
 
     @GetMapping("/activities/{id}")
-    Activity getActivityById(@PathVariable long id, @RequestParam("include_all_efforts") boolean includeAllEfforts);
+    Activity getActivityById(@PathVariable long id,
+                             @RequestParam("include_all_efforts") boolean includeAllEfforts);
 
     @GetMapping("/activities/{id}/laps")
     List<ActivityLap> getActivityLaps(@PathVariable long id);
@@ -57,6 +64,12 @@ public interface StravaClient {
     @GetMapping("/activities/{id}/comments")
     List<ActivityComment> getActivityComments(@PathVariable long id);
 
+    @GetMapping("/activities/{id}/streams")
+    ActivityStreams getActivityStreams(@PathVariable long id,
+                                       @RequestParam("keys") String[] keys,
+                                       @RequestParam("key_by_type") boolean keyByType);
+
     @PutMapping("/activities/{id}")
-    String updateActivity(@PathVariable long id, @RequestBody UpdatableActivity activity);
+    String updateActivity(@PathVariable long id,
+                          @RequestBody UpdatableActivity activity);
 }

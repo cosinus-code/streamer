@@ -33,7 +33,7 @@ import static org.cosinus.streamer.api.ParentStreamer.FOLDER_VIEW_ID;
 import static org.cosinus.streamer.strava.statististics.StravaStatisticsJsonStreamer.STATISTICS_ICON_NAME;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
-public class StravaStatisticsStreamer extends ExpandedStreamer<StravaStatisticStreamable> {
+public class StravaStatisticsStreamer extends ExpandedStreamer<StravaStatisticStreamer> {
 
     public static final String DETAIL_KEY_COUNT = "count";
 
@@ -72,10 +72,10 @@ public class StravaStatisticsStreamer extends ExpandedStreamer<StravaStatisticSt
     }
 
     @Override
-    public Stream<StravaStatisticStreamable> stream() {
+    public Stream<StravaStatisticStreamer> stream() {
         AthleteStatistics athleteStatistics = binaryStreamer().getAthleteStatistics();
         return Arrays.stream(StravaStatisticsType.values())
-            .map(type -> new StravaStatisticStreamable(
+            .map(type -> new StravaStatisticStreamer(
                 translator.translate(type.getKey()),
                 type.getStatisticsSupplier().apply(athleteStatistics)));
     }

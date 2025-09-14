@@ -79,4 +79,5 @@ public enum ActivityType {
             .filter(type -> type.getName().equals(name))
             .findFirst()
             .orElse(null);
-    }}
+    }
+}

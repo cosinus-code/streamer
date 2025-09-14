@@ -18,23 +18,20 @@
 package org.cosinus.streamer.strava.activity;
 
 import org.cosinus.streamer.api.ParentStreamer;
-import org.cosinus.streamer.api.value.TextValue;
+import org.cosinus.streamer.api.page.PagedStream;
 import org.cosinus.streamer.api.value.TranslatableName;
-import org.cosinus.streamer.strava.StravaFolderStreamer;
+import org.cosinus.streamer.strava.StravaParentStreamer;
 import org.cosinus.streamer.strava.StravaUserStreamer;
-import org.cosinus.streamer.strava.stream.StravaActivitySpliterator;
 
 import java.util.List;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static java.lang.String.valueOf;
 import static java.time.LocalDateTime.now;
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 import static org.cosinus.swing.util.DateUtils.*;
 
-public class StravaActivitiesYearStreamer extends StravaFolderStreamer<StravaActivityStreamer> {
+public class StravaActivitiesYearStreamer extends StravaParentStreamer<StravaActivityStreamer> {
 
     public static final String DETAIL_KEY_DISTANCE = "distance";
 
@@ -67,8 +64,9 @@ public class StravaActivitiesYearStreamer extends StravaFolderStreamer<StravaAct
         long startTime = toEpochSecond(startOfYear(year));
         long endTime = toEpochSecond(year == now().getYear() ? now() : lastSecondOfYear(year));
 
-        return StreamSupport
-            .stream(new StravaActivitySpliterator(userName, stravaClientInvoker, startTime, endTime), false)
+        return PagedStream
+            .of((pageSize, page) -> stravaClientInvoker.invoke(userName, stravaClient ->
+                stravaClient.getCurrentAthleteActivities(startTime, endTime, pageSize, page)))
             .map(activity -> new StravaActivityStreamer(stravaUserStreamer, this, activity));
     }
 
@@ -80,10 +78,5 @@ public class StravaActivitiesYearStreamer extends StravaFolderStreamer<StravaAct
     @Override
     public List<TranslatableName> detailNames() {
         return detailNames;
-    }
-
-    @Override
-    public void reset() {
-        details = singletonList(new TextValue(getName()));
     }
 }

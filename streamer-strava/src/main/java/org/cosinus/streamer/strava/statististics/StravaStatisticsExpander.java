@@ -25,12 +25,12 @@ import org.cosinus.streamer.api.expand.Expander;
 import static org.cosinus.streamer.strava.statististics.StravaStatisticsExpander.STRAVA_STATISTICS;
 
 @Expander(STRAVA_STATISTICS)
-public class StravaStatisticsExpander implements BinaryExpander<StravaStatisticStreamable> {
+public class StravaStatisticsExpander implements BinaryExpander<StravaStatisticStreamer> {
 
     public static final String STRAVA_STATISTICS = "strava-statistics";
 
     @Override
-    public ExpandedStreamer<StravaStatisticStreamable> expand(BinaryStreamer binaryStreamer) {
+    public ExpandedStreamer<StravaStatisticStreamer> expand(BinaryStreamer binaryStreamer) {
         return new StravaStatisticsStreamer(binaryStreamer);
     }
 }

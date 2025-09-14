@@ -18,13 +18,16 @@
 package org.cosinus.streamer.strava;
 
 import error.StreamerException;
+import lombok.Getter;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.value.TextValue;
 import org.cosinus.streamer.api.value.Value;
 import org.cosinus.streamer.strava.activity.StravaActivitiesStreamer;
 import org.cosinus.streamer.strava.client.StravaClient;
 import org.cosinus.streamer.strava.client.StravaClientInvoker;
+import org.cosinus.streamer.strava.club.StravaClubsStreamer;
 import org.cosinus.streamer.strava.model.AthleteProfile;
+import org.cosinus.streamer.strava.profile.StravaProfileStreamer;
 import org.cosinus.streamer.strava.statististics.StravaStatisticsJsonStreamer;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -40,10 +43,11 @@ import java.util.stream.Stream;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Stream.concat;
 import static org.cosinus.streamer.strava.StravaMainStreamer.STRAVA_ICON_NAME;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
-public class StravaUserStreamer implements ParentStreamer<StravaStreamer> {
+public class StravaUserStreamer implements ParentStreamer<StravaStreamer<?>> {
 
     public static final DateTimeFormatter DATE_FORMATTER = ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
 
@@ -63,6 +67,8 @@ public class StravaUserStreamer implements ParentStreamer<StravaStreamer> {
 
     public static final String SEX = "sex";
 
+    public static final String BIO = "bio";
+
     public static final String PREMIUM = "premium";
 
     public static final String SUMMIT = "summit";
@@ -81,6 +87,26 @@ public class StravaUserStreamer implements ParentStreamer<StravaStreamer> {
 
     public static final String FOLLOWER = "follower";
 
+    public static final String RESOURCE_STATE = "resource_state";
+
+    public static final String BADGE_TYPE_ID = "badge_type_id";
+
+    public static final Set<String> DATE_DETAILS = Set.of(
+        CREATED_AT,
+        UPDATED_AT
+    );
+
+    public static final Set<String> IGNORED_DETAILS = Set.of(
+        RESOURCE_STATE,
+        BADGE_TYPE_ID,
+        PROFILE,
+        PROFILE_MEDIUM,
+        PREMIUM,
+        BIO,
+        FOLLOWER,
+        FRIEND
+    );
+
     public static final Set<String> DETAIL_NAMES = Set.of(
         USERNAME,
         FIRST_NAME,
@@ -95,6 +121,7 @@ public class StravaUserStreamer implements ParentStreamer<StravaStreamer> {
 
     private final String userName;
 
+    @Getter
     private final Map<String, Object> userDetails;
 
     private final List<Value> details;
@@ -114,11 +141,23 @@ public class StravaUserStreamer implements ParentStreamer<StravaStreamer> {
     }
 
     @Override
-    public Stream<StravaStreamer> stream() {
-        return Stream.of(
-            new StravaActivitiesStreamer(this),
-            new StravaStatisticsJsonStreamer(this)
-        );
+    public Stream<StravaStreamer<?>> stream() {
+        return concat(
+            Stream.of(
+                new StravaActivitiesStreamer(this),
+                new StravaProfileStreamer(this),
+                new StravaStatisticsJsonStreamer(this)
+            ),
+            isUserPremium() ?
+                Stream.of(new StravaClubsStreamer(this)) :
+                Stream.empty());
+    }
+
+    public boolean isUserPremium() {
+        return ofNullable(userDetails.get(PREMIUM))
+            .map(Object::toString)
+            .map(Boolean::parseBoolean)
+            .orElse(false);
     }
 
     @Override
@@ -179,6 +218,5 @@ public class StravaUserStreamer implements ParentStreamer<StravaStreamer> {
     protected AthleteProfile getAthleteProfile() {
         return stravaClientInvoker.invoke(userName, StravaClient::getCurrentAthleteProfile);
     }
-
 }
 

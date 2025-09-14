@@ -17,18 +17,16 @@
 
 package org.cosinus.streamer.strava.activity;
 
-import org.cosinus.streamer.api.value.TextValue;
-import org.cosinus.streamer.strava.StravaFolderStreamer;
+import org.cosinus.streamer.strava.StravaParentStreamer;
 import org.cosinus.streamer.strava.StravaUserStreamer;
 
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
 import static java.time.LocalDateTime.now;
-import static java.util.Collections.singletonList;
 import static java.util.stream.IntStream.rangeClosed;
 
-public class StravaActivitiesStreamer extends StravaFolderStreamer<StravaActivitiesYearStreamer> {
+public class StravaActivitiesStreamer extends StravaParentStreamer<StravaActivitiesYearStreamer> {
 
     public static final String ACTIVITIES = "Activities";
 
@@ -44,10 +42,5 @@ public class StravaActivitiesStreamer extends StravaFolderStreamer<StravaActivit
             .orElse(currentYear);
         return rangeClosed(startYear, currentYear)
             .mapToObj(year -> new StravaActivitiesYearStreamer(stravaUserStreamer, this, year));
-    }
-
-    @Override
-    public void reset() {
-        details = singletonList(new TextValue(getName()));
     }
 }

@@ -64,6 +64,11 @@ public abstract class StravaStreamer<T> implements Streamer<T> {
     }
 
     @Override
+    public String getProtocol() {
+        return stravaUserStreamer.getProtocol();
+    }
+
+    @Override
     public List<Value> details() {
         if (details == null) {
             reset();
