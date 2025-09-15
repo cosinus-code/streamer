@@ -14,15 +14,19 @@
  *  limitations under the License.
  *
  */
+package org.cosinus.streamer.error;
 
-package org.cosinus.streamer.strava.client;
+public class AbortActionException extends StreamerException {
 
-import org.cosinus.streamer.strava.StravaComponent;
-import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.context.annotation.Configuration;
+    public AbortActionException(String messageKey, Object[] messageArguments) {
+        super(messageKey, messageArguments);
+    }
 
-@Configuration
-@EnableFeignClients(basePackageClasses = StravaClient.class)
-@StravaComponent
-public class StravaConfiguration {
+    public AbortActionException(String messageKey) {
+        super(messageKey);
+    }
+
+    public AbortActionException(String messageKey, Throwable cause) {
+        super(cause, messageKey);
+    }
 }

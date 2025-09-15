@@ -28,8 +28,8 @@ import org.cosinus.streamer.api.stream.pipeline.error.AbortPipelineConsumeExcept
 import org.cosinus.streamer.api.worker.SimpleWorker;
 import org.cosinus.streamer.api.worker.Worker;
 import org.cosinus.streamer.ui.action.progress.StreamersProgressModel;
-import error.AbortActionException;
-import error.ActionException;
+import org.cosinus.streamer.error.AbortActionException;
+import org.cosinus.streamer.error.ActionException;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 

@@ -16,8 +16,8 @@
 
 package org.cosinus.streamer.ui.action.execute.copy;
 
-import error.AbortActionException;
-import error.ActionException;
+import org.cosinus.streamer.error.AbortActionException;
+import org.cosinus.streamer.error.ActionException;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;

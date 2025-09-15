@@ -17,7 +17,7 @@
 
 package org.cosinus.streamer.strava;
 
-import error.StreamerException;
+import org.cosinus.streamer.error.StreamerException;
 import lombok.Getter;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.value.TextValue;

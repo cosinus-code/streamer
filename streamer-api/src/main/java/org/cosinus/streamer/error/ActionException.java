@@ -15,14 +15,18 @@
  *
  */
 
-package org.cosinus.streamer.strava.client;
+package org.cosinus.streamer.error;
 
-import org.cosinus.streamer.strava.StravaComponent;
-import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.context.annotation.Configuration;
+/**
+ * Exception thrown during executing an action
+ */
+public class ActionException extends StreamerException {
 
-@Configuration
-@EnableFeignClients(basePackageClasses = StravaClient.class)
-@StravaComponent
-public class StravaConfiguration {
+    public ActionException(Throwable cause, String messageKey, Object... messageArguments) {
+        super(cause, messageKey, messageArguments);
+    }
+
+    public ActionException(String messageKey, Object... messageArguments) {
+        super(messageKey, messageArguments);
+    }
 }

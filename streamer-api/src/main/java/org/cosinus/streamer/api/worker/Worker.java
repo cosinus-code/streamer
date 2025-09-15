@@ -16,8 +16,8 @@
 
 package org.cosinus.streamer.api.worker;
 
-import error.AbortActionException;
-import error.ActionException;
+import org.cosinus.streamer.error.AbortActionException;
+import org.cosinus.streamer.error.ActionException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cosinus.swing.action.execute.ActionExecutors;

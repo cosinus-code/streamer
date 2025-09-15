@@ -42,4 +42,3 @@ spring:
           port: 8889
         storing:
           location: strava
-

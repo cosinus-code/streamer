@@ -16,7 +16,7 @@
 
 package org.cosinus.streamer.ui.action.execute.load.image;
 
-import error.ActionException;
+import org.cosinus.streamer.error.ActionException;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.stream.pipeline.PipelineListener;

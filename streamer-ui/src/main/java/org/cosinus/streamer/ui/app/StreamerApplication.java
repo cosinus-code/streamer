@@ -22,7 +22,11 @@
 package org.cosinus.streamer.ui.app;
 
 import org.cosinus.swing.boot.SpringSwingBootApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.admin.SpringApplicationAdminJmxAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cloud.autoconfigure.RefreshAutoConfiguration;
 import org.springframework.context.annotation.EnableMBeanExport;
 import org.springframework.jmx.support.RegistrationPolicy;
 
@@ -30,6 +34,11 @@ import static org.cosinus.swing.boot.SpringSwingApplication.run;
 
 @SpringSwingBootApplication(scanBasePackages = "org.cosinus.streamer")
 @EnableMBeanExport(registration = RegistrationPolicy.IGNORE_EXISTING)
+@EnableAutoConfiguration(exclude = {
+    SecurityAutoConfiguration.class,
+    RefreshAutoConfiguration.class,
+    SpringApplicationAdminJmxAutoConfiguration.class
+})
 @EnableCaching
 public class StreamerApplication {
 
