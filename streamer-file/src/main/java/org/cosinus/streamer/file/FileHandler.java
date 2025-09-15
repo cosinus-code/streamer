@@ -144,15 +144,7 @@ public class FileHandler {
     }
 
     public void open(final File file) {
-        try {
-            if (desktop != null) {
-                desktop.open(file);
-            } else {
-                processExecutor.executeFile(file);
-            }
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        processExecutor.executeFile(file);
     }
 
     public void copyPermissions(File fileSource, File fileTarget) {
