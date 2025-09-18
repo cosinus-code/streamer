@@ -22,20 +22,20 @@
     <name>Streamer Parent</name>
 
     <properties>
-        <java.version>17</java.version>
+        <java.version>21</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
         <spring-swing.version>2.0.0-SNAPSHOT</spring-swing.version>
         <spring-cloud.version>4.3.0</spring-cloud.version>
-        <commons-net.version>3.8.0</commons-net.version>
-        <commons-pool.version>2.11.1</commons-pool.version>
+        <commons-net.version>3.12.0</commons-net.version>
+        <commons-pool.version>2.12.1</commons-pool.version>
         <commons-exec.version>1.5.0</commons-exec.version>
         <google-api.version>v3-rev197-1.25.0</google-api.version>
         <google-api-client.version>1.25.0</google-api-client.version>
         <google-auth-oath2.version>1.34.0</google-auth-oath2.version>
         <google-oath-jetty.version>1.39.0</google-oath-jetty.version>
-        <jenetics-jpx.version>3.1.0</jenetics-jpx.version>
+        <jenetics-jpx.version>3.2.1</jenetics-jpx.version>
         <junit.version>4.13.1</junit.version>
     </properties>
 
