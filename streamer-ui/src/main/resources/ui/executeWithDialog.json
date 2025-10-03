@@ -11,7 +11,8 @@
       "type": "list",
       "width": 300,
       "height": 400,
-      "action": true
+      "action": true,
+      "focus": true
     },
     {
       "id": "set-as-default-application",
