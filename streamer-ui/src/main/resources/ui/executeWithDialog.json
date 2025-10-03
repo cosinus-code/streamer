@@ -10,7 +10,8 @@
       "label": "",
       "type": "list",
       "width": 300,
-      "height": 400
+      "height": 400,
+      "action": true
     },
     {
       "id": "set-as-default-application",
