@@ -96,7 +96,8 @@ public class ExecuteStreamerWithAction implements ActionInContext {
                 if (executeStreamerModel.isSetAsDefault()) {
                     fileSystem.setDefaultApplicationToExecuteFile(application.getId(), file);
                 }
-                processExecutor.execute(application.isRunInTerminal(), application.getCommandToExecuteFile(file));
+                processExecutor.execute(application.isRunInTerminal(), false,
+                    application.getCommandToExecuteFile(file));
             });
     }
 
