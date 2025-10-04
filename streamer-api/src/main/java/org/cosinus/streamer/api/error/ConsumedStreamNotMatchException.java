@@ -28,8 +28,4 @@ public class ConsumedStreamNotMatchException extends StreamerException {
     public ConsumedStreamNotMatchException(String message, Throwable cause) {
         super(message, cause);
     }
-
-    public ConsumedStreamNotMatchException(Throwable cause) {
-        super(cause);
-    }
 }

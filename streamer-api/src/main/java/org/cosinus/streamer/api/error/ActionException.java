@@ -15,7 +15,7 @@
  *
  */
 
-package org.cosinus.streamer.error;
+package org.cosinus.streamer.api.error;
 
 /**
  * Exception thrown during executing an action

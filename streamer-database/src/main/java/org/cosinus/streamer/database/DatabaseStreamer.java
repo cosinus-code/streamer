@@ -73,12 +73,12 @@ public abstract class DatabaseStreamer implements RemoteStreamer<DatabaseRecord,
                             databaseRecord.setLeadDetailIndex(index - 1);
                         }
                     } catch (SQLException e) {
-                        throw new DatabaseException(e);
+                        throw new DatabaseException(e, "failed.to.create.record");
                     }
                 });
             return databaseRecord;
         } catch (SQLException e) {
-            throw new DatabaseException(e);
+            throw new DatabaseException(e, "failed.to.create.record");
         }
     }
 

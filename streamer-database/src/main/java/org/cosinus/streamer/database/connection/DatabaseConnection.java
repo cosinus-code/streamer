@@ -126,7 +126,7 @@ public class DatabaseConnection implements Connection<ResultSet> {
         try {
             return new ResultSet(resultSetSupplier.get());
         } catch (SQLException e) {
-            throw new DatabaseException(e);
+            throw new DatabaseException(e, "failed.to.query.database");
         }
     }
 

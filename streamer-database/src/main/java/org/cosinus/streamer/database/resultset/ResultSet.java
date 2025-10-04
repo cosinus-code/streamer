@@ -40,7 +40,7 @@ public class ResultSet implements AutoCloseable {
                 .map(type -> type.resolveValue(resultSet, columnIndex))
                 .orElse(null);
         } catch (SQLException e) {
-            throw new DatabaseException(e);
+            throw new DatabaseException(e, "failed.to.get.record.value");
         }
     }
 
@@ -57,7 +57,7 @@ public class ResultSet implements AutoCloseable {
             T value = supplier.supply(resultSet);
             return resultSet.wasNull() ? null : value;
         } catch (SQLException e) {
-            throw new DatabaseException(e);
+            throw new DatabaseException(e, "failed.to.query.database");
         }
     }
 
@@ -65,7 +65,7 @@ public class ResultSet implements AutoCloseable {
         try {
             return resultSet.next();
         } catch (SQLException ex) {
-            throw new DatabaseException(ex);
+            throw new DatabaseException(ex, "failed.to.query.database");
         }
     }
 
@@ -73,7 +73,7 @@ public class ResultSet implements AutoCloseable {
         try {
             return resultSet.getMetaData();
         } catch (SQLException e) {
-            throw new DatabaseException(e);
+            throw new DatabaseException(e, "failed.to.get.database.metadata");
         }
     }
 
@@ -83,7 +83,7 @@ public class ResultSet implements AutoCloseable {
             return IntStream.rangeClosed(1, metaData.getColumnCount())
                 .mapToObj(index -> getColumnLabel(metaData, index));
         } catch (SQLException e) {
-            throw new DatabaseException(e);
+            throw new DatabaseException(e, "failed.to.get.field.names");
         }
     }
 
@@ -91,7 +91,7 @@ public class ResultSet implements AutoCloseable {
         try {
             return metaData.getColumnLabel(index);
         } catch (SQLException e) {
-            throw new DatabaseException(e);
+            throw new DatabaseException(e, "failed.to.get.column.label");
         }
     }
 
@@ -99,7 +99,7 @@ public class ResultSet implements AutoCloseable {
         try {
             resultSet.close();
         } catch (SQLException ex) {
-            throw new DatabaseException(ex);
+            throw new DatabaseException(ex, "failed.to.query.database");
         }
     }
 }

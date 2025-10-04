@@ -16,10 +16,11 @@
 
 package org.cosinus.streamer.api.worker;
 
-import org.cosinus.streamer.error.AbortActionException;
-import org.cosinus.streamer.error.ActionException;
+import org.cosinus.streamer.api.error.AbortActionException;
+import org.cosinus.streamer.api.error.ActionException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cosinus.streamer.api.error.StreamerException;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.action.execute.ActionModel;
 import org.cosinus.swing.boot.SwingApplicationFrame;
@@ -57,9 +58,11 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
 
     protected final M workerModel;
 
-    private ActionException error;
+    private Exception error;
 
     private boolean paused;
+
+    private boolean aborted;
 
     protected Worker(ActionModel actionModel, M workerModel) {
         this.id = actionModel.getExecutionId();
@@ -83,8 +86,13 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
         this.paused = paused;
     }
 
-    protected void setError(ActionException error) {
+    protected void setError(Exception error) {
         this.error = error;
+    }
+
+    protected void setAborted() {
+        aborted = true;
+        logUserAbort();
     }
 
     @Override
@@ -96,7 +104,7 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
         } catch (ActionException ex) {
             setError(ex);
         } catch (AbortActionException ex) {
-            logUserAbort();
+            setAborted();
         }
         return workerModel;
     }
@@ -107,7 +115,7 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
             workerModel.update(items);
             workerListenerHandler.workerUpdated(getId(), workerModel);
         } catch (Exception ex) {
-            errorHandler.handleError(ex);
+            setError(ex);
         }
     }
 
@@ -124,7 +132,9 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
         } catch (InterruptedException e) {
             currentThread().interrupt();
         } catch (ExecutionException ex) {
-            errorHandler.handleError(applicationFrame, ex);
+            setError(ex.getCause() instanceof StreamerException streamerException ?
+                streamerException :
+                new StreamerException(ex, "worker.execution.error"));
         }
 
         if (error != null) {
@@ -159,6 +169,14 @@ public abstract class Worker<M extends WorkerModel<T>, T> extends SwingWorker<M,
 
     public M getWorkerModel() {
         return workerModel;
+    }
+
+    public boolean isSuccessful() {
+        return error == null && !isCancelled() && !isAborted();
+    }
+
+    public boolean isAborted() {
+        return aborted;
     }
 
     protected abstract void doWork();

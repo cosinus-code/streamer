@@ -28,8 +28,4 @@ public class SaveStreamerException extends StreamerException {
     public SaveStreamerException(String message, Throwable cause) {
         super(message, cause);
     }
-
-    public SaveStreamerException(Throwable cause) {
-        super(cause);
-    }
 }

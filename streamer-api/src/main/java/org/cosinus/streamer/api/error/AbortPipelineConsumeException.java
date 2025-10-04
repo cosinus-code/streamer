@@ -15,21 +15,11 @@
  *
  */
 
-package org.cosinus.streamer.google.drive.connection;
+package org.cosinus.streamer.api.error;
 
-import org.cosinus.streamer.api.error.StreamerException;
+public class AbortPipelineConsumeException extends RuntimeException {
 
-public class GoogleDriveException extends StreamerException {
-
-    public GoogleDriveException(String message) {
+    public AbortPipelineConsumeException(String message) {
         super(message);
-    }
-
-    public GoogleDriveException(String messageKey, Object... messageArguments) {
-        super(messageKey, messageArguments);
-    }
-
-    public GoogleDriveException(String message, Throwable cause) {
-        super(message, cause);
     }
 }

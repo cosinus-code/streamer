@@ -55,7 +55,7 @@ public enum ValueResolver {
         try {
             return valueCreator.apply(valueSupplier.supply(rs, index));
         } catch (SQLException e) {
-            throw new DatabaseException(e);
+            throw new DatabaseException(e, "failed.to.resolve.record.field.value");
         }
     }
 

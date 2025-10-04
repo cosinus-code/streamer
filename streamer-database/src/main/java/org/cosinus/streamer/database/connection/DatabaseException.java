@@ -31,7 +31,11 @@ public class DatabaseException extends StreamerException {
         super(message, cause);
     }
 
-    public DatabaseException(Throwable cause) {
-        super(cause);
+    public DatabaseException(Throwable cause,String message) {
+        super(cause, message);
+    }
+
+    public DatabaseException(Throwable cause,String message, Object... messageArguments) {
+        super(cause, message, messageArguments);
     }
 }

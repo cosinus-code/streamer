@@ -15,21 +15,22 @@
  *
  */
 
-package org.cosinus.streamer.google.drive.connection;
+package org.cosinus.streamer.api.error;
 
-import org.cosinus.streamer.api.error.StreamerException;
+public class SkipPipelineConsumeException extends RuntimeException {
 
-public class GoogleDriveException extends StreamerException {
+    private long skippedSize;
 
-    public GoogleDriveException(String message) {
+    public SkipPipelineConsumeException(long skippedSize) {
+        this.skippedSize = skippedSize;
+    }
+
+    public SkipPipelineConsumeException(long skippedSize, String message) {
         super(message);
+        this.skippedSize = skippedSize;
     }
 
-    public GoogleDriveException(String messageKey, Object... messageArguments) {
-        super(messageKey, messageArguments);
-    }
-
-    public GoogleDriveException(String message, Throwable cause) {
-        super(message, cause);
+    public long getSkippedSize() {
+        return skippedSize;
     }
 }

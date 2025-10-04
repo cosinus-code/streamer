@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package org.cosinus.streamer.error;
+package org.cosinus.streamer.api.error;
 
 public class AbortActionException extends StreamerException {
 
@@ -27,6 +27,6 @@ public class AbortActionException extends StreamerException {
     }
 
     public AbortActionException(String messageKey, Throwable cause) {
-        super(cause, messageKey);
+        super(messageKey, cause);
     }
 }

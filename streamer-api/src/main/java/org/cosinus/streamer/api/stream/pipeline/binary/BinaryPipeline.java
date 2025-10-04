@@ -19,7 +19,7 @@ package org.cosinus.streamer.api.stream.pipeline.binary;
 import org.cosinus.streamer.api.stream.binary.BinaryStream;
 import org.cosinus.streamer.api.stream.pipeline.Pipeline;
 import org.cosinus.streamer.api.stream.pipeline.PipelineListener;
-import org.cosinus.streamer.api.stream.pipeline.error.AbortPipelineConsumeException;
+import org.cosinus.streamer.api.error.AbortPipelineConsumeException;
 
 import java.io.IOException;
 import java.io.InputStream;

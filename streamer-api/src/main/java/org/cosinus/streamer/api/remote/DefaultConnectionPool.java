@@ -51,7 +51,7 @@ public abstract class DefaultConnectionPool<C extends Connection<R>, R>
         try {
             return borrowObject(key);
         } catch (Exception e) {
-            throw new StreamerException(e);
+            throw new StreamerException(e, "failed.to.borrow.connection.from.pool", key);
         }
     }
 

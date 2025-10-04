@@ -17,7 +17,7 @@
 package org.cosinus.streamer.api.stream.pipeline;
 
 import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
-import org.cosinus.streamer.api.stream.pipeline.error.SkipPipelineConsumeException;
+import org.cosinus.streamer.api.error.SkipPipelineConsumeException;
 
 import java.io.IOException;
 import java.util.function.Supplier;

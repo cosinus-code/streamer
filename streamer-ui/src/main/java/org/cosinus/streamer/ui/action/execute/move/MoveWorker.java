@@ -61,8 +61,10 @@ public class MoveWorker<S extends Streamer<S>, T extends Streamer<T>> extends Co
     @Override
     protected void onWorkerDoneBeforeFinishing() {
         super.onWorkerDoneBeforeFinishing();
-        source.flatStream(LEVEL_BOTTOM_UP, getStreamerFilter())
-            .filter(Streamer::exists)
-            .forEach(streamer -> streamer.delete(false));
+        if (isSuccessful()) {
+            source.flatStream(LEVEL_BOTTOM_UP, getStreamerFilter())
+                .filter(Streamer::exists)
+                .forEach(streamer -> streamer.delete(false));
+        }
     }
 }

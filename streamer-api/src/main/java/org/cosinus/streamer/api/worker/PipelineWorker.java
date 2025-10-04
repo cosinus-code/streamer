@@ -16,7 +16,7 @@
 
 package org.cosinus.streamer.api.worker;
 
-import org.cosinus.streamer.error.ActionException;
+import org.cosinus.streamer.api.error.ActionException;
 import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
 import org.cosinus.streamer.api.stream.pipeline.PipelineStrategy;
 import org.cosinus.streamer.api.stream.pipeline.StreamPipeline;
