@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.api.stream;
-
-import org.cosinus.streamer.api.BinaryStreamer;
-import org.cosinus.streamer.api.ParentStreamer;
-import org.cosinus.streamer.api.StreamerDelegate;
+package org.cosinus.streamer.api;
 
 import java.io.InputStream;
 import java.io.OutputStream;

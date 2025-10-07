@@ -23,8 +23,6 @@ import java.util.stream.Stream;
 
 public interface Streamer<T> extends Streamable {
 
-    String FILE_VIEW_ID = "file";
-
     String DETAIL_KEY_NAME = "name";
     String DETAIL_KEY_VALUE = "value";
     String DETAIL_KEY_TYPE = "type";

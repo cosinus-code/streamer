@@ -18,7 +18,9 @@ package org.cosinus.streamer.ui.dialog;
 
 import org.cosinus.streamer.ui.action.execute.copy.CopyProgressModel;
 import org.cosinus.swing.action.execute.ActionModel;
+import org.cosinus.swing.image.icon.IconHandler;
 import org.cosinus.swing.window.Frame;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,6 +33,9 @@ import static javax.swing.JLabel.CENTER;
  * Dialog for showing the copy action progress
  */
 public class CopyProgressDialog extends ProgressDialog<CopyProgressModel> {
+
+    @Autowired
+    protected IconHandler iconHandler;
 
     private JProgressBar itemProgressBar;
     private JProgressBar totalProgressBar;
@@ -59,6 +64,12 @@ public class CopyProgressDialog extends ProgressDialog<CopyProgressModel> {
         JPanel panNorth = new JPanel(new BorderLayout(5, 5));
         JPanel pathsPanel = new JPanel(new GridLayout(3, 1, 5, 5));
         JPanel progressPanel = new JPanel(new GridLayout(2, 1, 5, 5));
+
+        iconHandler.findIconByResource("transfer-from.png")
+            .ifPresent(copyFromLabel::setIcon);
+        iconHandler.findIconByResource("transfer-to.png")
+            .ifPresent(copyToLabel::setIcon);
+
 
         pathsPanel.add(actionLabel);
         pathsPanel.add(copyFromLabel);
@@ -102,9 +113,9 @@ public class CopyProgressDialog extends ProgressDialog<CopyProgressModel> {
     protected void updateActionFromTo(final CopyProgressModel progress) {
         if (progress.getSource() != null && progress.getTarget() != null) {
             copyFromLabel.setText(formatHandler.formatTextForLabel(copyFromLabel,
-                translator.translate("form_copy_from", progress.getSource().getPath())));
+                progress.getSource().getPath().toString()));
             copyToLabel.setText(formatHandler.formatTextForLabel(copyToLabel,
-                translator.translate("form_copy_to", progress.getTarget().getPath())));
+                progress.getTarget().getPath().toString()));
 
             copyFromLabel.setToolTipText(progress.getSource().getPath().toString());
             copyToLabel.setToolTipText(progress.getTarget().getPath().toString());

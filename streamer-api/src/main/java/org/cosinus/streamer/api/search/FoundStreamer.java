@@ -19,7 +19,7 @@ package org.cosinus.streamer.api.search;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerDelegate;
-import org.cosinus.streamer.api.stream.BinaryStreamerDelegate;
+import org.cosinus.streamer.api.BinaryStreamerDelegate;
 
 import java.util.stream.Stream;
 

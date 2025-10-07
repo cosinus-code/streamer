@@ -66,9 +66,6 @@ public class StreamerPanel extends Panel {
     private FavoritesHandler favoritesHandler;
 
     @Autowired
-    private StreamerViewHandler streamerViewHandler;
-
-    @Autowired
     private MenuHandler menuHandler;
 
     private final TextField addressTop;
