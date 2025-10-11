@@ -17,7 +17,7 @@ package org.cosinus.streamer.pack.archive.save;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
-import org.cosinus.streamer.api.stream.consumer.OutputWriter;
+import org.cosinus.stream.consumer.OutputWriter;
 
 import java.io.IOException;
 

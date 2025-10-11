@@ -15,13 +15,13 @@
  */
 package org.cosinus.streamer.api;
 
-import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
-import org.cosinus.streamer.api.stream.text.TextStreamConsumer;
+import org.cosinus.stream.consumer.StreamConsumer;
+import org.cosinus.stream.text.TextStreamConsumer;
 
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
-import static org.cosinus.streamer.api.stream.text.TextStream.lines;
+import static org.cosinus.stream.text.TextStream.lines;
 
 public class TextStreamer extends StreamerDelegate<String, BinaryStreamer> implements Streamer<String>
 {

@@ -26,31 +26,27 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.cosinus.streamer.api.stream.FlatStreamingStrategy.LEVEL_UP_BOTTOM;
-import static org.cosinus.streamer.api.stream.FlatStreamingStrategy.LEVEL_BOTTOM_UP;
-import static org.cosinus.streamer.api.stream.FlatStreamingStrategy.IN_DEPTH;
+import static org.cosinus.stream.FlatStreamingStrategy.*;
 import static org.cosinus.streamer.api.util.TestStreamerFactory.jsonStreamer;
 
 /**
  * Tests for flat streaming strategies
  */
 @RunWith(JUnit4.class)
-public class FlatStreamingStrategyTest
-{
+public class FlatStreamingStrategyTest {
     /**
      * Test flat streaming using LEVEL_UP_BOTTOM strategy for traversing the streamers tree.
      *
      * @throws IOException while reading the file with json streamers
      */
     @Test
-    public void testFlatStreamingStrategyLevelUpBottomOrder() throws IOException
-    {
+    public void testFlatStreamingStrategyLevelUpBottomOrder() throws IOException {
         //GIVEN
         JsonStreamer jsonStreamer = jsonStreamer("/flat-streaming/streamers.json");
         StreamerFilter filter = streamer -> true;
 
         //WHEN
-        try(Stream<JsonStreamer> flatStream = jsonStreamer.flatStream(LEVEL_UP_BOTTOM, filter)) {
+        try (Stream<JsonStreamer> flatStream = jsonStreamer.flatStream(LEVEL_UP_BOTTOM, filter)) {
             List<String> flatNames = flatStream.map(JsonStreamer::getName).toList();
 
             //THEN
@@ -65,14 +61,13 @@ public class FlatStreamingStrategyTest
      * @throws IOException while reading the file with json streamers
      */
     @Test
-    public void testFlatStreamingStrategyInDepth() throws IOException
-    {
+    public void testFlatStreamingStrategyInDepth() throws IOException {
         //GIVEN
         JsonStreamer jsonStreamer = jsonStreamer("/flat-streaming/streamers.json");
         StreamerFilter filter = streamer -> true;
 
         //WHEN
-        try(Stream<JsonStreamer> flatStream = jsonStreamer.flatStream(IN_DEPTH, filter)) {
+        try (Stream<JsonStreamer> flatStream = jsonStreamer.flatStream(IN_DEPTH, filter)) {
             List<String> flatNames = flatStream.map(JsonStreamer::getName).toList();
 
             //THEN
@@ -87,14 +82,13 @@ public class FlatStreamingStrategyTest
      * @throws IOException while reading the file with json streamers
      */
     @Test
-    public void testFlatStreamingStrategyLevelBottomUp() throws IOException
-    {
+    public void testFlatStreamingStrategyLevelBottomUp() throws IOException {
         //GIVEN
         JsonStreamer jsonStreamer = jsonStreamer("/flat-streaming/streamers.json");
         StreamerFilter filter = streamer -> true;
 
         //WHEN
-        try(Stream<JsonStreamer> flatStream = jsonStreamer.flatStream(LEVEL_BOTTOM_UP, filter)) {
+        try (Stream<JsonStreamer> flatStream = jsonStreamer.flatStream(LEVEL_BOTTOM_UP, filter)) {
             List<String> flatNames = flatStream.map(JsonStreamer::getName).toList();
 
             //THEN

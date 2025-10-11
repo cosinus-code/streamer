@@ -18,7 +18,7 @@
 package org.cosinus.streamer.strava.activity;
 
 import org.cosinus.streamer.api.ParentStreamer;
-import org.cosinus.streamer.api.page.PagedStream;
+import org.cosinus.stream.page.PagedStream;
 import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.streamer.strava.StravaParentStreamer;
 import org.cosinus.streamer.strava.StravaUserStreamer;

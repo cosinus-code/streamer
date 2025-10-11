@@ -19,10 +19,11 @@ import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.api.error.SaveStreamerException;
-import org.cosinus.streamer.api.stream.FlatStreamingSpliterator;
-import org.cosinus.streamer.api.stream.FlatStreamingStrategy;
-import org.cosinus.streamer.api.stream.StreamSupplier;
+import org.cosinus.stream.FlatStreamingSpliterator;
+import org.cosinus.stream.FlatStreamingStrategy;
+import org.cosinus.stream.StreamSupplier;
 
+import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -31,7 +32,8 @@ public interface RemoteParentStreamer<S extends Streamer<?>, R, C extends Connec
 
     @Override
     default Stream<S> stream() {
-        return streamFromRemote(connection -> connection.stream(getStreamQuery()))
+        return streamFromRemote(connection -> connection
+            .stream(getStreamQuery()))
             .map(this::createFromRemote);
     }
 
@@ -52,7 +54,7 @@ public interface RemoteParentStreamer<S extends Streamer<?>, R, C extends Connec
             .map(this::createFromRemote);
     }
 
-    private StreamSupplier<S> streamSupplier(final C connection) {
+    private Function<StreamSupplier<S>, Stream<S>> streamSupplier(final C connection) {
         return streamer -> {
             RemoteParentStreamer<S, R, C> remoteStreamer = (RemoteParentStreamer<S, R, C>) streamer;
             return connection

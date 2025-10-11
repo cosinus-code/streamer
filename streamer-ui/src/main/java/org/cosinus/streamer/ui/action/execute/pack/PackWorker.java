@@ -15,9 +15,9 @@
  */
 package org.cosinus.streamer.ui.action.execute.pack;
 
+import org.cosinus.stream.consumer.StreamConsumer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.expand.ExpandedStreamer;
-import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.execute.copy.CopyStrategy;
 import org.cosinus.streamer.ui.action.execute.copy.CopyWorker;

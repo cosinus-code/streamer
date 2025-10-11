@@ -16,10 +16,10 @@
 
 package org.cosinus.streamer.api.worker;
 
+import org.cosinus.stream.consumer.StreamConsumer;
+import org.cosinus.stream.pipeline.PipelineStrategy;
+import org.cosinus.stream.pipeline.StreamPipeline;
 import org.cosinus.streamer.api.error.ActionException;
-import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
-import org.cosinus.streamer.api.stream.pipeline.PipelineStrategy;
-import org.cosinus.streamer.api.stream.pipeline.StreamPipeline;
 import org.cosinus.swing.action.execute.ActionModel;
 
 import java.io.IOException;

@@ -16,15 +16,15 @@
 
 package org.cosinus.streamer.api;
 
-import org.cosinus.streamer.api.stream.FlatStreamingSpliterator;
-import org.cosinus.streamer.api.stream.FlatStreamingStrategy;
+import org.cosinus.stream.FlatStreamingSpliterator;
+import org.cosinus.stream.FlatStreamingStrategy;
 
 import java.nio.file.Path;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import static org.cosinus.stream.FlatStreamingStrategy.LEVEL_UP_BOTTOM;
 import static org.cosinus.streamer.api.StreamerFilter.ALL_STREAMERS;
-import static org.cosinus.streamer.api.stream.FlatStreamingStrategy.LEVEL_UP_BOTTOM;
 
 public interface ParentStreamer<S extends Streamer> extends Streamer<S> {
 

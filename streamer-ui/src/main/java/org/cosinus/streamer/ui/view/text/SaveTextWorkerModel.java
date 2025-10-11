@@ -15,8 +15,8 @@
  */
 package org.cosinus.streamer.ui.view.text;
 
+import org.cosinus.stream.consumer.StreamConsumer;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
 import org.cosinus.streamer.api.worker.AbstractSaveWorkerModel;
 
 import java.util.stream.Stream;

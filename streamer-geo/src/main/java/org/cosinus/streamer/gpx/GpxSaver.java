@@ -16,7 +16,7 @@
 package org.cosinus.streamer.gpx;
 
 import io.jenetics.jpx.*;
-import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
+import org.cosinus.stream.consumer.StreamConsumer;
 import org.cosinus.streamer.api.value.DateValue;
 import org.cosinus.streamer.api.value.DoubleValue;
 

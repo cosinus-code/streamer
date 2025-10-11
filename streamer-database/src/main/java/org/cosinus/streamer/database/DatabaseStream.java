@@ -15,7 +15,7 @@
  */
 package org.cosinus.streamer.database;
 
-import org.cosinus.streamer.api.stream.StreamDelegate;
+import org.cosinus.stream.StreamDelegate;
 import org.cosinus.streamer.database.resultset.ResultSet;
 
 import java.util.stream.Stream;

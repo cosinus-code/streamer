@@ -16,10 +16,10 @@
 
 package org.cosinus.streamer.ui.action.execute.load;
 
+import org.cosinus.stream.consumer.StreamConsumer;
+import org.cosinus.stream.pipeline.PipelineListener;
+import org.cosinus.stream.pipeline.PipelineStrategy;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
-import org.cosinus.streamer.api.stream.pipeline.PipelineListener;
-import org.cosinus.streamer.api.stream.pipeline.PipelineStrategy;
 import org.cosinus.streamer.api.worker.DirectPipelineWorker;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.swing.action.execute.ActionModel;

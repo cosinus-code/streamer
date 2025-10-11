@@ -16,7 +16,7 @@
 
 package org.cosinus.streamer.api;
 
-import org.cosinus.streamer.api.stream.binary.BinaryStream;
+import org.cosinus.stream.binary.BinaryStream;
 
 import java.io.InputStream;
 import java.io.OutputStream;

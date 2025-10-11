@@ -20,10 +20,10 @@ import io.jenetics.jpx.Track;
 import io.jenetics.jpx.TrackSegment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cosinus.stream.consumer.StreamConsumer;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.expand.ExpandedStreamer;
-import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
 import org.cosinus.streamer.api.value.TranslatableName;
 
 import java.io.IOException;

@@ -16,16 +16,16 @@
 
 package org.cosinus.streamer.ui.action.execute.copy;
 
-import org.cosinus.streamer.api.error.AbortActionException;
-import org.cosinus.streamer.api.error.ActionException;
+import org.cosinus.stream.consumer.StreamConsumer;
+import org.cosinus.stream.error.AbortPipelineConsumeException;
+import org.cosinus.stream.pipeline.Pipeline;
+import org.cosinus.stream.pipeline.PipelineListener;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
-import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
-import org.cosinus.streamer.api.stream.pipeline.Pipeline;
-import org.cosinus.streamer.api.stream.pipeline.PipelineListener;
-import org.cosinus.streamer.api.error.AbortPipelineConsumeException;
+import org.cosinus.streamer.api.error.AbortActionException;
+import org.cosinus.streamer.api.error.ActionException;
 import org.cosinus.streamer.api.worker.SimpleWorker;
 import org.cosinus.streamer.api.worker.Worker;
 import org.cosinus.swing.format.FormatHandler;

@@ -245,17 +245,17 @@ public class GoogleDriveConnection implements Connection<File> {
 
     @Override
     public boolean delete(File fileToDelete, boolean moveToTrash) {
-        if (moveToTrash) {
-            client
-                .files()
-                .update(fileToDelete.getId(), new File().setTrashed(true))
-                .execute();
-        } else {
-            client
-                .files()
-                .delete(fileToDelete.getId())
-                .execute();
-        }
+//        if (moveToTrash) {
+//            client
+//                .files()
+//                .update(fileToDelete.getId(), new File().setTrashed(true))
+//                .execute();
+//        } else {
+//            client
+//                .files()
+//                .delete(fileToDelete.getId())
+//                .execute();
+//        }
         return true;
     }
 

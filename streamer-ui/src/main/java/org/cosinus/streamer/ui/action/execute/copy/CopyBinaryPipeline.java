@@ -15,10 +15,10 @@
  */
 package org.cosinus.streamer.ui.action.execute.copy;
 
+import org.cosinus.stream.pipeline.PipelineListener;
+import org.cosinus.stream.pipeline.binary.BinaryPipeline;
+import org.cosinus.stream.pipeline.binary.BinaryPipelineStrategy;
 import org.cosinus.streamer.api.BinaryStreamer;
-import org.cosinus.streamer.api.stream.pipeline.PipelineListener;
-import org.cosinus.streamer.api.stream.pipeline.binary.BinaryPipeline;
-import org.cosinus.streamer.api.stream.pipeline.binary.BinaryPipelineStrategy;
 
 import java.io.InputStream;
 import java.io.OutputStream;

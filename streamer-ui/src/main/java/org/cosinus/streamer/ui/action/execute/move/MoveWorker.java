@@ -23,7 +23,7 @@ import org.cosinus.streamer.ui.action.execute.copy.CopyWorker;
 
 import java.util.List;
 
-import static org.cosinus.streamer.api.stream.FlatStreamingStrategy.LEVEL_BOTTOM_UP;
+import static org.cosinus.stream.FlatStreamingStrategy.LEVEL_BOTTOM_UP;
 
 public class MoveWorker<S extends Streamer<S>, T extends Streamer<T>> extends CopyWorker<S, T> {
 

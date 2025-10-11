@@ -16,11 +16,10 @@
 package org.cosinus.streamer.pack.archive.save;
 
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
-import org.cosinus.streamer.api.error.StreamerException;
-import org.cosinus.streamer.api.stream.consumer.DefaultStreamConsumer;
-import org.cosinus.streamer.api.stream.consumer.OutputWriter;
-import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
-import org.cosinus.streamer.api.stream.consumer.TemporaryFileOutputStream;
+import org.cosinus.stream.consumer.DefaultStreamConsumer;
+import org.cosinus.stream.consumer.OutputWriter;
+import org.cosinus.stream.consumer.StreamConsumer;
+import org.cosinus.stream.consumer.TemporaryFileOutputStream;
 import org.cosinus.streamer.api.worker.AbstractSaveWorkerModel;
 import org.cosinus.streamer.pack.archive.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +32,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static org.cosinus.streamer.api.stream.consumer.SuffixTemporaryFileStrategy.PART_TEMPORARY_FILE;
+import static org.cosinus.stream.consumer.SuffixTemporaryFileStrategy.PART_TEMPORARY_FILE;
 
 public class ArchiveSaveModel<A extends ArchiveStreamer<?>> extends AbstractSaveWorkerModel<OutputWriter<ArchiveOutputStream>> {
 
@@ -78,7 +77,11 @@ public class ArchiveSaveModel<A extends ArchiveStreamer<?>> extends AbstractSave
             return new DefaultStreamConsumer<>(archiveOutputStream) {
                 @Override
                 public void afterClose(boolean failed) {
-                    temporaryOutputStream.afterClose(failed);
+                    try {
+                        temporaryOutputStream.afterClose(failed);
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
                 }
             };
         } catch (FileNotFoundException e) {

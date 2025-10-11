@@ -16,13 +16,13 @@
 
 package org.cosinus.streamer.ui.action.execute.load.image;
 
-import org.cosinus.streamer.api.error.ActionException;
+import org.cosinus.stream.pipeline.PipelineListener;
+import org.cosinus.stream.pipeline.binary.BinaryPipeline;
+import org.cosinus.stream.pipeline.binary.BinaryPipelineStrategy;
+import org.cosinus.stream.pipeline.binary.BinaryStreamConsumer;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.stream.pipeline.PipelineListener;
-import org.cosinus.streamer.api.stream.pipeline.binary.BinaryPipeline;
-import org.cosinus.streamer.api.stream.pipeline.binary.BinaryPipelineStrategy;
-import org.cosinus.streamer.api.stream.pipeline.binary.BinaryStreamConsumer;
+import org.cosinus.streamer.api.error.ActionException;
 import org.cosinus.streamer.api.worker.Worker;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.image.ImageStreamerView;

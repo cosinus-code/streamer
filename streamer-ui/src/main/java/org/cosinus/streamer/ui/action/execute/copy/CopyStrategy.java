@@ -15,7 +15,7 @@
  */
 package org.cosinus.streamer.ui.action.execute.copy;
 
-import org.cosinus.streamer.api.stream.pipeline.binary.BinaryPipelineStrategy;
+import org.cosinus.stream.pipeline.binary.BinaryPipelineStrategy;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 

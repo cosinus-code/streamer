@@ -15,11 +15,11 @@
  */
 package org.cosinus.streamer.ui.action.execute.copy;
 
+import org.cosinus.stream.error.AbortPipelineConsumeException;
+import org.cosinus.stream.error.SkipPipelineConsumeException;
+import org.cosinus.stream.pipeline.binary.BinaryPipelineStrategy;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.stream.pipeline.binary.BinaryPipelineStrategy;
-import org.cosinus.streamer.api.error.AbortPipelineConsumeException;
-import org.cosinus.streamer.api.error.SkipPipelineConsumeException;
 import org.cosinus.swing.boot.SwingApplicationFrame;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.dialog.DialogOption;

@@ -16,12 +16,13 @@
 
 package org.cosinus.streamer.api;
 
-import org.cosinus.streamer.api.stream.consumer.StreamConsumer;
+import org.cosinus.stream.StreamSupplier;
+import org.cosinus.stream.consumer.StreamConsumer;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
 
 import java.util.stream.Stream;
 
-public interface Streamer<T> extends Streamable {
+public interface Streamer<T> extends Streamable, StreamSupplier<T> {
 
     String DETAIL_KEY_NAME = "name";
     String DETAIL_KEY_VALUE = "value";
