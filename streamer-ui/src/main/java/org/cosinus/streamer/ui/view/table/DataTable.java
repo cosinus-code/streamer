@@ -314,7 +314,7 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
         model.reset(parentStreamer);
 
         int sortedColumn = applicationStorage.getInt(sortingColumnKey(), 0);
-        boolean isAscendingSorted = applicationStorage.getBoolean(sortingAscendingKey(), false);
+        boolean isAscendingSorted = applicationStorage.getBoolean(sortingAscendingKey(), true);
         model.setSortColumn(sortedColumn, isAscendingSorted);
     }
 
