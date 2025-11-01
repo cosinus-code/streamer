@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 public class ArchiveBinaryStreamer extends ArchiveStreamer<byte[]> implements BinaryStreamer {
@@ -39,8 +40,13 @@ public class ArchiveBinaryStreamer extends ArchiveStreamer<byte[]> implements Bi
     @Override
     public InputStream inputStream() {
         return ofNullable(archiveEntry.getEntryInputStream())
+            .filter(not(this::isInputStreamAlreadyClosed))
             .orElseGet(() -> archiveStreamerFactory
                 .inputStream(archivePackStreamer.getArchiveType(), archivePackStreamer.binaryStreamer(), archiveEntry));
+    }
+
+    protected boolean isInputStreamAlreadyClosed(InputStream inputStream) {
+        return inputStream instanceof EntryInputStream entryInputStream && entryInputStream.isClosed();
     }
 
     @Override

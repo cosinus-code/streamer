@@ -23,28 +23,24 @@ import java.util.stream.Stream;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.stream.text.TextStream.lines;
 
-public class TextStreamer extends StreamerDelegate<String, BinaryStreamer> implements Streamer<String>
-{
-    public TextStreamer(BinaryStreamer delegate)
-    {
+public class TextStreamer extends StreamerDelegate<String, BinaryStreamer> implements Streamer<String> {
+
+    public TextStreamer(BinaryStreamer delegate) {
         super(delegate);
     }
 
     @Override
-    public Stream<String> stream()
-    {
+    public Stream<String> stream() {
         return lines(delegate.inputStream());
     }
 
     @Override
-    public BinaryStreamer binaryStreamer()
-    {
+    public BinaryStreamer binaryStreamer() {
         return delegate;
     }
 
     @Override
-    public boolean isTextCompatible()
-    {
+    public boolean isTextCompatible() {
         return true;
     }
 
