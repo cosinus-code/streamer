@@ -30,14 +30,19 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
+import static java.util.stream.Collectors.joining;
 import static org.cosinus.streamer.file.FileMainStreamer.FILE_PROTOCOL;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 public abstract class FileStreamer<T> implements Streamer<T> {
+
+    protected static final int DETAIL_INDEX_NAME = 0;
+    protected static final int DETAIL_INDEX_SIZE = 2;
 
     @Autowired
     protected FileMainStreamer fileMainStreamer;
@@ -91,7 +96,7 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     @Override
     public void save() {
         if (exists()) {
-            ofNullable(details.get(0))
+            ofNullable(details.get(DETAIL_INDEX_NAME))
                 .map(Value::toString)
                 .filter(not(getName()::equals))
                 .ifPresent(this::rename);
@@ -125,6 +130,28 @@ public abstract class FileStreamer<T> implements Streamer<T> {
             throw new StreamerException("rename.error.already.exist", newPath);
         }
         return file.renameTo(newPath.toFile());
+    }
+
+    @Override
+    public String getDescription() {
+        return Stream.of(
+                getTypeDescription(),
+                getDetailedSize())
+            .filter(Objects::nonNull)
+            .map(Object::toString)
+            .filter(not(String::isBlank))
+            .collect(joining(", "));
+    }
+
+    public String getTypeDescription() {
+        return fileHandler.getTypeDescription(file)
+            .orElse("");
+    }
+
+    public String getDetailedSize() {
+        return ofNullable(details().get(DETAIL_INDEX_SIZE))
+            .map(Object::toString)
+            .orElse(null);
     }
 
     @Override
@@ -177,7 +204,7 @@ public abstract class FileStreamer<T> implements Streamer<T> {
         if (details == null) {
             details = asList(
                 new TextValue(getName()),
-                new TextValue(getType()),
+                new TextValue(getTypeDescription()),
                 new MemoryValue(getSize(), isSizeComputing()),
                 new DateValue(lastModified()));
         }

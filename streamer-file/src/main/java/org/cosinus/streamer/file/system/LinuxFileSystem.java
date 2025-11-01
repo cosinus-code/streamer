@@ -26,6 +26,7 @@ import org.cosinus.swing.error.ProcessExecutionException;
 import org.cosinus.swing.exec.ProcessExecutor;
 import org.cosinus.swing.mimetype.MimeTypeResolver;
 import org.cosinus.swing.translate.Translator;
+import org.cosinus.swing.xml.XmlHandler;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -60,7 +61,7 @@ import static org.cosinus.swing.image.icon.IconSize.X32;
 public class LinuxFileSystem implements FileSystem {
 
     private final Translator translator;
-    private final MimeTypeResolver mimeTypeResolver;
+
     Logger LOG = LogManager.getLogger(LinuxFileSystem.class);
 
     private static final Set<String> IGNORED_FILESYSTEMS = Set.of("swap", "vfat");
@@ -73,12 +74,12 @@ public class LinuxFileSystem implements FileSystem {
 
     public LinuxFileSystem(final ProcessExecutor processExecutor,
                            final ObjectMapper objectMapper,
-                           final ErrorHandler errorHandler, Translator translator, MimeTypeResolver mimeTypeResolver) {
+                           final ErrorHandler errorHandler,
+                           final Translator translator) {
         this.processExecutor = processExecutor;
         this.objectMapper = objectMapper;
         this.errorHandler = errorHandler;
         this.translator = translator;
-        this.mimeTypeResolver = mimeTypeResolver;
     }
 
     @Override

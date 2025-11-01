@@ -64,6 +64,16 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
     }
 
     @Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        if (rowIndex < 0 || rowIndex >= viewItems.size()) {
+            return null;
+        }
+        return ofNullable(viewItems.get(rowIndex))
+            .filter(item -> !item.isTopItem() || columnIndex <= 0)
+            .orElse(null);
+    }
+
+    @Override
     public String getContentIdentifier() {
         return contentIdentifier;
     }
@@ -93,7 +103,10 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
     }
 
     public ViewItem getViewItemAt(int rowIndex, int columnIndex) {
-        return (ViewItem) getValueAt(rowIndex, columnIndex);
+        return ofNullable(getValueAt(rowIndex, columnIndex))
+            .filter(ViewItem.class::isInstance)
+            .map(ViewItem.class::cast)
+            .orElse(null);
     }
 
     public int getItemsCount() {

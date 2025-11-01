@@ -58,7 +58,7 @@ public class IconTable<T extends Streamable> extends DataTable<T> {
     @Override
     public void initComponents() {
         super.initComponents();
-        setHeader();
+        hideHeader();
         setSelectionType();
     }
 
@@ -72,7 +72,7 @@ public class IconTable<T extends Streamable> extends DataTable<T> {
         return (IconTableModel<T>) super.getTableModel();
     }
 
-    private void setHeader() {
+    private void hideHeader() {
         setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         setTableHeader(null);
     }

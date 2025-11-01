@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
@@ -35,6 +36,9 @@ import static java.util.function.Predicate.not;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_STORAGE_INTERNAL;
 
 public class FileRootStreamer extends FileParentStreamer {
+
+    protected static final int DETAIL_INDEX_FREE_SPACE = 2;
+    protected static final int DETAIL_INDEX_TOTAL_SPACE = 3;
 
     private final FileSystemRoot fileSystemRoot;
 
@@ -75,10 +79,16 @@ public class FileRootStreamer extends FileParentStreamer {
 
     @Override
     public String getDescription() {
-        return format("%s (%s %s)",
+        return format("%s (%s %s), %s/%s",
             fileSystemRoot.getDescription(),
             fileSystemRoot.getType(),
-            getDevice());
+            getDevice(),
+            ofNullable(details().get(DETAIL_INDEX_FREE_SPACE))
+                .map(Objects::toString)
+                .orElse("-"),
+            ofNullable(details().get(DETAIL_INDEX_TOTAL_SPACE))
+                .map(Objects::toString)
+                .orElse("-"));
     }
 
     private String getDevice() {

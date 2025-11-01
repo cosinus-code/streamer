@@ -77,6 +77,10 @@ public class ViewItem {
         return streamable.getPath();
     }
 
+    public String getDescription() {
+        return streamable.getDescription();
+    }
+
     @Override
     public String toString() {
         return isTopItem() ? TOP_ITEM_NAME : streamable.getName();

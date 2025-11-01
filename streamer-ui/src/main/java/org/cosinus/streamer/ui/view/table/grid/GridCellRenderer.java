@@ -31,7 +31,7 @@ import static org.cosinus.swing.image.icon.IconSize.X16;
 
 public class GridCellRenderer extends TableCellRenderer<GridTable> {
 
-    public static final int CELL_ICON_SIZE = 22;
+    public static final int CELL_ICON_SIZE = X16.getSize() + 4;
 
     public static final int CELL_HORIZONTAL_MARGIN = 3;
 

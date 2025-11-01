@@ -22,7 +22,6 @@ import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.streamer.ui.view.table.DataTable;
 import org.cosinus.streamer.ui.view.table.DataTableModel;
 import org.cosinus.streamer.ui.view.table.grid.header.GridHeader;
-import org.cosinus.swing.image.icon.IconHandler;
 import org.cosinus.swing.menu.CheckBoxMenuItem;
 import org.cosinus.swing.menu.PopupMenu;
 import org.cosinus.swing.preference.Preferences;
@@ -31,7 +30,9 @@ import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
-import javax.swing.table.*;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumnModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -46,9 +47,6 @@ public class GridTable<T extends Streamable> extends DataTable<T> implements Act
 
     @Autowired
     public ApplicationUIHandler uiHandler;
-
-    @Autowired
-    public IconHandler iconHandler;
 
     @Autowired
     public Preferences preferences;
@@ -147,8 +145,8 @@ public class GridTable<T extends Streamable> extends DataTable<T> implements Act
 
     protected void setColumnVisibility() {
         range(0, getColumnCount())
-                .filter(index -> index > 0)
-                .forEach(index -> setColVisible(index, isColumnVisible(index)));
+            .filter(index -> index > 0)
+            .forEach(index -> setColVisible(index, isColumnVisible(index)));
     }
 
     public void setColVisible(int index, boolean visible) {

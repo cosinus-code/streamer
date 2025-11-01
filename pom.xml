@@ -38,6 +38,9 @@
         <google-oath-jetty.version>1.39.0</google-oath-jetty.version>
         <jenetics-jpx.version>3.2.1</jenetics-jpx.version>
         <junit.version>4.13.1</junit.version>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
     <dependencyManagement>

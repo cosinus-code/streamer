@@ -45,13 +45,13 @@ public class DetailEditor<T extends Streamable> extends TextField implements Foc
 
     private T itemToBeEdited;
 
-    private final GridStreamerEditor<T> editor;
+    private final StreamerEditor<T> editor;
 
     private final int detailIndex;
 
     private boolean loading;
 
-    public DetailEditor(final GridStreamerEditor<T> editor, int detailIndex) {
+    public DetailEditor(final StreamerEditor<T> editor, int detailIndex) {
         this.editor = editor;
         this.detailIndex = detailIndex;
 

@@ -86,11 +86,6 @@ public class DeleteWorker extends SimpleWorker<StreamersProgressModel>
     }
 
     @Override
-    public PipelineStrategy getPipelineStrategy() {
-        return new NoPipelineStrategy();
-    }
-
-    @Override
     public PipelineListener<Streamer<?>> getPipelineListener() {
         return deleteListener;
     }

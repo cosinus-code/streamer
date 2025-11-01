@@ -102,7 +102,7 @@ public class FileParentStreamer extends FileStreamer<FileStreamer<?>> implements
     @Override
     public List<Value> details() {
         List<Value> details = super.details();
-        details.set(2, new MemoryValue(getSize(), isSizeComputing()));
+        details.set(DETAIL_INDEX_SIZE, new MemoryValue(getSize(), isSizeComputing()));
         return details;
     }
 }

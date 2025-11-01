@@ -1,5 +1,5 @@
 {
-  "folder": ["icon", "grid", "list", "tree"],
+  "folder": ["icon", "grid", "details", "tree"],
   "text": ["text-editor", "binary-viewer"],
   "image": ["image-viewer", "binary-viewer"],
   "binary": ["binary-viewer"],

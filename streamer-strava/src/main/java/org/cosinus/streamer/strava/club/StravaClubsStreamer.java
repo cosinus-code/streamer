@@ -17,7 +17,6 @@
 
 package org.cosinus.streamer.strava.club;
 
-import org.cosinus.stream.page.PagedStream;
 import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.streamer.strava.StravaParentStreamer;
 import org.cosinus.streamer.strava.StravaUserStreamer;
@@ -26,6 +25,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
+import static org.cosinus.stream.Streams.pagedStream;
 
 public class StravaClubsStreamer extends StravaParentStreamer<StravaClubStreamer> {
 
@@ -51,9 +51,8 @@ public class StravaClubsStreamer extends StravaParentStreamer<StravaClubStreamer
 
     @Override
     public Stream<StravaClubStreamer> stream() {
-        return PagedStream
-            .of((pageSize, page) -> stravaClientInvoker.invoke(userName, stravaClient ->
-                stravaClient.getCurrentAthleteClubs(pageSize, page)))
+        return pagedStream((pageSize, page) -> stravaClientInvoker.invoke(userName, stravaClient ->
+            stravaClient.getCurrentAthleteClubs(pageSize, page)))
             .map(club -> new StravaClubStreamer(this, club));
     }
 

@@ -33,6 +33,8 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 
+import static java.awt.Color.gray;
+import static java.awt.Font.ITALIC;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.view.table.icon.IconTable.PREVIEW_CELL_SIZE;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
@@ -68,23 +70,22 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
                                                    int column) {
 
         Component component = super.getTableCellRendererComponent(table,
-            value,
+            ofNullable(value).orElse(""),
             isSelected,
             hasFocus,
             row,
             column);
 
-        T dataTable = (T) table;
         if (component instanceof JLabel label && value instanceof ViewItem item) {
             if (item.isLink()) {
-                label.setFont(label.getFont().deriveFont(Font.ITALIC));
+                label.setFont(label.getFont().deriveFont(ITALIC));
             }
             if (item.isHidden()) {
-                label.setForeground(Color.gray);
+                label.setForeground(gray);
             }
 
-            return getCellComponent((JLabel) component,
-                dataTable,
+            return getCellComponent(label,
+                (T) table,
                 item,
                 isSelected,
                 row,

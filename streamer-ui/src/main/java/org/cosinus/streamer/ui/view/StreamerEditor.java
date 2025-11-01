@@ -29,4 +29,6 @@ public interface StreamerEditor<T extends Streamable> {
     StreamerView<T, T> getView();
 
     boolean isDirty();
+
+    void setDirty(boolean dirty);
 }

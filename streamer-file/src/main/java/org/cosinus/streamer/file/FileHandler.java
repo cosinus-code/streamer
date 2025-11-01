@@ -31,6 +31,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -149,5 +150,14 @@ public class FileHandler {
 
     public void copyPermissions(File fileSource, File fileTarget) {
         fileSystem.copyPermissions(fileSource, fileTarget);
+    }
+
+    public Optional<String> getTypeDescription(final File file) {
+        return mimeTypeResolver.getMimeTypes(file.toPath())
+            .stream()
+            .map(mimeTypeResolver::getMimeTypeDescription)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .findFirst();
     }
 }
