@@ -25,11 +25,17 @@ import org.cosinus.streamer.api.value.TextValue;
 import org.cosinus.streamer.strava.StravaStreamer;
 import org.cosinus.streamer.strava.activity.StravaActivityStreamer;
 import org.cosinus.streamer.strava.model.ActivityStreams;
+import org.cosinus.swing.file.FileHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.*;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
+import static java.util.function.Predicate.not;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.IntStream.range;
 import static org.cosinus.streamer.strava.model.ActivityStreamType.*;
 
@@ -38,6 +44,9 @@ public class StravaActivityGpxStreamer extends StravaStreamer<byte[]> implements
     public static final String GPX_TYPE = "gpx";
 
     public static final String GPX_ICON_NAME = "binary";
+
+    @Autowired
+    protected FileHandler fileHandler;
 
     private final StravaActivityStreamer stravaActivityStreamer;
 
@@ -126,4 +135,9 @@ public class StravaActivityGpxStreamer extends StravaStreamer<byte[]> implements
             new IntegerValue(null)
         );
     }
-}
+
+    @Override
+    public String getDescription() {
+        return fileHandler.getTypeDescription(getPath(), false)
+            .orElse("");
+    }}

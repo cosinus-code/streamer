@@ -19,6 +19,7 @@ package org.cosinus.streamer.google.drive;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.drive.model.File;
 import org.cosinus.streamer.api.ParentStreamer;
+import org.cosinus.streamer.api.file.BaseFileStreamer;
 import org.cosinus.streamer.api.remote.ConnectionPool;
 import org.cosinus.streamer.api.remote.RemoteStreamer;
 import org.cosinus.streamer.api.value.*;
@@ -36,7 +37,7 @@ import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.google.drive.GoogleDriveMainStreamer.DRIVE_PROTOCOL;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
-public abstract class GoogleDriveStreamer<T> implements RemoteStreamer<T, File, GoogleDriveConnection> {
+public abstract class GoogleDriveStreamer<T> extends BaseFileStreamer<T> implements RemoteStreamer<T, File, GoogleDriveConnection> {
 
     @Autowired
     protected GoogleDriveConnectionPool googleDriveConnectionPool;
@@ -50,10 +51,6 @@ public abstract class GoogleDriveStreamer<T> implements RemoteStreamer<T, File, 
 
     protected final String userId;
 
-    protected final List<TranslatableName> detailNames;
-
-    protected List<Value> details;
-
     protected boolean exists = true;
 
     public GoogleDriveStreamer(File file, Path path, String userId) {
@@ -61,11 +58,6 @@ public abstract class GoogleDriveStreamer<T> implements RemoteStreamer<T, File, 
         this.file = file;
         this.path = path;
         this.userId = userId;
-        this.detailNames = asList(
-            new TranslatableName(DETAIL_KEY_NAME, null),
-            new TranslatableName(DETAIL_KEY_TYPE, null),
-            new TranslatableName(DETAIL_KEY_SIZE, null),
-            new TranslatableName(DETAIL_KEY_TIME, null));
     }
 
     public String connectionId() {
@@ -122,32 +114,6 @@ public abstract class GoogleDriveStreamer<T> implements RemoteStreamer<T, File, 
                 .or(() -> getFromRemote(connection -> connection.findFileByPath(parentPath)))
                 .map(parentFile -> new GoogleDriveParentStreamer(parentFile, parentPath, userId)))
             .orElseGet(() -> new GoogleDriveUserStreamer(userId));
-    }
-
-    @Override
-    public List<TranslatableName> detailNames() {
-        return detailNames;
-    }
-
-    @Override
-    public List<Value> details() {
-        init();
-        return details;
-    }
-
-    @Override
-    public void init() {
-        if (details == null) {
-            details = asList(
-                new TextValue(getName()),
-                new TextValue(getType()),
-                new MemoryValue(getSize(), isSizeComputing()),
-                new DateValue(lastModified()));
-        }
-    }
-
-    protected boolean isSizeComputing() {
-        return false;
     }
 
     @Override

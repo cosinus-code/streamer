@@ -24,6 +24,8 @@ import org.cosinus.streamer.strava.StravaJsonStreamer;
 import org.cosinus.streamer.strava.activity.StravaActivityStreamer;
 import org.cosinus.streamer.strava.model.Activity;
 import org.cosinus.streamer.strava.model.ActivityComment;
+import org.cosinus.swing.translate.Translator;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -37,6 +39,11 @@ public class StravaActivityCommentsJsonStreamer extends StravaJsonStreamer {
     public static final String ACTIVITY_COMMENTS = "Comments";
 
     public static final String COMMENTS_ICON_NAME = "emblem-documents";
+
+    public static final int DETAILS_INDEX_COUNT = 1;
+
+    @Autowired
+    private Translator translator;
 
     private final StravaActivityStreamer stravaActivityStreamer;
 
@@ -97,5 +104,10 @@ public class StravaActivityCommentsJsonStreamer extends StravaJsonStreamer {
             new IntegerValue(getCommentsCount())
         );
         activityComments = null;
+    }
+
+    @Override
+    public String getDescription() {
+        return translator.translate("strava-activity-comments", details().get(DETAILS_INDEX_COUNT));
     }
 }

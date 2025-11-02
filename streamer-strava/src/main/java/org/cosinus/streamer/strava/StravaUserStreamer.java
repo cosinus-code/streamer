@@ -35,14 +35,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Stream.concat;
 import static org.cosinus.streamer.strava.StravaMainStreamer.STRAVA_ICON_NAME;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
@@ -217,6 +216,18 @@ public class StravaUserStreamer implements ParentStreamer<StravaStreamer<?>> {
 
     protected AthleteProfile getAthleteProfile() {
         return stravaClientInvoker.invoke(userName, StravaClient::getCurrentAthleteProfile);
+    }
+
+    @Override
+    public String getDescription() {
+        return Stream.of(
+                userDetails.get(FIRST_NAME) + " " + userDetails.get(LAST_NAME),
+                userDetails.get(CITY),
+                userDetails.get(COUNTRY))
+            .filter(Objects::nonNull)
+            .map(Object::toString)
+            .filter(not(String::isBlank))
+            .collect(joining(", "));
     }
 }
 

@@ -20,6 +20,8 @@ package org.cosinus.streamer.strava.club;
 import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.streamer.strava.StravaParentStreamer;
 import org.cosinus.streamer.strava.StravaUserStreamer;
+import org.cosinus.swing.translate.Translator;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -36,6 +38,9 @@ public class StravaClubsStreamer extends StravaParentStreamer<StravaClubStreamer
     public static final String DETAIL_KEY_COUNTRY = "club-country";
 
     public static final String DETAIL_KEY_MEMBERS_COUNT = "club-member-count";
+
+    @Autowired
+    private Translator translator;
 
     private final List<TranslatableName> detailNames;
 
@@ -59,5 +64,10 @@ public class StravaClubsStreamer extends StravaParentStreamer<StravaClubStreamer
     @Override
     public List<TranslatableName> detailNames() {
         return detailNames;
+    }
+
+    @Override
+    public String getDescription() {
+        return translator.translate("strava-athlete-clubs");
     }
 }

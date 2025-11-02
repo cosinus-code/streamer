@@ -55,7 +55,7 @@ public class ArchiveStreamEntry implements Comparable<ArchiveStreamEntry> {
     }
 
     public long getSize() {
-        return archiveEntry.getSize();
+        return isDirectory() ? -1L : archiveEntry.getSize();
     }
 
     public long lastModified() {

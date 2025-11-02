@@ -132,4 +132,9 @@ public class KeyValueStreamer implements JsonStreamer {
     public int hashCode() {
         return Objects.hashCode(keyValue);
     }
+
+    @Override
+    public String getDescription() {
+        return details().get(1).toString();
+    }
 }

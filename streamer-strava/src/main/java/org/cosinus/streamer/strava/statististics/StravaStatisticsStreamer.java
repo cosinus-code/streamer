@@ -76,6 +76,7 @@ public class StravaStatisticsStreamer extends ExpandedStreamer<StravaStatisticSt
         AthleteStatistics athleteStatistics = binaryStreamer().getAthleteStatistics();
         return Arrays.stream(StravaStatisticsType.values())
             .map(type -> new StravaStatisticStreamer(
+                this,
                 translator.translate(type.getKey()),
                 type.getStatisticsSupplier().apply(athleteStatistics)));
     }

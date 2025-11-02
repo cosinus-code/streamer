@@ -19,6 +19,8 @@ package org.cosinus.streamer.strava.activity;
 
 import org.cosinus.streamer.strava.StravaParentStreamer;
 import org.cosinus.streamer.strava.StravaUserStreamer;
+import org.cosinus.swing.translate.Translator;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
@@ -29,6 +31,9 @@ import static java.util.stream.IntStream.rangeClosed;
 public class StravaActivitiesStreamer extends StravaParentStreamer<StravaActivitiesYearStreamer> {
 
     public static final String ACTIVITIES = "Activities";
+
+    @Autowired
+    private Translator translator;
 
     public StravaActivitiesStreamer(final StravaUserStreamer stravaUserStreamer) {
         super(stravaUserStreamer, ACTIVITIES);
@@ -42,5 +47,10 @@ public class StravaActivitiesStreamer extends StravaParentStreamer<StravaActivit
             .orElse(currentYear);
         return rangeClosed(startYear, currentYear)
             .mapToObj(year -> new StravaActivitiesYearStreamer(stravaUserStreamer, this, year));
+    }
+
+    @Override
+    public String getDescription() {
+        return translator.translate("strava-athlete-activities");
     }
 }

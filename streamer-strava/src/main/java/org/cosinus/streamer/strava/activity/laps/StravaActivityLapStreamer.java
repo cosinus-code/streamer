@@ -24,16 +24,29 @@ import org.cosinus.streamer.api.value.TextValue;
 import org.cosinus.streamer.strava.StravaJsonStreamer;
 import org.cosinus.streamer.strava.model.ActivityLap;
 import org.cosinus.swing.format.FormatHandler;
+import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Objects;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
+import static java.util.stream.Collectors.joining;
 import static org.cosinus.streamer.strava.activity.laps.StravaActivityLapsJsonStreamer.LAPS_ICON_NAME;
 
 public class StravaActivityLapStreamer extends StravaJsonStreamer {
 
+    protected static final int DETAILS_INDEX_PACE = 1;
+
+    protected static final int DETAILS_INDEX_ELEVATION = 2;
+
     @Autowired
     private FormatHandler formatHandler;
+
+    @Autowired
+    private Translator translator;
 
     private final StravaActivityLapsStreamer stravaActivityLapsStreamer;
 
@@ -81,5 +94,20 @@ public class StravaActivityLapStreamer extends StravaJsonStreamer {
             new PaceValue(getPace()),
             new ElevationValue(activityLap.getTotalElevationGain())
         );
+    }
+
+    @Override
+    public String getDescription() {
+        return Stream.of(
+                ofNullable(details().get(DETAILS_INDEX_PACE))
+                    .map(distance -> translator.translate("strava-activity-pace", distance))
+                    .orElse(null),
+                ofNullable(details().get(DETAILS_INDEX_ELEVATION))
+                    .map(elevation -> translator.translate("strava-activity-elevation", elevation))
+                    .orElse(null))
+            .filter(Objects::nonNull)
+            .map(Object::toString)
+            .filter(not(String::isBlank))
+            .collect(joining(", "));
     }
 }

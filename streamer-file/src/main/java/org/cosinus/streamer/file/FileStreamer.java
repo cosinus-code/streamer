@@ -18,10 +18,9 @@ package org.cosinus.streamer.file;
 
 import lombok.Getter;
 import org.cosinus.streamer.api.ParentStreamer;
-import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.error.StreamerException;
-import org.cosinus.streamer.api.value.*;
-import org.cosinus.swing.file.FileHandler;
+import org.cosinus.streamer.api.file.BaseFileStreamer;
+import org.cosinus.streamer.api.value.Value;
 import org.cosinus.swing.util.AutoRemovableTemporaryFile;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -29,45 +28,26 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
-import static java.util.stream.Collectors.joining;
 import static org.cosinus.streamer.file.FileMainStreamer.FILE_PROTOCOL;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
-public abstract class FileStreamer<T> implements Streamer<T> {
-
-    protected static final int DETAIL_INDEX_NAME = 0;
-    protected static final int DETAIL_INDEX_SIZE = 2;
+public abstract class FileStreamer<T> extends BaseFileStreamer<T> {
 
     @Autowired
     protected FileMainStreamer fileMainStreamer;
 
-    @Autowired
-    protected FileHandler fileHandler;
-
     @Getter
     protected File file;
-
-    protected final List<TranslatableName> detailNames;
-
-    protected List<Value> details;
 
     public FileStreamer(Path path) {
         injectContext(this);
         this.file = ofNullable(path)
             .map(Path::toFile)
             .orElse(null);
-        detailNames = asList(
-            new TranslatableName(DETAIL_KEY_NAME, null),
-            new TranslatableName(DETAIL_KEY_TYPE, null),
-            new TranslatableName(DETAIL_KEY_SIZE, null),
-            new TranslatableName(DETAIL_KEY_TIME, null));
     }
 
     @Override
@@ -134,28 +114,6 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     }
 
     @Override
-    public String getDescription() {
-        return Stream.of(
-                getTypeDescription(),
-                getDetailedSize())
-            .filter(Objects::nonNull)
-            .map(Object::toString)
-            .filter(not(String::isBlank))
-            .collect(joining(", "));
-    }
-
-    public String getTypeDescription() {
-        return fileHandler.getTypeDescription(file)
-            .orElse("");
-    }
-
-    public String getDetailedSize() {
-        return ofNullable(details().get(DETAIL_INDEX_SIZE))
-            .map(Object::toString)
-            .orElse(null);
-    }
-
-    @Override
     public boolean isHidden() {
         return file.isHidden();
     }
@@ -191,36 +149,6 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     }
 
     @Override
-    public List<TranslatableName> detailNames() {
-        return detailNames;
-    }
-
-    @Override
-    public List<Value> details() {
-        init();
-        return details;
-    }
-
-    public void init() {
-        if (details == null) {
-            details = asList(
-                new TextValue(getName()),
-                new TextValue(getTypeDescription()),
-                new MemoryValue(getSize(), isSizeComputing()),
-                new DateValue(lastModified()));
-        }
-    }
-
-    protected boolean isSizeComputing() {
-        return false;
-    }
-
-    @Override
-    public boolean isFile() {
-        return true;
-    }
-
-    @Override
     public boolean equals(Object other) {
         if (this == other) {
             return true;
@@ -235,10 +163,5 @@ public abstract class FileStreamer<T> implements Streamer<T> {
     @Override
     public int hashCode() {
         return Objects.hash(file);
-    }
-
-    @Override
-    public void reset() {
-        details = null;
     }
 }

@@ -23,6 +23,8 @@ import org.cosinus.streamer.api.value.TextValue;
 import org.cosinus.streamer.strava.StravaJsonStreamer;
 import org.cosinus.streamer.strava.activity.StravaActivityStreamer;
 import org.cosinus.streamer.strava.model.ActivityLap;
+import org.cosinus.swing.translate.Translator;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -34,6 +36,9 @@ public class StravaActivityLapsJsonStreamer extends StravaJsonStreamer {
     public static final String ACTIVITY_LAPS = "Laps";
 
     public static final String LAPS_ICON_NAME = "undo";
+
+    @Autowired
+    private Translator translator;
 
     private final StravaActivityStreamer stravaActivityStreamer;
 
@@ -87,5 +92,10 @@ public class StravaActivityLapsJsonStreamer extends StravaJsonStreamer {
             new IntegerValue(null)
         );
         activityLaps = null;
+    }
+
+    @Override
+    public String getDescription() {
+        return translator.translate("strava-activity-laps");
     }
 }

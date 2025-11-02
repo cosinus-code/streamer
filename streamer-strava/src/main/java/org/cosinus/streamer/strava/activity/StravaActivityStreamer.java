@@ -31,18 +31,32 @@ import org.cosinus.streamer.strava.activity.gpx.StravaActivityGpxStreamer;
 import org.cosinus.streamer.strava.activity.kudos.StravaActivityKudosJsonStreamer;
 import org.cosinus.streamer.strava.activity.laps.StravaActivityLapsJsonStreamer;
 import org.cosinus.streamer.strava.model.Activity;
+import org.cosinus.swing.translate.Translator;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
+import static java.util.stream.Collectors.joining;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 public class StravaActivityStreamer extends StravaParentStreamer<StravaStreamer<?>> {
 
     public static final String DETAIL_KEY_COUNT = "count";
+
+    public static final int DETAILS_INDEX_TYPE = 1;
+
+    public static final int DETAILS_INDEX_DISTANCE = 2;
+
+    public static final int DETAILS_INDEX_ELEVATION = 3;
+
+    @Autowired
+    private Translator translator;
 
     private final StravaActivitiesYearStreamer stravaActivitiesYearStreamer;
 
@@ -93,7 +107,19 @@ public class StravaActivityStreamer extends StravaParentStreamer<StravaStreamer<
 
     @Override
     public String getDescription() {
-        return activity.getDescription();
+        return Stream.of(
+                activity.getDescription(),
+                details().get(DETAILS_INDEX_TYPE),
+                ofNullable(details().get(DETAILS_INDEX_DISTANCE))
+                    .map(distance -> translator.translate("strava-activity-distance", distance))
+                    .orElse(null),
+                ofNullable(details().get(DETAILS_INDEX_ELEVATION))
+                    .map(elevation -> translator.translate("strava-activity-elevation", elevation))
+                    .orElse(null))
+            .filter(Objects::nonNull)
+            .map(Object::toString)
+            .filter(not(String::isBlank))
+            .collect(joining(", "));
     }
 
     public long getStartDate() {
@@ -134,4 +160,5 @@ public class StravaActivityStreamer extends StravaParentStreamer<StravaStreamer<
     public List<TranslatableName> detailNames() {
         return detailNames;
     }
+
 }

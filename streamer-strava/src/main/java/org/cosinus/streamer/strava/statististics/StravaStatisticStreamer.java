@@ -23,11 +23,23 @@ import org.cosinus.streamer.strava.model.AthleteStatistic;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.joining;
 import static org.cosinus.streamer.strava.statististics.StravaStatisticsJsonStreamer.STATISTICS_ICON_NAME;
 
 public class StravaStatisticStreamer implements Streamable {
+
+    protected static final int DETAILS_INDEX_COUNT = 1;
+
+    protected static final int DETAILS_INDEX_DISTANCE = 2;
+
+    protected static final int DETAILS_INDEX_ELEVATION = 5;
+
+    final StravaStatisticsStreamer stravaStatisticsStreamer;
 
     private final String statisticName;
 
@@ -35,8 +47,10 @@ public class StravaStatisticStreamer implements Streamable {
 
     private List<Value> details;
 
-    public StravaStatisticStreamer(final String statisticName,
+    public StravaStatisticStreamer(final StravaStatisticsStreamer stravaStatisticsStreamer,
+                                   final String statisticName,
                                    final AthleteStatistic athleteStatistic) {
+        this.stravaStatisticsStreamer = stravaStatisticsStreamer;
         this.statisticName = statisticName;
         this.athleteStatistic = athleteStatistic;
     }
@@ -44,6 +58,16 @@ public class StravaStatisticStreamer implements Streamable {
     @Override
     public String getName() {
         return statisticName;
+    }
+
+    @Override
+    public String getDescription() {
+        return Stream.of(DETAILS_INDEX_COUNT, DETAILS_INDEX_DISTANCE, DETAILS_INDEX_ELEVATION)
+            .map(detailIndex -> ofNullable(details().get(detailIndex))
+                .map(detailValue -> stravaStatisticsStreamer.detailNames().get(detailIndex) + ": " + detailValue))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(joining(", "));
     }
 
     @Override
@@ -58,7 +82,7 @@ public class StravaStatisticStreamer implements Streamable {
 
     @Override
     public Streamable getParent() {
-        return null;
+        return stravaStatisticsStreamer;
     }
 
     @Override

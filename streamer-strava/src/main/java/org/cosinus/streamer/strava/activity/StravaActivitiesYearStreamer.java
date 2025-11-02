@@ -21,6 +21,8 @@ import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.streamer.strava.StravaParentStreamer;
 import org.cosinus.streamer.strava.StravaUserStreamer;
+import org.cosinus.swing.translate.Translator;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -38,6 +40,9 @@ public class StravaActivitiesYearStreamer extends StravaParentStreamer<StravaAct
     public static final String DETAIL_KEY_ELEVATION = "elevation";
 
     public static final String DETAIL_KEY_START_TIME = "start-time";
+
+    @Autowired
+    private Translator translator;
 
     protected final StravaActivitiesStreamer stravaActivitiesStreamer;
 
@@ -77,5 +82,10 @@ public class StravaActivitiesYearStreamer extends StravaParentStreamer<StravaAct
     @Override
     public List<TranslatableName> detailNames() {
         return detailNames;
+    }
+
+    @Override
+    public String getDescription() {
+        return translator.translate("strava-athlete-year-activities", getName());
     }
 }

@@ -18,42 +18,24 @@ package org.cosinus.streamer.pack.archive;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.cosinus.streamer.api.ParentStreamer;
-import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.file.BaseFileStreamer;
 import org.cosinus.streamer.api.value.*;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
 
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Objects;
 
-import static java.util.Arrays.asList;
-
-public abstract class ArchiveStreamer<T> implements Streamer<T> {
+public abstract class ArchiveStreamer<T> extends BaseFileStreamer<T> {
 
     protected final ArchivePackStreamer<? extends ArchiveStreamer> archivePackStreamer;
 
     protected final ArchiveStreamEntry archiveEntry;
 
-    protected final List<TranslatableName> detailNames;
-
-    protected final List<Value> details;
-
     public ArchiveStreamer(ArchivePackStreamer<? extends ArchiveStreamer> archivePackStreamer,
                            ArchiveStreamEntry archiveEntry) {
         this.archivePackStreamer = archivePackStreamer;
         this.archiveEntry = archiveEntry;
-        this.detailNames = asList(
-            new TranslatableName(DETAIL_KEY_NAME, null),
-            new TranslatableName(DETAIL_KEY_TYPE, null),
-            new TranslatableName(DETAIL_KEY_SIZE, null),
-            new TranslatableName(DETAIL_KEY_TIME, null));
-        this.details = asList(
-            new TextValue(getName()),
-            new TextValue(getType()),
-            new MemoryValue(getSize()),
-            new DateValue(lastModified()));
-
     }
 
     @Override
@@ -120,11 +102,6 @@ public abstract class ArchiveStreamer<T> implements Streamer<T> {
     }
 
     @Override
-    public boolean isFile() {
-        return true;
-    }
-
-    @Override
     public boolean delete(boolean moveToTrash) {
         return archivePackStreamer.delete(archiveEntry);
     }
@@ -137,15 +114,5 @@ public abstract class ArchiveStreamer<T> implements Streamer<T> {
     @Override
     public SaveWorkerModel<?> saveModel() {
         return archivePackStreamer.saveModel();
-    }
-
-    @Override
-    public List<TranslatableName> detailNames() {
-        return detailNames;
-    }
-
-    @Override
-    public List<Value> details() {
-        return details;
     }
 }

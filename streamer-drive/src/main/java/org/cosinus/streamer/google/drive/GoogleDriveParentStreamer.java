@@ -125,7 +125,7 @@ public class GoogleDriveParentStreamer
     }
 
     private String getMimeTypeForPath(Path path) {
-        return mimeTypeResolver.getMimeTypes(path)
+        return mimeTypeResolver.getMimeTypes(path, false)
             .stream()
             .findFirst()
             .map(Object::toString)

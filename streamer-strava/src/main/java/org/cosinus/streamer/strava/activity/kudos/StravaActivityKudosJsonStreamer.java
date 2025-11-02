@@ -24,6 +24,8 @@ import org.cosinus.streamer.strava.StravaJsonStreamer;
 import org.cosinus.streamer.strava.activity.StravaActivityStreamer;
 import org.cosinus.streamer.strava.model.Activity;
 import org.cosinus.streamer.strava.model.AthleteName;
+import org.cosinus.swing.translate.Translator;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -37,6 +39,11 @@ public class StravaActivityKudosJsonStreamer extends StravaJsonStreamer {
     public static final String ACTIVITY_KUDOS = "Kudos";
 
     public static final String KUDOS_ICON_NAME = "starred";
+
+    public static final int DETAILS_INDEX_COUNT = 1;
+
+    @Autowired
+    private Translator translator;
 
     private final StravaActivityStreamer stravaActivityStreamer;
 
@@ -97,5 +104,10 @@ public class StravaActivityKudosJsonStreamer extends StravaJsonStreamer {
             new IntegerValue(getKudosCount())
         );
         activityKudoers = null;
+    }
+
+    @Override
+    public String getDescription() {
+        return translator.translate("strava-activity-kudos", details().get(DETAILS_INDEX_COUNT));
     }
 }

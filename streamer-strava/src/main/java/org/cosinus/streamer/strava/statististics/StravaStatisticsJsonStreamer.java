@@ -24,6 +24,7 @@ import org.cosinus.streamer.strava.StravaUserStreamer;
 import org.cosinus.streamer.strava.client.StravaClientInvoker;
 import org.cosinus.streamer.strava.model.AthleteStatistic;
 import org.cosinus.streamer.strava.model.AthleteStatistics;
+import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.file.Path;
@@ -42,6 +43,9 @@ public class StravaStatisticsJsonStreamer extends StravaJsonStreamer {
 
     @Autowired
     protected StravaClientInvoker stravaClientInvoker;
+
+    @Autowired
+    private Translator translator;
 
     protected final StravaUserStreamer stravaUserStreamer;
 
@@ -163,5 +167,10 @@ public class StravaStatisticsJsonStreamer extends StravaJsonStreamer {
     @Override
     public Object getSource() {
         return getAthleteStatistics();
+    }
+
+    @Override
+    public String getDescription() {
+        return translator.translate("strava-athlete-statistics");
     }
 }

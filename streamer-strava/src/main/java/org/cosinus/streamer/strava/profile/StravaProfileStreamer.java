@@ -22,6 +22,8 @@ import org.cosinus.streamer.api.KeyValueStreamer;
 import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.streamer.strava.StravaParentStreamer;
 import org.cosinus.streamer.strava.StravaUserStreamer;
+import org.cosinus.swing.translate.Translator;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -39,6 +41,9 @@ import static org.cosinus.streamer.strava.StravaUserStreamer.*;
 public class StravaProfileStreamer extends StravaParentStreamer<KeyValueStreamer> {
 
     public static final String PROFILE = "Profile";
+
+    @Autowired
+    private Translator translator;
 
     private final List<TranslatableName> detailNames;
 
@@ -77,5 +82,10 @@ public class StravaProfileStreamer extends StravaParentStreamer<KeyValueStreamer
     @Override
     public List<TranslatableName> detailNames() {
         return detailNames;
+    }
+
+    @Override
+    public String getDescription() {
+        return translator.translate("strava-athlete-profile");
     }
 }

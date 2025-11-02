@@ -27,7 +27,7 @@ public class TranslatableName {
     @Autowired
     public Translator translator;
 
-    private String key;
+    private final String key;
 
     private String name;
 
@@ -53,6 +53,11 @@ public class TranslatableName {
         if (key != null) {
             name = translator.translate(key);
         }
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 
     @Override
