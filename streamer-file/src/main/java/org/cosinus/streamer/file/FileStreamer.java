@@ -21,6 +21,7 @@ import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.error.StreamerException;
 import org.cosinus.streamer.api.value.*;
+import org.cosinus.swing.file.FileHandler;
 import org.cosinus.swing.util.AutoRemovableTemporaryFile;
 import org.springframework.beans.factory.annotation.Autowired;
 

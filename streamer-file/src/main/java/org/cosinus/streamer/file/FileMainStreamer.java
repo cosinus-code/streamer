@@ -21,7 +21,8 @@ import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.api.meta.MainStreamer;
 import org.cosinus.streamer.api.meta.RootStreamer;
 import org.cosinus.streamer.api.value.TranslatableName;
-import org.cosinus.streamer.file.system.FileSystemRoot;
+import org.cosinus.swing.file.FileHandler;
+import org.cosinus.swing.file.FileSystemRoot;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import java.io.File;

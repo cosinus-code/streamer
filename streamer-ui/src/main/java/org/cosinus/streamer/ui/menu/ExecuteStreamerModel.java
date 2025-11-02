@@ -17,7 +17,7 @@
 
 package org.cosinus.streamer.ui.menu;
 
-import org.cosinus.streamer.file.system.Application;
+import org.cosinus.swing.file.Application;
 import org.cosinus.swing.ui.UIModel;
 
 import java.util.Collection;

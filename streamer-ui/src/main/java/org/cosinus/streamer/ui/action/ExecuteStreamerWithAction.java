@@ -18,8 +18,6 @@
 package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.file.system.Application;
-import org.cosinus.streamer.file.system.FileSystem;
 import org.cosinus.streamer.ui.menu.ExecuteStreamerModel;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
@@ -27,6 +25,8 @@ import org.cosinus.swing.action.ActionContext;
 import org.cosinus.swing.action.ActionInContext;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.exec.ProcessExecutor;
+import org.cosinus.swing.file.Application;
+import org.cosinus.swing.file.FileSystem;
 import org.springframework.stereotype.Component;
 
 import java.io.File;

@@ -18,8 +18,8 @@ package org.cosinus.streamer.file;
 
 import org.cosinus.streamer.api.value.TextValue;
 import org.cosinus.streamer.api.value.Value;
-import org.cosinus.streamer.file.system.FileSystemDevice;
-import org.cosinus.streamer.file.system.FileSystemRoot;
+import org.cosinus.swing.file.FileSystemDevice;
+import org.cosinus.swing.file.FileSystemRoot;
 import org.cosinus.swing.format.FormatHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
