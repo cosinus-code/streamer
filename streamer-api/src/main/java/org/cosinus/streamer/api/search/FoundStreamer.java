@@ -21,6 +21,7 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerDelegate;
 import org.cosinus.streamer.api.BinaryStreamerDelegate;
 
+import java.nio.file.Path;
 import java.util.stream.Stream;
 
 public class FoundStreamer<S extends Streamer<S>> extends StreamerDelegate<S, S> {
@@ -45,5 +46,25 @@ public class FoundStreamer<S extends Streamer<S>> extends StreamerDelegate<S, S>
     @Override
     public Stream<S> stream() {
         return delegate.stream();
+    }
+
+    @Override
+    public Path getPath() {
+        return parent.getPath().resolve(delegate.getName());
+    }
+
+    @Override
+    public String getDescription() {
+        return getPath().toString();
+    }
+
+    @Override
+    public boolean isLink() {
+        return true;
+    }
+
+    @Override
+    public Streamer<?> getLinkedStreamer() {
+        return delegate;
     }
 }

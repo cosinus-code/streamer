@@ -93,7 +93,11 @@ public interface Streamable {
     }
 
     default boolean isLink() {
-        return false;
+        return getLinkedStreamer() != null;
+    }
+
+    default Streamer<?> getLinkedStreamer() {
+        return null;
     }
 
     default boolean exists() {

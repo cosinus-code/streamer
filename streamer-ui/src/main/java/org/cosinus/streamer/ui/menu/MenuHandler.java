@@ -75,7 +75,7 @@ public class MenuHandler {
     public void addContextMenu(final JComponent component, final PopupMenu popupContextMenu) {
         component.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(MouseEvent mouseEvent) {
+            public void mousePressed(final MouseEvent mouseEvent) {
                 if (mouseEvent.getButton() == BUTTON3) {
                     popupContextMenu.show(component,
                         mouseEvent.getX(),

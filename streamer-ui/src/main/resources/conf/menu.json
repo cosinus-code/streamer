@@ -41,6 +41,10 @@
     "menu-go-parent": {
       "shortcut": "control UP",
       "icon": "go-up"
+    },
+    "menu-go-to-linked-streamer": {
+      "shortcut": "control L",
+      "icon": "insert-link"
     }
   },
   "menu-help": {

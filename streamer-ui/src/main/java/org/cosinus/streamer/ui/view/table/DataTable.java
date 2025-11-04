@@ -50,6 +50,7 @@ import static org.cosinus.streamer.ui.action.CreateStreamerAction.CREATE_STREAME
 import static org.cosinus.streamer.ui.action.DeleteStreamerAction.DELETE_STREAMER_ACTION_NAME;
 import static org.cosinus.streamer.ui.action.ExecuteStreamerAction.EXECUTE_STREAMER_ACTION_ID;
 import static org.cosinus.streamer.ui.action.ExecuteStreamerWithAction.EXECUTE_STREAMER_WITH_ACTION_ID;
+import static org.cosinus.streamer.ui.action.GoToLinkedStreamerAction.GO_TO_LINKED_STREAMER_ACTION_NAME;
 import static org.cosinus.streamer.ui.action.MoveToTrashStreamerAction.MOVE_TO_TRASH_STREAMER_ACTION_NAME;
 import static org.cosinus.streamer.ui.menu.MenuHandler.SEPARATOR;
 
@@ -113,11 +114,15 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
         popupContextMenu = menuHandler.createPopupMenu(
             EXECUTE_STREAMER_ACTION_ID,
             EXECUTE_STREAMER_WITH_ACTION_ID,
+            GO_TO_LINKED_STREAMER_ACTION_NAME,
             SEPARATOR,
             MOVE_TO_TRASH_STREAMER_ACTION_NAME,
             DELETE_STREAMER_ACTION_NAME,
             SEPARATOR,
             CREATE_STREAMER_ACTION_ID);
+
+        popupContextMenu.setEnabled(GO_TO_LINKED_STREAMER_ACTION_NAME, false);
+
         menuHandler.addContextMenu(this, popupContextMenu);
         addMouseListener(new MouseAdapter() {
             @Override
@@ -180,7 +185,7 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
 
             actionController.runActionByKeyStroke(keyEvent);
             if (actionController.isLetterKey(keyEvent)) {
-                 if (!isAction(keyEvent.getWhen(), FIND_STREAMER_SPEED)) {
+                if (!isAction(keyEvent.getWhen(), FIND_STREAMER_SPEED)) {
                     nameToFind = "";
                 }
                 nameToFind += (char) keyEvent.getKeyCode();
@@ -354,6 +359,17 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
 
     private void resetContentIdentifier() {
         getTableModel().setContentIdentifier(null);
+    }
+
+    @Override
+    public void changeSelection(int rowIndex, int columnIndex, boolean toggle, boolean extend) {
+        super.changeSelection(rowIndex, columnIndex, toggle, extend);
+        popupContextMenu.setEnabled(
+            GO_TO_LINKED_STREAMER_ACTION_NAME,
+            ofNullable(getCurrentItem())
+                .map(Streamable::isLink)
+                .orElse(false));
+
     }
 
     public abstract void setCurrentIndex(int index);

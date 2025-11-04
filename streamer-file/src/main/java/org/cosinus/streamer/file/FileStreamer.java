@@ -18,6 +18,7 @@ package org.cosinus.streamer.file;
 
 import lombok.Getter;
 import org.cosinus.streamer.api.ParentStreamer;
+import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.error.StreamerException;
 import org.cosinus.streamer.api.file.BaseFileStreamer;
 import org.cosinus.streamer.api.value.Value;
@@ -146,6 +147,18 @@ public abstract class FileStreamer<T> extends BaseFileStreamer<T> {
     @Override
     public String getProtocol() {
         return FILE_PROTOCOL;
+    }
+
+    @Override
+    public boolean isLink() {
+        return fileHandler.isLink(file);
+    }
+
+    @Override
+    public Streamer<?> getLinkedStreamer() {
+        return ofNullable(fileHandler.getLinkedPath(file))
+            .map(fileMainStreamer::create)
+            .orElse(null);
     }
 
     @Override
