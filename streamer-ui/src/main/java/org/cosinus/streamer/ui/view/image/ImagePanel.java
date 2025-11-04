@@ -177,7 +177,8 @@ public class ImagePanel extends Panel implements LoadWorkerModel<byte[], Updatab
             EXECUTE_STREAMER_WITH_ACTION_ID,
             SEPARATOR,
             MOVE_TO_TRASH_STREAMER_ACTION_NAME,
-            DELETE_STREAMER_ACTION_NAME);
+            DELETE_STREAMER_ACTION_NAME,
+            SEPARATOR);
 
         Menu imageQualityMenu = new Menu(IMAGE_QUALITY);
         popupContextMenu.add(imageQualityMenu);

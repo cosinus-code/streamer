@@ -53,6 +53,11 @@ public class SaveAction implements ActionInContext {
     }
 
     @Override
+    public String getIconName() {
+        return "document-save";
+    }
+
+    @Override
     public String getId() {
         return SAVE_ACTION_ID;
     }

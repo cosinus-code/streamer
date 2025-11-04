@@ -54,6 +54,11 @@ public class ChangeShowHiddenPreferenceAction extends ChangePreferenceAction {
     }
 
     @Override
+    public String getIconName() {
+        return "view-hidden";
+    }
+
+    @Override
     public String getId() {
         return MENU_SHOW_HIDDEN;
     }

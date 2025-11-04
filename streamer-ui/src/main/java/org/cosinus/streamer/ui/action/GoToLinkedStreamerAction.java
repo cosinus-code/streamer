@@ -79,6 +79,11 @@ public class GoToLinkedStreamerAction implements ActionInContext {
     }
 
     @Override
+    public String getIconName() {
+        return "insert-link";
+    }
+
+    @Override
     public String getId() {
         return GO_TO_LINKED_STREAMER_ACTION_NAME;
     }

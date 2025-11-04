@@ -43,6 +43,11 @@ public class EditPreferencesAction implements ActionInContext {
     }
 
     @Override
+    public String getIconName() {
+        return "settings";
+    }
+
+    @Override
     public String getId() {
         return EDIT_PREFERENCES;
     }

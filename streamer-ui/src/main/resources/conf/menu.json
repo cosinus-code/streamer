@@ -1,56 +1,42 @@
 {
   "menu-streamer": {
     "menu-streamer-quit": {
-      "shortcut": "alt F4",
-      "icon": "application-exit"
+      "shortcut": "alt F4"
     }
   },
   "menu-edit": {
     "menu-edit-preferences": {
-      "shortcut": "control P",
-      "icon": "settings"
+      "shortcut": "control P"
     }
   },
   "menu-view": {
     "menu-view-refresh": {
-      "shortcut": "control R",
-      "icon": "view-refresh"
+      "shortcut": "control R"
     },
     "separator1": {},
-    "menu-view-icon": {
-      "icon": "view-icon"
-    },
-    "menu-view-grid": {
-      "icon": "view-grid"
-    },
-    "menu-view-list": {
-      "icon": "view-list"
+    "menu-view-icon": {},
+    "menu-view-grid": {},
+    "menu-view-details": {
+      "icon": "view-details"
     },
     "menu-view-tree": {
       "icon": "view-tree"
     },
     "separator3": {},
-    "menu-view-left-view": {
-      "icon": "view-left-pane"
-    },
-    "menu-view-hidden": {
-      "icon": "view-hidden"
-    }
+    "menu-view-left-view": {},
+    "menu-view-hidden": {}
   },
   "menu-go": {
     "menu-go-parent": {
-      "shortcut": "control UP",
-      "icon": "go-up"
+      "shortcut": "control UP"
     },
     "menu-go-to-linked-streamer": {
-      "shortcut": "control L",
-      "icon": "insert-link"
+      "shortcut": "control L"
     }
   },
   "menu-help": {
     "menu-help-index": {
-      "shortcut": "F1",
-      "icon": "help"
+      "shortcut": "F1"
     }
   }
 }

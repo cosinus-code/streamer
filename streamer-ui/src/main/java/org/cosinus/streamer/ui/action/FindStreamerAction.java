@@ -54,6 +54,11 @@ public class FindStreamerAction implements ActionInContext {
     }
 
     @Override
+    public String getIconName() {
+        return "edit-find";
+    }
+
+    @Override
     public String getId() {
         return FIND_STREAMER_ACTION_ID;
     }

@@ -37,6 +37,11 @@ public class ChangeToGridViewAction implements ActionInContext {
     }
 
     @Override
+    public String getIconName() {
+        return "view-grid";
+    }
+
+    @Override
     public String getId() {
         return "menu-view-grid";
     }

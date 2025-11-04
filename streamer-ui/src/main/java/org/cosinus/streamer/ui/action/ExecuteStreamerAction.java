@@ -77,6 +77,11 @@ public class ExecuteStreamerAction implements ActionInContext {
     }
 
     @Override
+    public String getIconName() {
+        return "system-run";
+    }
+
+    @Override
     public String getId() {
         return EXECUTE_STREAMER_ACTION_ID;
     }

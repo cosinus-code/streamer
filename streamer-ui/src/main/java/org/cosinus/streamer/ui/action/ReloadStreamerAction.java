@@ -67,6 +67,11 @@ public class ReloadStreamerAction implements ActionInContext {
     }
 
     @Override
+    public String getIconName() {
+        return "view-refresh";
+    }
+
+    @Override
     public String getId() {
         return RELOAD_STREAMER_ACTION_ID;
     }

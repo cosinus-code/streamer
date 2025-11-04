@@ -67,6 +67,11 @@ public class GoToParentStreamerAction implements ActionInContext {
     }
 
     @Override
+    public String getIconName() {
+        return "go-up";
+    }
+
+    @Override
     public String getId() {
         return GO_TO_PARENT_ACTION;
     }

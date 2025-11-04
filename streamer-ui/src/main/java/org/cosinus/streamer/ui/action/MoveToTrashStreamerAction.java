@@ -61,6 +61,11 @@ public class MoveToTrashStreamerAction extends DeleteStreamerAction {
     }
 
     @Override
+    public String getIconName() {
+        return "user-trash";
+    }
+
+    @Override
     public String getActionName() {
         return MOVE_TO_TRASH_STREAMER_ACTION_NAME;
     }

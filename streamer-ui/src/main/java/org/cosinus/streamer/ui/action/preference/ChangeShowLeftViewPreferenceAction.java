@@ -52,6 +52,11 @@ public class ChangeShowLeftViewPreferenceAction extends ChangePreferenceAction {
     }
 
     @Override
+    public String getIconName() {
+        return "view-left-pane";
+    }
+
+    @Override
     public String getId() {
         return MENU_SHOW_LEFT_VIEW;
     }

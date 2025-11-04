@@ -37,6 +37,11 @@ public class ChangeToIconViewAction implements ActionInContext {
     }
 
     @Override
+    public String getIconName() {
+        return "view-icon";
+    }
+
+    @Override
     public String getId() {
         return "menu-view-icon";
     }

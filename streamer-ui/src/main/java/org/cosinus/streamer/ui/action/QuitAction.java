@@ -33,6 +33,11 @@ public class QuitAction implements ActionInContext {
     }
 
     @Override
+    public String getIconName() {
+        return "application-exit";
+    }
+
+    @Override
     public String getId() {
         return MENU_STREAMER_QUIT;
     }

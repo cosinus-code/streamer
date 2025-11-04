@@ -77,6 +77,11 @@ public class CreateStreamerAction implements ActionInContext {
     }
 
     @Override
+    public String getIconName() {
+        return "folder-new";
+    }
+
+    @Override
     public String getId() {
         return CREATE_STREAMER_ACTION_ID;
     }

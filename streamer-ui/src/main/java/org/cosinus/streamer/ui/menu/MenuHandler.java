@@ -18,7 +18,11 @@
 package org.cosinus.streamer.ui.menu;
 
 import org.cosinus.streamer.ui.action.FindAndLoadStreamerAction;
+import org.cosinus.swing.action.ActionContextProvider;
 import org.cosinus.swing.action.ActionController;
+import org.cosinus.swing.action.ActionInContext;
+import org.cosinus.swing.image.icon.IconHandler;
+import org.cosinus.swing.image.icon.IconSize;
 import org.cosinus.swing.menu.MenuItem;
 import org.cosinus.swing.menu.PopupMenu;
 import org.springframework.stereotype.Component;
@@ -29,6 +33,7 @@ import java.awt.event.MouseEvent;
 
 import static java.awt.event.MouseEvent.BUTTON3;
 import static java.util.Arrays.stream;
+import static org.cosinus.swing.image.icon.IconSize.X16;
 
 @Component
 public class MenuHandler {
@@ -38,13 +43,15 @@ public class MenuHandler {
     private final ActionController actionController;
 
     private final FavoritesHandler favoritesHandler;
+    private final IconHandler iconHandler;
 
     private PopupMenu favoritesPopup;
 
     public MenuHandler(final ActionController actionController,
-                       final FavoritesHandler favoritesHandler) {
+                       final FavoritesHandler favoritesHandler, IconHandler iconHandler) {
         this.actionController = actionController;
         this.favoritesHandler = favoritesHandler;
+        this.iconHandler = iconHandler;
     }
 
     public PopupMenu createPopupMenu(String... actionIds) {
@@ -69,6 +76,10 @@ public class MenuHandler {
     public MenuItem createMenuItem(String actionId) {
         MenuItem menuItem = new MenuItem(e -> actionController.runAction(actionId), actionId);
         menuItem.translate();
+        actionController.findAction(actionId)
+            .map(ActionInContext::getIconName)
+            .flatMap(iconName -> iconHandler.findIconByName(iconName, X16))
+            .ifPresent(menuItem::setIcon);
         return menuItem;
     }
 

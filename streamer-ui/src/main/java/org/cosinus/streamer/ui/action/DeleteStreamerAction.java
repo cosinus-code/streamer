@@ -114,6 +114,11 @@ public class DeleteStreamerAction implements ActionInContext {
     }
 
     @Override
+    public String getIconName() {
+        return "edit-delete";
+    }
+
+    @Override
     public String getId() {
         return DELETE_STREAMER_ACTION_NAME;
     }
