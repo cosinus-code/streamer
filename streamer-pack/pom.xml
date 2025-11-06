@@ -14,9 +14,9 @@
     <name>Streamer Pack</name>
 
     <properties>
-        <commons-compress.version>1.27.1</commons-compress.version>
-        <junrar.version>7.5.5</junrar.version>
-        <xz.version>1.8</xz.version>
+        <commons-compress.version>1.28.0</commons-compress.version>
+        <junrar.version>7.5.7</junrar.version>
+        <xz.version>1.10</xz.version>
     </properties>
 
     <dependencies>

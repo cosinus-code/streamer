@@ -63,7 +63,7 @@ public class CompressorInputStreamFactory extends CompressorStreamFactory {
             .or(() -> {
                 try (InputStream bufferedInputStream = new BufferedInputStream(inputStream)) {
                     return Optional.of(detect(bufferedInputStream));
-                } catch (IOException | CompressorException e) {
+                } catch (IOException e) {
                     LOG.trace(e);
                     return empty();
                 }

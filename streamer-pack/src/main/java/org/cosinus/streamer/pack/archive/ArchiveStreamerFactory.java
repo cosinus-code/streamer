@@ -72,7 +72,7 @@ public class ArchiveStreamerFactory extends ArchiveStreamFactory {
             .or(() -> {
                 try (InputStream bufferedInputStream = new BufferedInputStream(binaryStreamer.inputStream())) {
                     return Optional.of(detect(bufferedInputStream));
-                } catch (IOException | ArchiveException e) {
+                } catch (IOException e) {
                     LOG.trace(e);
                     return empty();
                 }

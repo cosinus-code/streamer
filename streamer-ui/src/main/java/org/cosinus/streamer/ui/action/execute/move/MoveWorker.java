@@ -62,7 +62,7 @@ public class MoveWorker<S extends Streamer<S>, T extends Streamer<T>> extends Co
     protected void onWorkerDoneBeforeFinishing() {
         super.onWorkerDoneBeforeFinishing();
         if (isSuccessful()) {
-            source.flatStream(LEVEL_BOTTOM_UP, getStreamerFilter())
+            source.flatStream(LEVEL_BOTTOM_UP, copyStrategy, getStreamerFilter())
                 .filter(Streamer::exists)
                 .forEach(streamer -> streamer.delete(false));
         }

@@ -15,6 +15,7 @@
  */
 package org.cosinus.streamer.api.remote;
 
+import org.cosinus.stream.StreamingStrategy;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
@@ -38,10 +39,14 @@ public interface RemoteParentStreamer<S extends Streamer<?>, R, C extends Connec
     }
 
     @Override
-    default Stream<S> flatStream(final FlatStreamingStrategy strategy, final StreamerFilter streamerFilter) {
+    default Stream<S> flatStream(final FlatStreamingStrategy flatStreamingStrategy,
+                                 final StreamingStrategy streamingStrategy,
+                                 final StreamerFilter streamerFilter) {
         return getConnection()
             .map(connection -> StreamSupport
-                .stream(new FlatStreamingSpliterator<>(strategy,
+                .stream(new FlatStreamingSpliterator<>(
+                    flatStreamingStrategy,
+                    streamingStrategy,
                     streamFromConnection(connection).filter(streamerFilter),
                     streamSupplier(connection)), false)
                 .onClose(() -> returnConnection(connection)))

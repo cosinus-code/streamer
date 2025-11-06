@@ -55,13 +55,13 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
 
     protected final StreamerFilter streamerFilter;
 
-    private final CopyStrategy copyStrategy;
+    protected final CopyStrategy copyStrategy;
 
-    private final OverallCopyListener overallCopyProgress;
+    protected final OverallCopyListener overallCopyProgress;
 
-    private long totalSize;
+    protected long totalSize;
 
-    private long totalItems;
+    protected long totalItems;
 
     public CopyWorker(CopyActionModel<S, T> copyModel) {
         super(copyModel, new CopyProgressModel());
@@ -100,7 +100,7 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
     @Override
     public void preparePipelineOpen(CopyStrategy pipelineStrategy,
                                     PipelineListener<S> pipelineListener) {
-        try (Stream<S> flatStreamers = source.flatStream(streamerFilter)) {
+        try (Stream<S> flatStreamers = source.flatStream(pipelineStrategy, streamerFilter)) {
             flatStreamers
                 .filter(not(Streamer::isParent))
                 .mapToLong(Streamer::getSize)
@@ -119,7 +119,7 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
 
     @Override
     public Stream<S> openPipelineInputStream(CopyStrategy pipelineStrategy) {
-        return source.flatStream(getStreamerFilter());
+        return source.flatStream(pipelineStrategy, getStreamerFilter());
     }
 
     @Override

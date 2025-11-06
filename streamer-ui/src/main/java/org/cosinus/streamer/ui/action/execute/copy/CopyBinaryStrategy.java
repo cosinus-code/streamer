@@ -41,7 +41,7 @@ import static org.cosinus.swing.context.ApplicationContextInjector.injectContext
 public class CopyBinaryStrategy implements BinaryPipelineStrategy {
 
     @Autowired
-    SwingApplicationFrame applicationFrame;
+    private SwingApplicationFrame applicationFrame;
 
     @Autowired
     private Translator translator;
@@ -78,7 +78,7 @@ public class CopyBinaryStrategy implements BinaryPipelineStrategy {
     }
 
     @Override
-    public boolean shouldRetryOnFail() {
+    public boolean shouldRetryOnFail(Exception exception) {
         DialogOption optionValue = dialogHandler.retryWithSkipDialog(applicationFrame,
             translator.translate("act_copy_error_write", target.getPath()));
         if (optionValue == DialogOption.ABORT) {

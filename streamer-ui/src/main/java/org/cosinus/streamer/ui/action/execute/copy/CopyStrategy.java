@@ -15,8 +15,13 @@
  */
 package org.cosinus.streamer.ui.action.execute.copy;
 
+import org.cosinus.stream.error.AbortPipelineConsumeException;
+import org.cosinus.stream.error.SkipPipelineConsumeException;
 import org.cosinus.stream.pipeline.binary.BinaryPipelineStrategy;
+import org.cosinus.swing.boot.SwingApplicationFrame;
 import org.cosinus.swing.dialog.DialogHandler;
+import org.cosinus.swing.dialog.DialogOption;
+import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
@@ -24,7 +29,13 @@ import static org.cosinus.swing.context.ApplicationContextInjector.injectContext
 public class CopyStrategy implements BinaryPipelineStrategy {
 
     @Autowired
+    private SwingApplicationFrame applicationFrame;
+
+    @Autowired
     protected DialogHandler dialogHandler;
+
+    @Autowired
+    protected Translator translator;
 
     private boolean overwriteAllExistingTargets;
 
@@ -82,5 +93,19 @@ public class CopyStrategy implements BinaryPipelineStrategy {
 
     public void checkTransfer() {
         this.shouldCheck = true;
+    }
+
+    @Override
+    public boolean shouldRetryOnFail(Exception exception) {
+        DialogOption optionValue = dialogHandler.retryWithSkipDialog(applicationFrame,
+            translator.translate("act-copy-error", exception.getMessage()));
+        if (optionValue == DialogOption.ABORT) {
+            throw new AbortPipelineConsumeException("Copy aborted by user");
+        }
+        if (optionValue == DialogOption.SKIP) {
+            //TODO
+            throw new SkipPipelineConsumeException(1);
+        }
+        return optionValue == DialogOption.RETRY;
     }
 }

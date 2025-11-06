@@ -18,12 +18,14 @@ package org.cosinus.streamer.api;
 
 import org.cosinus.stream.FlatStreamingSpliterator;
 import org.cosinus.stream.FlatStreamingStrategy;
+import org.cosinus.stream.StreamingStrategy;
 
 import java.nio.file.Path;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static org.cosinus.stream.FlatStreamingStrategy.LEVEL_UP_BOTTOM;
+import static org.cosinus.stream.StreamingStrategy.NO_STRATEGY;
 import static org.cosinus.streamer.api.StreamerFilter.ALL_STREAMERS;
 
 public interface ParentStreamer<S extends Streamer> extends Streamer<S> {
@@ -36,7 +38,7 @@ public interface ParentStreamer<S extends Streamer> extends Streamer<S> {
      * @return the flat stream of sub-streamers
      */
     default Stream<S> flatStream() {
-        return flatStream(LEVEL_UP_BOTTOM, ALL_STREAMERS);
+        return flatStream(LEVEL_UP_BOTTOM, NO_STRATEGY, ALL_STREAMERS);
     }
 
     /**
@@ -45,8 +47,19 @@ public interface ParentStreamer<S extends Streamer> extends Streamer<S> {
      * @param streamerFilter the filter to apply on the direct children
      * @return the flat stream of sub-streamers
      */
-    default Stream<S> flatStream(StreamerFilter streamerFilter) {
-        return flatStream(LEVEL_UP_BOTTOM, streamerFilter);
+    default Stream<S> flatStream(final StreamerFilter streamerFilter) {
+        return flatStream(LEVEL_UP_BOTTOM, NO_STRATEGY, streamerFilter);
+    }
+
+    /**
+     * Get the flat stream of all sub-streamers
+     *
+     * @param streamerFilter the filter to apply on the direct children
+     * @return the flat stream of sub-streamers
+     */
+    default Stream<S> flatStream(final StreamingStrategy streamingStrategy,
+                                 final StreamerFilter streamerFilter) {
+        return flatStream(LEVEL_UP_BOTTOM, streamingStrategy, streamerFilter);
     }
 
     /**
@@ -55,9 +68,14 @@ public interface ParentStreamer<S extends Streamer> extends Streamer<S> {
      * @param streamerFilter the filter to apply on the direct children
      * @return the flat stream of sub-streamers
      */
-    default Stream<S> flatStream(FlatStreamingStrategy strategy, StreamerFilter streamerFilter) {
+    default Stream<S> flatStream(final FlatStreamingStrategy flatStreamingStrategy,
+                                 final StreamingStrategy streamingStrategy,
+                                 final StreamerFilter streamerFilter) {
         return StreamSupport.stream(
-            new FlatStreamingSpliterator(strategy, stream().filter(streamerFilter)), false);
+            new FlatStreamingSpliterator<>(
+                flatStreamingStrategy,
+                streamingStrategy,
+                stream().filter(streamerFilter)), false);
     }
 
     default void execute(Path path) {

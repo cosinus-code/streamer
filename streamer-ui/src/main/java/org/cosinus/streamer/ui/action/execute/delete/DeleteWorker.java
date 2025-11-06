@@ -18,7 +18,6 @@ package org.cosinus.streamer.ui.action.execute.delete;
 
 import org.cosinus.stream.consumer.StreamConsumer;
 import org.cosinus.stream.error.AbortPipelineConsumeException;
-import org.cosinus.stream.pipeline.NoPipelineStrategy;
 import org.cosinus.stream.pipeline.PipelineListener;
 import org.cosinus.stream.pipeline.PipelineStrategy;
 import org.cosinus.stream.pipeline.StreamPipeline;
@@ -72,8 +71,10 @@ public class DeleteWorker extends SimpleWorker<StreamersProgressModel>
     }
 
     @Override
-    public Stream<Streamer<?>> openPipelineInputStream(PipelineStrategy pipelineStrategy) {
-        return deleteModel.getParentStreamer().flatStream(LEVEL_BOTTOM_UP, deleteModel.getStreamerFilter());
+    public Stream<Streamer<?>> openPipelineInputStream(final PipelineStrategy pipelineStrategy) {
+        return deleteModel
+            .getParentStreamer()
+            .flatStream(LEVEL_BOTTOM_UP, pipelineStrategy, deleteModel.getStreamerFilter());
     }
 
     @Override
@@ -94,7 +95,7 @@ public class DeleteWorker extends SimpleWorker<StreamersProgressModel>
     public void preparePipelineOpen(PipelineStrategy pipelineStrategy, PipelineListener<Streamer<?>> pipelineListener) {
         ParentStreamer<Streamer<?>> parentStreamer = deleteModel.getParentStreamer();
         StreamerFilter streamerFilter = deleteModel.getStreamerFilter();
-        try (Stream<? extends Streamer<?>> flatStream = parentStreamer.flatStream(streamerFilter)) {
+        try (Stream<? extends Streamer<?>> flatStream = parentStreamer.flatStream(pipelineStrategy, streamerFilter)) {
             flatStream.forEach(streamer ->
                 pipelineListener.onPreparingPipeline(++streamersToDeleteCount));
         }
