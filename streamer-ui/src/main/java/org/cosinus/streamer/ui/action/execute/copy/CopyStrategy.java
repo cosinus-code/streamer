@@ -94,18 +94,4 @@ public class CopyStrategy implements BinaryPipelineStrategy {
     public void checkTransfer() {
         this.shouldCheck = true;
     }
-
-    @Override
-    public boolean shouldRetryOnFail(Exception exception) {
-        DialogOption optionValue = dialogHandler.retryWithSkipDialog(applicationFrame,
-            translator.translate("act-copy-error", exception.getMessage()));
-        if (optionValue == DialogOption.ABORT) {
-            throw new AbortPipelineConsumeException("Copy aborted by user");
-        }
-        if (optionValue == DialogOption.SKIP) {
-            //TODO
-            throw new SkipPipelineConsumeException(1);
-        }
-        return optionValue == DialogOption.RETRY;
-    }
 }

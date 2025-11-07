@@ -16,14 +16,12 @@
 
 package org.cosinus.streamer.ui.action.execute.copy;
 
+import org.cosinus.stream.StreamingStrategy;
 import org.cosinus.stream.consumer.StreamConsumer;
 import org.cosinus.stream.error.AbortPipelineConsumeException;
 import org.cosinus.stream.pipeline.Pipeline;
 import org.cosinus.stream.pipeline.PipelineListener;
-import org.cosinus.streamer.api.BinaryStreamer;
-import org.cosinus.streamer.api.ParentStreamer;
-import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.StreamerFilter;
+import org.cosinus.streamer.api.*;
 import org.cosinus.streamer.api.error.AbortActionException;
 import org.cosinus.streamer.api.error.ActionException;
 import org.cosinus.streamer.api.worker.SimpleWorker;
@@ -59,6 +57,8 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
 
     protected final OverallCopyListener overallCopyProgress;
 
+    private final StreamingStrategy streamingStrategy;
+
     protected long totalSize;
 
     protected long totalItems;
@@ -70,6 +70,7 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
         this.streamerFilter = copyModel.getSourceFilter();
         this.copyStrategy = new CopyStrategy();
         this.overallCopyProgress = createOverallCopyListener();
+        this.streamingStrategy = new DefaultStreamingStrategy();
     }
 
     public StreamerFilter getStreamerFilter() {
@@ -100,7 +101,7 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
     @Override
     public void preparePipelineOpen(CopyStrategy pipelineStrategy,
                                     PipelineListener<S> pipelineListener) {
-        try (Stream<S> flatStreamers = source.flatStream(pipelineStrategy, streamerFilter)) {
+        try (Stream<S> flatStreamers = source.flatStream(streamingStrategy, streamerFilter)) {
             flatStreamers
                 .filter(not(Streamer::isParent))
                 .mapToLong(Streamer::getSize)
@@ -119,7 +120,7 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
 
     @Override
     public Stream<S> openPipelineInputStream(CopyStrategy pipelineStrategy) {
-        return source.flatStream(pipelineStrategy, getStreamerFilter());
+        return source.flatStream(streamingStrategy, getStreamerFilter());
     }
 
     @Override
