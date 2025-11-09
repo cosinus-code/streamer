@@ -17,7 +17,6 @@
 package org.cosinus.streamer.api.value;
 
 import org.cosinus.swing.format.FormatHandler;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static java.util.Optional.ofNullable;
@@ -48,7 +47,7 @@ public class MemoryValue extends LongValue {
     }
 
     @Override
-    public int compareTo(@NotNull Value other) {
+    public int compareTo(Value other) {
         if (other instanceof MemoryValue memoryValue) {
             return Long.compare(value, memoryValue.value);
         }

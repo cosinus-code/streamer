@@ -15,8 +15,6 @@
  */
 package org.cosinus.streamer.api.value;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -83,7 +81,7 @@ public class DateValue extends Value {
     }
 
     @Override
-    public int compareTo(@NotNull Value other) {
+    public int compareTo(Value other) {
         if (other instanceof DateValue dateValue) {
             return compare(value, dateValue.value);
         }

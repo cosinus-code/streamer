@@ -20,7 +20,7 @@
     <properties>
         <application.display.name>Streamer</application.display.name>
         <application.name>streamer</application.name>
-        <application.category>Utility</application.category>
+        <application.category>Accessories</application.category>
         <application.icon.name>streamer.png</application.icon.name>
         <application.icns.name>streamer.icns</application.icns.name>
         <application.class>org.cosinus.streamer.ui.app.StreamerApplication</application.class>
@@ -189,10 +189,10 @@
                                     </vmArgs>
                                     <linuxConfig>
                                         <pngFile>src/main/resources/image/${application.icon.name}</pngFile>
-                                        <generateAppImage>true</generateAppImage>
+                                        <generateAppImage>false</generateAppImage>
                                         <generateDeb>true</generateDeb>
                                         <generateRpm>false</generateRpm>
-                                        <wrapJar>true</wrapJar>
+                                        <wrapJar>false</wrapJar>
                                         <categories>
                                             <category>${application.category}</category>
                                         </categories>

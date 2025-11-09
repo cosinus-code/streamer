@@ -15,8 +15,6 @@
  */
 package org.cosinus.streamer.api.value;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.math.BigDecimal;
 
 import static java.util.Optional.ofNullable;
@@ -58,7 +56,7 @@ public class BigDecimalValue extends Value {
     }
 
     @Override
-    public int compareTo(@NotNull Value other) {
+    public int compareTo(Value other) {
         if (other instanceof BigDecimalValue decimalValue && value != null && decimalValue.value != null) {
             return value.compareTo(decimalValue.value);
         }

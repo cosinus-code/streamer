@@ -16,8 +16,6 @@
 
 package org.cosinus.streamer.api.value;
 
-import org.jetbrains.annotations.NotNull;
-
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 import static org.apache.commons.lang3.ObjectUtils.compare;
@@ -57,7 +55,7 @@ public class IntegerValue extends Value {
     }
 
     @Override
-    public int compareTo(@NotNull Value other) {
+    public int compareTo(Value other) {
         if (other instanceof IntegerValue integerValue) {
             return Integer.compare(value, integerValue.value);
         }

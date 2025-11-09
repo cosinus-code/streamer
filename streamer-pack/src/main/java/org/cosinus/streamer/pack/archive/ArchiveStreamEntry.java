@@ -17,7 +17,6 @@
 package org.cosinus.streamer.pack.archive;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -97,7 +96,7 @@ public class ArchiveStreamEntry implements Comparable<ArchiveStreamEntry> {
     }
 
     @Override
-    public int compareTo(@NotNull ArchiveStreamEntry entry) {
+    public int compareTo(ArchiveStreamEntry entry) {
         return getName().compareTo(entry.getName());
     }
 

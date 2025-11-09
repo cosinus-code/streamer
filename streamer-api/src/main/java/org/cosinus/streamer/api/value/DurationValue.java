@@ -17,9 +17,7 @@
 
 package org.cosinus.streamer.api.value;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.cosinus.swing.format.FormatHandler;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static java.util.Optional.ofNullable;
@@ -44,7 +42,7 @@ public class DurationValue extends LongValue {
     }
 
     @Override
-    public int compareTo(@NotNull Value other) {
+    public int compareTo(Value other) {
         if (other instanceof DurationValue duration) {
             return compare(value, duration.value);
         }

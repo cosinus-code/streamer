@@ -17,7 +17,6 @@
 package org.cosinus.streamer.api.value;
 
 import org.cosinus.swing.format.FormatHandler;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static java.util.Optional.ofNullable;
@@ -40,7 +39,7 @@ public class ElevationValue extends DoubleValue {
     }
 
     @Override
-    public int compareTo(@NotNull Value other) {
+    public int compareTo(Value other) {
         if (other instanceof ElevationValue elevation) {
             return compare(value, elevation.value);
         }

@@ -17,7 +17,6 @@
 package org.cosinus.streamer.google.drive.connection;
 
 import com.google.api.services.drive.model.File;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -42,12 +41,12 @@ public class GoogleDriveOutputStream extends OutputStream {
     }
 
     @Override
-    public void write(byte @NotNull [] bytes) throws IOException {
+    public void write(byte[] bytes) throws IOException {
         uploadBytes(bytes);
     }
 
     @Override
-    public void write(byte @NotNull [] bytes, int off, int len) throws IOException {
+    public void write(byte[] bytes, int off, int len) throws IOException {
         uploadBytes(subarray(bytes, off, off + len));
     }
 
