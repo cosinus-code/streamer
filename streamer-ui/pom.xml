@@ -28,6 +28,7 @@
         <application.splash.file.name>splash.png</application.splash.file.name>
         <java.packager.version>1.7.6</java.packager.version>
         <java.packager.mac.startup>X86_64</java.packager.mac.startup>
+        <java.packager.windows.application.version>2.0.0.0</java.packager.windows.application.version>
     </properties>
 
     <dependencies>
@@ -231,10 +232,10 @@
                                         <headerType>gui</headerType>
                                         <wrapJar>true</wrapJar>
                                         <companyName>${organization.name}</companyName>
-                                        <fileVersion>${version}</fileVersion>
-                                        <txtFileVersion>${version}</txtFileVersion>
-                                        <productVersion>${version}</productVersion>
-                                        <txtProductVersion>${version}</txtProductVersion>
+                                        <fileVersion>${java.packager.windows.application.version}</fileVersion>
+                                        <txtFileVersion>${java.packager.windows.application.version}</txtFileVersion>
+                                        <productVersion>${java.packager.windows.application.version}</productVersion>
+                                        <txtProductVersion>${java.packager.windows.application.version}</txtProductVersion>
                                         <fileDescription>${description}</fileDescription>
                                         <copyright>${organization.name}</copyright>
                                         <productName>${application.display.name}</productName>
