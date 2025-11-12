@@ -31,6 +31,7 @@ import java.util.Optional;
 import static java.awt.event.KeyEvent.VK_F7;
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 import static org.cosinus.swing.dialog.OptionsDialog.PLAIN_MESSAGE;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_NEW_FOLDER;
 
 /**
  * Rename streamer action
@@ -78,7 +79,7 @@ public class CreateStreamerAction implements ActionInContext {
 
     @Override
     public String getIconName() {
-        return "folder-new";
+        return ICON_NEW_FOLDER;
     }
 
     @Override

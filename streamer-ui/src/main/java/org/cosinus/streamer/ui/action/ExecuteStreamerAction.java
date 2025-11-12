@@ -30,6 +30,7 @@ import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_ENTER;
 import static java.util.Optional.ofNullable;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_EXECUTE;
 
 /**
  * Load streamer action
@@ -78,7 +79,7 @@ public class ExecuteStreamerAction implements ActionInContext {
 
     @Override
     public String getIconName() {
-        return "system-run";
+        return ICON_EXECUTE;
     }
 
     @Override

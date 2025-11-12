@@ -34,6 +34,7 @@ import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_L;
 import static java.util.Optional.ofNullable;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_FORWARD;
 
 @Component
 public class GoToLinkedStreamerAction implements ActionInContext {
@@ -80,7 +81,7 @@ public class GoToLinkedStreamerAction implements ActionInContext {
 
     @Override
     public String getIconName() {
-        return "insert-link";
+        return ICON_FORWARD;
     }
 
     @Override

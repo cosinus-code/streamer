@@ -36,6 +36,7 @@ import static java.awt.event.KeyEvent.VK_DELETE;
 import static org.cosinus.streamer.ui.action.execute.delete.DeleteActionModel.delete;
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 import static org.cosinus.swing.dialog.OptionsDialog.YES_NO_CANCEL_OPTION;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_DELETE;
 
 /**
  * Rename streamer action
@@ -115,7 +116,7 @@ public class DeleteStreamerAction implements ActionInContext {
 
     @Override
     public String getIconName() {
-        return "edit-delete";
+        return ICON_DELETE;
     }
 
     @Override

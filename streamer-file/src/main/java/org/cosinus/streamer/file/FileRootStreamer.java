@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.file;
 
+import java.util.Map;
 import org.cosinus.streamer.api.value.TextValue;
 import org.cosinus.streamer.api.value.Value;
 import org.cosinus.swing.file.FileSystemDevice;
@@ -33,12 +34,44 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
+import static org.cosinus.swing.file.FileSystemDevice.CDROM;
+import static org.cosinus.swing.file.FileSystemDevice.EXTERNAL_DRIVE;
+import static org.cosinus.swing.file.FileSystemDevice.EXTERNAL_DRIVE_SEAGATE;
+import static org.cosinus.swing.file.FileSystemDevice.EXTERNAL_DRIVE_WESTERN_DIGITAL;
+import static org.cosinus.swing.file.FileSystemDevice.HARD_DRIVE;
+import static org.cosinus.swing.file.FileSystemDevice.PHONE;
+import static org.cosinus.swing.file.FileSystemDevice.REMOVABLE_FLASH;
+import static org.cosinus.swing.file.FileSystemDevice.SSD;
+import static org.cosinus.swing.file.FileSystemDevice.WATCH;
+import static org.cosinus.swing.file.FileSystemDevice.WATCH_GARMIN;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_STORAGE_COMPACT_DISK;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_STORAGE_EXTERNAL;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_STORAGE_EXTERNAL_SEAGATE;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_STORAGE_EXTERNAL_WESTERN_DIGITAL;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_STORAGE_INTERNAL;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_STORAGE_INTERNAL_SSD;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_STORAGE_PHONE;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_STORAGE_REMOVABLE;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_STORAGE_WATCH;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_STORAGE_WATCH_GARMIN;
 
 public class FileRootStreamer extends FileParentStreamer {
 
     protected static final int DETAIL_INDEX_FREE_SPACE = 2;
     protected static final int DETAIL_INDEX_TOTAL_SPACE = 3;
+
+    protected static final Map<FileSystemDevice, String> ICON_NAMES = Map.of(
+        HARD_DRIVE, ICON_STORAGE_INTERNAL,
+        SSD, ICON_STORAGE_INTERNAL_SSD,
+        EXTERNAL_DRIVE, ICON_STORAGE_EXTERNAL,
+        EXTERNAL_DRIVE_SEAGATE, ICON_STORAGE_EXTERNAL_SEAGATE,
+        EXTERNAL_DRIVE_WESTERN_DIGITAL, ICON_STORAGE_EXTERNAL_WESTERN_DIGITAL,
+        REMOVABLE_FLASH, ICON_STORAGE_REMOVABLE,
+        PHONE, ICON_STORAGE_PHONE,
+        WATCH, ICON_STORAGE_WATCH,
+        WATCH_GARMIN, ICON_STORAGE_WATCH_GARMIN,
+        CDROM, ICON_STORAGE_COMPACT_DISK
+    );
 
     private final FileSystemRoot fileSystemRoot;
 
@@ -125,7 +158,7 @@ public class FileRootStreamer extends FileParentStreamer {
     @Override
     public String getIconName() {
         return ofNullable(fileSystemRoot.getDevice())
-            .map(FileSystemDevice::getIconName)
+            .map(ICON_NAMES::get)
             .orElse(ICON_STORAGE_INTERNAL);
     }
 

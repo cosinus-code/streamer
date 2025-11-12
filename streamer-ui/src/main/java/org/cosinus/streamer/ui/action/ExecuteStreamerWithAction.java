@@ -17,6 +17,13 @@
 
 package org.cosinus.streamer.ui.action;
 
+import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
+import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
+import static org.cosinus.swing.image.icon.IconSize.X32;
+
+import java.io.File;
+import java.nio.file.Path;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.menu.ExecuteStreamerModel;
 import org.cosinus.streamer.ui.view.StreamerView;
@@ -25,17 +32,10 @@ import org.cosinus.swing.action.ActionContext;
 import org.cosinus.swing.action.ActionInContext;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.exec.ProcessExecutor;
-import org.cosinus.swing.file.Application;
+import org.cosinus.swing.file.FileCompatibleApplications;
 import org.cosinus.swing.file.FileSystem;
+import org.cosinus.swing.image.icon.IconProvider;
 import org.springframework.stereotype.Component;
-
-import java.io.File;
-import java.nio.file.Path;
-import java.util.Map;
-
-import static java.util.Optional.ofNullable;
-import static java.util.function.Predicate.not;
-import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 
 @Component
 public class ExecuteStreamerWithAction implements ActionInContext {
@@ -52,14 +52,18 @@ public class ExecuteStreamerWithAction implements ActionInContext {
 
     private final DialogHandler dialogHandler;
 
+    private final IconProvider iconProvider;
+
     public ExecuteStreamerWithAction(final StreamerViewHandler streamerViewHandler,
                                      final FileSystem fileSystem,
                                      final ProcessExecutor processExecutor,
-                                     final DialogHandler dialogHandler) {
+                                     final DialogHandler dialogHandler,
+                                     final IconProvider iconProvider) {
         this.streamerViewHandler = streamerViewHandler;
         this.fileSystem = fileSystem;
         this.processExecutor = processExecutor;
         this.dialogHandler = dialogHandler;
+        this.iconProvider = iconProvider;
     }
 
     @Override
@@ -77,19 +81,26 @@ public class ExecuteStreamerWithAction implements ActionInContext {
     }
 
     public void openFile(final File file) {
-        Map<String, Application> compatibleApplicationsMap = fileSystem.findCompatibleApplicationsToExecuteFile(file);
+        FileCompatibleApplications compatibleApplicationsMap =
+            fileSystem.findCompatibleApplicationsToExecuteFile(file);
         if (compatibleApplicationsMap.isEmpty()) {
             dialogHandler.showInfo("No compatible applications found.");
             return;
         }
 
-        String defaultApplicationId = fileSystem.getDefaultApplicationIdToExecuteFile(file);
+        compatibleApplicationsMap
+            .values()
+            .forEach(application -> ofNullable(application.getIconName())
+                .flatMap(name -> iconProvider.findIconByName(name, X32))
+                .ifPresent(application::setIcon));
+
         ExecuteStreamerModel executeStreamerModel = new ExecuteStreamerModel(
             compatibleApplicationsMap.values(),
-            compatibleApplicationsMap.get(defaultApplicationId));
+            compatibleApplicationsMap.getDefaultApplication());
 
         dialogHandler
-            .showDialog(() -> dialogHandler.createDialog(applicationFrame, OPEN_WITH_DIALOG, executeStreamerModel))
+            .showDialog(() -> dialogHandler.createDialog(applicationFrame, OPEN_WITH_DIALOG,
+                executeStreamerModel))
             .response()
             .map(ExecuteStreamerModel::getSelectedApplication)
             .ifPresent(application -> {

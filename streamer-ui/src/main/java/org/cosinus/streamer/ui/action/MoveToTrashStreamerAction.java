@@ -30,6 +30,7 @@ import javax.swing.*;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_DELETE;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_MOVE_TO_TRASH;
 
 /**
  * Rename streamer action
@@ -62,7 +63,7 @@ public class MoveToTrashStreamerAction extends DeleteStreamerAction {
 
     @Override
     public String getIconName() {
-        return "user-trash";
+        return ICON_MOVE_TO_TRASH;
     }
 
     @Override
