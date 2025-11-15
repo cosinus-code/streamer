@@ -21,7 +21,7 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.error.SaveStreamerException;
 import org.cosinus.streamer.api.remote.RemoteParentStreamer;
 import org.cosinus.streamer.google.drive.connection.GoogleDriveConnection;
-import org.cosinus.swing.mimetype.MimeTypeResolver;
+import org.cosinus.swing.file.mimetype.MimeTypeResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.file.Path;
