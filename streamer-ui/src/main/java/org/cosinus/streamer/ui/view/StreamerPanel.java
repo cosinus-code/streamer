@@ -24,6 +24,7 @@ import org.cosinus.swing.form.control.NoBorderButton;
 import org.cosinus.swing.form.control.TextField;
 import org.cosinus.swing.format.FormatHandler;
 import org.cosinus.swing.image.icon.IconHandler;
+import org.cosinus.swing.image.icon.IconInitializer;
 import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.translate.Translator;
 import org.cosinus.swing.ui.ApplicationUIHandler;
@@ -40,8 +41,8 @@ import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.action.FindAndLoadStreamerAction.findAndLoadStreamer;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.ADDRESS_TOP;
 import static org.cosinus.swing.border.Borders.emptyBorder;
-import static org.cosinus.swing.color.SystemColor.*;
-import static org.cosinus.swing.image.icon.IconSize.X16;
+import static org.cosinus.swing.color.SystemColor.MENUITEM_FOREGROUND;
+import static org.cosinus.swing.color.SystemColor.TEXT_PANE_SELECTION_BACKGROUND;
 
 public class StreamerPanel extends Panel {
 
@@ -67,6 +68,9 @@ public class StreamerPanel extends Panel {
 
     @Autowired
     private MenuHandler menuHandler;
+
+    @Autowired
+    private IconInitializer iconInitializer;
 
     private final TextField addressTop;
 
@@ -94,45 +98,52 @@ public class StreamerPanel extends Panel {
     public void initComponents() {
         super.initComponents();
 
-        addressTop.setUI(new BasicTextFieldUI());
-        addressTop.setFont(uiHandler.getLabelFont());
-        addressTop.setBorder(emptyBorder(3, 5, 3, 5));
-        addressTop.setOpaque(false);
-        addressTop.setFont(addressTop.getFont().deriveFont(BOLD));
-        addressTop.addAction(findAndLoadStreamer(addressTop::getText));
-
-        freeSpaceLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        uiHandler.getInactiveForegroundColor()
-            .ifPresent(freeSpaceLabel::setForeground);
         freeSpaceLabel.setVisible(false);
+
+        addressTop.addAction(findAndLoadStreamer(addressTop::getText));
 
         showViewsButton = new NoBorderButton("⏷", this::showViewsSelector);
         addAsFavoriteButton = new NoBorderButton("★", this::addCurrentAddressAsFavorite);
         showFavoritesButton = new NoBorderButton("⏷", this::showFavoritesSelector);
         showFavoritesButton.setToolTipText(translator.translate("show-favorite-addresses"));
 
-        JPanel freesSpacePanel = new JPanel(new BorderLayout(5, 5));
+        Panel freesSpacePanel = new Panel(new BorderLayout(5, 5));
         freesSpacePanel.setBorder(emptyBorder(3, 5, 3, 3));
         freesSpacePanel.add(showViewsButton, WEST);
         freesSpacePanel.add(freeSpaceLabel, CENTER);
         freesSpacePanel.add(freeSpaceMarker, EAST);
         freesSpacePanel.setOpaque(false);
 
-        JPanel favoritesPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        Panel favoritesPanel = new Panel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         favoritesPanel.add(addAsFavoriteButton);
         favoritesPanel.add(showFavoritesButton);
 
-        JPanel addressTopPanel = new JPanel(new BorderLayout());
+        Panel addressTopPanel = new Panel(new BorderLayout());
         addressTopPanel.add(addressTop, CENTER);
         addressTopPanel.add(favoritesPanel, EAST);
 
-        JPanel topPanel = new JPanel(new BorderLayout());
+        Panel topPanel = new Panel(new BorderLayout());
         topPanel.add(freesSpacePanel, NORTH);
         if (preferences.booleanPreference(ADDRESS_TOP)) {
             topPanel.add(addressTopPanel, SOUTH);
         }
 
         add(topPanel, NORTH);
+    }
+
+    @Override
+    public void updateForm() {
+        super.updateForm();
+
+        freeSpaceLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        addressTop.setUI(new BasicTextFieldUI());
+        addressTop.setBorder(emptyBorder(3, 5, 3, 5));
+        addressTop.setOpaque(false);
+        addressTop.setFont(freeSpaceLabel.getFont().deriveFont(BOLD));
+        addressTop.setForeground(freeSpaceLabel.getForeground());
+
+        setAddress(addressTop.getText());
     }
 
     private void addCurrentAddressAsFavorite() {
@@ -177,12 +188,14 @@ public class StreamerPanel extends Panel {
 
         this.view = view;
         this.view.initComponents();
+        this.view.triggerFormUpdate();
 
-        showViewsButton.setIcon(ofNullable(view.getName())
+        ofNullable(view.getName())
             .flatMap(View::findByName)
             .map(View::getIconName)
-            .flatMap(iconName -> iconHandler.findIconByName(iconName, X16))
-            .orElse(null));
+                .ifPresent(showViewsButton::setIconName);
+        iconInitializer.updateIcon(showViewsButton);
+
         revalidate();
     }
 

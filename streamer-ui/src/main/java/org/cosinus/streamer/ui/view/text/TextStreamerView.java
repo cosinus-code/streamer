@@ -22,6 +22,7 @@ import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.FindPanel;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
+import org.cosinus.swing.form.ScrollPane;
 
 import javax.swing.*;
 import java.awt.*;
@@ -57,7 +58,7 @@ public class TextStreamerView extends StreamerView<String, String> {
     public void initComponents() {
         super.initComponents();
 
-        JScrollPane scroll = new JScrollPane();
+        ScrollPane scroll = new ScrollPane();
         scroll.setViewportView(textEditor);
         ofNullable(textEditor.getBackground())
             .map(Color::getRGB)

@@ -19,7 +19,7 @@ package org.cosinus.streamer.ui.view.table.details;
 import org.cosinus.streamer.ui.view.table.TableCellRenderer;
 import org.cosinus.streamer.ui.view.table.ViewItem;
 import org.cosinus.swing.format.FormatHandler;
-import org.cosinus.swing.image.icon.IconSize;
+import org.cosinus.swing.icon.IconSize;
 import org.cosinus.swing.text.HtmlText;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,8 +31,8 @@ import java.util.Objects;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 import static org.cosinus.swing.border.Borders.emptyBorder;
-import static org.cosinus.swing.image.icon.IconSize.X16;
-import static org.cosinus.swing.image.icon.IconSize.X32;
+import static org.cosinus.swing.icon.IconSize.X16;
+import static org.cosinus.swing.icon.IconSize.X32;
 
 public class DetailsCellRenderer extends TableCellRenderer<DetailsTable> {
 

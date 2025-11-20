@@ -25,7 +25,7 @@ import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.dialog.DialogOption;
 import org.cosinus.swing.format.FormatHandler;
 import org.cosinus.swing.image.icon.IconHandler;
-import org.cosinus.swing.image.icon.IconSize;
+import org.cosinus.swing.icon.IconSize;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 

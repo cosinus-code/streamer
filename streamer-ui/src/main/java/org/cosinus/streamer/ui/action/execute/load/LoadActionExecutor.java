@@ -93,7 +93,7 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
             return;
         }
 
-        StreamerView<T, T> streamerViewToLoadTo = streamerViewHandler.getStreamerView(
+        StreamerView<T, T> streamerViewToLoadTo = streamerViewHandler.createStreamerView(
             actionModel.getLocationToLoadTo(),
             ofNullable(actionModel.getStreamerViewNameToLoadIn())
                 .filter(viewName -> !streamerToLoad.isTextCompatible() || TEXT_EDITOR.equals(viewName))

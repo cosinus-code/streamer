@@ -1,7 +1,8 @@
 {
   "menu-streamer": {
     "menu-streamer-quit": {
-      "shortcut": "alt F4"
+      "shortcut": "alt F4",
+      "hideOnMac": true
     }
   },
   "menu-edit": {

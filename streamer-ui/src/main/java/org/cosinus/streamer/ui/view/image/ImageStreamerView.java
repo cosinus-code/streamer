@@ -25,6 +25,7 @@ import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.ActionController;
+import org.cosinus.swing.form.ScrollPane;
 import org.cosinus.swing.image.UpdatableImage;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -84,7 +85,7 @@ public class ImageStreamerView extends StreamerView<byte[], UpdatableImage> {
         imagePanel = new ImagePanel(this);
         imagePanel.initHeaderPopup();
 
-        JScrollPane scroll = new JScrollPane();
+        ScrollPane scroll = new ScrollPane();
         scroll.setViewportView(imagePanel);
         streamerViewMainPanel.add(scroll, CENTER);
 

@@ -4,6 +4,7 @@ swing:
     icon: streamer.png
   ui:
     initializer: true
+    listener: false
 
 spring:
   cache:

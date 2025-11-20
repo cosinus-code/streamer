@@ -18,7 +18,7 @@ package org.cosinus.streamer.ui.view.table.icon;
 
 import org.cosinus.streamer.ui.view.table.ViewItem;
 import org.cosinus.swing.form.Panel;
-import org.cosinus.swing.image.icon.IconSize;
+import org.cosinus.swing.icon.IconSize;
 import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.text.WrappedText;
 import org.cosinus.swing.text.TextWrapper;
@@ -31,7 +31,7 @@ import static org.cosinus.streamer.ui.preference.StreamerPreferences.ICON_SIZE;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.PREVIEW;
 import static org.cosinus.streamer.ui.view.table.icon.IconTable.PREVIEW_CELL_SIZE;
 import static org.cosinus.swing.border.Borders.emptyBorder;
-import static org.cosinus.swing.image.icon.IconSize.X32;
+import static org.cosinus.swing.icon.IconSize.X32;
 
 public class IconCellPanel extends Panel {
 

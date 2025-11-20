@@ -17,13 +17,6 @@
 
 package org.cosinus.streamer.ui.action;
 
-import static java.util.Optional.ofNullable;
-import static java.util.function.Predicate.not;
-import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
-import static org.cosinus.swing.image.icon.IconSize.X32;
-
-import java.io.File;
-import java.nio.file.Path;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.menu.ExecuteStreamerModel;
 import org.cosinus.streamer.ui.view.StreamerView;
@@ -34,8 +27,15 @@ import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.exec.ProcessExecutor;
 import org.cosinus.swing.file.FileCompatibleApplications;
 import org.cosinus.swing.file.FileSystem;
-import org.cosinus.swing.image.icon.IconProvider;
+import org.cosinus.swing.image.icon.IconInitializer;
 import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.nio.file.Path;
+
+import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
+import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 
 @Component
 public class ExecuteStreamerWithAction implements ActionInContext {
@@ -52,18 +52,18 @@ public class ExecuteStreamerWithAction implements ActionInContext {
 
     private final DialogHandler dialogHandler;
 
-    private final IconProvider iconProvider;
+    private final IconInitializer iconInitializer;
 
     public ExecuteStreamerWithAction(final StreamerViewHandler streamerViewHandler,
                                      final FileSystem fileSystem,
                                      final ProcessExecutor processExecutor,
                                      final DialogHandler dialogHandler,
-                                     final IconProvider iconProvider) {
+                                     final IconInitializer iconInitializer) {
         this.streamerViewHandler = streamerViewHandler;
         this.fileSystem = fileSystem;
         this.processExecutor = processExecutor;
         this.dialogHandler = dialogHandler;
-        this.iconProvider = iconProvider;
+        this.iconInitializer = iconInitializer;
     }
 
     @Override
@@ -90,9 +90,7 @@ public class ExecuteStreamerWithAction implements ActionInContext {
 
         compatibleApplicationsMap
             .values()
-            .forEach(application -> ofNullable(application.getIconName())
-                .flatMap(name -> iconProvider.findIconByName(name, X32))
-                .ifPresent(application::setIcon));
+            .forEach(iconInitializer::updateIcon);
 
         ExecuteStreamerModel executeStreamerModel = new ExecuteStreamerModel(
             compatibleApplicationsMap.values(),

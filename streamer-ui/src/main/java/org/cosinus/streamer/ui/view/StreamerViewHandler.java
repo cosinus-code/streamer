@@ -16,7 +16,6 @@
 
 package org.cosinus.streamer.ui.view;
 
-import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.view.table.grid.GridViewCreator;
 import org.cosinus.swing.preference.Preference;
@@ -92,7 +91,7 @@ public class StreamerViewHandler {
             .ifPresent(view -> view.setActive(location == currentLocation)));
     }
 
-    public <T, V> StreamerView<T, V> getStreamerView(PanelLocation location, String streamerViewName) {
+    public <T, V> StreamerView<T, V> createStreamerView(PanelLocation location, String streamerViewName) {
         Optional<String> resolvedViewName = ofNullable(streamerViewName)
             .filter(viewName -> !viewName.equals(FOLDER_VIEW_ID))
             .or(() -> getPreferredViewName(location));
@@ -124,7 +123,8 @@ public class StreamerViewHandler {
         StreamerPanel panel = new StreamerPanel();
         panelsMap.put(location, panel);
         panel.initComponents();
-        panel.setView(getStreamerView(location, null));
+        //TODO: the creation of the view can be skipped here, and let the load action to create it
+        panel.setView(createStreamerView(location, null));
         return panel;
     }
 

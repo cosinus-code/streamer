@@ -27,7 +27,7 @@ import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 import static org.cosinus.swing.border.Borders.emptyBorder;
-import static org.cosinus.swing.image.icon.IconSize.X16;
+import static org.cosinus.swing.icon.IconSize.X16;
 
 public class GridCellRenderer extends TableCellRenderer<GridTable> {
 
@@ -45,7 +45,7 @@ public class GridCellRenderer extends TableCellRenderer<GridTable> {
                                       int row,
                                       int column) {
 
-        setBorder(CELL_BORDER);
+        //setBorder(CELL_BORDER);
 
         label.setText(item.isTopItem() ?
             item.toString() :

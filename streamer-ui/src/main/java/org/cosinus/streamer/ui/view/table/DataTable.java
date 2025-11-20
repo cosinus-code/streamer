@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.ui.view.table;
 
+import org.cosinus.stream.swing.ExtendedContainer;
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.menu.MenuHandler;
@@ -54,7 +55,7 @@ import static org.cosinus.streamer.ui.action.GoToLinkedStreamerAction.GO_TO_LINK
 import static org.cosinus.streamer.ui.action.MoveToTrashStreamerAction.MOVE_TO_TRASH_STREAMER_ACTION_NAME;
 import static org.cosinus.streamer.ui.menu.MenuHandler.SEPARATOR;
 
-public abstract class DataTable<T extends Streamable> extends Table implements FocusListener {
+public abstract class DataTable<T extends Streamable> extends Table implements FocusListener, ExtendedContainer {
 
     public static final int FIND_STREAMER_SPEED = 500;
 
@@ -94,9 +95,6 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
 
         setModel(model);
 
-        setBorder(null);
-        setShowHorizontalLines(false);
-        setShowVerticalLines(false);
         setRowSelectionAllowed(true);
         setColumnSelectionAllowed(false);
         setRowMargin(0);
@@ -130,6 +128,19 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
                 requestFocus();
             }
         });
+    }
+
+    @Override
+    public Stream<Component> streamAdditionalContainers() {
+        return Stream.of(popupContextMenu);
+    }
+
+    public void updateForm() {
+        super.updateForm();
+
+        setBorder(null);
+        setShowHorizontalLines(false);
+        setShowVerticalLines(false);
     }
 
     @Override
@@ -308,9 +319,6 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
             .filter(i -> name.equals(items.get(i).getName()))
             .findFirst()
             .ifPresent(index -> setCurrentIndex(index, true));
-    }
-
-    public void updateForm() {
     }
 
     public void reset(final Streamer<T> parentStreamer) {

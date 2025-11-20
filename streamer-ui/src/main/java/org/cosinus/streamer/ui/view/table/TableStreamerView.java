@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.ui.view.table;
 
+import org.cosinus.stream.swing.ExtendedContainer;
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
@@ -23,23 +24,25 @@ import org.cosinus.streamer.ui.menu.MenuHandler;
 import org.cosinus.streamer.ui.view.DefaultStreamerView;
 import org.cosinus.streamer.ui.view.FindPanel;
 import org.cosinus.streamer.ui.view.PanelLocation;
+import org.cosinus.swing.form.ScrollPane;
 import org.cosinus.swing.menu.PopupMenu;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.lang.Math.max;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.action.CreateStreamerAction.CREATE_STREAMER_ACTION_ID;
 
-public abstract class TableStreamerView<T extends Streamable> extends DefaultStreamerView<T> {
+public abstract class TableStreamerView<T extends Streamable>
+    extends DefaultStreamerView<T> implements ExtendedContainer {
 
     public static final String STATUS_ITEMS_COUNT_KEY = "status-items-count";
     public static final String STATUS_SELECTED_ITEMS_COUNT_KEY = "status-selected-items-count";
@@ -49,7 +52,7 @@ public abstract class TableStreamerView<T extends Streamable> extends DefaultStr
 
     protected DataTable<T> table;
 
-    private JScrollPane scroll;
+    private ScrollPane scroll;
 
     protected PopupMenu popupContextMenu;
 
@@ -63,14 +66,10 @@ public abstract class TableStreamerView<T extends Streamable> extends DefaultStr
         table.init(this);
         table.initComponents();
 
-        scroll = new JScrollPane();
+        scroll = new ScrollPane();
         scroll.setEnabled(false);
         scroll.setViewportView(table);
         scroll.setFocusable(false);
-        ofNullable(table.getBackground())
-            .map(Color::getRGB)
-            .map(Color::new)
-            .ifPresent(scroll.getViewport()::setBackground);
         scroll.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -139,7 +138,17 @@ public abstract class TableStreamerView<T extends Streamable> extends DefaultStr
     @Override
     public void updateForm() {
         super.updateForm();
+
+        ofNullable(table.getBackground())
+            .map(Color::getRGB)
+            .map(Color::new)
+            .ifPresent(scroll.getViewport()::setBackground);
         table.updateForm();
+    }
+
+    @Override
+    public Stream<Component> streamAdditionalContainers() {
+        return Stream.of(alternativeViewsPopup, popupContextMenu);
     }
 
     @Override

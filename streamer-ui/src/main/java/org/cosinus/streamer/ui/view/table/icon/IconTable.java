@@ -26,7 +26,7 @@ import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.ui.view.table.DataTable;
 import org.cosinus.streamer.ui.view.table.DataTableModel;
 import org.cosinus.swing.error.ErrorHandler;
-import org.cosinus.swing.image.icon.IconSize;
+import org.cosinus.swing.icon.IconSize;
 import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ import javax.swing.table.TableColumnModel;
 
 import static java.util.stream.IntStream.range;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.*;
-import static org.cosinus.swing.image.icon.IconSize.X32;
+import static org.cosinus.swing.icon.IconSize.X32;
 import static org.cosinus.swing.math.MoreMath.divideAndFloor;
 
 public class IconTable<T extends Streamable> extends DataTable<T> {

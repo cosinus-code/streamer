@@ -31,14 +31,13 @@ import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.form.Panel;
 import org.cosinus.swing.form.control.Label;
-import org.cosinus.swing.image.icon.IconHandler;
+import org.cosinus.swing.image.icon.IconInitializer;
 import org.cosinus.swing.menu.PopupMenu;
 import org.cosinus.swing.menu.RadioButtonMenuItem;
 import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -51,7 +50,6 @@ import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_STATUS
 import static org.cosinus.streamer.ui.view.View.findByName;
 import static org.cosinus.streamer.ui.view.text.TextStreamerView.DIRTY_TEXT_MARKER;
 import static org.cosinus.swing.border.Borders.emptyBorder;
-import static org.cosinus.swing.image.icon.IconSize.X16;
 
 public abstract class StreamerView<T, V> extends Panel implements WorkerListener<LoadWorkerModel<T, V>, V> {
 
@@ -73,9 +71,6 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
     protected ChangeViewAction changeViewAction;
 
     @Autowired
-    protected IconHandler iconHandler;
-
-    @Autowired
     protected AddressBar addressBar;
 
     @Autowired
@@ -87,11 +82,14 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
     @Autowired
     protected Translator translator;
 
+    @Autowired
+    protected IconInitializer iconInitializer;
+
     protected final String id;
 
     protected final PanelLocation location;
 
-    protected final JPanel streamerViewMainPanel;
+    protected final Panel streamerViewMainPanel;
 
     protected FindPanel findPanel;
 
@@ -99,7 +97,7 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
 
     protected Streamer<T> parentStreamer;
 
-    private PopupMenu alternativeViewsPopup;
+    protected PopupMenu alternativeViewsPopup;
 
     private Label statusBar;
 
@@ -107,7 +105,7 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
         this.id = UUID.randomUUID().toString();
         this.location = location;
 
-        streamerViewMainPanel = new JPanel(new BorderLayout());
+        streamerViewMainPanel = new Panel(new BorderLayout());
         setLayout(new BorderLayout());
     }
 
@@ -136,8 +134,8 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
             viewKey(viewName));
         findByName(viewName)
             .map(View::getIconName)
-            .flatMap(iconName -> iconHandler.findIconByName(iconName, X16))
-            .ifPresent(menuItem::setIcon);
+            .ifPresent(menuItem::setIconName);
+        iconInitializer.updateIcon(menuItem);
         return menuItem;
     }
 
@@ -157,9 +155,6 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
 
     public String getId() {
         return id;
-    }
-
-    public void updateForm() {
     }
 
     protected LoadingProgress createLoadingIndicator() {
@@ -192,8 +187,6 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
         } else {
             add(loadingIndicator, SOUTH);
         }
-
-        updateForm();
     }
 
 
