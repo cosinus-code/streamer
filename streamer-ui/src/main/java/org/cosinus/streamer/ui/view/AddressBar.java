@@ -40,6 +40,14 @@ public class AddressBar extends Panel {
 
     private TextField addressField;
 
+    private Panel addressPanel;
+
+    private SimpleButton backButton;
+
+    private SimpleButton nextButton;
+
+    private SimpleButton upButton;
+
     public AddressBar(final ApplicationUIHandler uiHandler,
                       final ActionController actionController) {
         this.uiHandler = uiHandler;
@@ -50,33 +58,16 @@ public class AddressBar extends Panel {
     public void initComponents() {
         addressField = new TextField();
 
-        SimpleButton backButton = new SimpleButton(ICON_BACK, "<");
-        SimpleButton nextButton = new SimpleButton(ICON_NEXT, ">");
-        SimpleButton upButton = new SimpleButton(ICON_UP, "Λ");
-
-        Dimension addressDimension = new Dimension(32, 32);
-        backButton.setPreferredSize(addressDimension);
-        nextButton.setPreferredSize(addressDimension);
-        upButton.setPreferredSize(addressDimension);
+        backButton = new SimpleButton(ICON_BACK, "<");
+        nextButton = new SimpleButton(ICON_NEXT, ">");
+        upButton = new SimpleButton(ICON_UP, "Λ");
 
         upButton.addAction(() -> actionController.runAction(GO_TO_PARENT_ACTION));
         addressField.addAction(findAndLoadStreamer(addressField::getText));
 
-        backButton.setFocusable(false);
-        nextButton.setFocusable(false);
-        upButton.setFocusable(false);
+        SpringGridLayout layout = new SpringGridLayout(this, 1, 4, 1, 3, 1, 3);
 
-        SpringGridLayout layout = new SpringGridLayout(this,
-            1, 4,
-            1, 3,
-            1, 3);
-
-        setOpaque(true);
-        setBackground(uiHandler.getControlColor());
-
-        Panel addressPanel = new Panel(new BorderLayout());
-        addressPanel.setPreferredSize(addressDimension);
-        addressPanel.setBorder(emptyBorder(2, 1, 2, 3));
+        addressPanel = new Panel(new BorderLayout());
         addressPanel.add(addressField);
 
         setLayout(layout);
@@ -84,10 +75,31 @@ public class AddressBar extends Panel {
         add(nextButton);
         add(upButton);
         add(addressPanel);
+
         layout.pack();
     }
 
     public void setAddress(String address) {
         addressField.setText(address);
+    }
+
+    @Override
+    public void updateForm() {
+        super.updateForm();
+
+        setOpaque(true);
+        setBackground(uiHandler.getControlColor());
+
+        Dimension addressDimension = new Dimension(32, 32);
+        backButton.setPreferredSize(addressDimension);
+        nextButton.setPreferredSize(addressDimension);
+        upButton.setPreferredSize(addressDimension);
+
+        backButton.setFocusable(false);
+        nextButton.setFocusable(false);
+        upButton.setFocusable(false);
+
+        addressPanel.setPreferredSize(addressDimension);
+        addressPanel.setBorder(emptyBorder(2, 1, 2, 3));
     }
 }
