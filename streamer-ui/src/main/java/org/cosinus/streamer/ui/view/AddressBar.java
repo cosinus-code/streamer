@@ -20,8 +20,6 @@ import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.form.Panel;
 import org.cosinus.swing.form.control.SimpleButton;
 import org.cosinus.swing.form.control.TextField;
-import org.cosinus.swing.image.icon.IconHandler;
-import org.cosinus.swing.image.icon.IconInitializer;
 import org.cosinus.swing.layout.SpringGridLayout;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.stereotype.Component;
@@ -36,24 +34,16 @@ import static org.cosinus.swing.image.icon.IconProvider.*;
 @Component
 public class AddressBar extends Panel {
 
-    private final IconHandler iconHandler;
-
     private final ApplicationUIHandler uiHandler;
 
     private final ActionController actionController;
 
-    private final IconInitializer iconInitializer;
-
     private TextField addressField;
 
-    public AddressBar(final IconHandler iconHandler,
-                      final ApplicationUIHandler uiHandler,
-                      final ActionController actionController,
-                      final IconInitializer iconInitializer) {
-        this.iconHandler = iconHandler;
+    public AddressBar(final ApplicationUIHandler uiHandler,
+                      final ActionController actionController) {
         this.uiHandler = uiHandler;
         this.actionController = actionController;
-        this.iconInitializer = iconInitializer;
     }
 
     @Override
@@ -63,8 +53,6 @@ public class AddressBar extends Panel {
         SimpleButton backButton = new SimpleButton(ICON_BACK, "<");
         SimpleButton nextButton = new SimpleButton(ICON_NEXT, ">");
         SimpleButton upButton = new SimpleButton(ICON_UP, "Λ");
-
-        iconInitializer.updateIcon(backButton, nextButton, upButton);
 
         Dimension addressDimension = new Dimension(32, 32);
         backButton.setPreferredSize(addressDimension);
