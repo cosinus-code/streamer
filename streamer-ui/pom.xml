@@ -20,7 +20,7 @@
     <properties>
         <application.display.name>Streamer</application.display.name>
         <application.name>streamer</application.name>
-        <application.category>Accessories</application.category>
+        <application.category>Administration</application.category>
         <application.icon.name>streamer.png</application.icon.name>
         <application.icns.name>streamer.icns</application.icns.name>
         <application.class>org.cosinus.streamer.ui.app.StreamerApplication</application.class>
@@ -170,10 +170,9 @@
                                 </goals>
                                 <configuration>
                                     <mainClass>org.springframework.boot.loader.launch.JarLauncher</mainClass>
-                                    <name>${application.display.name}</name>
+                                    <name>${application.name}</name>
                                     <organizationName>${organization.name}</organizationName>
                                     <displayName>${application.display.name}</displayName>
-                                    <envPath>${application.home.env.name}</envPath>
                                     <bundleJre>false</bundleJre>
                                     <runnableJar>${project.basedir}/target/${application.name}.jar</runnableJar>
                                     <generateInstaller>true</generateInstaller>
@@ -181,6 +180,7 @@
                                     <platform>auto</platform>
                                     <additionalResources>
                                         <additionalResource>src/main/resources/image/${application.splash.file.name}</additionalResource>
+                                        <additionalResource>src/main/resources/image/${application.icon.name}</additionalResource>
 Ω                                    </additionalResources>
                                     <vmArgs>
                                         <vmArg>-Dswing.aatext=true</vmArg>
@@ -194,9 +194,6 @@
                                         <generateDeb>true</generateDeb>
                                         <generateRpm>false</generateRpm>
                                         <wrapJar>false</wrapJar>
-                                        <categories>
-                                            <category>${application.category}</category>
-                                        </categories>
                                     </linuxConfig>
                                     <macConfig>
                                         <appId>${application.name}</appId>
@@ -212,7 +209,7 @@
                                         <infoPlist>
                                             <additionalEntries>
                                                 <![CDATA[
-                                            <key>JVMArguments</key>
+                                            <key>Arguments</key>
                                             <array>
                                                 <string>-splash-progress</string>
                                                 <string>-splash-progress-color=50,167,237</string>
