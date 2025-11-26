@@ -23,7 +23,6 @@ import org.cosinus.swing.form.ProgressBar;
 import org.cosinus.swing.form.control.NoBorderButton;
 import org.cosinus.swing.form.control.TextField;
 import org.cosinus.swing.format.FormatHandler;
-import org.cosinus.swing.image.icon.IconInitializer;
 import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.translate.Translator;
 import org.cosinus.swing.ui.ApplicationUIHandler;
@@ -64,9 +63,6 @@ public class StreamerPanel extends Panel {
 
     @Autowired
     private MenuHandler menuHandler;
-
-    @Autowired
-    private IconInitializer iconInitializer;
 
     private final TextField addressTop;
 
@@ -190,7 +186,6 @@ public class StreamerPanel extends Panel {
             .flatMap(View::findByName)
             .map(View::getIconName)
             .ifPresent(showViewsButton::setIconName);
-        iconInitializer.updateIcon(showViewsButton);
 
         revalidate();
     }
