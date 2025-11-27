@@ -17,8 +17,8 @@
 package org.cosinus.streamer.ui.action.execute.move;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.worker.SimpleWorker;
-import org.cosinus.streamer.api.worker.WorkerListenerHandler;
+import org.cosinus.swing.worker.SimpleWorker;
+import org.cosinus.swing.worker.WorkerListenerHandler;
 import org.cosinus.streamer.ui.action.execute.copy.AbstractCopyWorkerExecutor;
 import org.cosinus.streamer.ui.action.execute.copy.CopyProgressModel;
 import org.cosinus.streamer.ui.action.execute.copy.CopyWorker;

@@ -16,10 +16,10 @@
 package org.cosinus.streamer.ui.action.execute.find;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.worker.Worker;
-import org.cosinus.streamer.api.worker.WorkerExecutor;
-import org.cosinus.streamer.api.worker.WorkerListener;
-import org.cosinus.streamer.api.worker.WorkerListenerHandler;
+import org.cosinus.swing.worker.Worker;
+import org.cosinus.swing.worker.WorkerExecutor;
+import org.cosinus.swing.worker.WorkerListener;
+import org.cosinus.swing.worker.WorkerListenerHandler;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.springframework.stereotype.Component;

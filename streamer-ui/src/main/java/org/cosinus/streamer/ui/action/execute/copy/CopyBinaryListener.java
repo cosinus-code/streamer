@@ -17,7 +17,7 @@ package org.cosinus.streamer.ui.action.execute.copy;
 
 import org.cosinus.stream.pipeline.PipelineListener;
 import org.cosinus.streamer.api.BinaryStreamer;
-import org.cosinus.streamer.api.worker.SimpleWorker;
+import org.cosinus.swing.worker.SimpleWorker;
 
 public class CopyBinaryListener implements PipelineListener<byte[]> {
 

@@ -15,7 +15,7 @@
  */
 package org.cosinus.streamer.ui.action.execute.compute;
 
-import org.cosinus.streamer.api.worker.*;
+import org.cosinus.swing.worker.*;
 import org.springframework.stereotype.Component;
 
 import static org.cosinus.streamer.ui.action.ComputeStreamerSizeAction.COMPUTE_STREAMER_SIZE_ACTION_ID;

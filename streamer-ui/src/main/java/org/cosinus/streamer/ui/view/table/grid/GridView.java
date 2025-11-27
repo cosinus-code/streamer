@@ -18,7 +18,7 @@ package org.cosinus.streamer.ui.view.table.grid;
 
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
-import org.cosinus.streamer.api.worker.WorkerListener;
+import org.cosinus.swing.worker.WorkerListener;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerEditor;
 import org.cosinus.streamer.ui.view.table.DataTable;

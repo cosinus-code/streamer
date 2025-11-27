@@ -18,8 +18,8 @@ package org.cosinus.streamer.ui.action.execute.compute;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerSizeHandler;
-import org.cosinus.streamer.api.worker.Worker;
-import org.cosinus.streamer.api.worker.WorkerModel;
+import org.cosinus.swing.worker.Worker;
+import org.cosinus.swing.worker.WorkerModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static java.util.Optional.ofNullable;

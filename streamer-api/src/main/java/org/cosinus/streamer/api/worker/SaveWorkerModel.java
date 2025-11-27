@@ -16,6 +16,7 @@
 package org.cosinus.streamer.api.worker;
 
 import org.cosinus.stream.consumer.StreamConsumer;
+import org.cosinus.swing.worker.WorkerModel;
 
 import java.util.stream.Stream;
 

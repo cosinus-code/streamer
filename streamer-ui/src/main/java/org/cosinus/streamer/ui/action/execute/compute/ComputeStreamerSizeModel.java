@@ -16,7 +16,7 @@
 package org.cosinus.streamer.ui.action.execute.compute;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.worker.WorkerModel;
+import org.cosinus.swing.worker.WorkerModel;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.execute.ActionModel;
 import org.springframework.beans.factory.annotation.Autowired;

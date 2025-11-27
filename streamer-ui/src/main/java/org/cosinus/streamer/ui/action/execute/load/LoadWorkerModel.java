@@ -16,10 +16,7 @@
 
 package org.cosinus.streamer.ui.action.execute.load;
 
-import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.worker.WorkerModel;
-
-import static java.util.Optional.ofNullable;
+import org.cosinus.swing.worker.WorkerModel;
 
 public interface LoadWorkerModel<T, V> extends WorkerModel<V> {
 

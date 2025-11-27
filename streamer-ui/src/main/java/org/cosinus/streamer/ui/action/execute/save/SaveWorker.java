@@ -18,7 +18,7 @@ package org.cosinus.streamer.ui.action.execute.save;
 import org.cosinus.stream.consumer.StreamConsumer;
 import org.cosinus.stream.pipeline.PipelineListener;
 import org.cosinus.stream.pipeline.PipelineStrategy;
-import org.cosinus.streamer.api.worker.DirectPipelineWorker;
+import org.cosinus.swing.worker.DirectPipelineWorker;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
 
 import java.util.stream.Stream;

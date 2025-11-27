@@ -16,8 +16,8 @@
 
 package org.cosinus.streamer.ui.dialog;
 
-import org.cosinus.streamer.api.worker.WorkerListener;
-import org.cosinus.streamer.api.worker.WorkerModel;
+import org.cosinus.swing.worker.WorkerListener;
+import org.cosinus.swing.worker.WorkerModel;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.action.execute.ActionModel;
 import org.cosinus.swing.format.FormatHandler;

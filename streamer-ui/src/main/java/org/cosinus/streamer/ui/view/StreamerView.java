@@ -21,7 +21,7 @@ import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
-import org.cosinus.streamer.api.worker.WorkerListener;
+import org.cosinus.swing.worker.WorkerListener;
 import org.cosinus.streamer.ui.action.ChangeViewAction;
 import org.cosinus.streamer.ui.action.ChangeViewActionContext;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;

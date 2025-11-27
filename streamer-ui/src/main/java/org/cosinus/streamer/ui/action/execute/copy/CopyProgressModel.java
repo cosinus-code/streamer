@@ -17,7 +17,7 @@
 package org.cosinus.streamer.ui.action.execute.copy;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.worker.WorkerModel;
+import org.cosinus.swing.worker.WorkerModel;
 import org.cosinus.streamer.ui.action.progress.ProgressModel;
 
 import java.util.List;

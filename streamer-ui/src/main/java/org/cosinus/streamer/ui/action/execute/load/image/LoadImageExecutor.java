@@ -16,10 +16,10 @@
 
 package org.cosinus.streamer.ui.action.execute.load.image;
 
-import org.cosinus.streamer.api.worker.Worker;
-import org.cosinus.streamer.api.worker.WorkerExecutor;
-import org.cosinus.streamer.api.worker.WorkerListener;
-import org.cosinus.streamer.api.worker.WorkerListenerHandler;
+import org.cosinus.swing.worker.Worker;
+import org.cosinus.swing.worker.WorkerExecutor;
+import org.cosinus.swing.worker.WorkerListener;
+import org.cosinus.swing.worker.WorkerListenerHandler;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.swing.image.UpdatableImage;
 import org.springframework.stereotype.Component;
