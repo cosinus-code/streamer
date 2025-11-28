@@ -53,6 +53,7 @@ public class LoadWorker<T> extends DirectPipelineWorker<LoadWorkerModel<T>, T> i
     @Override
     public void beforePipelineOpen() {
         streamerViewToLoadTo.reset(streamerToLoad);
+        streamerViewToLoadTo.triggerFormUpdate();
     }
 
     @Override

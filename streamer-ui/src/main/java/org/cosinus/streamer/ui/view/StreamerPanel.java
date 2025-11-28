@@ -180,7 +180,6 @@ public class StreamerPanel extends Panel {
 
         this.view = view;
         this.view.initComponents();
-        this.view.triggerFormUpdate();
 
         ofNullable(view.getName())
             .flatMap(View::findByName)
