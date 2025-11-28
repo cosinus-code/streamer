@@ -64,9 +64,4 @@ public class LoadWorker<T> extends DirectPipelineWorker<LoadWorkerModel<T>, T> i
     public PipelineListener<T> getPipelineListener() {
         return this;
     }
-
-    @Override
-    protected StreamConsumer<T> streamConsumer() {
-        return null;
-    }
 }

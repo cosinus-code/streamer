@@ -24,6 +24,7 @@ import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import java.util.stream.Stream;
 
 public class SaveWorker<T> extends DirectPipelineWorker<SaveWorkerModel<T>, T> {
+
     private StreamConsumer<T> streamConsumer;
 
     public SaveWorker(final SaveActionModel<?> actionModel, final SaveWorkerModel<T> workerModel) {
