@@ -18,7 +18,7 @@ package org.cosinus.streamer.ui.action.execute.load;
 
 import org.cosinus.swing.worker.WorkerModel;
 
-public interface LoadWorkerModel<T, V> extends WorkerModel<V> {
+public interface LoadWorkerModel<V> extends WorkerModel<V> {
 
     default String getContentIdentifier() {
         return null;

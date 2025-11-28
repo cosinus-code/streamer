@@ -34,7 +34,7 @@ import static java.util.function.Predicate.not;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_HIDDEN;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.TOP_VISIBLE;
 
-public abstract class DataTableModel<T extends Streamable> extends TableModel implements LoadWorkerModel<T, T> {
+public abstract class DataTableModel<T extends Streamable> extends TableModel implements LoadWorkerModel<T> {
 
     private static final Logger LOG = LogManager.getLogger(DataTableModel.class);
 

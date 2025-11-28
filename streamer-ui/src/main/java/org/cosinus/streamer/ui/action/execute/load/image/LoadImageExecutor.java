@@ -28,7 +28,7 @@ import static org.cosinus.streamer.ui.action.execute.load.image.LoadImageActionM
 
 @Component
 public class LoadImageExecutor
-    extends WorkerExecutor<LoadImageActionModel, LoadWorkerModel<byte[], UpdatableImage>, UpdatableImage> {
+    extends WorkerExecutor<LoadImageActionModel, LoadWorkerModel<UpdatableImage>, UpdatableImage> {
 
     protected LoadImageExecutor(final WorkerListenerHandler workerListenerHandler) {
         super(workerListenerHandler);
@@ -40,13 +40,13 @@ public class LoadImageExecutor
     }
 
     @Override
-    protected WorkerListener<LoadWorkerModel<byte[], UpdatableImage>, UpdatableImage>
+    protected WorkerListener<LoadWorkerModel<UpdatableImage>, UpdatableImage>
     createWorkerListener(LoadImageActionModel actionModel) {
         return actionModel.getImageStreamerView();
     }
 
     @Override
-    protected Worker<LoadWorkerModel<byte[], UpdatableImage>, UpdatableImage>
+    protected Worker<LoadWorkerModel<UpdatableImage>, UpdatableImage>
     createWorker(LoadImageActionModel actionModel) {
         return new LoadImageWorker(actionModel);
     }

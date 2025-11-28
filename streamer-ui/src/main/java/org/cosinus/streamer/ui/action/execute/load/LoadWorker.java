@@ -29,7 +29,7 @@ import java.util.stream.Stream;
 /**
  * {@link javax.swing.SwingWorker} for loading a streamer
  */
-public class LoadWorker<T> extends DirectPipelineWorker<LoadWorkerModel<T, T>, T> implements PipelineListener<T> {
+public class LoadWorker<T> extends DirectPipelineWorker<LoadWorkerModel<T>, T> implements PipelineListener<T> {
 
     private final Streamer<T> streamerToLoad;
 

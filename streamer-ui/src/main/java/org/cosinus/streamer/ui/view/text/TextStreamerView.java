@@ -115,7 +115,7 @@ public class TextStreamerView extends StreamerView<String, String> {
     }
 
     @Override
-    public LoadWorkerModel<String, String> getLoadWorkerModel() {
+    public LoadWorkerModel<String> getLoadWorkerModel() {
         return textEditor;
     }
 
@@ -125,14 +125,14 @@ public class TextStreamerView extends StreamerView<String, String> {
     }
 
     @Override
-    public void workerStarted(LoadWorkerModel<String, String> loadWorkerModel) {
+    public void workerStarted(LoadWorkerModel<String> loadWorkerModel) {
         super.workerStarted(loadWorkerModel);
         textEditor.setDirty(false);
         textEditor.setLoading(true);
     }
 
     @Override
-    public void workerFinished(LoadWorkerModel<String, String> loadWorkerModel) {
+    public void workerFinished(LoadWorkerModel<String> loadWorkerModel) {
         super.workerFinished(loadWorkerModel);
         textEditor.setCaretPosition(0);
         textEditor.requestFocus();

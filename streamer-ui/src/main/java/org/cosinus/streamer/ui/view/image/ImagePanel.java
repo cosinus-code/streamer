@@ -49,7 +49,7 @@ import static org.cosinus.streamer.ui.action.MoveToTrashStreamerAction.MOVE_TO_T
 import static org.cosinus.streamer.ui.menu.MenuHandler.SEPARATOR;
 import static org.cosinus.swing.image.ImageSettings.*;
 
-public class ImagePanel extends Panel implements LoadWorkerModel<byte[], UpdatableImage>, ActionListener {
+public class ImagePanel extends Panel implements LoadWorkerModel<UpdatableImage>, ActionListener {
 
     public static final String IMAGE_SETTINGS_SPEED = "image-settings-speed";
     public static final String IMAGE_SETTINGS_QUALITY = "image-settings-quality";

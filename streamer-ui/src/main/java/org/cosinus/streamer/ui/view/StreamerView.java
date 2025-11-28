@@ -51,7 +51,7 @@ import static org.cosinus.streamer.ui.view.View.findByName;
 import static org.cosinus.streamer.ui.view.text.TextStreamerView.DIRTY_TEXT_MARKER;
 import static org.cosinus.swing.border.Borders.emptyBorder;
 
-public abstract class StreamerView<T, V> extends Panel implements WorkerListener<LoadWorkerModel<T, V>, V> {
+public abstract class StreamerView<T, V> extends Panel implements WorkerListener<LoadWorkerModel<V>, V> {
 
     private static final Logger LOG = LogManager.getLogger(StreamerView.class);
 
@@ -218,7 +218,7 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
     }
 
     @Override
-    public void workerStarted(LoadWorkerModel<T, V> loadWorkerModel) {
+    public void workerStarted(LoadWorkerModel<V> loadWorkerModel) {
         try {
             loadingIndicator.startLoading(loadWorkerModel.getTotalSizeToLoad());
         } catch (Exception ex) {
@@ -228,13 +228,13 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
     }
 
     @Override
-    public void workerUpdated(LoadWorkerModel<T, V> loadWorkerModel) {
+    public void workerUpdated(LoadWorkerModel<V> loadWorkerModel) {
         loadingIndicator.updateLoading(loadWorkerModel.getLoadedSize(), loadWorkerModel.getTotalSizeToLoad());
         updateStatus();
     }
 
     @Override
-    public void workerFinished(LoadWorkerModel<T, V> loadWorkerModel) {
+    public void workerFinished(LoadWorkerModel<V> loadWorkerModel) {
         loadingIndicator.finishLoading();
         updateAddressBarAndStreamerPanel();
 
@@ -346,7 +346,7 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
 
     public abstract String getNextItemIdentifier();
 
-    public abstract LoadWorkerModel<T, V> getLoadWorkerModel();
+    public abstract LoadWorkerModel<V> getLoadWorkerModel();
 
     protected abstract Container getContainer();
 }

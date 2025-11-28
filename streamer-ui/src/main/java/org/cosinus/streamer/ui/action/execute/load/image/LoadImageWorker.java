@@ -35,7 +35,7 @@ import java.io.UncheckedIOException;
 
 import static org.cosinus.swing.format.FormatHandler.MEGA_INT;
 
-public class LoadImageWorker extends Worker<LoadWorkerModel<byte[], UpdatableImage>, UpdatableImage>
+public class LoadImageWorker extends Worker<LoadWorkerModel<UpdatableImage>, UpdatableImage>
     implements BinaryPipeline, PipelineListener<byte[]>, BinaryPipelineStrategy {
 
     public static final int IMAGE_LOAD_RATE = 3 * MEGA_INT;

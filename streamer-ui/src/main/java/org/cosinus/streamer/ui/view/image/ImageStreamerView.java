@@ -152,7 +152,7 @@ public class ImageStreamerView extends StreamerView<byte[], UpdatableImage> {
     }
 
     @Override
-    public LoadWorkerModel<byte[], UpdatableImage> getLoadWorkerModel() {
+    public LoadWorkerModel<UpdatableImage> getLoadWorkerModel() {
         return imagePanel;
     }
 
@@ -175,13 +175,13 @@ public class ImageStreamerView extends StreamerView<byte[], UpdatableImage> {
     }
 
     @Override
-    public void workerUpdated(LoadWorkerModel<byte[], UpdatableImage> loadWorkerModel) {
+    public void workerUpdated(LoadWorkerModel<UpdatableImage> loadWorkerModel) {
         super.workerUpdated(loadWorkerModel);
         imagePanel.repaint();
     }
 
     @Override
-    public void workerFinished(LoadWorkerModel<byte[], UpdatableImage> loadWorkerModel) {
+    public void workerFinished(LoadWorkerModel<UpdatableImage> loadWorkerModel) {
         super.workerFinished(loadWorkerModel);
         imagePanel.finish();
     }
