@@ -16,11 +16,13 @@
 
 package org.cosinus.streamer.google.drive;
 
+import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.meta.MainStreamer;
 import org.cosinus.streamer.api.meta.RootStreamer;
 import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.streamer.google.drive.connection.GoogleDriveUsersProvider;
+import org.cosinus.streamer.google.drive.model.GoogleDriveShareHandler;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -28,23 +30,35 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
+import static java.util.stream.Stream.concat;
 
 @RootStreamer("Google Drive")
 @GoogleDriveComponent
-public class GoogleDriveMainStreamer extends MainStreamer<GoogleDriveUserStreamer> {
+public class GoogleDriveMainStreamer extends MainStreamer<ParentStreamer<? extends GoogleDriveStreamer<?>>> {
 
     public static final String DRIVE_PROTOCOL = "drive://";
 
     private final List<String> googleDriveUserIds;
 
+    private final GoogleDriveSharesStreamer googleDriveSharesStreamer;
+
     private List<TranslatableName> detailNames;
 
-    public GoogleDriveMainStreamer(final GoogleDriveUsersProvider googleDriveUsersProvider) {
+    public GoogleDriveMainStreamer(final GoogleDriveUsersProvider googleDriveUsersProvider,
+                                   final GoogleDriveShareHandler shareProvider) {
         this.googleDriveUserIds = googleDriveUsersProvider.getGoogleDriveUserIds();
+        this.googleDriveSharesStreamer = new GoogleDriveSharesStreamer(this, shareProvider);
     }
 
     @Override
-    public Stream<GoogleDriveUserStreamer> stream() {
+    public Stream<ParentStreamer<? extends GoogleDriveStreamer<?>>> stream() {
+        return concat(
+            streamGoogleDriveUsers(),
+            Stream.of(googleDriveSharesStreamer)
+        );
+    }
+
+    public Stream<GoogleDriveUserStreamer> streamGoogleDriveUsers() {
         return googleDriveUserIds
             .stream()
             .map(GoogleDriveUserStreamer::new);

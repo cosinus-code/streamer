@@ -71,4 +71,8 @@ public class GoogleDriveUserStreamer extends GoogleDriveParentStreamer {
             );
         }
     }
+
+    public File findFileById(String fileId) {
+        return getFromRemote(connection -> connection.findFilesById(fileId));
+    }
 }

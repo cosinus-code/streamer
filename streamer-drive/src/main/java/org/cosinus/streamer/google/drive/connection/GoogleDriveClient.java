@@ -27,7 +27,6 @@ import com.google.api.services.drive.model.FileList;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
 
 import static org.cosinus.streamer.google.drive.connection.CreateResumableFileUpload.UPLOAD_URL;
 
@@ -54,7 +53,7 @@ public class GoogleDriveClient extends Drive {
         try {
             super.initialize(httpClientRequest);
         } catch (IOException e) {
-            throw new UncheckedIOException(e);
+            throw new GoogleDriveException(e);
         }
     }
 
@@ -108,7 +107,7 @@ public class GoogleDriveClient extends Drive {
                 HttpRequest request = getRequestFactory().buildPutRequest(uploadUrl, content);
                 return new FileUploadRequest(request, fileToUpdate, bytes.length);
             } catch (IOException e) {
-                throw new UncheckedIOException(e);
+                throw new GoogleDriveException(e);
             }
         }
 
@@ -139,11 +138,23 @@ public class GoogleDriveClient extends Drive {
             }
 
             @Override
+            public GoogleDriveList setSupportsAllDrives(Boolean supportsAllDrives) {
+                super.setSupportsAllDrives(supportsAllDrives);
+                return this;
+            }
+
+            @Override
+            public GoogleDriveList setIncludeItemsFromAllDrives(Boolean includeItemsFromAllDrives) {
+                super.setIncludeItemsFromAllDrives(includeItemsFromAllDrives);
+                return this;
+            }
+
+            @Override
             public FileList execute() {
                 try {
                     return super.execute();
                 } catch (IOException e) {
-                    throw new UncheckedIOException(e);
+                    throw new GoogleDriveException(e);
                 }
             }
         }
@@ -161,11 +172,18 @@ public class GoogleDriveClient extends Drive {
             }
 
             @Override
+            public GoogleDriveGet setSupportsAllDrives(Boolean supportsAllDrives) {
+                super.setSupportsAllDrives(supportsAllDrives);
+                return this;
+            }
+
+
+            @Override
             public InputStream executeMediaAsInputStream() {
                 try {
                     return super.executeMediaAsInputStream();
                 } catch (IOException e) {
-                    throw new UncheckedIOException(e);
+                    throw new GoogleDriveException(e);
                 }
             }
 
@@ -174,7 +192,7 @@ public class GoogleDriveClient extends Drive {
                 try {
                     return super.execute();
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    throw new GoogleDriveException(e);
                 }
             }
         }
@@ -200,7 +218,7 @@ public class GoogleDriveClient extends Drive {
                 try {
                     return super.execute();
                 } catch (IOException e) {
-                    throw new UncheckedIOException(e);
+                    throw new GoogleDriveException(e);
                 }
             }
         }
@@ -216,7 +234,7 @@ public class GoogleDriveClient extends Drive {
                 try {
                     return super.execute();
                 } catch (IOException e) {
-                    throw new UncheckedIOException(e);
+                    throw new GoogleDriveException(e);
                 }
             }
         }
@@ -232,7 +250,7 @@ public class GoogleDriveClient extends Drive {
                 try {
                     return super.execute();
                 } catch (IOException e) {
-                    throw new UncheckedIOException(e);
+                    throw new GoogleDriveException(e);
                 }
             }
         }
@@ -259,7 +277,7 @@ public class GoogleDriveClient extends Drive {
                 try {
                     return super.execute();
                 } catch (IOException e) {
-                    throw new UncheckedIOException(e);
+                    throw new GoogleDriveException(e);
                 }
             }
         }

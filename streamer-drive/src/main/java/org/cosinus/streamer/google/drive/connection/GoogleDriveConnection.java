@@ -21,6 +21,7 @@ import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInsta
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.services.drive.model.About.StorageQuota;
 import com.google.api.services.drive.model.File;
+import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.api.remote.Connection;
@@ -67,9 +68,9 @@ public class GoogleDriveConnection implements Connection<File> {
 
     public static final String FILES_FIELDS = "files(%s)".formatted(FILE_FIELDS);
 
-    public static final String QUERY_FOR_PARENT = "parents in '%s'";
+    public static final String QUERY_FOR_PARENT = "'%s' in parents";
 
-    public static final String QUERY_FOR_NAME = "name = '%s'";
+    public static final String QUERY_BY_NAME = "name = '%s'";
 
     public static final String QUERY_NO_TRASH = "trashed = false";
 
@@ -87,6 +88,7 @@ public class GoogleDriveConnection implements Connection<File> {
 
     private final NetHttpTransport httpTransport;
 
+    @Getter
     private final String userId;
 
     private GoogleDriveClient client;
@@ -142,10 +144,6 @@ public class GoogleDriveConnection implements Connection<File> {
         return userId;
     }
 
-    public String getUserId() {
-        return userId;
-    }
-
     public StorageQuota storageQuota() {
         return client
             .about()
@@ -161,6 +159,8 @@ public class GoogleDriveConnection implements Connection<File> {
             .files()
             .list()
             .setSpaces(DRIVE)
+            .setSupportsAllDrives(true)
+            .setIncludeItemsFromAllDrives(true)
             .setQ(query)
             .setFields(FILES_FIELDS)
             .execute()
@@ -196,7 +196,7 @@ public class GoogleDriveConnection implements Connection<File> {
 
         boolean isFileCorrespondingToPath = isFileCorrespondingToPath(parentFile, parentPath);
         if (isFileCorrespondingToPath) {
-            cache.cacheFile(path, file);
+            cache.cacheFile(path, populateFile(file));
         }
         return isFileCorrespondingToPath;
     }
@@ -216,11 +216,12 @@ public class GoogleDriveConnection implements Connection<File> {
     }
 
     public File findFilesById(String fileId) {
-            return populateFile(client
-                .files()
-                .get(fileId)
-                .setFields(FILE_FIELDS)
-                .execute());
+        return client
+            .files()
+            .get(fileId)
+            .setFields(FILE_FIELDS)
+            .setSupportsAllDrives(true)
+            .execute();
     }
 
     public List<File> findFilesByName(String fileName) {
@@ -228,7 +229,7 @@ public class GoogleDriveConnection implements Connection<File> {
             .files()
             .list()
             .setSpaces(DRIVE)
-            .setQ(QUERY_FOR_NAME.formatted(fileName))
+            .setQ(QUERY_BY_NAME.formatted(fileName))
             .setFields(FILES_FIELDS)
             .execute()
             .getFiles();

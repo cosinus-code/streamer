@@ -48,11 +48,6 @@ public class MetaStreamer implements ParentStreamer<MainStreamer> {
     }
 
     @Override
-    public boolean exists() {
-        return true;
-    }
-
-    @Override
     public boolean canRead() {
         return false;
     }
@@ -80,16 +75,6 @@ public class MetaStreamer implements ParentStreamer<MainStreamer> {
     @Override
     public Stream<MainStreamer> flatStream(StreamerFilter streamerFilter) {
         return null;
-    }
-
-    @Override
-    public long getFreeSpace() {
-        return 0;
-    }
-
-    @Override
-    public long getTotalSpace() {
-        return 0;
     }
 
     @Override

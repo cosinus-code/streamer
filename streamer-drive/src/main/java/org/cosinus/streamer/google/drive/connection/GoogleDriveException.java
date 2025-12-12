@@ -17,9 +17,13 @@
 
 package org.cosinus.streamer.google.drive.connection;
 
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import org.apache.http.client.HttpResponseException;
 import org.cosinus.streamer.api.error.StreamerException;
 
 public class GoogleDriveException extends StreamerException {
+
+    private GoogleJsonResponseException googleJsonResponseException;
 
     public GoogleDriveException(String message) {
         super(message);
@@ -31,5 +35,20 @@ public class GoogleDriveException extends StreamerException {
 
     public GoogleDriveException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    public GoogleDriveException(Throwable cause) {
+        super(cause.getMessage(), cause);
+        if (cause instanceof GoogleJsonResponseException responseException) {
+            this.googleJsonResponseException = responseException;
+        }
+    }
+
+    public GoogleJsonResponseException getGoogleJsonResponseException() {
+        return googleJsonResponseException;
+    }
+
+    public int getStatusCode() {
+        return googleJsonResponseException.getStatusCode();
     }
 }

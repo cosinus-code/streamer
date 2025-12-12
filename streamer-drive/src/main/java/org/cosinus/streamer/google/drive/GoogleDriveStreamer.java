@@ -18,21 +18,20 @@ package org.cosinus.streamer.google.drive;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.drive.model.File;
+import lombok.Getter;
+import lombok.Setter;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.file.BaseFileStreamer;
 import org.cosinus.streamer.api.remote.ConnectionPool;
 import org.cosinus.streamer.api.remote.RemoteStreamer;
-import org.cosinus.streamer.api.value.*;
 import org.cosinus.streamer.google.drive.connection.GoogleDriveCache;
 import org.cosinus.streamer.google.drive.connection.GoogleDriveConnection;
 import org.cosinus.streamer.google.drive.connection.GoogleDriveConnectionPool;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Objects;
 
-import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.google.drive.GoogleDriveMainStreamer.DRIVE_PROTOCOL;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
@@ -49,8 +48,10 @@ public abstract class GoogleDriveStreamer<T> extends BaseFileStreamer<T> impleme
 
     protected final Path path;
 
+    @Getter
     protected final String userId;
 
+    @Setter
     protected boolean exists = true;
 
     public GoogleDriveStreamer(File file, Path path, String userId) {
@@ -60,6 +61,7 @@ public abstract class GoogleDriveStreamer<T> extends BaseFileStreamer<T> impleme
         this.userId = userId;
     }
 
+    @Override
     public String connectionId() {
         return userId;
     }
@@ -96,10 +98,6 @@ public abstract class GoogleDriveStreamer<T> extends BaseFileStreamer<T> impleme
     @Override
     public boolean exists() {
         return exists;
-    }
-
-    public void setExists(boolean exists) {
-        this.exists = exists;
     }
 
     @Override
