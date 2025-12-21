@@ -16,17 +16,18 @@
 
 package org.cosinus.streamer.ui.action.execute.copy;
 
+import lombok.Getter;
 import org.cosinus.stream.StreamingStrategy;
 import org.cosinus.stream.consumer.StreamConsumer;
 import org.cosinus.stream.error.AbortPipelineConsumeException;
-import org.cosinus.stream.pipeline.Pipeline;
 import org.cosinus.stream.pipeline.PipelineListener;
+import org.cosinus.stream.pipeline.PipelineStrategy;
 import org.cosinus.streamer.api.*;
-import org.cosinus.swing.error.AbortActionException;
 import org.cosinus.swing.error.ActionException;
-import org.cosinus.swing.worker.SimpleWorker;
-import org.cosinus.swing.worker.Worker;
 import org.cosinus.swing.format.FormatHandler;
+import org.cosinus.swing.worker.PipelineWorker;
+import org.cosinus.swing.worker.Worker;
+import org.cosinus.swing.worker.WorkerModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
@@ -36,13 +37,13 @@ import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
+import static org.cosinus.stream.FlatStreamingStrategy.IN_DEPTH;
 
 /**
  * {@link Worker} for copying streamers from a source parent streamer to target parent streamer
  */
 public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
-    extends SimpleWorker<CopyProgressModel>
-    implements Pipeline<S, Stream<S>, StreamConsumer<S>, CopyStrategy> {
+    extends PipelineWorker<WorkerModel<CopyWorkerUnit<S, T>>, CopyWorkerUnit<S, T>, CopyProgressModel<S>> {
 
     @Autowired
     protected FormatHandler formatHandler;
@@ -51,41 +52,24 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
 
     protected final ParentStreamer<T> destination;
 
+    @Getter
     protected final StreamerFilter streamerFilter;
 
     protected final CopyStrategy copyStrategy;
 
-    protected final OverallCopyListener overallCopyProgress;
-
     private final StreamingStrategy streamingStrategy;
 
-    protected long totalSize;
-
-    protected long totalItems;
-
     public CopyWorker(CopyActionModel<S, T> copyModel) {
-        super(copyModel, new CopyProgressModel());
+        this(copyModel, new CopyWorkerModel<>(copyModel.getStreamerViewTarget().getCopyWorkerModel()));
+    }
+
+    public CopyWorker(CopyActionModel<S, T> copyModel, WorkerModel<CopyWorkerUnit<S, T>> workerModel) {
+        super(copyModel, workerModel, new CopyProgressModel<>());
         this.source = copyModel.getSource();
         this.destination = copyModel.getDestination();
         this.streamerFilter = copyModel.getSourceFilter();
         this.copyStrategy = new CopyStrategy();
-        this.overallCopyProgress = createOverallCopyListener();
         this.streamingStrategy = new DefaultStreamingStrategy();
-    }
-
-    public StreamerFilter getStreamerFilter() {
-        return streamerFilter;
-    }
-
-    @Override
-    protected void doWork() {
-        try {
-            openPipeline();
-        } catch (AbortPipelineConsumeException ex) {
-            throw new AbortActionException("Copy pipeline aborted", ex);
-        } catch (IOException | UncheckedIOException ex) {
-            throw new ActionException(ex, "act_copy_error", source.getPath(), destination.getPath());
-        }
     }
 
     @Override
@@ -94,50 +78,45 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
     }
 
     @Override
-    public PipelineListener<S> getPipelineListener() {
-        return overallCopyProgress;
-    }
-
-    @Override
-    public void preparePipelineOpen(CopyStrategy pipelineStrategy,
-                                    PipelineListener<S> pipelineListener) {
-        try (Stream<S> flatStreamers = source.flatStream(streamingStrategy, streamerFilter)) {
+    public void preparePipelineOpen(final PipelineStrategy pipelineStrategy,
+                                    final PipelineListener<CopyWorkerUnit<S, T>> pipelineListener) {
+        try (Stream<S> flatStreamers = source.flatStream(IN_DEPTH, streamingStrategy, getStreamerFilter())) {
             flatStreamers
                 .filter(not(Streamer::isParent))
                 .mapToLong(Streamer::getSize)
-                .forEach(size -> {
-                    this.totalSize += size;
-                    pipelineListener.onPreparingPipeline(++this.totalItems);
-                });
+                .forEach(size -> updateProgress(progressModel -> {
+                    progressModel.addTotalProgress(size);
+                    progressModel.setTotalItems(progressModel.getTotalItems() + 1);
+                }));
         }
 
         long freeSpace = destination.getFreeSpace();
-        if (totalSize > freeSpace && !copyStrategy.shouldContinueWhenNotEnoughFreeSpace()) {
+        if (progressModel.getProgressPercent() > freeSpace && !copyStrategy.shouldContinueWhenNotEnoughFreeSpace()) {
             throw new AbortPipelineConsumeException("Not enough free space on destination: " +
                 formatHandler.formatMemorySize(freeSpace));
         }
     }
 
     @Override
-    public Stream<S> openPipelineInputStream(CopyStrategy pipelineStrategy) {
-        return source.flatStream(streamingStrategy, getStreamerFilter());
+    public Stream<CopyWorkerUnit<S, T>> openPipelineInputStream(PipelineStrategy pipelineStrategy) {
+        return source.flatStream(IN_DEPTH, streamingStrategy, getStreamerFilter())
+            .map(source -> new CopyWorkerUnit<>(source, targetStreamer(source)));
     }
 
     @Override
-    public StreamConsumer<S> openPipelineOutputStream(CopyStrategy pipelineStrategy) {
+    protected StreamConsumer<CopyWorkerUnit<S, T>> streamConsumer() {
         return this::copyStreamer;
     }
 
-    protected void copyStreamer(S streamerToCopy) {
-        copyStreamer(streamerToCopy, targetStreamer(streamerToCopy));
-    }
-
-    protected void copyStreamer(S streamerToCopy, T streamerToCopyTo) {
+    protected void copyStreamer(final CopyWorkerUnit<S, T> copyWorkerUnit) {
+        S streamerToCopy = copyWorkerUnit.source();
+        T streamerToCopyTo = copyWorkerUnit.target();
         BinaryStreamer binarySource = streamerToCopy.binaryStreamer();
         BinaryStreamer binaryTarget = streamerToCopyTo.binaryStreamer();
         if (binarySource != null && binaryTarget != null) {
             try {
-                new CopyBinaryPipeline(binarySource, binaryTarget, copyStrategy, this)
+                new CopyBinaryPipeline(binarySource, binaryTarget, copyStrategy,
+                    new CopyBinaryListener(binarySource, binaryTarget))
                     .openPipeline();
             } catch (IOException | UncheckedIOException ex) {
                 throw new ActionException(ex, "act_copy_error", binarySource.getPath(), binaryTarget.getPath());
@@ -147,16 +126,16 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
         }
     }
 
-    protected T targetStreamer(S streamerToCopy) {
+    protected T targetStreamer(final S streamerToCopy) {
         Path targetPath = getTargetPath(streamerToCopy);
         return destination.create(targetPath, streamerToCopy);
     }
 
-    protected Path getTargetPath(S streamerToCopy) {
+    protected Path getTargetPath(final S streamerToCopy) {
         return destination.getPath().resolve(getRelativePath(streamerToCopy));
     }
 
-    protected Path getRelativePath(Streamer<?> streamer) {
+    protected Path getRelativePath(final Streamer<?> streamer) {
         Path streamerPath = streamer.getPath();
         return streamerPath.subpath(ofNullable(source.getPath())
                 .filter(streamerPath::startsWith)
@@ -165,33 +144,47 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
             streamerPath.getNameCount());
     }
 
-    protected OverallCopyListener createOverallCopyListener() {
-        return new OverallCopyListener();
+    @Override
+    public void afterPipelineDataSkip(long skippedDataSize) {
+        updateProgress(progress -> {
+            progress.updateStreamerProgress(skippedDataSize);
+            progress.finishStreamerProgress();
+        });
     }
 
-    protected class OverallCopyListener implements PipelineListener<S> {
+    private class CopyBinaryListener implements PipelineListener<byte[]> {
 
-        @Override
-        public void onPreparingPipeline(long totalItems) {
-            updateModel(() -> workerModel.setTotalItems(totalItems));
+        private final BinaryStreamer source;
+
+        private final BinaryStreamer target;
+
+        public CopyBinaryListener(final BinaryStreamer source,
+                                  final BinaryStreamer target) {
+            this.source = source;
+            this.target = target;
         }
 
         @Override
         public void beforePipelineOpen() {
-            updateModel(() -> workerModel.startTotalProgress(totalSize));
+            updateProgress(progress -> progress.startStreamerProgress(source, target));
+        }
+
+        @Override
+        public void afterPipelineDataConsume(final byte[] bytes) {
+            updateProgress(progress -> progress.updateStreamerProgress(bytes.length));
         }
 
         @Override
         public void afterPipelineDataSkip(long skippedDataSize) {
-            updateModel(() -> {
-                workerModel.updateStreamerProgress(skippedDataSize);
-                workerModel.finishStreamerProgress();
-            });
+            CopyWorker.this.afterPipelineDataSkip(skippedDataSize);
         }
 
         @Override
         public void afterPipelineClose(boolean pipelineFailed) {
-            updateModel(workerModel::finishTotalProgress);
+            source.finalizeStreaming();
+            target.finalizeStreaming();
+            target.finalizeCopy(source);
+            updateProgress(CopyProgressModel::finishStreamerProgress);
         }
     }
 }

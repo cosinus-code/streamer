@@ -17,10 +17,11 @@ package org.cosinus.streamer.ui.action.execute.save;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
+import org.cosinus.swing.progress.ProgressListener;
+import org.cosinus.swing.progress.ProgressModel;
 import org.cosinus.swing.worker.Worker;
 import org.cosinus.swing.worker.WorkerExecutor;
 import org.cosinus.swing.worker.WorkerListener;
-import org.cosinus.swing.worker.WorkerListenerHandler;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.springframework.stereotype.Component;
 
@@ -28,11 +29,7 @@ import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.action.SaveAction.SAVE_ACTION_ID;
 
 @Component
-public class SaveWorkerExecutor<T> extends WorkerExecutor<SaveActionModel, SaveWorkerModel<T>, T> {
-
-    public SaveWorkerExecutor(final WorkerListenerHandler workerListenerHandler) {
-        super(workerListenerHandler);
-    }
+public class SaveWorkerExecutor<T> extends WorkerExecutor<SaveActionModel, SaveWorkerModel<T>, T, ProgressModel> {
 
     @Override
     public void execute(SaveActionModel actionModel) {
@@ -43,18 +40,23 @@ public class SaveWorkerExecutor<T> extends WorkerExecutor<SaveActionModel, SaveW
     }
 
     @Override
-    protected WorkerListener<SaveWorkerModel<T>, T> createWorkerListener(SaveActionModel actionModel) {
+    protected WorkerListener<SaveWorkerModel<T>, T> getWorkerListener(SaveActionModel actionModel) {
         return actionModel.getStreamerView().getSaveListener();
     }
 
     @Override
-    protected Worker<SaveWorkerModel<T>, T> createWorker(SaveActionModel actionModel) {
+    protected ProgressListener getProgressListener(SaveActionModel actionModel) {
+        return actionModel.getStreamerView().getLoadingIndicator();
+    }
+
+    @Override
+    protected Worker<SaveWorkerModel<T>, T, ProgressModel> createWorker(SaveActionModel actionModel) {
         Streamer<T> streamerToSave = actionModel.getStreamerView().getParentStreamer();
         StreamerView<T, T> streamerView = actionModel.getStreamerView();
 
         SaveWorkerModel<T> saveWorkerModel = (SaveWorkerModel<T>) streamerToSave.saveModel();
         if (saveWorkerModel == null && !streamerToSave.isParent()) {
-            saveWorkerModel = streamerView.getSaveModel();
+            saveWorkerModel = streamerView.getSaveWorkerModel();
         }
 
         return ofNullable(saveWorkerModel)

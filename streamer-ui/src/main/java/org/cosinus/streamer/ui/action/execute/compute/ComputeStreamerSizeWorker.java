@@ -18,6 +18,7 @@ package org.cosinus.streamer.ui.action.execute.compute;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerSizeHandler;
+import org.cosinus.swing.progress.ProgressModel;
 import org.cosinus.swing.worker.Worker;
 import org.cosinus.swing.worker.WorkerModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ import static java.util.Optional.ofNullable;
 /**
  * Worker for computing a streamer size
  */
-public class ComputeStreamerSizeWorker extends Worker<WorkerModel<Void>, Void> {
+public class ComputeStreamerSizeWorker extends Worker<WorkerModel<Void>, Void, ProgressModel> {
 
     private final Streamer<?> streamer;
 
@@ -35,7 +36,7 @@ public class ComputeStreamerSizeWorker extends Worker<WorkerModel<Void>, Void> {
     private StreamerSizeHandler streamerSizeHandler;
 
     public ComputeStreamerSizeWorker(final ComputeStreamerSizeModel actionModel) {
-        super(actionModel, actionModel);
+        super(actionModel, actionModel, new ProgressModel());
         this.streamer = actionModel.getStreamer();
     }
 

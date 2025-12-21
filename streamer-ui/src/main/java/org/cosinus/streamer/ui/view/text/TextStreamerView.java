@@ -148,7 +148,7 @@ public class TextStreamerView extends StreamerView<String, String> {
     }
 
     @Override
-    public SaveWorkerModel<String> getSaveModel() {
+    public SaveWorkerModel<String> getSaveWorkerModel() {
         return textEditor.getSaveWorkerModel();
     }
 

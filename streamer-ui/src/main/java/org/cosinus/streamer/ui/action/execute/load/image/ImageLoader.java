@@ -55,7 +55,7 @@ public class ImageLoader extends BinaryStreamConsumer {
     private void updateImage() {
         try {
             image.update(getImageBytes());
-            loadImageWorker.publishImage(image);
+            loadImageWorker.checkStatusAndPublish(image);
         } catch (IOException ex) {
             LOG.debug("Failed to load image ({}): {}", ex.getMessage(), streamerToLoad.getPath());
         }

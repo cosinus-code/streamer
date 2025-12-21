@@ -16,12 +16,9 @@
 
 package org.cosinus.streamer.ui.view;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
-import org.cosinus.swing.worker.WorkerListener;
 import org.cosinus.streamer.ui.action.ChangeViewAction;
 import org.cosinus.streamer.ui.action.ChangeViewActionContext;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
@@ -35,7 +32,10 @@ import org.cosinus.swing.image.icon.IconInitializer;
 import org.cosinus.swing.menu.PopupMenu;
 import org.cosinus.swing.menu.RadioButtonMenuItem;
 import org.cosinus.swing.preference.Preferences;
+import org.cosinus.swing.progress.CustomProgressBar;
 import org.cosinus.swing.translate.Translator;
+import org.cosinus.swing.worker.WorkerListener;
+import org.cosinus.swing.worker.WorkerModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
@@ -52,8 +52,6 @@ import static org.cosinus.streamer.ui.view.text.TextStreamerView.DIRTY_TEXT_MARK
 import static org.cosinus.swing.border.Borders.emptyBorder;
 
 public abstract class StreamerView<T, V> extends Panel implements WorkerListener<LoadWorkerModel<V>, V> {
-
-    private static final Logger LOG = LogManager.getLogger(StreamerView.class);
 
     @Autowired
     private Preferences preferences;
@@ -93,7 +91,7 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
 
     protected FindPanel findPanel;
 
-    protected LoadingProgress loadingIndicator;
+    protected CustomProgressBar loadingIndicator;
 
     protected Streamer<T> parentStreamer;
 
@@ -157,8 +155,8 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
         return id;
     }
 
-    protected LoadingProgress createLoadingIndicator() {
-        LoadingProgress loading = new LoadingProgress();
+    protected CustomProgressBar createLoadingIndicator() {
+        CustomProgressBar loading = new CustomProgressBar();
         loading.setIndeterminate(true);
         loading.setPreferredSize(new Dimension(getWidth(), 7));
         return loading;
@@ -213,29 +211,22 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
         return location;
     }
 
-    public LoadingProgress getLoadingIndicator() {
+    public CustomProgressBar getLoadingIndicator() {
         return loadingIndicator;
     }
 
     @Override
     public void workerStarted(LoadWorkerModel<V> loadWorkerModel) {
-        try {
-            loadingIndicator.startLoading(loadWorkerModel.getTotalSizeToLoad());
-        } catch (Exception ex) {
-            LOG.debug("Failed to start loading indicator", ex);
-        }
         requestFocus();
     }
 
     @Override
     public void workerUpdated(LoadWorkerModel<V> loadWorkerModel) {
-        loadingIndicator.updateLoading(loadWorkerModel.getLoadedSize(), loadWorkerModel.getTotalSizeToLoad());
         updateStatus();
     }
 
     @Override
     public void workerFinished(LoadWorkerModel<V> loadWorkerModel) {
-        loadingIndicator.finishLoading();
         updateAddressBarAndStreamerPanel();
 
         streamerViewStorage.saveLastLoadedStreamer(this.getParentStreamer(), getCurrentLocation());
@@ -318,8 +309,20 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
 
     }
 
-    public SaveWorkerModel<T> getSaveModel() {
+    public SaveWorkerModel<T> getSaveWorkerModel() {
         return null;
+    }
+
+    public WorkerModel<Streamer<T>> getDeleteWorkerModel() {
+        return null;
+    }
+
+    public WorkerModel<T> getCopyWorkerModel() {
+        return null;
+    }
+
+    public void fireContentChanged() {
+        repaint();
     }
 
     public <V> WorkerListener<SaveWorkerModel<V>, V> getSaveListener() {

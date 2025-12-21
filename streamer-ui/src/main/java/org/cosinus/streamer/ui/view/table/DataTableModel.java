@@ -24,6 +24,7 @@ import org.cosinus.streamer.api.search.SearchStreamer;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.swing.form.TableModel;
 import org.cosinus.swing.preference.Preferences;
+import org.cosinus.swing.worker.WorkerModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
@@ -38,11 +39,16 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
 
     private static final Logger LOG = LogManager.getLogger(DataTableModel.class);
 
+    @Autowired
+    protected Preferences preferences;
+
     protected final List<ViewItem> viewItems;
 
     private final ViewItemComparator comparator;
 
     protected final Map<String, T> streamableMap;
+
+    private final boolean showHidden;
 
     protected Streamer<T> parentStreamer;
 
@@ -50,13 +56,13 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
 
     private int currentIndex;
 
-    @Autowired
-    public Preferences preferences;
+    private boolean contentChanged;
 
     public DataTableModel() {
         this.comparator = new ViewItemComparator();
         this.viewItems = new ArrayList<>();
         this.streamableMap = new HashMap<>();
+        this.showHidden = preferences.booleanPreference(SHOW_HIDDEN);
     }
 
     public Streamer<T> getParentStreamer() {
@@ -184,13 +190,10 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
             //TODO: this is just an workaround
             return;
         }
-        boolean showHidden = preferences.booleanPreference(SHOW_HIDDEN);
         items
             .stream()
+            .map(this::toViewItem)
             .filter(Objects::nonNull)
-            .map(Streamable.class::cast)
-            .filter(streamable -> !streamable.isHidden() || showHidden)
-            .map(ViewItem::new)
             .forEach(this::addItem);
 
         viewItems.sort(comparator);
@@ -200,6 +203,13 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
         viewItems.add(viewItem);
         T streamer = (T) viewItem.getStreamable();
         streamableMap.put(viewItem.getId(), streamer);
+        contentChanged = true;
+    }
+
+    protected void removeItem(ViewItem viewItem) {
+        viewItems.remove(viewItem);
+        streamableMap.remove(viewItem.getId());
+        contentChanged = true;
     }
 
     @Override
@@ -237,6 +247,46 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
                 .filter(not(ViewItem::isTopItem))
                 .map(ViewItem::getName)
                 .orElseGet(parentStreamer::getName);
+    }
+
+    public WorkerModel<Streamer<T>> getDeleteWorkerModel() {
+        return items -> items
+            .stream()
+            .map(this::toViewItem)
+            .filter(Objects::nonNull)
+            .filter(viewItem -> streamableMap.containsKey(viewItem.getId()))
+            .forEach(this::removeItem);
+    }
+
+    public WorkerModel<T> getCopyWorkerModel() {
+        return items -> {
+            items
+                .stream()
+                .filter(streamable -> streamable.getPath().getParent().equals(parentStreamer.getPath()))
+                .map(this::toViewItem)
+                .filter(Objects::nonNull)
+                .filter(viewItem -> !streamableMap.containsKey(viewItem.getId()))
+                .forEach(this::addItem);
+
+            if (contentChanged) {
+                viewItems.sort(comparator);
+            }
+        };
+
+    }
+
+    private ViewItem toViewItem(Streamable streamer) {
+        return ofNullable(streamer)
+            .filter(streamable -> showHidden || !streamable.isHidden())
+            .map(ViewItem::new)
+            .orElse(null);
+    }
+
+    public void fireContentChanged() {
+        if (contentChanged) {
+            fireTableDataChanged();
+            contentChanged = false;
+        }
     }
 
     public abstract int getRowForIndex(int index);

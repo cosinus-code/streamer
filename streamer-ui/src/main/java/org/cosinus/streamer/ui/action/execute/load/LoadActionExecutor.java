@@ -18,8 +18,9 @@ package org.cosinus.streamer.ui.action.execute.load;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
+import org.cosinus.swing.progress.ProgressListener;
+import org.cosinus.swing.progress.ProgressModel;
 import org.cosinus.swing.worker.WorkerExecutor;
-import org.cosinus.swing.worker.WorkerListenerHandler;
 import org.cosinus.streamer.ui.action.execute.load.image.LoadImageActionModel;
 import org.cosinus.streamer.ui.action.execute.load.image.LoadImageExecutor;
 import org.cosinus.streamer.ui.action.execute.save.SaveActionModel;
@@ -46,7 +47,7 @@ import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
  * Implementation of {@link ActionExecutor} based on {@link LoadWorker}
  */
 @Component
-public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, LoadWorkerModel<T>, T> {
+public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, LoadWorkerModel<T>, T, ProgressModel> {
 
     private final StreamerViewHandler streamerViewHandler;
 
@@ -62,15 +63,13 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
 
     private final MimeTypeResolver mimeTypeResolver;
 
-    protected LoadActionExecutor(final WorkerListenerHandler workerListenerHandler,
-                                 final StreamerViewHandler streamerViewHandler,
+    protected LoadActionExecutor(final StreamerViewHandler streamerViewHandler,
                                  final BinaryExpanderHandler binaryExpanderHandler,
                                  final DialogHandler dialogHandler,
                                  final Translator translator,
                                  final SaveWorkerExecutor saveWorkerExecutor,
                                  final LoadImageExecutor loadImageExecutor,
                                  final MimeTypeResolver mimeTypeResolver) {
-        super(workerListenerHandler);
         this.streamerViewHandler = streamerViewHandler;
         this.binaryExpanderHandler = binaryExpanderHandler;
         this.dialogHandler = dialogHandler;
@@ -148,18 +147,27 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
     }
 
     @Override
-    protected StreamerView<T, T> createWorkerListener(LoadActionModel<T> actionModel) {
+    protected StreamerView<T, T> getWorkerListener(LoadActionModel<T> actionModel) {
         return actionModel.getStreamerViewToLoadTo();
+    }
+
+    @Override
+    protected ProgressListener getProgressListener(LoadActionModel<T> actionModel) {
+        return actionModel.getStreamerViewToLoadTo().getLoadingIndicator();
     }
 
 
     @Override
     protected LoadWorker<T> createWorker(LoadActionModel<T> actionModel) {
+        actionModel
+            .getStreamerViewToLoadTo()
+            .getLoadWorkerModel()
+            .setContentIdentifier(actionModel.getItemToSelectAfterLoad());
+
         return new LoadWorker<>(
             actionModel,
             actionModel.getStreamerToLoad(),
-            actionModel.getStreamerViewToLoadTo(),
-            actionModel.getItemToSelectAfterLoad());
+            actionModel.getStreamerViewToLoadTo());
     }
 
     @Override

@@ -141,14 +141,6 @@ public class StreamerViewHandler {
         return ofNullable(panelsMap.get(location));
     }
 
-    public void reloadViews() {
-        stream(PanelLocation.values())
-            .map(this::getView)
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .forEach(StreamerView::reload);
-    }
-
     public StreamerView getOppositeView() {
         return panelsMap.keySet()
             .stream()
@@ -163,5 +155,18 @@ public class StreamerViewHandler {
         return ofNullable(streamer.getViewId())
             .map(viewsMap::get)
             .orElseGet(Collections::emptyList);
+    }
+
+    public void reloadCurrentView() {
+        getCurrentView().reload();
+    }
+
+    public void reloadOppositeView() {
+        getOppositeView().reload();
+    }
+
+    public void reloadViews() {
+        reloadCurrentView();
+        reloadOppositeView();
     }
 }

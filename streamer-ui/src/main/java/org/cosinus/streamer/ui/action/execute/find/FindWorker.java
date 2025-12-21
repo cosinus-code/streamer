@@ -18,6 +18,7 @@ package org.cosinus.streamer.ui.action.execute.find;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
 import org.cosinus.streamer.api.meta.StreamerHandler;
+import org.cosinus.swing.progress.ProgressModel;
 import org.cosinus.swing.worker.Worker;
 import org.cosinus.streamer.ui.view.StreamerViewStorage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 
-public class FindWorker extends Worker<FindWorkerModel, Streamer<?>> {
+public class FindWorker extends Worker<FindWorkerModel, Streamer<?>, ProgressModel> {
 
     @Autowired
     private StreamerViewStorage streamerViewStorage;
@@ -42,14 +43,12 @@ public class FindWorker extends Worker<FindWorkerModel, Streamer<?>> {
     private final FindActionModel findActionModel;
 
     protected FindWorker(final FindActionModel findActionModel) {
-        super(findActionModel, new FindWorkerModel());
+        super(findActionModel, new FindWorkerModel(), new ProgressModel());
         this.findActionModel = findActionModel;
     }
 
     @Override
     protected void doWork() {
-        checkWorkerStatus();
-
         Streamer<?> streamer = findStreamer()
             .map(binaryExpanderHandler::expandStreamer)
             .orElse(null);

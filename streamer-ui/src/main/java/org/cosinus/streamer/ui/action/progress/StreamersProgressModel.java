@@ -16,7 +16,10 @@
 
 package org.cosinus.streamer.ui.action.progress;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.swing.progress.ProgressModel;
 import org.cosinus.swing.worker.WorkerModel;
 
 import java.util.List;
@@ -24,49 +27,10 @@ import java.util.List;
 /**
  * Model for a progress over multiple streamers
  */
-public class StreamersProgressModel implements WorkerModel<StreamersProgressModel> {
-    private final ProgressModel simpleProgressMode;
+@Setter
+@Getter
+public class StreamersProgressModel extends ProgressModel {
 
     private Streamer<?> currentStreamer;
 
-    public StreamersProgressModel() {
-        this.simpleProgressMode = new ProgressModel();
-    }
-
-    public void updateProgress(Streamer<?> streamer) {
-        simpleProgressMode.addProgress(1);
-        this.currentStreamer = streamer;
-    }
-
-    public Streamer<?> getCurrentStreamer() {
-        return currentStreamer;
-    }
-
-    public long getProgressDone() {
-        return simpleProgressMode.getProgressDone();
-    }
-
-    public int getProgress() {
-        return simpleProgressMode.getProgressPercent();
-    }
-
-    public void setProgressTotalSize(long totalProgressSize) {
-        simpleProgressMode.setProgressTotalSize(totalProgressSize);
-    }
-
-    public long getProgressTotalSize() {
-        return simpleProgressMode.getProgressTotalSize();
-    }
-
-    public void startProgress(long totalProgressSize) {
-        simpleProgressMode.startProgress(totalProgressSize);
-    }
-
-    public void finishProgress() {
-        simpleProgressMode.finishProgress();
-    }
-
-    @Override
-    public void update(List<StreamersProgressModel> items) {
-    }
 }

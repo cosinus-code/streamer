@@ -16,19 +16,17 @@
 package org.cosinus.streamer.ui.action.execute.save;
 
 import org.cosinus.stream.consumer.StreamConsumer;
-import org.cosinus.stream.pipeline.PipelineListener;
 import org.cosinus.stream.pipeline.PipelineStrategy;
-import org.cosinus.swing.worker.DirectPipelineWorker;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
+import org.cosinus.swing.progress.ProgressModel;
+import org.cosinus.swing.worker.PipelineWorker;
 
 import java.util.stream.Stream;
 
-public class SaveWorker<T> extends DirectPipelineWorker<SaveWorkerModel<T>, T> {
-
-    private StreamConsumer<T> streamConsumer;
+public class SaveWorker<T> extends PipelineWorker<SaveWorkerModel<T>, T, ProgressModel> {
 
     public SaveWorker(final SaveActionModel<?> actionModel, final SaveWorkerModel<T> workerModel) {
-        super(actionModel, workerModel);
+        super(actionModel, workerModel, new ProgressModel());
     }
 
     @Override
@@ -38,21 +36,6 @@ public class SaveWorker<T> extends DirectPipelineWorker<SaveWorkerModel<T>, T> {
 
     @Override
     protected StreamConsumer<T> streamConsumer() {
-        if (streamConsumer == null) {
-            streamConsumer = workerModel.streamConsumer();
-        }
-        return streamConsumer;
-    }
-
-    @Override
-    public PipelineListener<T> getPipelineListener() {
-        return new PipelineListener<T>() {
-            @Override
-            public void afterPipelineClose(boolean pipelineFailed) {
-                if (streamConsumer != null) {
-                    streamConsumer.afterClose(pipelineFailed);
-                }
-            }
-        };
+        return workerModel.streamConsumer();
     }
 }

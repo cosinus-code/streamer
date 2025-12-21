@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.ui.dialog;
 
+import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.copy.CopyProgressModel;
 import org.cosinus.swing.action.execute.ActionModel;
 import org.cosinus.swing.image.icon.IconHandler;
@@ -32,7 +33,7 @@ import static javax.swing.JLabel.CENTER;
 /**
  * Dialog for showing the copy action progress
  */
-public class CopyProgressDialog extends ProgressDialog<CopyProgressModel> {
+public class CopyProgressDialog<S extends Streamer<S>> extends ProgressDialog<CopyProgressModel<S>> {
 
     @Autowired
     protected IconHandler iconHandler;
@@ -91,7 +92,7 @@ public class CopyProgressDialog extends ProgressDialog<CopyProgressModel> {
     }
 
     @Override
-    public void workerUpdated(final CopyProgressModel progress) {
+    public void progressUpdated(final CopyProgressModel progress) {
         updateActionStatus(progress);
         updateActionFromTo(progress);
         updateProgressBar(progress);
@@ -129,6 +130,6 @@ public class CopyProgressDialog extends ProgressDialog<CopyProgressModel> {
 
     protected void updateProgressBar(final CopyProgressModel progress) {
         itemProgressBar.setValue(progress.getStreamerProgress());
-        totalProgressBar.setValue(progress.getTotalProgress());
+        totalProgressBar.setValue(progress.getProgressPercent());
     }
 }

@@ -18,25 +18,21 @@ package org.cosinus.streamer.ui.action.execute.delete;
 
 import org.cosinus.stream.StreamingStrategy;
 import org.cosinus.stream.consumer.StreamConsumer;
-import org.cosinus.stream.error.AbortPipelineConsumeException;
 import org.cosinus.stream.pipeline.PipelineListener;
 import org.cosinus.stream.pipeline.PipelineStrategy;
-import org.cosinus.stream.pipeline.StreamPipeline;
 import org.cosinus.streamer.api.DefaultStreamingStrategy;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
-import org.cosinus.swing.error.AbortActionException;
-import org.cosinus.swing.error.ActionException;
-import org.cosinus.swing.worker.SimpleWorker;
-import org.cosinus.swing.worker.Worker;
 import org.cosinus.streamer.ui.action.progress.StreamersProgressModel;
 import org.cosinus.swing.dialog.DialogHandler;
+import org.cosinus.swing.error.ActionException;
 import org.cosinus.swing.translate.Translator;
+import org.cosinus.swing.worker.PipelineWorker;
+import org.cosinus.swing.worker.Worker;
+import org.cosinus.swing.worker.WorkerModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.stream.Stream;
 
 import static org.cosinus.stream.FlatStreamingStrategy.LEVEL_BOTTOM_UP;
@@ -44,8 +40,8 @@ import static org.cosinus.stream.FlatStreamingStrategy.LEVEL_BOTTOM_UP;
 /**
  * {@link Worker} for deleting streamers
  */
-public class DeleteWorker extends SimpleWorker<StreamersProgressModel>
-    implements StreamPipeline<Streamer<?>> {
+public class DeleteWorker
+    extends PipelineWorker<WorkerModel<Streamer<?>>, Streamer<?>, StreamersProgressModel> {
 
     @Autowired
     protected DialogHandler dialogHandler;
@@ -55,39 +51,23 @@ public class DeleteWorker extends SimpleWorker<StreamersProgressModel>
 
     private final DeleteActionModel deleteModel;
 
-    private final DeleteListener deleteListener;
-
     private final StreamingStrategy streamingStrategy;
 
-    private long streamersToDeleteCount;
-
     public DeleteWorker(DeleteActionModel deleteModel) {
-        super(deleteModel, new StreamersProgressModel());
+        super(deleteModel, deleteModel.getStreamerView().getDeleteWorkerModel(), new StreamersProgressModel());
         this.deleteModel = deleteModel;
-        this.deleteListener = new DeleteListener();
         this.streamingStrategy = new DefaultStreamingStrategy();
     }
 
     @Override
-    protected void doWork() {
-        try {
-            openPipeline();
-        } catch (AbortPipelineConsumeException ex) {
-            throw new AbortActionException("Delete pipeline aborted", ex);
-        } catch (IOException | UncheckedIOException ex) {
-            throw new ActionException(ex, "act-delete-error");
-        }
-    }
-
-    @Override
-    public Stream<Streamer<?>> openPipelineInputStream(final PipelineStrategy pipelineStrategy) {
+    public Stream<Streamer<?>> openPipelineInputStream(PipelineStrategy pipelineStrategy) {
         return deleteModel
             .getParentStreamer()
             .flatStream(LEVEL_BOTTOM_UP, streamingStrategy, deleteModel.getStreamerFilter());
     }
 
     @Override
-    public StreamConsumer<Streamer<?>> openPipelineOutputStream(PipelineStrategy pipelineStrategy) {
+    protected StreamConsumer<Streamer<?>> streamConsumer() {
         return streamerToDelete -> {
             if (streamerToDelete.exists() && !streamerToDelete.delete(deleteModel.isMoveToTrash())) {
                 throw new ActionException("act-delete-cannot", streamerToDelete.getPath());
@@ -96,39 +76,22 @@ public class DeleteWorker extends SimpleWorker<StreamersProgressModel>
     }
 
     @Override
-    public PipelineListener<Streamer<?>> getPipelineListener() {
-        return deleteListener;
-    }
-
-    @Override
     public void preparePipelineOpen(PipelineStrategy pipelineStrategy, PipelineListener<Streamer<?>> pipelineListener) {
         ParentStreamer<Streamer<?>> parentStreamer = deleteModel.getParentStreamer();
         StreamerFilter streamerFilter = deleteModel.getStreamerFilter();
         try (Stream<? extends Streamer<?>> flatStream = parentStreamer.flatStream(streamingStrategy, streamerFilter)) {
-            flatStream.forEach(streamer ->
-                pipelineListener.onPreparingPipeline(++streamersToDeleteCount));
+            updateProgress(progress ->
+                progress.addTotalProgress(flatStream.count()));
         }
     }
 
-    private class DeleteListener implements PipelineListener<Streamer<?>> {
-        @Override
-        public void onPreparingPipeline(long preparedDataSize) {
-            updateModel(() -> workerModel.setProgressTotalSize(streamersToDeleteCount));
-        }
+    @Override
+    public void beforePipelineDataConsume(final Streamer<?> streamerToDelete) {
+        progressModel.setCurrentStreamer(streamerToDelete);
+    }
 
-        @Override
-        public void beforePipelineOpen() {
-            updateModel(() -> workerModel.startProgress(streamersToDeleteCount));
-        }
-
-        @Override
-        public void beforePipelineDataConsume(Streamer<?> data) {
-            updateModel(() -> workerModel.updateProgress(data));
-        }
-
-        @Override
-        public void afterPipelineClose(boolean pipelineFailed) {
-            updateModel(workerModel::finishProgress);
-        }
+    @Override
+    public void afterPipelineDataConsume(final Streamer<?> streamerToDelete) {
+        progressModel.addProgress(1);
     }
 }

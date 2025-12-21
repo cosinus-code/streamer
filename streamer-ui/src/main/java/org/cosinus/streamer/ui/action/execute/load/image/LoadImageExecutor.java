@@ -16,10 +16,11 @@
 
 package org.cosinus.streamer.ui.action.execute.load.image;
 
+import org.cosinus.swing.progress.ProgressListener;
+import org.cosinus.swing.progress.ProgressModel;
 import org.cosinus.swing.worker.Worker;
 import org.cosinus.swing.worker.WorkerExecutor;
 import org.cosinus.swing.worker.WorkerListener;
-import org.cosinus.swing.worker.WorkerListenerHandler;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.swing.image.UpdatableImage;
 import org.springframework.stereotype.Component;
@@ -28,11 +29,7 @@ import static org.cosinus.streamer.ui.action.execute.load.image.LoadImageActionM
 
 @Component
 public class LoadImageExecutor
-    extends WorkerExecutor<LoadImageActionModel, LoadWorkerModel<UpdatableImage>, UpdatableImage> {
-
-    protected LoadImageExecutor(final WorkerListenerHandler workerListenerHandler) {
-        super(workerListenerHandler);
-    }
+    extends WorkerExecutor<LoadImageActionModel, LoadWorkerModel<UpdatableImage>, UpdatableImage, ProgressModel> {
 
     @Override
     public String getHandledAction() {
@@ -41,12 +38,17 @@ public class LoadImageExecutor
 
     @Override
     protected WorkerListener<LoadWorkerModel<UpdatableImage>, UpdatableImage>
-    createWorkerListener(LoadImageActionModel actionModel) {
+    getWorkerListener(LoadImageActionModel actionModel) {
         return actionModel.getImageStreamerView();
     }
 
     @Override
-    protected Worker<LoadWorkerModel<UpdatableImage>, UpdatableImage>
+    protected ProgressListener getProgressListener(LoadImageActionModel actionModel) {
+        return actionModel.getImageStreamerView().getLoadingIndicator();
+    }
+
+    @Override
+    protected Worker<LoadWorkerModel<UpdatableImage>, UpdatableImage, ProgressModel>
     createWorker(LoadImageActionModel actionModel) {
         return new LoadImageWorker(actionModel);
     }

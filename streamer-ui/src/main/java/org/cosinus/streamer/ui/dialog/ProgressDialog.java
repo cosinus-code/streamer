@@ -16,11 +16,11 @@
 
 package org.cosinus.streamer.ui.dialog;
 
-import org.cosinus.swing.worker.WorkerListener;
-import org.cosinus.swing.worker.WorkerModel;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.action.execute.ActionModel;
 import org.cosinus.swing.format.FormatHandler;
+import org.cosinus.swing.progress.ProgressListener;
+import org.cosinus.swing.progress.ProgressModel;
 import org.cosinus.swing.translate.Translator;
 import org.cosinus.swing.window.Dialog;
 import org.cosinus.swing.window.Frame;
@@ -40,7 +40,9 @@ import static org.cosinus.swing.border.Borders.emptyBorder;
 /**
  * Generic dialog for showing progress
  */
-public abstract class ProgressDialog<M extends WorkerModel<M>> extends Dialog<Void> implements WorkerListener<M, M> {
+public abstract class ProgressDialog<M extends ProgressModel>
+    extends Dialog<Void>
+    implements ProgressListener<M> {
 
     @Autowired
     protected ActionExecutors actionExecutors;
@@ -148,12 +150,12 @@ public abstract class ProgressDialog<M extends WorkerModel<M>> extends Dialog<Vo
     }
 
     @Override
-    public void workerStarted(M workerModel) {
+    public void progressStarted(final M progressModel) {
         invokeLater(() -> setVisible(true));
     }
 
     @Override
-    public void workerFinished(M workerModel) {
+    public void progressFinished(final M progressModel) {
         dispose();
     }
 

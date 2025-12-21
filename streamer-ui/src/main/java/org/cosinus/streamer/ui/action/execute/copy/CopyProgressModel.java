@@ -16,67 +16,34 @@
 
 package org.cosinus.streamer.ui.action.execute.copy;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.swing.worker.WorkerModel;
-import org.cosinus.streamer.ui.action.progress.ProgressModel;
-
-import java.util.List;
+import org.cosinus.swing.progress.ProgressModel;
 
 /**
  * Model for a progress over multiple streamers for actions with source and target
  */
-public class CopyProgressModel implements WorkerModel<CopyProgressModel>
-{
-
-    private final ProgressModel totalProgressModel;
+public class CopyProgressModel<S extends Streamer<S>> extends ProgressModel {
 
     private final ProgressModel streamerProgressModel;
 
+    @Setter
+    @Getter
     private long totalItems;
 
+    @Getter
     private Streamer<?> source;
 
+    @Getter
     private Streamer<?> target;
 
     public CopyProgressModel() {
-        totalProgressModel = new ProgressModel();
         streamerProgressModel = new ProgressModel();
-    }
-
-    @Override
-    public void update(List<CopyProgressModel> items) {
-    }
-
-    public void setTotalItems(long totalItems) {
-        this.totalItems = totalItems;
-    }
-
-    public long getTotalItems() {
-        return totalItems;
-    }
-
-    public long getProgressDone() {
-        return totalProgressModel.getProgressDone();
-    }
-
-    public int getTotalProgress() {
-        return totalProgressModel.getProgressPercent();
     }
 
     public int getStreamerProgress() {
         return streamerProgressModel.getProgressPercent();
-    }
-
-    public long getSpeed() {
-        return totalProgressModel.getSpeed();
-    }
-
-    public long getRemainingTime() {
-        return totalProgressModel.getRemainingTime();
-    }
-
-    public void startTotalProgress(long totalProgressSize) {
-        totalProgressModel.startProgress(totalProgressSize);
     }
 
     public void startStreamerProgress(Streamer<?> source, Streamer<?> target) {
@@ -85,28 +52,12 @@ public class CopyProgressModel implements WorkerModel<CopyProgressModel>
         this.target = target;
     }
 
-    public void updateTotalProgress(long value) {
-        totalProgressModel.addProgress(value);
-    }
-
     public void updateStreamerProgress(long value) {
         streamerProgressModel.addProgress(value);
-        updateTotalProgress(value);
+        addProgress(value);
     }
 
     public void finishStreamerProgress() {
         streamerProgressModel.finishProgress();
-    }
-
-    public void finishTotalProgress() {
-        totalProgressModel.finishProgress();
-    }
-
-    public Streamer<?> getSource() {
-        return source;
-    }
-
-    public Streamer<?> getTarget() {
-        return target;
     }
 }

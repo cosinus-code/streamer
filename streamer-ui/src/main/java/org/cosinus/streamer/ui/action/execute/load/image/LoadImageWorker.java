@@ -23,6 +23,7 @@ import org.cosinus.stream.pipeline.binary.BinaryStreamConsumer;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.swing.error.ActionException;
+import org.cosinus.swing.progress.ProgressModel;
 import org.cosinus.swing.worker.Worker;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.image.ImageStreamerView;
@@ -35,7 +36,7 @@ import java.io.UncheckedIOException;
 
 import static org.cosinus.swing.format.FormatHandler.MEGA_INT;
 
-public class LoadImageWorker extends Worker<LoadWorkerModel<UpdatableImage>, UpdatableImage>
+public class LoadImageWorker extends Worker<LoadWorkerModel<UpdatableImage>, UpdatableImage, ProgressModel>
     implements BinaryPipeline, PipelineListener<byte[]>, BinaryPipelineStrategy {
 
     public static final int IMAGE_LOAD_RATE = 3 * MEGA_INT;
@@ -45,7 +46,9 @@ public class LoadImageWorker extends Worker<LoadWorkerModel<UpdatableImage>, Upd
     private final ImageStreamerView imageStreamerView;
 
     public LoadImageWorker(final LoadImageActionModel actionModel) {
-        super(actionModel, actionModel.getImageStreamerView().getLoadWorkerModel());
+        super(actionModel,
+            actionModel.getImageStreamerView().getLoadWorkerModel(),
+            actionModel.getImageStreamerView().getLoadingIndicator().getProgressModel());
         this.streamerToLoad = actionModel.getStreamerToLoad();
         this.imageStreamerView = actionModel.getImageStreamerView();
     }
@@ -107,11 +110,6 @@ public class LoadImageWorker extends Worker<LoadWorkerModel<UpdatableImage>, Upd
 
     public Streamer<byte[]> getStreamerToLoad() {
         return streamerToLoad;
-    }
-
-    public void publishImage(final UpdatableImage image) {
-        checkWorkerStatus();
-        publish(image);
     }
 
     @Override

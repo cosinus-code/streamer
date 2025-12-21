@@ -26,6 +26,7 @@ import org.cosinus.streamer.ui.view.FindPanel;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.swing.form.ScrollPane;
 import org.cosinus.swing.menu.PopupMenu;
+import org.cosinus.swing.worker.WorkerModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
@@ -178,13 +179,13 @@ public abstract class TableStreamerView<T extends Streamable>
 
     @Override
     public void workerStarted(LoadWorkerModel<T> loadWorkerModel) {
-        getDataTableModel().fireTableDataChanged();
+        getDataTableModel().fireContentChanged();
         super.workerStarted(loadWorkerModel);
     }
 
     @Override
     public void workerUpdated(LoadWorkerModel<T> loadWorkerModel) {
-        getDataTableModel().fireTableDataChanged();
+        getDataTableModel().fireContentChanged();
         super.workerUpdated(loadWorkerModel);
     }
 
@@ -203,6 +204,12 @@ public abstract class TableStreamerView<T extends Streamable>
     }
 
     @Override
+    public void fireContentChanged() {
+        getDataTableModel().fireContentChanged();
+        super.fireContentChanged();
+    }
+
+    @Override
     public String getStatus() {
         int selectedItemsCount = table.getSelectedItems().size();
         return selectedItemsCount > 0 ?
@@ -218,9 +225,8 @@ public abstract class TableStreamerView<T extends Streamable>
 
     @Override
     public void reset(final Streamer<T> parentStreamer) {
-        this.parentStreamer = parentStreamer;
-        table.reset(parentStreamer);
         super.reset(parentStreamer);
+        table.reset(parentStreamer);
     }
 
     @Override
@@ -241,5 +247,15 @@ public abstract class TableStreamerView<T extends Streamable>
     @Override
     protected FindPanel createFindTextPanel() {
         return new FindStreamerPanel<>(this);
+    }
+
+    @Override
+    public WorkerModel<Streamer<T>> getDeleteWorkerModel() {
+        return getDataTableModel().getDeleteWorkerModel();
+    }
+
+    @Override
+    public WorkerModel<T> getCopyWorkerModel() {
+        return getDataTableModel().getCopyWorkerModel();
     }
 }

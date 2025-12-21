@@ -19,7 +19,6 @@ package org.cosinus.streamer.ui.action;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
-import org.cosinus.swing.worker.WorkerListenerHandler;
 import org.cosinus.streamer.pack.archive.ArchiveExpander;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.pack.PackActionModel;
@@ -71,7 +70,6 @@ public class PackStreamerAction extends AbstractCopyAction<PackActionModel> {
                               final Translator translator,
                               final DialogHandler dialogHandler,
                               final ActionExecutors actionExecutors,
-                              final WorkerListenerHandler workerListenerHandler,
                               final LoadActionExecutor loadActionExecutor,
                               final StreamerViewHandler streamerViewHandler,
                               final ApplicationUIHandler uiHandler,
@@ -79,7 +77,7 @@ public class PackStreamerAction extends AbstractCopyAction<PackActionModel> {
                               final PackWorkerExecutor packWorkerExecutor,
                               final BinaryExpanderHandler expanderHandler) {
         super(preferences, translator, dialogHandler, actionExecutors,
-            workerListenerHandler, loadActionExecutor, streamerViewHandler);
+            loadActionExecutor, streamerViewHandler);
         this.uiHandler = uiHandler;
         this.binaryExpanderHandler = binaryExpanderHandler;
         this.packWorkerExecutor = packWorkerExecutor;

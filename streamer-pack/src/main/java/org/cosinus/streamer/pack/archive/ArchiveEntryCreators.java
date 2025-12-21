@@ -17,6 +17,7 @@ package org.cosinus.streamer.pack.archive;
 
 import com.github.junrar.Archive;
 import com.github.junrar.exception.RarException;
+import com.github.junrar.exception.UnsupportedRarV5Exception;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.arj.ArjArchiveEntry;
 import org.apache.commons.compress.archivers.dump.DumpArchiveEntry;
@@ -120,8 +121,10 @@ public final class ArchiveEntryCreators {
             .map(file -> {
                 try {
                     return new Archive(new FileInputStream(file));
-                } catch (RarException | IOException e) {
-                    throw new StreamerException("Cannot create TGZ input stream from file: " + file.getPath(), e);
+                } catch (UnsupportedRarV5Exception ex) {
+                    throw new StreamerException(ex, "Cannot handle RAR 5 format");
+                } catch (RarException | IOException ex) {
+                    throw new StreamerException(ex, "Cannot create RAR input stream from file: " + file.getPath());
                 }
             })
             .map(RarEntryInputStream::new)

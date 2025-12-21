@@ -17,12 +17,8 @@
 package org.cosinus.streamer.ui.action.execute.move;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.swing.worker.SimpleWorker;
-import org.cosinus.swing.worker.WorkerListenerHandler;
 import org.cosinus.streamer.ui.action.execute.copy.AbstractCopyWorkerExecutor;
-import org.cosinus.streamer.ui.action.execute.copy.CopyProgressModel;
 import org.cosinus.streamer.ui.action.execute.copy.CopyWorker;
-import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.execute.ActionExecutor;
@@ -38,14 +34,12 @@ public class MoveWorkerExecutor<S extends Streamer<S>, T extends Streamer<T>>
     extends AbstractCopyWorkerExecutor<S, T, MoveActionModel<S, T>> {
 
     protected MoveWorkerExecutor(final ProgressFormHandler progressFormHandler,
-                                 final WorkerListenerHandler workerListenerHandler,
-                                 final LoadActionExecutor loadActionExecutor,
                                  final StreamerViewHandler streamerViewHandler) {
-        super(progressFormHandler, workerListenerHandler, loadActionExecutor, streamerViewHandler);
+        super(progressFormHandler, streamerViewHandler);
     }
 
     @Override
-    protected SimpleWorker<CopyProgressModel> createWorker(final MoveActionModel<S, T> actionModel) {
+    protected MoveWorker<S, T> createWorker(MoveActionModel<S, T> actionModel) {
         return new MoveWorker<>(actionModel);
     }
 

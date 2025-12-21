@@ -15,6 +15,8 @@
  */
 package org.cosinus.streamer.ui.action.execute.pack;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
@@ -24,6 +26,7 @@ import java.util.Set;
 
 import static java.util.Optional.ofNullable;
 
+@Getter
 public class PackActionModel<S extends Streamer<S>, T extends Streamer<T>>
     extends CopyActionModel<S, T> implements UIModel {
 
@@ -37,22 +40,11 @@ public class PackActionModel<S extends Streamer<S>, T extends Streamer<T>>
 
     private String packType;
 
+    @Setter
     private String[] packTypes;
 
     public PackActionModel(String actionId, String actionName) {
         super(actionId, actionName);
-    }
-
-    public String getPackType() {
-        return packType;
-    }
-
-    public void setPackTypes(String[] packTypes) {
-        this.packTypes = packTypes;
-    }
-
-    public String[] getPackTypes() {
-        return packTypes;
     }
 
     public static <S extends Streamer<S>, T extends Streamer<T>>
@@ -60,8 +52,8 @@ public class PackActionModel<S extends Streamer<S>, T extends Streamer<T>>
         PackActionModel<S, T> packActionModel = new PackActionModel<>(actionId, actionName);
         packActionModel
             .setStreamersToCopy(from.getSelectedItems())
-            .from(from.getParentStreamer())
-            .to(to.getParentStreamer());
+            .from(from.getStreamerView(), from.getParentStreamer())
+            .to(to.getStreamerView(), to.getParentStreamer());
         return packActionModel;
     }
 
@@ -88,12 +80,10 @@ public class PackActionModel<S extends Streamer<S>, T extends Streamer<T>>
         ofNullable(value)
             .map(Object::toString)
             .ifPresent(text -> {
-                if (key.equals(PACK_TO)) {
-                    setTargetPath(text);
-                } else if (key.equals(PACK_TYPE)) {
-                    packType = text;
-                } else if (key.equals(PACK_FILTER)) {
-                    setCopyFilter(text);
+                switch (key) {
+                    case PACK_TO -> setTargetPath(text);
+                    case PACK_TYPE -> packType = text;
+                    case PACK_FILTER -> setCopyFilter(text);
                 }
             });
     }

@@ -20,6 +20,7 @@ import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.value.Value;
 
 import java.nio.file.Path;
+import java.util.Objects;
 
 /**
  * View item used in the view model
@@ -92,5 +93,19 @@ public class ViewItem {
 
     public boolean isFile() {
         return streamable.isFile();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof ViewItem viewItem)) {
+            return false;
+        }
+        return topItem == viewItem.topItem &&
+            Objects.equals(getId(), viewItem.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(topItem, getId());
     }
 }

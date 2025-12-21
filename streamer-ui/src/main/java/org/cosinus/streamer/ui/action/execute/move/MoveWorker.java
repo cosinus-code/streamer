@@ -20,17 +20,28 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.execute.copy.CopyWorker;
+import org.cosinus.streamer.ui.action.execute.copy.CopyWorkerUnit;
 
 import java.util.List;
 
+import static java.util.Collections.singletonList;
 import static org.cosinus.stream.FlatStreamingStrategy.LEVEL_BOTTOM_UP;
 
 public class MoveWorker<S extends Streamer<S>, T extends Streamer<T>> extends CopyWorker<S, T> {
 
     private List<S> streamersToCopy;
 
+    private final MoveWorkerModel<S, T> moveWorkerModel;
+
     public MoveWorker(CopyActionModel<S, T> copyModel) {
-        super(copyModel);
+        this(copyModel, new MoveWorkerModel<>(
+            copyModel.getStreamerViewTarget().getCopyWorkerModel(),
+            copyModel.getStreamerViewSource().getDeleteWorkerModel()));
+    }
+
+    public MoveWorker(CopyActionModel<S, T> copyModel, MoveWorkerModel<S, T> moveWorkerModel) {
+        super(copyModel, moveWorkerModel);
+        this.moveWorkerModel = moveWorkerModel;
     }
 
     @Override
@@ -51,10 +62,12 @@ public class MoveWorker<S extends Streamer<S>, T extends Streamer<T>> extends Co
     }
 
     @Override
-    protected void copyStreamer(S streamerToCopy, T streamerToCopyTo) {
-        super.copyStreamer(streamerToCopy, streamerToCopyTo);
-        if (!streamerToCopy.isParent()) {
-            streamerToCopy.delete(false);
+    protected void copyStreamer(CopyWorkerUnit<S, T> copyWorkerUnit) {
+        super.copyStreamer(copyWorkerUnit);
+        S streamerToMove = copyWorkerUnit.source();
+        if (!streamerToMove.isParent()) {
+            streamerToMove.delete(false);
+            moveWorkerModel.updateDeletedItems(singletonList(streamerToMove));
         }
     }
 
@@ -64,7 +77,10 @@ public class MoveWorker<S extends Streamer<S>, T extends Streamer<T>> extends Co
         if (isSuccessful()) {
             source.flatStream(LEVEL_BOTTOM_UP, copyStrategy, getStreamerFilter())
                 .filter(Streamer::exists)
-                .forEach(streamer -> streamer.delete(false));
+                .forEach(streamer -> {
+                    streamer.delete(false);
+                    moveWorkerModel.updateDeletedItems(singletonList(streamer));
+                });
         }
     }
 }

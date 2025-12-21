@@ -71,7 +71,7 @@ public class StreamersProgressDialog extends ProgressDialog<StreamersProgressMod
     }
 
     @Override
-    public void workerUpdated(StreamersProgressModel progressModel) {
+    public void progressUpdated(StreamersProgressModel progressModel) {
         if (progressModel.getProgressDone() <= 0) {
             actionLabel.setText(translator.translate("action_preparing",
                 progressModel.getProgressTotalSize()));
@@ -83,7 +83,7 @@ public class StreamersProgressDialog extends ProgressDialog<StreamersProgressMod
                 .map(path -> formatHandler.formatTextForLabel(lblStreamer, path.toString()))
                 .ifPresent(lblStreamer::setText);
             progressBar.setIndeterminate(false);
-            progressBar.setValue(progressModel.getProgress());
+            progressBar.setValue(progressModel.getProgressPercent());
         }
     }
 }

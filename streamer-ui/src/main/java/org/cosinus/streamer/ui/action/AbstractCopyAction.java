@@ -18,7 +18,6 @@ package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.swing.worker.WorkerListenerHandler;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
@@ -49,8 +48,6 @@ public abstract class AbstractCopyAction<M extends CopyActionModel> implements A
 
     protected final ActionExecutors actionExecutors;
 
-    protected final WorkerListenerHandler workerListenerHandler;
-
     protected final LoadActionExecutor loadActionExecutor;
 
     protected final StreamerViewHandler streamerViewHandler;
@@ -59,14 +56,12 @@ public abstract class AbstractCopyAction<M extends CopyActionModel> implements A
                                  final Translator translator,
                                  final DialogHandler dialogHandler,
                                  final ActionExecutors actionExecutors,
-                                 final WorkerListenerHandler workerListenerHandler,
                                  final LoadActionExecutor loadActionExecutor,
                                  final StreamerViewHandler streamerViewHandler) {
         this.preferences = preferences;
         this.translator = translator;
         this.dialogHandler = dialogHandler;
         this.actionExecutors = actionExecutors;
-        this.workerListenerHandler = workerListenerHandler;
         this.loadActionExecutor = loadActionExecutor;
         this.streamerViewHandler = streamerViewHandler;
     }

@@ -8,6 +8,8 @@ swing:
       enabled: true
       trace: false
       frequency: 200
+  worker:
+    delay: 0
 
 spring:
   cache:

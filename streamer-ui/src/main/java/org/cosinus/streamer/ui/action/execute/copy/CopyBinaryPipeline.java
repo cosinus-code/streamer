@@ -36,11 +36,11 @@ public class CopyBinaryPipeline implements BinaryPipeline {
     public CopyBinaryPipeline(BinaryStreamer source,
                               BinaryStreamer target,
                               CopyStrategy copyStrategy,
-                              CopyWorker copyWorker) {
+                              PipelineListener pipelineListener) {
         this.source = source;
         this.target = target;
         this.copyStrategy = new CopyBinaryStrategy(source, target, copyStrategy);
-        this.pipelineListener = new CopyBinaryListener(source, target, copyWorker);
+        this.pipelineListener = pipelineListener;
     }
 
     @Override

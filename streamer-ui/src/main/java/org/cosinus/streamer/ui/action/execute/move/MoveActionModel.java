@@ -33,8 +33,8 @@ public class MoveActionModel<S extends Streamer<S>, T extends Streamer<T>> exten
     MoveActionModel<S, T> move(String actionId, String actionName, ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
         MoveActionModel<S, T> moveActionModel = new MoveActionModel<>(actionId, actionName);
         moveActionModel.setStreamersToCopy(from.getSelectedItems())
-            .from(from.getParentStreamer())
-            .to(to.getParentStreamer());
+            .from(from.getStreamerView(), from.getParentStreamer())
+            .to(to.getStreamerView(), to.getParentStreamer());
 
         return moveActionModel;
     }

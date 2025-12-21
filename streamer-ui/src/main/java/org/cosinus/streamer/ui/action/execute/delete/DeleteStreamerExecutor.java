@@ -16,18 +16,15 @@
 
 package org.cosinus.streamer.ui.action.execute.delete;
 
-import org.cosinus.swing.worker.SimpleWorker;
-import org.cosinus.swing.worker.WorkerListener;
-import org.cosinus.swing.worker.WorkerListenerHandler;
-import org.cosinus.swing.worker.WorkerExecutor;
-import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
-import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
+import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.streamer.ui.action.progress.StreamersProgressModel;
 import org.cosinus.streamer.ui.dialog.ProgressDialog;
-import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.execute.ActionExecutor;
+import org.cosinus.swing.worker.WorkerExecutor;
+import org.cosinus.swing.worker.WorkerListener;
+import org.cosinus.swing.worker.WorkerModel;
 import org.springframework.stereotype.Component;
 
 import static org.cosinus.streamer.ui.action.DeleteStreamerAction.DELETE_STREAMER_ACTION_NAME;
@@ -37,51 +34,41 @@ import static org.cosinus.streamer.ui.action.DeleteStreamerAction.DELETE_STREAME
  */
 @Component
 public class DeleteStreamerExecutor
-    extends WorkerExecutor<DeleteActionModel, StreamersProgressModel, StreamersProgressModel> {
+    extends WorkerExecutor<DeleteActionModel<?>, WorkerModel<Streamer<?>>, Streamer<?>, StreamersProgressModel> {
 
     protected final ProgressFormHandler progressFormHandler;
-
-    private final LoadActionExecutor loadActionExecutor;
 
     private final StreamerViewHandler streamerViewHandler;
 
     protected DeleteStreamerExecutor(final ProgressFormHandler progressFormHandler,
-                                     final WorkerListenerHandler workerListenerHandler,
-                                     final LoadActionExecutor loadActionExecutor,
                                      final StreamerViewHandler streamerViewHandler) {
-        super(workerListenerHandler);
         this.progressFormHandler = progressFormHandler;
-        this.loadActionExecutor = loadActionExecutor;
         this.streamerViewHandler = streamerViewHandler;
     }
 
     @Override
-    protected void registerWorkerListeners(final DeleteActionModel deleteAction,
-                                           final StreamersProgressModel workerModel) {
-        super.registerWorkerListeners(deleteAction, workerModel);
+    protected WorkerListener<WorkerModel<Streamer<?>>, Streamer<?>> getWorkerListener(DeleteActionModel<?> deleteModel) {
+        return new WorkerListener<>() {
+            @Override
+            public void workerUpdated(WorkerModel<Streamer<?>> workerModel) {
+                streamerViewHandler.getCurrentView().fireContentChanged();
+            }
 
-        workerListenerHandler.register(StreamersProgressModel.class, deleteAction.getExecutionId(),
-            new WorkerListener<>() {
-                @Override
-                public void workerFinished(StreamersProgressModel workerModel) {
-                    final StreamerView<?, ?> currentView = streamerViewHandler.getCurrentView();
-                    loadActionExecutor.execute(new LoadActionModel(
-                        currentView.getCurrentLocation(),
-                        currentView.getParentStreamer(),
-                        currentView.getNextItemIdentifier()));
-                }
-            });
-
+            @Override
+            public void workerFinished(WorkerModel<Streamer<?>> workerModel) {
+                streamerViewHandler.getCurrentView().reload();
+            }
+        };
     }
 
     @Override
-    protected ProgressDialog<StreamersProgressModel> createWorkerListener(DeleteActionModel deleteModel) {
+    protected ProgressDialog<StreamersProgressModel> getProgressListener(DeleteActionModel<?> deleteModel) {
         return progressFormHandler.createStreamersProgressDialog(deleteModel);
     }
 
     @Override
-    protected SimpleWorker<StreamersProgressModel> createWorker(DeleteActionModel actionModel) {
-        return new DeleteWorker(actionModel);
+    protected DeleteWorker createWorker(DeleteActionModel<?> deleteModel) {
+        return new DeleteWorker(deleteModel);
     }
 
     @Override

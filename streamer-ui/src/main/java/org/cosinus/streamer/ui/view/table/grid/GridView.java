@@ -86,7 +86,7 @@ public class GridView<T extends Streamable> extends TableStreamerView<T> {
     }
 
     @Override
-    public SaveWorkerModel<T> getSaveModel() {
+    public SaveWorkerModel<T> getSaveWorkerModel() {
         return (GridStreamerEditor<T>) streamerEditor;
     }
 

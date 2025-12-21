@@ -16,10 +16,12 @@
 
 package org.cosinus.streamer.ui.action.execute.delete;
 
+import lombok.Getter;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
+import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.swing.action.execute.ActionModel;
 
 import java.util.List;
@@ -28,7 +30,10 @@ import java.util.UUID;
 /**
  * Encapsulates the model of the delete streamers action
  */
+@Getter
 public class DeleteActionModel<S extends Streamer<S>> extends ActionModel {
+
+    private StreamerView<S, S> streamerView;
 
     private StreamerFilter streamerFilter;
 
@@ -43,8 +48,14 @@ public class DeleteActionModel<S extends Streamer<S>> extends ActionModel {
     public static <S extends Streamer<S>> DeleteActionModel<S>
     delete(String actionId, String actionName, final ParentStreamerViewContext<S> from) {
         return new DeleteActionModel<S>(actionId, actionName)
+            .streamerView(from.getStreamerView())
             .deleteStreamers(from.getSelectedItems())
             .from(from.getParentStreamer());
+    }
+
+    public DeleteActionModel<S> streamerView(StreamerView<S, S> streamerView) {
+        this.streamerView = streamerView;
+        return this;
     }
 
     public DeleteActionModel<S> deleteStreamers(List<Streamer<S>> streamersToDelete) {
@@ -57,20 +68,9 @@ public class DeleteActionModel<S extends Streamer<S>> extends ActionModel {
         return this;
     }
 
-    public StreamerFilter getStreamerFilter() {
-        return streamerFilter;
-    }
-
-    public ParentStreamer<S> getParentStreamer() {
-        return parentStreamer;
-    }
-
     public DeleteActionModel<S> from(ParentStreamer<S> parentStreamer) {
         this.parentStreamer = parentStreamer;
         return this;
     }
 
-    public boolean isMoveToTrash() {
-        return moveToTrash;
-    }
 }

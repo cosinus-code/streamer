@@ -16,53 +16,50 @@
 
 package org.cosinus.streamer.ui.action.execute.load;
 
-import org.cosinus.stream.consumer.StreamConsumer;
-import org.cosinus.stream.pipeline.PipelineListener;
-import org.cosinus.stream.pipeline.PipelineStrategy;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.swing.worker.DirectPipelineWorker;
 import org.cosinus.streamer.ui.view.StreamerView;
-import org.cosinus.swing.action.execute.ActionModel;
-
-import java.util.stream.Stream;
+import org.cosinus.swing.progress.ProgressModel;
+import org.cosinus.swing.worker.StreamWorker;
 
 /**
  * {@link javax.swing.SwingWorker} for loading a streamer
  */
-public class LoadWorker<T> extends DirectPipelineWorker<LoadWorkerModel<T>, T> implements PipelineListener<T> {
+public class LoadWorker<T> extends StreamWorker<LoadWorkerModel<T>, T, ProgressModel> {
 
     private final Streamer<T> streamerToLoad;
 
     private final StreamerView<T, T> streamerViewToLoadTo;
 
-    public LoadWorker(ActionModel actionModel,
+    public LoadWorker(LoadActionModel<T> actionModel,
                       final Streamer<T> streamerToLoad,
-                      final StreamerView<T, T> streamerViewToLoadTo,
-                      String contentIdentifier) {
-        super(actionModel, streamerViewToLoadTo.getLoadWorkerModel());
+                      final StreamerView<T, T> streamerViewToLoadTo) {
+        super(actionModel,
+            streamerViewToLoadTo.getLoadWorkerModel(),
+            streamerToLoad,
+            streamerViewToLoadTo.getLoadingIndicator().getProgressModel());
+
         this.streamerToLoad = streamerToLoad;
         this.streamerViewToLoadTo = streamerViewToLoadTo;
-        workerModel.setContentIdentifier(contentIdentifier);
-    }
-
-    @Override
-    public void preparePipelineOpen(PipelineStrategy pipelineStrategy, PipelineListener<T> pipelineListener) {
-        streamerToLoad.init();
     }
 
     @Override
     public void beforePipelineOpen() {
+        streamerToLoad.init();
         streamerViewToLoadTo.reset(streamerToLoad);
-        streamerViewToLoadTo.triggerFormUpdate();
     }
 
     @Override
-    public Stream<T> openPipelineInputStream(PipelineStrategy pipelineStrategy) {
-        return streamerToLoad.stream();
+    public void afterPipelineOpen() {
+        progressModel.startProgress(workerModel.getTotalSizeToLoad());
     }
 
     @Override
-    public PipelineListener<T> getPipelineListener() {
-        return this;
+    public void afterPipelineDataConsume(T data) {
+        progressModel.updateProgress(workerModel.getLoadedSize(), workerModel.getTotalSizeToLoad());
+    }
+
+    @Override
+    public void afterPipelineClose(boolean pipelineFailed) {
+        progressModel.finishProgress();
     }
 }

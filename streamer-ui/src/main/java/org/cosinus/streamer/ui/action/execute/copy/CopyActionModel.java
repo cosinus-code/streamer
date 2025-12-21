@@ -16,10 +16,12 @@
 
 package org.cosinus.streamer.ui.action.execute.copy;
 
+import lombok.Getter;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
+import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.swing.action.execute.ActionModel;
 import org.cosinus.swing.ui.UIModel;
 
@@ -43,14 +45,25 @@ public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> exten
 
     public static final Set<String> COPY_KEYS = Set.of(COPY_TO, COPY_FILTER);
 
+    @Getter
     private StreamerFilter sourceFilter = streamer -> true;
 
+    @Getter
+    private StreamerView<S, S> streamerViewSource;
+
+    @Getter
+    private StreamerView<T, T> streamerViewTarget;
+
+    @Getter
     private List<Streamer<S>> streamersToCopy;
 
+    @Getter
     private ParentStreamer<S> source;
 
+    @Getter
     private ParentStreamer<T> destination;
 
+    @Getter
     private Path targetPath;
 
     public CopyActionModel(String actionId, String actionName) {
@@ -61,12 +74,8 @@ public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> exten
     CopyActionModel<S, T> copy(String actionId, String actionName, ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
         return new CopyActionModel<S, T>(actionId, actionName)
             .setStreamersToCopy(from.getSelectedItems())
-            .from(from.getParentStreamer())
-            .to(to.getParentStreamer());
-    }
-
-    public Path getTargetPath() {
-        return targetPath;
+            .from(from.getStreamerView(), from.getParentStreamer())
+            .to(to.getStreamerView(), to.getParentStreamer());
     }
 
     public void setTargetPath(Path targetPath) {
@@ -86,31 +95,23 @@ public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> exten
 
     }
 
-    public ParentStreamer<S> getSource() {
-        return source;
-    }
-
-    public StreamerFilter getSourceFilter() {
-        return sourceFilter;
-    }
-
     public CopyActionModel<S, T> setStreamersToCopy(List<Streamer<S>> streamersToCopy) {
         this.streamersToCopy = streamersToCopy;
         this.sourceFilter = this.streamersToCopy::contains;
         return this;
     }
 
-    public List<Streamer<S>> getStreamersToCopy() {
-        return streamersToCopy;
-    }
-
-    public CopyActionModel<S, T> from(ParentStreamer<S> source) {
+    public CopyActionModel<S, T> from(StreamerView<S, S> streamerViewSource, ParentStreamer<S> source) {
+        this.streamerViewSource = streamerViewSource;
         this.source = source;
         return this;
     }
 
-    public ParentStreamer<T> getDestination() {
-        return destination;
+    public CopyActionModel<S, T> to(StreamerView<T, T> streamerViewTarget, ParentStreamer<T> destination) {
+        this.streamerViewTarget = streamerViewTarget;
+        this.destination = destination;
+        this.targetPath = destination.getPath();
+        return this;
     }
 
     public CopyActionModel<S, T> to(ParentStreamer<T> destination) {

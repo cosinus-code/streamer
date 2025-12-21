@@ -17,67 +17,52 @@
 package org.cosinus.streamer.ui.action.execute.copy;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.swing.worker.WorkerListener;
-import org.cosinus.swing.worker.WorkerListenerHandler;
-import org.cosinus.swing.worker.WorkerExecutor;
-import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
-import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.streamer.ui.dialog.ProgressDialog;
-import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.execute.ActionExecutor;
+import org.cosinus.swing.worker.WorkerExecutor;
+import org.cosinus.swing.worker.WorkerListener;
+import org.cosinus.swing.worker.WorkerModel;
 import org.springframework.stereotype.Component;
 
 /**
  * Implementation of {@link ActionExecutor} for copying streamers based on {@link CopyWorker}
  */
 @Component
-public abstract class AbstractCopyWorkerExecutor<
-    S extends Streamer<S>,
+public abstract class AbstractCopyWorkerExecutor<S extends Streamer<S>,
     T extends Streamer<T>,
-    A extends CopyActionModel<S, T>> extends WorkerExecutor<A, CopyProgressModel, CopyProgressModel> {
+    A extends CopyActionModel<S, T>>
+    extends WorkerExecutor<A, WorkerModel<CopyWorkerUnit<S, T>>, CopyWorkerUnit<S, T>, CopyProgressModel<S>> {
 
     protected final ProgressFormHandler progressFormHandler;
 
-    private final LoadActionExecutor loadActionExecutor;
-
-    private final StreamerViewHandler streamerViewHandler;
+    protected final StreamerViewHandler streamerViewHandler;
 
     protected AbstractCopyWorkerExecutor(final ProgressFormHandler progressFormHandler,
-                                         final WorkerListenerHandler workerListenerHandler,
-                                         final LoadActionExecutor loadActionExecutor,
                                          final StreamerViewHandler streamerViewHandler) {
-        super(workerListenerHandler);
         this.progressFormHandler = progressFormHandler;
-        this.loadActionExecutor = loadActionExecutor;
         this.streamerViewHandler = streamerViewHandler;
     }
 
     @Override
-    protected void registerWorkerListeners(A copyAction, CopyProgressModel workerModel) {
-        super.registerWorkerListeners(copyAction, workerModel);
-        workerListenerHandler.register(CopyProgressModel.class, copyAction.getExecutionId(),
-            new WorkerListener<>() {
-                @Override
-                public void workerFinished(CopyProgressModel workerModel) {
-                    final StreamerView<?, ?> oppositeView = streamerViewHandler.getOppositeView();
-                    loadActionExecutor.execute(new LoadActionModel(
-                        oppositeView.getCurrentLocation(),
-                        oppositeView.getParentStreamer(),
-                        null));
+    protected WorkerListener<WorkerModel<CopyWorkerUnit<S, T>>, CopyWorkerUnit<S, T>> getWorkerListener(A actionModel) {
+        return new WorkerListener<>() {
+            @Override
+            public void workerUpdated(WorkerModel<CopyWorkerUnit<S, T>> workerModel) {
+                streamerViewHandler.getCurrentView().fireContentChanged();
+                streamerViewHandler.getOppositeView().fireContentChanged();
+            }
 
-                    final StreamerView<?, ?> currentView = streamerViewHandler.getCurrentView();
-                    loadActionExecutor.execute(new LoadActionModel(
-                        currentView.getCurrentLocation(),
-                        currentView.getParentStreamer(),
-                        currentView.getNextItemIdentifier()));
-                }
-            });
+            @Override
+            public void workerFinished(WorkerModel<CopyWorkerUnit<S, T>> workerModel) {
+                streamerViewHandler.reloadViews();
+            }
+        };
     }
 
     @Override
-    protected ProgressDialog<CopyProgressModel> createWorkerListener(A copyModel) {
+    protected ProgressDialog<CopyProgressModel<S>> getProgressListener(A copyModel) {
         return progressFormHandler.createCopyProgressDialog(copyModel);
     }
 }
