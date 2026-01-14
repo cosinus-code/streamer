@@ -22,7 +22,6 @@ import org.cosinus.streamer.api.meta.MainStreamer;
 import org.cosinus.streamer.api.meta.RootStreamer;
 import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.swing.resource.FilesystemResourceResolver;
-import org.cosinus.swing.resource.ResourceLocator;
 import org.cosinus.swing.security.AuthorizedClient;
 import org.cosinus.swing.security.LocalStorageOAuth2AuthorizedClientService;
 
@@ -34,6 +33,7 @@ import java.util.stream.Stream;
 import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.strava.StravaUserStreamer.*;
+import static org.cosinus.streamer.strava.client.StravaClient.STRAVA_CLIENT_ID;
 
 @Getter
 @RootStreamer("Strava")
@@ -62,7 +62,7 @@ public class StravaMainStreamer extends MainStreamer<StravaUserStreamer> {
 
     @Override
     public Stream<StravaUserStreamer> stream() {
-        return localStorageOAuth2AuthorizedClientService.getAuthorizedClientsMap()
+        return localStorageOAuth2AuthorizedClientService.getAuthorizedClientsMap(STRAVA_CLIENT_ID)
             .entrySet()
             .stream()
             .map(entry -> new StravaUserStreamer(

@@ -18,6 +18,7 @@
 package org.cosinus.streamer.google.drive.connection;
 
 import com.google.api.services.drive.model.File;
+import org.cosinus.streamer.google.drive.GoogleDriveComponent;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
@@ -26,7 +27,7 @@ import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 
-@Component
+@GoogleDriveComponent
 public class GoogleDriveCache extends HashMap<String, File> {
 
     public Optional<File> findCachedFile(Path path) {

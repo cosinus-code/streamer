@@ -24,12 +24,10 @@ spring:
         config:
           strava:
             url: https://www.strava.com
-      oauth2:
-        enabled: true
-        clientRegistrationId: strava
   security:
     oauth2:
       client:
+        enabled: true
         registration:
           strava:
             clientId: 169183
@@ -44,7 +42,8 @@ spring:
             token-uri: https://www.strava.com/oauth/token
             user-info-uri: https://www.strava.com/api/v3/athlete
         receiver:
-          enabled: true
-          port: 8889
-        storing:
-          location: strava
+          strava:
+            host: localhost
+            port: 8889
+            storing-location: strava
+            file-name: authorizedClients

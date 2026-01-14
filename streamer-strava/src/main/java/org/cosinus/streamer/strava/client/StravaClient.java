@@ -24,10 +24,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.List;
 
+import static org.cosinus.streamer.strava.client.StravaClient.STRAVA_CLIENT_ID;
+
 @FeignClient(
-    name = "strava",
+    name = STRAVA_CLIENT_ID,
     path = "/api/v3")
 public interface StravaClient {
+
+    String STRAVA_CLIENT_ID = "strava";
 
     @GetMapping("/athlete")
     AthleteProfile getCurrentAthleteProfile();

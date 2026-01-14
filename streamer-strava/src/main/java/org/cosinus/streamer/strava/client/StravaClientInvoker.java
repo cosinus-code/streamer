@@ -18,32 +18,12 @@
 package org.cosinus.streamer.strava.client;
 
 import org.cosinus.streamer.strava.StravaComponent;
-import org.cosinus.streamer.strava.model.AthleteProfile;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import java.util.function.Function;
-
-import static org.springframework.security.core.authority.AuthorityUtils.createAuthorityList;
+import org.cosinus.swing.cloud.client.ClientInvoker;
 
 @StravaComponent
-public class StravaClientInvoker {
-
-    public static final String ATHLETE = "ATHLETE";
-
-    private final StravaClient stravaClient;
+public class StravaClientInvoker extends ClientInvoker<StravaClient> {
 
     public StravaClientInvoker(final StravaClient stravaClient) {
-        this.stravaClient = stravaClient;
-    }
-
-    public <T> T invoke(String invokeAsUSer, Function<StravaClient, T> stravaClientCall) {
-        SecurityContextHolder.getContext().setAuthentication(
-            new AnonymousAuthenticationToken(invokeAsUSer, invokeAsUSer, createAuthorityList(ATHLETE)));
-        try {
-            return stravaClientCall.apply(stravaClient);
-        } finally {
-            SecurityContextHolder.getContext().setAuthentication(null);
-        }
+        super(stravaClient);
     }
 }
