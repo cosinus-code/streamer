@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.ui.view.table.details;
 
+import lombok.Getter;
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.ui.view.table.DataTable;
 import org.cosinus.streamer.ui.view.table.DataTableModel;
@@ -41,14 +42,11 @@ public class DetailsTable<T extends Streamable> extends DataTable<T> {
     @Autowired
     public Translator translator;
 
+    @Getter
     private final DetailsView<?> view;
 
     public DetailsTable(DetailsView<?> view) {
         this.view = view;
-    }
-
-    public DetailsView<?> getView() {
-        return view;
     }
 
     @Override
@@ -102,24 +100,6 @@ public class DetailsTable<T extends Streamable> extends DataTable<T> {
         super.updateForm();
 
         setRowHeight(ROW_HEIGHT);
-    }
-
-    @Override
-    public void setCurrentIndex(int index) {
-        getSelectionModel().setSelectionInterval(index, index);
-        getTableModel().setCurrentIndex(index);
-        scrollRectToVisible(getCellRect(index, 0, false));
-        repaint();
-    }
-
-
-    @Override
-    public void addIndexToSelection(int index) {
-        getSelectionModel().addSelectionInterval(index, index);
-        getTableModel().setCurrentIndex(index);
-        scrollRectToVisible(getCellRect(index, 0, false));
-        repaint();
-        view.updateStatus();
     }
 
     @Override

@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.ui.view.table.grid;
 
+import lombok.Getter;
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.value.TranslatableName;
@@ -54,16 +55,14 @@ public class GridTable<T extends Streamable> extends DataTable<T> implements Act
     @Autowired
     public Translator translator;
 
+    @Getter
     public PopupMenu popupHeader;
 
+    @Getter
     private final GridView<?> view;
 
     public GridTable(GridView<?> view) {
         this.view = view;
-    }
-
-    public GridView<?> getView() {
-        return view;
     }
 
     @Override
@@ -172,24 +171,6 @@ public class GridTable<T extends Streamable> extends DataTable<T> implements Act
     }
 
     @Override
-    public void setCurrentIndex(int index) {
-        getSelectionModel().setSelectionInterval(index, index);
-        getTableModel().setCurrentIndex(index);
-        scrollRectToVisible(getCellRect(index, 0, false));
-        repaint();
-    }
-
-
-    @Override
-    public void addIndexToSelection(int index) {
-        getSelectionModel().addSelectionInterval(index, index);
-        getTableModel().setCurrentIndex(index);
-        scrollRectToVisible(getCellRect(index, 0, false));
-        repaint();
-        view.updateStatus();
-    }
-
-    @Override
     public GridTableModel<T> getTableModel() {
         return (GridTableModel<T>) super.getTableModel();
     }
@@ -215,10 +196,6 @@ public class GridTable<T extends Streamable> extends DataTable<T> implements Act
 
     private String columnKey(int index) {
         return storageKey("grid", "visible", Integer.toString(index));
-    }
-
-    public PopupMenu getPopupHeader() {
-        return popupHeader;
     }
 
     @Override

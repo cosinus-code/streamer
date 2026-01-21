@@ -103,6 +103,18 @@ public class IconTable<T extends Streamable> extends DataTable<T> {
     }
 
     @Override
+    public void addIndexToSelection(int index) {
+        //TODO: to add to selection
+        setCurrentIndex(index);
+    }
+
+    @Override
+    public void extendsSelectionToIndex(int index) {
+        //TODO: to add to selection
+        setCurrentIndex(index);
+    }
+
+    @Override
     protected TableColumnModel createDefaultColumnModel() {
         return new DefaultTableColumnModel() {
             @Override
@@ -123,12 +135,6 @@ public class IconTable<T extends Streamable> extends DataTable<T> {
                 };
             }
         };
-    }
-
-    @Override
-    public void addIndexToSelection(int index) {
-        //TODO: to add to selection
-        setCurrentIndex(index);
     }
 
     public void onResize(int width, int height) {

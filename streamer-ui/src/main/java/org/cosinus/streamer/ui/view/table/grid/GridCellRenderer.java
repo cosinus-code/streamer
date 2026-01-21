@@ -45,7 +45,7 @@ public class GridCellRenderer extends TableCellRenderer<GridTable> {
                                       int row,
                                       int column) {
 
-        //setBorder(CELL_BORDER);
+        setBorder(CELL_BORDER);
 
         label.setText(item.isTopItem() ?
             item.toString() :

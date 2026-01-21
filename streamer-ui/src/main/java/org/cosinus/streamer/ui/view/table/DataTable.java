@@ -170,7 +170,16 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
             } else if (event.getID() == MOUSE_ENTERED) {
 //                setDragItself(true);
             } else if (event.getID() == MOUSE_PRESSED) {
-                setCurrentIndex(getIndexForItemAtPoint(event.getPoint()));
+                int clickedIndex = getIndexForItemAtPoint(event.getPoint());
+                if (event.isControlDown()) {
+                    addIndexToSelection(clickedIndex);
+                    event.consume();
+                } else if (event.isShiftDown()) {
+                    extendsSelectionToIndex(clickedIndex);
+                    event.consume();
+                } else {
+                    setCurrentIndex(clickedIndex);
+                }
                 resetContentIdentifier();
             } else if (event.getID() == MOUSE_CLICKED) {
                 if (isLeftMouseButton(event)) {
@@ -380,9 +389,27 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
 
     }
 
-    public abstract void setCurrentIndex(int index);
+    public void setCurrentIndex(int currentIndex) {
+        getSelectionModel().setSelectionInterval(currentIndex, currentIndex);
+        setInternalCurrentIndex(currentIndex);
+    }
 
-    public abstract void addIndexToSelection(int index);
+    public void addIndexToSelection(int currentIndex) {
+        getSelectionModel().addSelectionInterval(currentIndex, currentIndex);
+        setInternalCurrentIndex(currentIndex);
+    }
+
+    public void extendsSelectionToIndex(int currentIndex) {
+        getSelectionModel().setSelectionInterval(getCurrentIndex(), currentIndex);
+        setInternalCurrentIndex(currentIndex);
+    }
+
+    protected void setInternalCurrentIndex(int currentIndex) {
+        getTableModel().setCurrentIndex(currentIndex);
+        scrollRectToVisible(getCellRect(currentIndex, 0, false));
+        repaint();
+        view.updateStatus();
+    }
 
     protected abstract DataTableModel<T> createDataTableModel();
 }
