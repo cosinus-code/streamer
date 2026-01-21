@@ -17,9 +17,9 @@
 
 package org.cosinus.streamer.api;
 
-import org.cosinus.stream.StreamingStrategy;
 import org.cosinus.stream.error.AbortPipelineConsumeException;
 import org.cosinus.stream.error.SkipPipelineConsumeException;
+import org.cosinus.stream.pipeline.PipelineStrategy;
 import org.cosinus.swing.boot.SwingApplicationFrame;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.dialog.DialogOption;
@@ -27,8 +27,11 @@ import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
+import static org.cosinus.swing.dialog.DialogOption.*;
 
-public class DefaultStreamingStrategy implements StreamingStrategy {
+public class DefaultPipelineStrategy implements PipelineStrategy {
+
+    private boolean skipAll;
 
     @Autowired
     private SwingApplicationFrame applicationFrame;
@@ -39,21 +42,26 @@ public class DefaultStreamingStrategy implements StreamingStrategy {
     @Autowired
     protected Translator translator;
 
-    public DefaultStreamingStrategy() {
+    public DefaultPipelineStrategy() {
         injectContext(this);
     }
 
     @Override
     public boolean shouldRetryOnFail(Exception exception) {
+        if (skipAll) {
+            throw new SkipPipelineConsumeException();
+        }
         DialogOption optionValue = dialogHandler.retryWithSkipDialog(applicationFrame,
             translator.translate("act-streaming-error"));
-        if (optionValue == DialogOption.ABORT) {
-            throw new AbortPipelineConsumeException("Streaming aborted by user");
+        if (optionValue == ABORT) {
+            throw new AbortPipelineConsumeException("Streaming aborted by user due to error");
         }
-        if (optionValue == DialogOption.SKIP) {
-            //TODO
-            throw new SkipPipelineConsumeException(1);
+        if (optionValue == SKIP_ALL) {
+            skipAll = true;
         }
-        return optionValue == DialogOption.RETRY;
+        if (skipAll || optionValue == SKIP) {
+            throw new SkipPipelineConsumeException();
+        }
+        return optionValue == RETRY;
     }
 }

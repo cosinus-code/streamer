@@ -69,7 +69,7 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
         this.destination = copyModel.getDestination();
         this.streamerFilter = copyModel.getSourceFilter();
         this.copyStrategy = new CopyStrategy();
-        this.streamingStrategy = new DefaultStreamingStrategy();
+        this.streamingStrategy = new DefaultPipelineStrategy();
     }
 
     @Override

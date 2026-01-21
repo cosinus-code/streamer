@@ -15,21 +15,14 @@
  */
 package org.cosinus.streamer.ui.action.execute.copy;
 
-import org.cosinus.stream.error.AbortPipelineConsumeException;
-import org.cosinus.stream.error.SkipPipelineConsumeException;
 import org.cosinus.stream.pipeline.binary.BinaryPipelineStrategy;
-import org.cosinus.swing.boot.SwingApplicationFrame;
 import org.cosinus.swing.dialog.DialogHandler;
-import org.cosinus.swing.dialog.DialogOption;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 public class CopyStrategy implements BinaryPipelineStrategy {
-
-    @Autowired
-    private SwingApplicationFrame applicationFrame;
 
     @Autowired
     protected DialogHandler dialogHandler;

@@ -16,11 +16,10 @@
 
 package org.cosinus.streamer.ui.action.execute.delete;
 
-import org.cosinus.stream.StreamingStrategy;
 import org.cosinus.stream.consumer.StreamConsumer;
 import org.cosinus.stream.pipeline.PipelineListener;
 import org.cosinus.stream.pipeline.PipelineStrategy;
-import org.cosinus.streamer.api.DefaultStreamingStrategy;
+import org.cosinus.streamer.api.DefaultPipelineStrategy;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
@@ -51,19 +50,19 @@ public class DeleteWorker
 
     private final DeleteActionModel deleteModel;
 
-    private final StreamingStrategy streamingStrategy;
+    private final PipelineStrategy pipelineStrategy;
 
     public DeleteWorker(DeleteActionModel deleteModel) {
         super(deleteModel, deleteModel.getStreamerView().getDeleteWorkerModel(), new StreamersProgressModel());
         this.deleteModel = deleteModel;
-        this.streamingStrategy = new DefaultStreamingStrategy();
+        this.pipelineStrategy = new DefaultPipelineStrategy();
     }
 
     @Override
     public Stream<Streamer<?>> openPipelineInputStream(PipelineStrategy pipelineStrategy) {
         return deleteModel
             .getParentStreamer()
-            .flatStream(LEVEL_BOTTOM_UP, streamingStrategy, deleteModel.getStreamerFilter());
+            .flatStream(LEVEL_BOTTOM_UP, this.pipelineStrategy, deleteModel.getStreamerFilter());
     }
 
     @Override
@@ -79,7 +78,7 @@ public class DeleteWorker
     public void preparePipelineOpen(PipelineStrategy pipelineStrategy, PipelineListener<Streamer<?>> pipelineListener) {
         ParentStreamer<Streamer<?>> parentStreamer = deleteModel.getParentStreamer();
         StreamerFilter streamerFilter = deleteModel.getStreamerFilter();
-        try (Stream<? extends Streamer<?>> flatStream = parentStreamer.flatStream(streamingStrategy, streamerFilter)) {
+        try (Stream<? extends Streamer<?>> flatStream = parentStreamer.flatStream(this.pipelineStrategy, streamerFilter)) {
             updateProgress(progress ->
                 progress.addTotalProgress(flatStream.count()));
         }
@@ -93,5 +92,10 @@ public class DeleteWorker
     @Override
     public void afterPipelineDataConsume(final Streamer<?> streamerToDelete) {
         progressModel.addProgress(1);
+    }
+
+    @Override
+    public PipelineStrategy getPipelineStrategy() {
+        return pipelineStrategy;
     }
 }
