@@ -25,7 +25,7 @@ import org.cosinus.streamer.api.value.TranslatableName;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static java.util.Collections.singletonList;
+import static org.cosinus.streamer.api.value.TranslatableName.translatableNames;
 
 public class StravaActivityKudosStreamer
     extends ExpandedStreamer<StravaActivityKudoStreamer>
@@ -35,7 +35,7 @@ public class StravaActivityKudosStreamer
 
     public StravaActivityKudosStreamer(final BinaryStreamer binaryStreamer) {
         super(binaryStreamer);
-        this.detailNames = singletonList(new TranslatableName(DETAIL_KEY_NAME, null));
+        this.detailNames = translatableNames(DETAIL_KEY_NAME);
     }
 
     @Override

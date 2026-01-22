@@ -46,11 +46,11 @@ public abstract class BaseFileStreamer<T> implements Streamer<T> {
 
     public BaseFileStreamer() {
         injectContext(this);
-        detailNames = asList(
-            new TranslatableName(DETAIL_KEY_NAME, null),
-            new TranslatableName(DETAIL_KEY_TYPE, null),
-            new TranslatableName(DETAIL_KEY_SIZE, null),
-            new TranslatableName(DETAIL_KEY_TIME, null));
+        detailNames = TranslatableName.translatableNames(
+            DETAIL_KEY_NAME,
+            DETAIL_KEY_TYPE,
+            DETAIL_KEY_SIZE,
+            DETAIL_KEY_TIME);
     }
 
     @Override

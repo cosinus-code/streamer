@@ -28,7 +28,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static org.cosinus.streamer.api.ParentStreamer.FOLDER_VIEW_ID;
 import static org.cosinus.streamer.strava.statististics.StravaStatisticsJsonStreamer.STATISTICS_ICON_NAME;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
@@ -59,16 +58,17 @@ public class StravaStatisticsStreamer extends ExpandedStreamer<StravaStatisticSt
     public StravaStatisticsStreamer(final BinaryStreamer binaryStreamer) {
         super(binaryStreamer);
         injectContext(this);
-        this.detailNames = asList(
-            new TranslatableName(DETAIL_KEY_NAME, null),
-            new TranslatableName(DETAIL_KEY_COUNT, null),
-            new TranslatableName(DETAIL_KEY_DISTANCE, null),
-            new TranslatableName(DETAIL_KEY_MOVING_TIME, null),
-            new TranslatableName(DETAIL_KEY_ELAPSED_TIME, null),
-            new TranslatableName(DETAIL_KEY_ELEVATION_GAIN, null),
-            new TranslatableName(DETAIL_KEY_ACHIEVEMENT_COUNT, null),
-            new TranslatableName(DETAIL_KEY_BIGGEST_DISTANCE, null),
-            new TranslatableName(DETAIL_KEY_BIGGEST_ELEVATION_GAIN, null));
+        this.detailNames = TranslatableName.translatableNames(
+            DETAIL_KEY_NAME,
+            DETAIL_KEY_COUNT,
+            DETAIL_KEY_DISTANCE,
+            DETAIL_KEY_MOVING_TIME,
+            DETAIL_KEY_ELAPSED_TIME,
+            DETAIL_KEY_ELEVATION_GAIN,
+            DETAIL_KEY_ACHIEVEMENT_COUNT,
+            DETAIL_KEY_BIGGEST_DISTANCE,
+            DETAIL_KEY_BIGGEST_ELEVATION_GAIN
+        );
     }
 
     @Override

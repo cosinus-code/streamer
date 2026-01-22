@@ -29,7 +29,6 @@ import java.util.stream.Stream;
 
 import static java.lang.String.valueOf;
 import static java.time.LocalDateTime.now;
-import static java.util.Arrays.asList;
 import static org.cosinus.stream.Streams.pagedStream;
 import static org.cosinus.swing.util.DateUtils.*;
 
@@ -56,12 +55,13 @@ public class StravaActivitiesYearStreamer extends StravaParentStreamer<StravaAct
         super(stravaUserStreamer, valueOf(year));
         this.stravaActivitiesStreamer = stravaActivitiesStreamer;
         this.year = year;
-        this.detailNames = asList(
-            new TranslatableName(DETAIL_KEY_NAME, null),
-            new TranslatableName(DETAIL_KEY_TYPE, null),
-            new TranslatableName(DETAIL_KEY_DISTANCE, null),
-            new TranslatableName(DETAIL_KEY_ELEVATION, null),
-            new TranslatableName(DETAIL_KEY_START_TIME, null));
+        this.detailNames = TranslatableName.translatableNames(
+            DETAIL_KEY_NAME,
+            DETAIL_KEY_TYPE,
+            DETAIL_KEY_DISTANCE,
+            DETAIL_KEY_ELEVATION,
+            DETAIL_KEY_START_TIME
+        );
     }
 
     @Override

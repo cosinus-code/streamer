@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static org.cosinus.streamer.gpx.GpxExpander.GPX_PROTOCOL;
 
 public class GpxStreamer extends ExpandedStreamer<GpxPoint> implements Streamer<GpxPoint> {
@@ -51,11 +50,12 @@ public class GpxStreamer extends ExpandedStreamer<GpxPoint> implements Streamer<
 
     public GpxStreamer(final BinaryStreamer binaryStreamer) {
         super(binaryStreamer);
-        detailNames = asList(
-            new TranslatableName(DETAIL_KEY_TIME, null),
-            new TranslatableName(DETAIL_KEY_LATITUDE, null),
-            new TranslatableName(DETAIL_KEY_LONGITUDE, null),
-            new TranslatableName(DETAIL_KEY_ELEVATION, null));
+        detailNames = TranslatableName.translatableNames(
+            DETAIL_KEY_TIME,
+            DETAIL_KEY_LATITUDE,
+            DETAIL_KEY_LONGITUDE,
+            DETAIL_KEY_ELEVATION
+        );
 
     }
 

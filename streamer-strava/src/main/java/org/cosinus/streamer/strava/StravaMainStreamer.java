@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.strava.StravaUserStreamer.*;
 import static org.cosinus.streamer.strava.client.StravaClient.STRAVA_CLIENT_ID;
@@ -88,12 +87,12 @@ public class StravaMainStreamer extends MainStreamer<StravaUserStreamer> {
     @Override
     public List<TranslatableName> detailNames() {
         if (detailNames == null) {
-            detailNames = asList(
-                new TranslatableName(USERNAME, null),
-                new TranslatableName(FIRST_NAME, null),
-                new TranslatableName(LAST_NAME, null),
-                new TranslatableName(CITY, null),
-                new TranslatableName(COUNTRY, null)
+            detailNames = TranslatableName.translatableNames(
+                USERNAME,
+                FIRST_NAME,
+                LAST_NAME,
+                CITY,
+                COUNTRY
             );
         }
         return detailNames;

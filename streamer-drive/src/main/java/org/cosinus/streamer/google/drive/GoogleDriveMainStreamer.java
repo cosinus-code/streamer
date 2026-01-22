@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static java.util.stream.Stream.concat;
 
 @RootStreamer("Google Drive")
@@ -96,10 +95,10 @@ public class GoogleDriveMainStreamer extends MainStreamer<ParentStreamer<? exten
 
     @Override
     public void init() {
-        detailNames = asList(
-            new TranslatableName(DETAIL_KEY_NAME, null),
-            new TranslatableName(DETAIL_KEY_FREE_MEMORY, null),
-            new TranslatableName(DETAIL_KEY_TOTAL_MEMORY, null)
+        detailNames = TranslatableName.translatableNames(
+            DETAIL_KEY_NAME,
+            DETAIL_KEY_FREE_MEMORY,
+            DETAIL_KEY_TOTAL_MEMORY
         );
     }
 }

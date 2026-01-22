@@ -152,18 +152,23 @@ public class IconTable<T extends Streamable> extends DataTable<T> {
     @Override
     public void changeSelection(int row, int column, boolean toggle, boolean extend) {
         int index = getTableModel().getIndex(row, column);
+        int newRow;
+        int newColumn;
         if (index < 0) {
-            row = 0;
-            column = 0;
+            newRow = 0;
+            newColumn = 0;
         } else {
             int count = getTableModel().getItemsCount();
             if (index >= count) {
-                row = getTableModel().getRowForIndex(count - 1);
-                column = getTableModel().getColumnForIndex(count - 1);
+                newRow = getTableModel().getRowForIndex(count - 1);
+                newColumn = getTableModel().getColumnForIndex(count - 1);
+            } else {
+                newRow = row;
+                newColumn = column;
             }
         }
 
-        super.changeSelection(row, column, toggle, extend);
+        super.changeSelection(newRow, newColumn, toggle, extend);
     }
 
     public int getCellWidth() {

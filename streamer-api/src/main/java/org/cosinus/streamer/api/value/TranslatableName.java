@@ -15,11 +15,15 @@
  */
 package org.cosinus.streamer.api.value;
 
+import lombok.Getter;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
+import static java.util.Arrays.stream;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 public class TranslatableName {
@@ -29,13 +33,10 @@ public class TranslatableName {
 
     private final String key;
 
+    @Getter
     private String name;
 
-    public TranslatableName(String name) {
-        this(null, name);
-    }
-
-    public TranslatableName(String key, String name) {
+    private TranslatableName(String key, String name) {
         injectContext(this);
         this.key = key;
         this.name = name;
@@ -45,8 +46,18 @@ public class TranslatableName {
         }
     }
 
-    public String name() {
-        return name;
+    public static TranslatableName name(String name) {
+        return new TranslatableName(null, name);
+    }
+
+    public static TranslatableName translatableName(String key) {
+        return new TranslatableName(key, null);
+    }
+
+    public static List<TranslatableName> translatableNames(String... keys) {
+        return stream(keys)
+            .map(key -> new TranslatableName(key, null))
+            .collect(Collectors.toList());
     }
 
     public void translate() {

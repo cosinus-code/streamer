@@ -46,7 +46,7 @@ public class DatabaseQueryStreamer extends DatabaseStreamer {
     public void init() {
         try (Stream<String> fieldNames = getFromRemote(connection -> connection.getFieldNames(getStreamQuery()))) {
             detailNames = fieldNames
-                .map(TranslatableName::new)
+                .map(TranslatableName::name)
                 .collect(toList());
         }
     }

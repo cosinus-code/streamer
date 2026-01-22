@@ -19,7 +19,6 @@ import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.streamer.ui.view.table.DataTableModel;
-import org.cosinus.streamer.ui.view.table.ViewItem;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -29,6 +28,7 @@ import java.util.List;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
+import static org.cosinus.streamer.api.value.TranslatableName.translatableName;
 
 public class GridTableModel<T extends Streamable> extends DataTableModel<T> {
 
@@ -63,7 +63,7 @@ public class GridTableModel<T extends Streamable> extends DataTableModel<T> {
 
     @Override
     public String getColumnName(int column) {
-        return this.columnNames.get(column).name();
+        return this.columnNames.get(column).getName();
     }
 
     @Override
@@ -82,7 +82,7 @@ public class GridTableModel<T extends Streamable> extends DataTableModel<T> {
     }
 
     private TranslatableName getName() {
-        return new TranslatableName("form-table-header-name", null);
+        return translatableName("form-table-header-name");
     }
 
     @Override

@@ -131,7 +131,7 @@ public class GridTable<T extends Streamable> extends DataTable<T> implements Act
                     .mapToObj(index -> {
                         CheckBoxMenuItem checkbox = new CheckBoxMenuItem(
                             this, isColumnVisible(index), columnKey(index));
-                        checkbox.setText(detailNames.get(index).name());
+                        checkbox.setText(detailNames.get(index).getName());
                         return checkbox;
                     })
                     .forEach(popupHeader::add);

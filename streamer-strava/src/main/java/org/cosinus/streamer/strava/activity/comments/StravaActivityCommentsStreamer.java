@@ -25,8 +25,6 @@ import org.cosinus.streamer.api.value.TranslatableName;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
-
 public class StravaActivityCommentsStreamer
     extends ExpandedStreamer<StravaActivityCommentStreamer>
     implements ParentStreamer<StravaActivityCommentStreamer> {
@@ -37,10 +35,10 @@ public class StravaActivityCommentsStreamer
 
     public StravaActivityCommentsStreamer(final BinaryStreamer binaryStreamer) {
         super(binaryStreamer);
-        this.detailNames = asList(
-            new TranslatableName(DETAIL_KEY_COMMENT, null),
-            new TranslatableName(DETAIL_KEY_NAME, null),
-            new TranslatableName(DETAIL_KEY_TIME, null)
+        this.detailNames = TranslatableName.translatableNames(
+            DETAIL_KEY_COMMENT,
+            DETAIL_KEY_NAME,
+            DETAIL_KEY_TIME
         );
     }
 

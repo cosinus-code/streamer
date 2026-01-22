@@ -33,7 +33,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_COMPUTER;
 
 @RootStreamer("Filesystem")
@@ -135,11 +134,11 @@ public class FileMainStreamer extends MainStreamer<FileStreamer<?>> {
 
     @Override
     public void init() {
-        detailNames = asList(
-            new TranslatableName(DETAIL_KEY_NAME, null),
-            new TranslatableName(DETAIL_KEY_TYPE, null),
-            new TranslatableName(DETAIL_KEY_FREE_MEMORY, null),
-            new TranslatableName(DETAIL_KEY_TOTAL_MEMORY, null)
+        detailNames = TranslatableName.translatableNames(
+            DETAIL_KEY_NAME,
+            DETAIL_KEY_TYPE,
+            DETAIL_KEY_FREE_MEMORY,
+            DETAIL_KEY_TOTAL_MEMORY
         );
     }
 

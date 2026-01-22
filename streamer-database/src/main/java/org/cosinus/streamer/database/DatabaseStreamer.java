@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static org.cosinus.streamer.api.value.TranslatableName.name;
 import static org.cosinus.streamer.database.DatabaseMainStreamer.DATABASE_PROTOCOL;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
@@ -66,7 +67,7 @@ public abstract class DatabaseStreamer implements RemoteStreamer<DatabaseRecord,
                     try {
                         String columnName = metaData.getColumnName(index);
                         Value value = resultSet.getValue(index);
-                        databaseRecord.put(new TranslatableName(columnName), value);
+                        databaseRecord.put(name(columnName), value);
                         //TODO:
                         if (columnName.equalsIgnoreCase("id") && value != null) {
                             databaseRecord.setName(value.toString());

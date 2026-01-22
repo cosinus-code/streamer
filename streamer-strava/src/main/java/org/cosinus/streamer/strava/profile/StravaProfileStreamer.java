@@ -34,7 +34,6 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.strava.StravaUserStreamer.*;
 
@@ -49,9 +48,9 @@ public class StravaProfileStreamer extends StravaParentStreamer<KeyValueStreamer
 
     public StravaProfileStreamer(final StravaUserStreamer stravaUserStreamer) {
         super(stravaUserStreamer, PROFILE);
-        this.detailNames = asList(
-            new TranslatableName(DETAIL_KEY_NAME, null),
-            new TranslatableName(DETAIL_KEY_VALUE, null)
+        this.detailNames = TranslatableName.translatableNames(
+            DETAIL_KEY_NAME,
+            DETAIL_KEY_VALUE
         );
     }
 

@@ -72,9 +72,9 @@ public class StravaActivityStreamer extends StravaParentStreamer<StravaStreamer<
         injectContext(this);
         this.stravaActivitiesYearStreamer = stravaActivitiesYearStreamer;
         this.activity = activity;
-        this.detailNames = asList(
-            new TranslatableName(DETAIL_KEY_NAME, null),
-            new TranslatableName(DETAIL_KEY_COUNT, null)
+        this.detailNames = TranslatableName.translatableNames(
+            DETAIL_KEY_NAME,
+            DETAIL_KEY_COUNT
         );
     }
 

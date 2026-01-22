@@ -25,7 +25,6 @@ import org.cosinus.streamer.api.value.TranslatableName;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static org.cosinus.streamer.strava.activity.StravaActivitiesYearStreamer.DETAIL_KEY_ELEVATION;
 
 public class StravaActivityLapsStreamer
@@ -41,10 +40,10 @@ public class StravaActivityLapsStreamer
 
     public StravaActivityLapsStreamer(final BinaryStreamer binaryStreamer) {
         super(binaryStreamer);
-        this.detailNames = asList(
-            new TranslatableName(DETAIL_KEY_INDEX, null),
-            new TranslatableName(DETAIL_KEY_PACE, null),
-            new TranslatableName(DETAIL_KEY_ELEVATION, null)
+        this.detailNames = TranslatableName.translatableNames(
+            DETAIL_KEY_INDEX,
+            DETAIL_KEY_PACE,
+            DETAIL_KEY_ELEVATION
         );
     }
 

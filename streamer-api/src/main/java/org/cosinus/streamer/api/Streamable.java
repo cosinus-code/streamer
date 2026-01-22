@@ -26,6 +26,7 @@ import static java.util.Collections.singletonList;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 import static org.cosinus.streamer.api.Streamer.DETAIL_KEY_NAME;
+import static org.cosinus.streamer.api.value.TranslatableName.translatableNames;
 
 public interface Streamable {
 
@@ -128,7 +129,7 @@ public interface Streamable {
     }
 
     default List<TranslatableName> detailNames() {
-        return singletonList(new TranslatableName(DETAIL_KEY_NAME, null));
+        return translatableNames(DETAIL_KEY_NAME);
     }
 
     default List<Value> details() {

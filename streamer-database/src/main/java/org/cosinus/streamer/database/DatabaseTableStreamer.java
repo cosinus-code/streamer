@@ -94,7 +94,7 @@ public class DatabaseTableStreamer extends DatabaseStreamer {
         });
         detailNames = fields
             .stream()
-            .map(TranslatableName::new)
+            .map(TranslatableName::name)
             .collect(toList());
     }
 
@@ -119,17 +119,17 @@ public class DatabaseTableStreamer extends DatabaseStreamer {
 
     @Override
     public boolean canUpdateRecordDetail(int detailIndex) {
-        return !getPrimaryKeys().contains(detailNames.get(detailIndex).name());
+        return !getPrimaryKeys().contains(detailNames.get(detailIndex).getName());
     }
 
     public void updateRecord(DatabaseRecord databaseRecord) {
         Map<String, Object> fieldValuesToUpdate = new LinkedHashMap<>();
         Map<String, Object> primaryKey = new LinkedHashMap<>();
         databaseRecord.forEach((key, value) -> {
-            if (primaryKeys.contains(key.name())) {
-                primaryKey.put(key.name(), value.value());
+            if (primaryKeys.contains(key.getName())) {
+                primaryKey.put(key.getName(), value.value());
             } else {
-                fieldValuesToUpdate.put(key.name(), value.value());
+                fieldValuesToUpdate.put(key.getName(), value.value());
             }
         });
         runRemote(connection -> connection.updateRecord(tableName, primaryKey, fieldValuesToUpdate));
@@ -140,7 +140,7 @@ public class DatabaseTableStreamer extends DatabaseStreamer {
             .entrySet()
             .stream()
             .collect(toMap(
-                entry -> entry.getKey().name(),
+                entry -> entry.getKey().getName(),
                 entry -> entry.getValue().value()))));
     }
 }

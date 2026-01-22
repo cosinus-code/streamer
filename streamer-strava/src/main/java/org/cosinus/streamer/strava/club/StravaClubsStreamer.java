@@ -26,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static org.cosinus.stream.Streams.pagedStream;
 
 public class StravaClubsStreamer extends StravaParentStreamer<StravaClubStreamer> {
@@ -46,12 +45,11 @@ public class StravaClubsStreamer extends StravaParentStreamer<StravaClubStreamer
 
     public StravaClubsStreamer(final StravaUserStreamer stravaUserStreamer) {
         super(stravaUserStreamer, CLUBS);
-        this.detailNames = asList(
-            new TranslatableName(DETAIL_KEY_NAME, null),
-            new TranslatableName(DETAIL_KEY_CITY, null),
-            new TranslatableName(DETAIL_KEY_COUNTRY, null),
-            new TranslatableName(DETAIL_KEY_MEMBERS_COUNT, null)
-        );
+        this.detailNames = TranslatableName.translatableNames(
+            DETAIL_KEY_NAME,
+            DETAIL_KEY_CITY,
+            DETAIL_KEY_COUNTRY,
+            DETAIL_KEY_MEMBERS_COUNT);
     }
 
     @Override

@@ -49,9 +49,9 @@ public class StravaClubStreamer extends StravaParentStreamer<KeyValueStreamer> {
         super(stravaClubsStreamer.getStravaUserStreamer(), club.getName());
         this.stravaClubsStreamer = stravaClubsStreamer;
         this.club = club;
-        this.detailNames = asList(
-            new TranslatableName(DETAIL_KEY_NAME, null),
-            new TranslatableName(DETAIL_KEY_VALUE, null)
+        this.detailNames = TranslatableName.translatableNames(
+            DETAIL_KEY_NAME,
+            DETAIL_KEY_VALUE
         );
         this.details = asList(
             new TextValue(club.getName()),
