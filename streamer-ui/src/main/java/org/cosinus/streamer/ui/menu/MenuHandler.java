@@ -18,6 +18,7 @@
 package org.cosinus.streamer.ui.menu;
 
 import org.cosinus.streamer.ui.action.FindAndLoadStreamerAction;
+import org.cosinus.streamer.ui.favorites.FavoritesHandler;
 import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.image.icon.IconHandler;
 import org.cosinus.swing.menu.MenuItem;

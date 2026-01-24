@@ -28,6 +28,7 @@ import javax.swing.*;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_SPACE;
+import static java.util.Optional.ofNullable;
 
 /**
  * Compute streamer size action
@@ -48,10 +49,16 @@ public class ComputeStreamerSizeAction implements ActionInContext {
 
     @Override
     public void run(ActionContext context) {
-        if (streamerViewHandler.getCurrentView().getCurrentItem() instanceof Streamer<?> streamer) {
-            computeStreamerSizeExecutor.execute(new ComputeStreamerSizeModel(streamer));
-            streamerViewHandler.getCurrentView().goNext();
-        }
+        ofNullable(streamerViewHandler.getCurrentView().getCurrentStreamer())
+            .ifPresent(streamer -> {
+                ComputeStreamerSizeModel computeStreamerSizeModel = new ComputeStreamerSizeModel(streamer);
+                computeStreamerSizeModel.registerListeners(
+                    streamerViewHandler.getCurrentView(),
+                    streamerViewHandler.getOppositeView());
+
+                computeStreamerSizeExecutor.execute(computeStreamerSizeModel);
+                streamerViewHandler.getCurrentView().goNext();
+            });
     }
 
     @Override

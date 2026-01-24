@@ -18,7 +18,7 @@
 package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.menu.ExecuteStreamerModel;
+import org.cosinus.streamer.ui.model.ExecuteStreamerModel;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.ActionContext;
@@ -69,10 +69,7 @@ public class ExecuteStreamerWithAction implements ActionInContext {
     @Override
     public void run(ActionContext context) {
         StreamerView<?, ?> streamerView = streamerViewHandler.getCurrentView();
-        ofNullable(streamerView.getCurrentItem())
-            .filter(item -> Streamer.class.isAssignableFrom(item.getClass()))
-            .map(Streamer.class::cast)
-            .or(() -> ofNullable(streamerView.getParentStreamer()))
+        ofNullable(streamerView.getCurrentStreamerOrParent())
             .filter(not(Streamer::isParent))
             .map(Streamer::getPath)
             .map(Path::toFile)

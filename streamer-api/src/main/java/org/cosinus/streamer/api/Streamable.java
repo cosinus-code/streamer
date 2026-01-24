@@ -73,6 +73,10 @@ public interface Streamable {
         return null;
     }
 
+    default String getTypeDescription() {
+        return getType();
+    }
+
     default String getType() {
         return getExtension(getName());
     }

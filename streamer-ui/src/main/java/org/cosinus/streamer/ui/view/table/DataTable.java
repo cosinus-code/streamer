@@ -53,6 +53,7 @@ import static org.cosinus.streamer.ui.action.ExecuteStreamerAction.EXECUTE_STREA
 import static org.cosinus.streamer.ui.action.ExecuteStreamerWithAction.EXECUTE_STREAMER_WITH_ACTION_ID;
 import static org.cosinus.streamer.ui.action.GoToLinkedStreamerAction.GO_TO_LINKED_STREAMER_ACTION_NAME;
 import static org.cosinus.streamer.ui.action.MoveToTrashStreamerAction.MOVE_TO_TRASH_STREAMER_ACTION_NAME;
+import static org.cosinus.streamer.ui.action.ShowStreamerPropertiesAction.SHOW_STREAMER_PROPERTIES_ACTION_ID;
 import static org.cosinus.streamer.ui.menu.MenuHandler.SEPARATOR;
 
 public abstract class DataTable<T extends Streamable> extends Table implements FocusListener, ExtendedContainer {
@@ -117,7 +118,10 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
             MOVE_TO_TRASH_STREAMER_ACTION_NAME,
             DELETE_STREAMER_ACTION_NAME,
             SEPARATOR,
-            CREATE_STREAMER_ACTION_ID);
+            CREATE_STREAMER_ACTION_ID,
+            SEPARATOR,
+            SHOW_STREAMER_PROPERTIES_ACTION_ID
+        );
 
         popupContextMenu.setEnabled(GO_TO_LINKED_STREAMER_ACTION_NAME, false);
 

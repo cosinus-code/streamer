@@ -15,7 +15,7 @@
  *
  */
 
-package org.cosinus.streamer.ui.menu;
+package org.cosinus.streamer.ui.model;
 
 import org.cosinus.swing.file.Application;
 import org.cosinus.swing.ui.UIModel;

@@ -15,7 +15,7 @@
  *
  */
 
-package org.cosinus.streamer.ui.menu;
+package org.cosinus.streamer.ui.favorites;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cosinus.swing.convert.JsonFileConverter;

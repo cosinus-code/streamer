@@ -15,14 +15,17 @@
  */
 package org.cosinus.streamer.ui.action.execute.compute;
 
+import lombok.Getter;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.swing.worker.WorkerModel;
-import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.execute.ActionModel;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.cosinus.swing.ui.Refreshable;
+import org.cosinus.swing.worker.WorkerModel;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import static java.util.Arrays.asList;
 import static org.cosinus.streamer.ui.action.ComputeStreamerSizeAction.COMPUTE_STREAMER_SIZE_ACTION_ID;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
@@ -31,24 +34,24 @@ import static org.cosinus.swing.context.ApplicationContextInjector.injectContext
  */
 public class ComputeStreamerSizeModel extends ActionModel implements WorkerModel<Void> {
 
-    @Autowired
-    private StreamerViewHandler streamerViewHandler;
-
+    @Getter
     private final Streamer<?> streamer;
+
+    private final Set<Refreshable> streamerSizeListeners;
 
     public ComputeStreamerSizeModel(final Streamer<?> streamer) {
         super(streamer.getId(), COMPUTE_STREAMER_SIZE_ACTION_ID);
         injectContext(this);
         this.streamer = streamer;
-    }
-
-    public Streamer<?> getStreamer() {
-        return streamer;
+        this.streamerSizeListeners = new HashSet<>();
     }
 
     @Override
     public void update(List<Void> items) {
-        streamerViewHandler.getCurrentView().repaint();
-        streamerViewHandler.getOppositeView().repaint();
+        streamerSizeListeners.forEach(Refreshable::refresh);
+    }
+
+    public void registerListeners(Refreshable... componentListeners) {
+        streamerSizeListeners.addAll(asList(componentListeners));
     }
 }

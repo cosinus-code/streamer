@@ -1,0 +1,48 @@
+{
+  "icon": {
+    "id": "streamer-icon",
+    "width": 84,
+    "height": 84,
+    "editable": true
+  },
+  "fields": [
+    {
+      "id": "streamer-name",
+      "type": "text",
+      "label": "streamer-name",
+      "focus": true
+    },
+    {
+      "id": "streamer-type",
+      "type": "label",
+      "label": "streamer-type"
+    },
+    {
+      "id": "streamer-location",
+      "type": "label",
+      "label": "streamer-location"
+    },
+    {
+      "id": "streamer-last-modified",
+      "type": "label",
+      "label": "streamer-last-modified"
+    },
+    {
+      "id": "streamer-size",
+      "type": "label",
+      "label": "streamer-size"
+    }
+  ],
+  "buttons": [
+    {
+      "id": "cancel",
+      "label": "cancel",
+      "action": "cancel"
+    },
+    {
+      "id": "ok",
+      "label": "ok",
+      "action": "ok"
+    }
+  ]
+}

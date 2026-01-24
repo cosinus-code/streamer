@@ -16,7 +16,7 @@
 
 package org.cosinus.streamer.ui.view;
 
-import org.cosinus.streamer.ui.menu.FavoritesHandler;
+import org.cosinus.streamer.ui.favorites.FavoritesHandler;
 import org.cosinus.streamer.ui.menu.MenuHandler;
 import org.cosinus.swing.form.Panel;
 import org.cosinus.swing.form.ProgressBar;

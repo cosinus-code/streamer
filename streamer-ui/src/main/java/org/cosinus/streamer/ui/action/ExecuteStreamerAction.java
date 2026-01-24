@@ -16,7 +16,6 @@
 
 package org.cosinus.streamer.ui.action;
 
-import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.view.StreamerView;
@@ -53,9 +52,7 @@ public class ExecuteStreamerAction implements ActionInContext {
     @Override
     public void run(ActionContext context) {
         StreamerView<?, ?> streamerView = streamerViewHandler.getCurrentView();
-        ofNullable(streamerView.getCurrentItem())
-            .filter(item -> Streamer.class.isAssignableFrom(item.getClass()))
-            .map(Streamer.class::cast)
+        ofNullable(streamerView.getCurrentStreamer())
             .ifPresent(streamerToExecute -> {
                 if (streamerToExecute.isParent()) {
                     loadActionExecutor.execute(new LoadActionModel(

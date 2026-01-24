@@ -18,6 +18,7 @@ package org.cosinus.streamer.ui.view.table;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cosinus.swing.file.FileHandler;
 import org.cosinus.swing.image.ImageHandler;
 import org.cosinus.swing.image.icon.IconHandler;
 import org.cosinus.swing.icon.IconSize;
@@ -30,7 +31,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
 import java.util.Optional;
 
 import static java.awt.Color.gray;
@@ -56,6 +56,9 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
 
     @Autowired
     private ImageHandler imageHandler;
+
+    @Autowired
+    private FileHandler fileHandler;
 
     public TableCellRenderer() {
         injectContext(this);
@@ -137,16 +140,7 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
     }
 
     public File createItemFile(ViewItem item) {
-        String fileName = ofNullable(item.getPath())
-            .map(Objects::toString)
-            .or(() -> ofNullable(item.getName()))
-            .orElse("tmp");
-        return new File(fileName) {
-            @Override
-            public boolean isDirectory() {
-                return item.isParent();
-            }
-        };
+        return fileHandler.createVirtualFile(item.getPath(), item.getName(), item.isParent());
     }
 
 }

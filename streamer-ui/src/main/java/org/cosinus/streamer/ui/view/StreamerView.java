@@ -337,6 +337,19 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
         setStatus(getStatus());
     }
 
+    public Streamer<T> getCurrentStreamer() {
+        return ofNullable(getCurrentItem())
+            .filter(item -> Streamer.class.isAssignableFrom(item.getClass()))
+            .map(Streamer.class::cast)
+            .orElse(null);
+    }
+
+    public Streamer<T> getCurrentStreamerOrParent() {
+        return ofNullable(getCurrentStreamer())
+            .or(() -> ofNullable(getParentStreamer()))
+            .orElse(null);
+    }
+
     public abstract String getStatus();
 
     public abstract String getName();
