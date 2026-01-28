@@ -1,0 +1,62 @@
+{
+  "fields": [
+    {
+      "id": "owner-name",
+      "type": "label",
+      "label": "owner-name"
+    },
+    {
+      "id": "group-name",
+      "type": "combobox",
+      "label": "group-name",
+      "focus": true
+    },
+    {
+      "id": "owner-permissions",
+      "type": "boolean-list",
+      "label": "owner-permissions"
+    },
+    {
+      "id": "group-permissions",
+      "type": "boolean-list",
+      "label": "group-permissions"
+    },
+    {
+      "id": "others-permissions",
+      "type": "boolean-list",
+      "label": "others-permissions"
+    },
+    {
+      "id": "set-user-id",
+      "type": "boolean",
+      "label": "set-user-id"
+    },
+    {
+      "id": "set-group-id",
+      "type": "boolean",
+      "label": "set-group-id"
+    },
+    {
+      "id": "sticky",
+      "type": "boolean",
+      "label": "sticky"
+    },
+    {
+      "id": "permissions-text-view",
+      "type": "label",
+      "label": "permissions-text-view"
+    }
+  ],
+  "buttons": [
+    {
+      "id": "cancel",
+      "label": "cancel",
+      "action": "cancel"
+    },
+    {
+      "id": "ok",
+      "label": "ok",
+      "action": "ok"
+    }
+  ]
+}

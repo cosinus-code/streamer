@@ -19,6 +19,7 @@ package org.cosinus.streamer.api;
 import org.cosinus.stream.StreamSupplier;
 import org.cosinus.stream.consumer.StreamConsumer;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
+import org.cosinus.swing.file.Permissions;
 
 import java.util.stream.Stream;
 
@@ -66,5 +67,13 @@ public interface Streamer<T> extends Streamable, StreamSupplier<T> {
 
     default SaveWorkerModel<?> saveModel() {
         return null;
+    }
+
+    default Permissions getPermissions() {
+        return Permissions.builder().build();
+    }
+
+    default void setPermissions(Permissions permissions) {
+
     }
 }

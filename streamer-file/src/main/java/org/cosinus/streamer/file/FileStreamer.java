@@ -22,6 +22,7 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.error.StreamerException;
 import org.cosinus.streamer.api.file.BaseFileStreamer;
 import org.cosinus.streamer.api.value.Value;
+import org.cosinus.swing.file.Permissions;
 import org.cosinus.swing.util.AutoRemovableTemporaryFile;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -159,6 +160,21 @@ public abstract class FileStreamer<T> extends BaseFileStreamer<T> {
         return ofNullable(fileHandler.getLinkedPath(file))
             .map(fileMainStreamer::create)
             .orElse(null);
+    }
+
+    @Override
+    public Permissions getPermissions() {
+        return fileHandler.getFilePermissions(file);
+    }
+
+    @Override
+    public void setPermissions(Permissions permissions) {
+        if (!permissions.numberView().equals(getPermissions().numberView())) {
+            fileHandler.setFilePermissions(file, permissions);
+        }
+        if (!permissions.getGroupName().equals(getPermissions().getGroupName())) {
+            fileHandler.setGroupOwnerForFile(file, permissions.getGroupName());
+        }
     }
 
     @Override
