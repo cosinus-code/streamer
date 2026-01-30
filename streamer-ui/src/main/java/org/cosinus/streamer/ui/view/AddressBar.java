@@ -63,7 +63,7 @@ public class AddressBar extends Panel {
         upButton = new SimpleButton(ICON_UP, "Λ");
 
         upButton.addAction(() -> actionController.runAction(GO_TO_PARENT_ACTION));
-        addressField.addAction(findAndLoadStreamer(addressField::getText));
+        addressField.addActionListener(event -> findAndLoadStreamer(addressField::getText));
 
         SpringGridLayout layout = new SpringGridLayout(this, 1, 4, 1, 3, 1, 3);
 

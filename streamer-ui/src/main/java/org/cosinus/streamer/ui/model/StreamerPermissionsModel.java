@@ -19,7 +19,6 @@ package org.cosinus.streamer.ui.model;
 
 import lombok.Getter;
 import org.cosinus.swing.file.Permissions;
-import org.cosinus.streamer.api.Streamer;
 import org.cosinus.swing.form.control.CheckBoxValue;
 import org.cosinus.swing.translate.Translator;
 import org.cosinus.swing.ui.UIModel;
@@ -42,6 +41,7 @@ public class StreamerPermissionsModel implements UIModel {
     private static final String SET_GROUP_ID = "set-group-id";
     private static final String STICKY = "sticky";
     private static final String TEXT_VIEW = "permissions-text-view";
+    private static final String NUMBER_VIEW = "permissions-number-view";
 
     private static final String READ_PERMISSION_KEY = "read";
     private static final String WRITE_PERMISSION_KEY = "write";
@@ -56,7 +56,8 @@ public class StreamerPermissionsModel implements UIModel {
         SET_USER_ID,
         SET_GROUP_ID,
         STICKY,
-        TEXT_VIEW);
+        TEXT_VIEW,
+        NUMBER_VIEW);
 
     @Autowired
     private Translator translator;
@@ -70,13 +71,13 @@ public class StreamerPermissionsModel implements UIModel {
     @Getter
     private final Permissions permissions;
 
-    public StreamerPermissionsModel(final Streamer<?> streamer) {
+    public StreamerPermissionsModel(final Permissions permissions) {
         injectContext(this);
         this.readPermissionName = translator.translate(READ_PERMISSION_KEY);
         this.writePermissionName = translator.translate(WRITE_PERMISSION_KEY);
         this.executePermissionName = translator.translate(EXECUTE_PERMISSION_KEY);
 
-        this.permissions = streamer.getPermissions();
+        this.permissions = permissions;
     }
 
     @Override
@@ -138,6 +139,7 @@ public class StreamerPermissionsModel implements UIModel {
             case SET_GROUP_ID -> permissions.isSetGroupId();
             case STICKY -> permissions.isSticky();
             case TEXT_VIEW -> permissions.getTextView();
+            case NUMBER_VIEW -> permissions.getNumberView();
             default -> null;
         };
     }
@@ -147,4 +149,8 @@ public class StreamerPermissionsModel implements UIModel {
         return permissions.getAvailableGroupNames();
     }
 
+    @Override
+    public boolean isReadonly(final String key) {
+        return !permissions.isEditable();
+    }
 }

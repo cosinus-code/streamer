@@ -11,7 +11,7 @@
       "type": "list",
       "width": 300,
       "height": 400,
-      "action": true,
+      "doubleClickAction": true,
       "focus": true
     },
     {

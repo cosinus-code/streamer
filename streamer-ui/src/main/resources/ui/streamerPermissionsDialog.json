@@ -14,37 +14,48 @@
     {
       "id": "owner-permissions",
       "type": "boolean-list",
-      "label": "owner-permissions"
+      "label": "owner-permissions",
+      "action": "refresh"
     },
     {
       "id": "group-permissions",
       "type": "boolean-list",
-      "label": "group-permissions"
+      "label": "group-permissions",
+      "action": "refresh"
     },
     {
       "id": "others-permissions",
       "type": "boolean-list",
-      "label": "others-permissions"
+      "label": "others-permissions",
+      "action": "refresh"
     },
     {
       "id": "set-user-id",
       "type": "boolean",
-      "label": "set-user-id"
+      "label": "set-user-id",
+      "action": "refresh"
     },
     {
       "id": "set-group-id",
       "type": "boolean",
-      "label": "set-group-id"
+      "label": "set-group-id",
+      "action": "refresh"
     },
     {
       "id": "sticky",
       "type": "boolean",
-      "label": "sticky"
+      "label": "sticky",
+      "action": "refresh"
     },
     {
       "id": "permissions-text-view",
       "type": "label",
       "label": "permissions-text-view"
+    },
+    {
+      "id": "permissions-number-view",
+      "type": "label",
+      "label": "permissions-number-view"
     }
   ],
   "buttons": [

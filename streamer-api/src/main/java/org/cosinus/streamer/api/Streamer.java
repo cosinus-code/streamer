@@ -70,7 +70,7 @@ public interface Streamer<T> extends Streamable, StreamSupplier<T> {
     }
 
     default Permissions getPermissions() {
-        return Permissions.builder().build();
+        return null;
     }
 
     default void setPermissions(Permissions permissions) {

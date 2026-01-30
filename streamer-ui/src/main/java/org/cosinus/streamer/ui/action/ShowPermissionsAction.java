@@ -24,6 +24,8 @@ import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.ActionContext;
 import org.cosinus.swing.action.ActionInContext;
 import org.cosinus.swing.dialog.DialogHandler;
+import org.cosinus.swing.file.Permissions;
+import org.cosinus.swing.translate.Translator;
 import org.springframework.stereotype.Component;
 
 import static java.util.Optional.ofNullable;
@@ -42,10 +44,14 @@ public class ShowPermissionsAction implements ActionInContext {
 
     private final DialogHandler dialogHandler;
 
+    private final Translator translator;
+
     public ShowPermissionsAction(final StreamerViewHandler streamerViewHandler,
-                                 final DialogHandler dialogHandler) {
+                                 final DialogHandler dialogHandler,
+                                 final Translator translator) {
         this.streamerViewHandler = streamerViewHandler;
         this.dialogHandler = dialogHandler;
+        this.translator = translator;
     }
 
     @Override
@@ -56,7 +62,13 @@ public class ShowPermissionsAction implements ActionInContext {
     }
 
     private void showStreamerPermissionsDialog(Streamer<?> streamer) {
-        StreamerPermissionsModel streamerPermissionsModel = new StreamerPermissionsModel(streamer);
+        Permissions permissions = streamer.getPermissions();
+        if (permissions == null) {
+            dialogHandler.showInfo(translator.translate("no-permissions-available"));
+            return;
+        }
+
+        StreamerPermissionsModel streamerPermissionsModel = new StreamerPermissionsModel(permissions);
         dialogHandler.showDialog(() -> dialogHandler
                 .createDialog(applicationFrame, STREAMER_PERMISSIONS_DIALOG, streamerPermissionsModel))
             .response()

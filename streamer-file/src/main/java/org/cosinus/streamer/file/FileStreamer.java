@@ -169,12 +169,22 @@ public abstract class FileStreamer<T> extends BaseFileStreamer<T> {
 
     @Override
     public void setPermissions(Permissions permissions) {
-        if (!permissions.numberView().equals(getPermissions().numberView())) {
-            fileHandler.setFilePermissions(file, permissions);
-        }
-        if (!permissions.getGroupName().equals(getPermissions().getGroupName())) {
-            fileHandler.setGroupOwnerForFile(file, permissions.getGroupName());
-        }
+        ofNullable(getPermissions())
+            .filter(Permissions::isEditable)
+            .ifPresent(existingPermissions -> {
+                if (!permissions.getNumberView().equals(existingPermissions.getNumberView())) {
+                    fileHandler.setFilePermissions(file, permissions);
+                }
+                String newOwnerName = !permissions.getOwnerName().equals(existingPermissions.getOwnerName()) ?
+                    permissions.getOwnerName() :
+                    null;
+                String newGroupName = !permissions.getGroupName().equals(existingPermissions.getGroupName()) ?
+                    permissions.getGroupName() :
+                    null;
+                if (newOwnerName != null || newGroupName != null) {
+                    fileHandler.setOwnerForFile(file, newOwnerName, newGroupName);
+                }
+            });
     }
 
     @Override
