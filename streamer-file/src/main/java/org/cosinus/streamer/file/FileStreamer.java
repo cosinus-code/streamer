@@ -22,7 +22,8 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.error.StreamerException;
 import org.cosinus.streamer.api.file.BaseFileStreamer;
 import org.cosinus.streamer.api.value.Value;
-import org.cosinus.swing.file.Permissions;
+import org.cosinus.swing.file.FilePermissions;
+import org.cosinus.swing.security.Permissions;
 import org.cosinus.swing.util.AutoRemovableTemporaryFile;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -163,28 +164,30 @@ public abstract class FileStreamer<T> extends BaseFileStreamer<T> {
     }
 
     @Override
-    public Permissions getPermissions() {
+    public FilePermissions getPermissions() {
         return fileHandler.getFilePermissions(file);
     }
 
     @Override
     public void setPermissions(Permissions permissions) {
-        ofNullable(getPermissions())
-            .filter(Permissions::isEditable)
-            .ifPresent(existingPermissions -> {
-                if (!permissions.getNumberView().equals(existingPermissions.getNumberView())) {
-                    fileHandler.setFilePermissions(file, permissions);
-                }
-                String newOwnerName = !permissions.getOwnerName().equals(existingPermissions.getOwnerName()) ?
-                    permissions.getOwnerName() :
-                    null;
-                String newGroupName = !permissions.getGroupName().equals(existingPermissions.getGroupName()) ?
-                    permissions.getGroupName() :
-                    null;
-                if (newOwnerName != null || newGroupName != null) {
-                    fileHandler.setOwnerForFile(file, newOwnerName, newGroupName);
-                }
-            });
+        if (permissions instanceof FilePermissions filePermissions) {
+            ofNullable(getPermissions())
+                .filter(FilePermissions::isEditable)
+                .ifPresent(existingPermissions -> {
+                    if (!filePermissions.getNumberView().equals(existingPermissions.getNumberView())) {
+                        fileHandler.setFilePermissions(file, filePermissions);
+                    }
+                    String newOwnerName = !filePermissions.getOwnerName().equals(existingPermissions.getOwnerName()) ?
+                        filePermissions.getOwnerName() :
+                        null;
+                    String newGroupName = !filePermissions.getGroupName().equals(existingPermissions.getGroupName()) ?
+                        filePermissions.getGroupName() :
+                        null;
+                    if (newOwnerName != null || newGroupName != null) {
+                        fileHandler.setOwnerForFile(file, newOwnerName, newGroupName);
+                    }
+                });
+        }
     }
 
     @Override

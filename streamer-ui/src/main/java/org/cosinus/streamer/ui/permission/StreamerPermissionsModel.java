@@ -15,10 +15,10 @@
  *
  */
 
-package org.cosinus.streamer.ui.model;
+package org.cosinus.streamer.ui.permission;
 
 import lombok.Getter;
-import org.cosinus.swing.file.Permissions;
+import org.cosinus.swing.file.FilePermissions;
 import org.cosinus.swing.form.control.CheckBoxValue;
 import org.cosinus.swing.translate.Translator;
 import org.cosinus.swing.ui.UIModel;
@@ -69,9 +69,9 @@ public class StreamerPermissionsModel implements UIModel {
     private final String executePermissionName;
 
     @Getter
-    private final Permissions permissions;
+    private final FilePermissions permissions;
 
-    public StreamerPermissionsModel(final Permissions permissions) {
+    public StreamerPermissionsModel(final FilePermissions permissions) {
         injectContext(this);
         this.readPermissionName = translator.translate(READ_PERMISSION_KEY);
         this.writePermissionName = translator.translate(WRITE_PERMISSION_KEY);

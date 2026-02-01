@@ -17,6 +17,7 @@ package org.cosinus.streamer.api;
 
 import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.streamer.api.value.Value;
+import org.cosinus.swing.security.Permissions;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -161,5 +162,15 @@ public abstract class StreamerDelegate<T, S extends Streamer<?>> implements Stre
     @Override
     public int getLeadDetailIndex() {
         return delegate.getLeadDetailIndex();
+    }
+
+    @Override
+    public Permissions getPermissions() {
+        return delegate.getPermissions();
+    }
+
+    @Override
+    public void setPermissions(Permissions permissions) {
+        delegate.setPermissions(permissions);
     }
 }

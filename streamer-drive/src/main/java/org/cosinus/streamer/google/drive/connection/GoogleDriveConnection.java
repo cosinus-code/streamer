@@ -21,6 +21,7 @@ import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInsta
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.services.drive.model.About.StorageQuota;
 import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.Permission;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -64,7 +65,7 @@ public class GoogleDriveConnection implements Connection<File> {
 
     public static final String STORAGE_QUOTA_FIELDS = "storageQuota(limit,usage)";
 
-    public static final String FILE_FIELDS = "id,name,mimeType,parents,size,modifiedTime";
+    public static final String FILE_FIELDS = "id,name,mimeType,parents,size,modifiedTime,permissions,owners,webViewLink";
 
     public static final String FILES_FIELDS = "files(%s)".formatted(FILE_FIELDS);
 
@@ -284,6 +285,34 @@ public class GoogleDriveConnection implements Connection<File> {
             .resumeUpload(fileToUpdate, bytes)
             .setResumeUploadHeaders()
             .setThrowExceptionOnExecuteError(false)
+            .execute();
+    }
+
+    public Permission getPermission(String fileId, String permissionId) {
+        return client
+            .permissions()
+            .get(fileId, permissionId)
+            .execute();
+    }
+
+    public Permission createPermission(String fileId, Permission permission) {
+        return client
+            .permissions()
+            .create(fileId, permission)
+            .execute();
+    }
+
+    public Permission updatePermission(String fileId, String permissionId, Permission permission) {
+        return client
+            .permissions()
+            .update(fileId, permissionId, permission)
+            .execute();
+    }
+
+    public void removePermission(String fileId, String permissionId) {
+        client
+            .permissions()
+            .delete(fileId, permissionId)
             .execute();
     }
 

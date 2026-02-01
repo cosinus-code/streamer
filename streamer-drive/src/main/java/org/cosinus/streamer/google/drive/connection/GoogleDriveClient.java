@@ -24,6 +24,8 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
+import com.google.api.services.drive.model.Permission;
+import com.google.api.services.drive.model.PermissionList;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,6 +46,11 @@ public class GoogleDriveClient extends Drive {
     }
 
     @Override
+    public GoogleDrivePermissions permissions() {
+        return new GoogleDrivePermissions();
+    }
+
+    @Override
     public GoogleDriveAbout about() {
         return new GoogleDriveAbout();
     }
@@ -54,6 +61,143 @@ public class GoogleDriveClient extends Drive {
             super.initialize(httpClientRequest);
         } catch (IOException e) {
             throw new GoogleDriveException(e);
+        }
+    }
+
+    public class GoogleDrivePermissions extends Permissions {
+
+        @Override
+        public GoogleDrivePermissionsList list(String fileId) {
+            GoogleDrivePermissionsList list = new GoogleDrivePermissionsList(fileId);
+            initialize(list);
+            return list;
+        }
+
+        @Override
+        public GoogleDrivePermissionGet get(String fileId, String permissionId) {
+            GoogleDrivePermissionGet get = new GoogleDrivePermissionGet(fileId, permissionId);
+            initialize(get);
+            return get;
+        }
+
+        @Override
+        public GoogleDrivePermissionCreate create(String fileId, Permission content) {
+            GoogleDrivePermissionCreate create = new GoogleDrivePermissionCreate(fileId, content);
+            initialize(create);
+            return create;
+        }
+
+        @Override
+        public GoogleDrivePermissionUpdate update(String fileId, String permissionId, Permission content) {
+            GoogleDrivePermissionUpdate update = new GoogleDrivePermissionUpdate(fileId, permissionId, content);
+            initialize(update);
+            return update;
+        }
+
+        @Override
+        public GoogleDrivePermissionDelete delete(String fileId, String permissionId) {
+            GoogleDrivePermissionDelete delete = new GoogleDrivePermissionDelete(fileId, permissionId);
+            initialize(delete);
+            return delete;
+        }
+
+        public class GoogleDrivePermissionsList extends Permissions.List {
+            protected GoogleDrivePermissionsList(String fileId) {
+                super(fileId);
+            }
+
+            @Override
+            public GoogleDrivePermissionsList setFields(String fields) {
+                super.setFields(fields);
+                return this;
+            }
+
+            @Override
+            public PermissionList execute() {
+                try {
+                    return super.execute();
+                } catch (IOException e) {
+                    throw new GoogleDriveException(e);
+                }
+            }
+        }
+
+        public class GoogleDrivePermissionGet extends Permissions.Get {
+            protected GoogleDrivePermissionGet(String fileId, String permissionId) {
+                super(fileId, permissionId);
+            }
+
+            @Override
+            public GoogleDrivePermissionGet setFields(String fields) {
+                super.setFields(fields);
+                return this;
+            }
+
+            @Override
+            public Permission execute() {
+                try {
+                    return super.execute();
+                } catch (IOException e) {
+                    throw new GoogleDriveException(e);
+                }
+            }
+        }
+
+        public class GoogleDrivePermissionCreate extends Permissions.Create {
+            protected GoogleDrivePermissionCreate(String fileId, Permission content) {
+                super(fileId, content);
+            }
+
+            @Override
+            public GoogleDrivePermissionCreate setFields(String fields) {
+                super.setFields(fields);
+                return this;
+            }
+
+            @Override
+            public Permission execute() {
+                try {
+                    return super.execute();
+                } catch (IOException e) {
+                    throw new GoogleDriveException(e);
+                }
+            }
+        }
+
+        public class GoogleDrivePermissionUpdate extends Permissions.Update {
+            protected GoogleDrivePermissionUpdate(String fileId, String permissionId, Permission content) {
+                super(fileId, permissionId, content);
+            }
+
+            @Override
+            public GoogleDrivePermissionUpdate setFields(String fields) {
+                super.setFields(fields);
+                return this;
+            }
+
+            @Override
+            public Permission execute() {
+                try {
+                    return super.execute();
+                } catch (IOException e) {
+                    throw new GoogleDriveException(e);
+                }
+            }
+        }
+
+        public class GoogleDrivePermissionDelete extends Permissions.Delete {
+            protected GoogleDrivePermissionDelete(String fileId, String permissionId) {
+                super(fileId, permissionId);
+            }
+
+            @Override
+            public Void execute() {
+                try {
+                    return super.execute();
+                } catch (IOException e) {
+                    throw new GoogleDriveException(e);
+                }
+            }
         }
     }
 
@@ -204,7 +348,7 @@ public class GoogleDriveClient extends Drive {
             }
 
             protected GoogleDriveCreate(File content, AbstractInputStreamContent mediaContent) {
-                super(content,mediaContent);
+                super(content, mediaContent);
             }
 
             @Override

@@ -18,18 +18,17 @@
 package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.model.StreamerPermissionsModel;
+import org.cosinus.streamer.ui.permission.PermissionsHandler;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.ActionContext;
 import org.cosinus.swing.action.ActionInContext;
 import org.cosinus.swing.dialog.DialogHandler;
-import org.cosinus.swing.file.Permissions;
+import org.cosinus.swing.security.Permissions;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.stereotype.Component;
 
 import static java.util.Optional.ofNullable;
-import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 
 @Component
 public class ShowPermissionsAction implements ActionInContext {
@@ -46,12 +45,16 @@ public class ShowPermissionsAction implements ActionInContext {
 
     private final Translator translator;
 
+    private final PermissionsHandler permissionsHandler;
+
     public ShowPermissionsAction(final StreamerViewHandler streamerViewHandler,
                                  final DialogHandler dialogHandler,
-                                 final Translator translator) {
+                                 final Translator translator,
+                                 final PermissionsHandler permissionsHandler) {
         this.streamerViewHandler = streamerViewHandler;
         this.dialogHandler = dialogHandler;
         this.translator = translator;
+        this.permissionsHandler = permissionsHandler;
     }
 
     @Override
@@ -67,13 +70,14 @@ public class ShowPermissionsAction implements ActionInContext {
             dialogHandler.showInfo(translator.translate("no-permissions-available"));
             return;
         }
-
-        StreamerPermissionsModel streamerPermissionsModel = new StreamerPermissionsModel(permissions);
-        dialogHandler.showDialog(() -> dialogHandler
-                .createDialog(applicationFrame, STREAMER_PERMISSIONS_DIALOG, streamerPermissionsModel))
-            .response()
-            .map(StreamerPermissionsModel::getPermissions)
-            .ifPresent(streamer::setPermissions);
+        permissionsHandler
+            .findPermissionsDialogHandler(permissions)
+            .ifPresentOrElse(
+                permissionsDialogHandler -> permissionsDialogHandler
+                    .showPermissionsDialog(permissions)
+                    .ifPresent(streamer::setPermissions),
+                () -> dialogHandler.showInfo(translator.translate("unsupported-permissions-type"))
+            );
     }
 
     @Override

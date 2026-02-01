@@ -19,7 +19,7 @@ package org.cosinus.streamer.api;
 import org.cosinus.stream.StreamSupplier;
 import org.cosinus.stream.consumer.StreamConsumer;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
-import org.cosinus.swing.file.Permissions;
+import org.cosinus.swing.security.Permissions;
 
 import java.util.stream.Stream;
 
