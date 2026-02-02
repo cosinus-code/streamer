@@ -75,7 +75,8 @@ public class GoogleDrivePermissionsDialog extends Dialog<GoogleDrivePermissions>
                     @Override
                     public String getHtml() {
                         return htmlText(wrappedHtml(
-                            boldText(user.getDisplayName()),
+                            boldText(user.getDisplayName() +
+                                (user.isMe() ? " (" + translator.translate("google-drive-me") + ")" : "")),
                             user.getDescription()));
                     }
                 }.getHtml());

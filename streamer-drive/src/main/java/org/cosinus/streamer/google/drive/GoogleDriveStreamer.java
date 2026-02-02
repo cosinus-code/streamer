@@ -122,7 +122,7 @@ public abstract class GoogleDriveStreamer<T> extends BaseFileStreamer<T> impleme
 
     @Override
     public GoogleDrivePermissions getPermissions() {
-        return new GoogleDrivePermissions(file);
+        return file.getOwners() != null && file.getPermissions() != null ? new GoogleDrivePermissions(file) : null;
     }
 
     @Override

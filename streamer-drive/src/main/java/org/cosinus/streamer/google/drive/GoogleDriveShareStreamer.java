@@ -21,6 +21,7 @@ import com.google.api.services.drive.model.File;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.google.drive.model.GoogleDriveShare;
 import org.cosinus.streamer.google.drive.model.GoogleDriveShareHandler;
+import org.cosinus.streamer.google.drive.permissions.GoogleDrivePermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class GoogleDriveShareStreamer extends GoogleDriveParentStreamer {
@@ -57,5 +58,10 @@ public class GoogleDriveShareStreamer extends GoogleDriveParentStreamer {
     @Override
     public boolean delete(boolean moveToTrash) {
         return googleDriveShareHandler.deleteGoogleDriveShare(googleDriveShare);
+    }
+
+    @Override
+    public GoogleDrivePermissions getPermissions() {
+        return null;
     }
 }
