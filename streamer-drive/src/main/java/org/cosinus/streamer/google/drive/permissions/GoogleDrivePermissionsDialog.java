@@ -81,7 +81,7 @@ public class GoogleDrivePermissionsDialog extends Dialog<GoogleDrivePermissions>
                     }
                 }.getHtml());
                 userLabel.setIconName(user.getIconName());
-                iconHandler.findIconByName(user.getIconName(), X32)
+                iconHandler.findIconByName(user.getIconName(), X32, true)
                     .ifPresent(userLabel::setIcon);
 
                 usersPanel.add(userLabel);

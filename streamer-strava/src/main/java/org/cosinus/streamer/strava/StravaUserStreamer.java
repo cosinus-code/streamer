@@ -177,6 +177,11 @@ public class StravaUserStreamer implements ParentStreamer<StravaStreamer<?>> {
     }
 
     @Override
+    public boolean isIconRounded() {
+        return true;
+    }
+
+    @Override
     public String getProtocol() {
         return stravaMainStreamer.getProtocol();
     }

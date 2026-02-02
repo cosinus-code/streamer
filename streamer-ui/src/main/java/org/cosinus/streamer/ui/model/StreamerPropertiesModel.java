@@ -113,7 +113,7 @@ public class StreamerPropertiesModel implements UIModel {
     @Override
     public Icon getIcon() {
         return ofNullable(streamer.getIconName())
-            .flatMap(iconName -> iconHandler.findIconByName(iconName, X64))
+            .flatMap(iconName -> iconHandler.findIconByName(iconName, X64, false))
             .or(() -> iconHandler.findIconByFile(createItemFile(streamer), X64))
             .orElse(null);
     }

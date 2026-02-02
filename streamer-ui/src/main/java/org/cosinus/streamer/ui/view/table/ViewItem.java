@@ -74,6 +74,10 @@ public class ViewItem {
         return streamable.getIconName();
     }
 
+    public boolean isIconRounded() {
+        return streamable.isIconRounded();
+    }
+
     public Path getPath() {
         return streamable.getPath();
     }

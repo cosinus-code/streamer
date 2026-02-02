@@ -106,8 +106,8 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
                                                   int column);
 
     protected Optional<Icon> getUpIcon(IconSize size) {
-        return iconHandler.findIconByName(ICON_UP, size)
-            .or(() -> iconHandler.findIconByName(ICON_FOLDER, size));
+        return iconHandler.findIconByName(ICON_UP, size, false)
+            .or(() -> iconHandler.findIconByName(ICON_FOLDER, size, false));
     }
 
     protected Optional<Icon> getIcon(IconSize size, ViewItem item) {
@@ -116,12 +116,12 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
 
     protected Optional<Icon> getIcon(IconSize size, ViewItem item, boolean showPreview) {
         return ofNullable(item.getIconName())
-            .flatMap(iconName -> iconHandler.findIconByName(item.getIconName(), size))
+            .flatMap(iconName -> iconHandler.findIconByName(item.getIconName(), size, item.isIconRounded()))
             .or(() -> item.isFile() ?
                 showPreview ?
                     findIconWithPreview(size, createItemFile(item)) :
                     iconHandler.findIconByFile(createItemFile(item), size) :
-                iconHandler.findIconByName(ICON_FOLDER, size)
+                iconHandler.findIconByName(ICON_FOLDER, size, false)
                     .or(() -> uiHandler.getDefaultFileIcon()));
     }
 

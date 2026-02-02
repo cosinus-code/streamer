@@ -124,6 +124,10 @@ public interface Streamable {
         return null;
     }
 
+    default boolean isIconRounded() {
+        return false;
+    }
+
     default boolean canRead() {
         return true;
     }
