@@ -20,7 +20,7 @@ package org.cosinus.streamer.ui.menu;
 import org.cosinus.streamer.ui.action.FindAndLoadStreamerAction;
 import org.cosinus.streamer.ui.favorites.FavoritesHandler;
 import org.cosinus.swing.action.ActionController;
-import org.cosinus.swing.image.icon.IconHandler;
+import org.cosinus.swing.image.icon.IconInitializer;
 import org.cosinus.swing.menu.MenuItem;
 import org.cosinus.swing.menu.PopupMenu;
 import org.springframework.stereotype.Component;
@@ -41,12 +41,16 @@ public class MenuHandler {
 
     private final FavoritesHandler favoritesHandler;
 
+    protected final IconInitializer iconInitializer;
+
     private PopupMenu favoritesPopup;
 
     public MenuHandler(final ActionController actionController,
-                       final FavoritesHandler favoritesHandler, IconHandler iconHandler) {
+                       final FavoritesHandler favoritesHandler,
+                       final IconInitializer iconInitializer) {
         this.actionController = actionController;
         this.favoritesHandler = favoritesHandler;
+        this.iconInitializer = iconInitializer;
     }
 
     public PopupMenu createPopupMenu(String... actionIds) {
@@ -71,6 +75,9 @@ public class MenuHandler {
     public MenuItem createMenuItem(String actionId) {
         MenuItem menuItem = new MenuItem(e -> actionController.runAction(actionId), actionId);
         menuItem.translate();
+
+        //TODO: this shouldn't be necessary, but sometimes the icon is not loaded by the IconInitializer
+        iconInitializer.updateIcon(menuItem);
         return menuItem;
     }
 
