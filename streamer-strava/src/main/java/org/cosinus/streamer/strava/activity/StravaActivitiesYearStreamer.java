@@ -40,6 +40,8 @@ public class StravaActivitiesYearStreamer extends StravaParentStreamer<StravaAct
 
     public static final String DETAIL_KEY_START_TIME = "start-time";
 
+    public static final String DETAIL_KEY_PACE = "pace";
+
     @Autowired
     private Translator translator;
 
@@ -60,6 +62,7 @@ public class StravaActivitiesYearStreamer extends StravaParentStreamer<StravaAct
             DETAIL_KEY_TYPE,
             DETAIL_KEY_DISTANCE,
             DETAIL_KEY_ELEVATION,
+            DETAIL_KEY_PACE,
             DETAIL_KEY_START_TIME
         );
     }

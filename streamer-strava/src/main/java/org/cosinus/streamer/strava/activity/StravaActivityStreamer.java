@@ -19,10 +19,7 @@ package org.cosinus.streamer.strava.activity;
 
 import lombok.Getter;
 import org.cosinus.streamer.api.ParentStreamer;
-import org.cosinus.streamer.api.value.DateValue;
-import org.cosinus.streamer.api.value.DistanceValue;
-import org.cosinus.streamer.api.value.TextValue;
-import org.cosinus.streamer.api.value.TranslatableName;
+import org.cosinus.streamer.api.value.*;
 import org.cosinus.streamer.strava.StravaParentStreamer;
 import org.cosinus.streamer.strava.StravaStreamer;
 import org.cosinus.streamer.strava.StravaUserStreamer;
@@ -153,6 +150,7 @@ public class StravaActivityStreamer extends StravaParentStreamer<StravaStreamer<
             new TextValue(getType()),
             new DistanceValue(activity.getDistance()),
             new DistanceValue(activity.getTotalElevationGain()),
+            new PaceValue(activity.getAverageSpeed()),
             new DateValue(getStartDate()));
     }
 
@@ -160,5 +158,4 @@ public class StravaActivityStreamer extends StravaParentStreamer<StravaStreamer<
     public List<TranslatableName> detailNames() {
         return detailNames;
     }
-
 }

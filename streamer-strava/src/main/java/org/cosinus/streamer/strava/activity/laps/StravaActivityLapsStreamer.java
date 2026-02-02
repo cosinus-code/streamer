@@ -35,7 +35,6 @@ public class StravaActivityLapsStreamer
 
     public static final String DETAIL_KEY_PACE = "pace";
 
-
     private final List<TranslatableName> detailNames;
 
     public StravaActivityLapsStreamer(final BinaryStreamer binaryStreamer) {

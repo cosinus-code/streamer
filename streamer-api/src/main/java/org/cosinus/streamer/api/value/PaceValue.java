@@ -34,7 +34,7 @@ public class PaceValue extends DoubleValue {
     @Override
     public String toString() {
         return ofNullable(value)
-            .map(formatHandler::formatPace)
+            .map(formatHandler::formatSpeedAsPace)
             .orElse("");
     }
 

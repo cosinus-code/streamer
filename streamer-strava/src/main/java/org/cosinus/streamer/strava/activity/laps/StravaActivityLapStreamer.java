@@ -79,19 +79,13 @@ public class StravaActivityLapStreamer extends StravaJsonStreamer {
         return activityLap;
     }
 
-    protected Double getPace() {
-        return ofNullable(activityLap.getAverageSpeed())
-            .map(averageSpeed -> 1000 / (60 * averageSpeed))
-            .orElse(null);
-    }
-
     @Override
     public void reset() {
         details = asList(
             new TextValue(formatHandler.formatIndexAsString(
                 activityLap.getLapIndex(),
                 stravaActivityLapsStreamer.getLapsCount())),
-            new PaceValue(getPace()),
+            new PaceValue(activityLap.getAverageSpeed()),
             new ElevationValue(activityLap.getTotalElevationGain())
         );
     }
