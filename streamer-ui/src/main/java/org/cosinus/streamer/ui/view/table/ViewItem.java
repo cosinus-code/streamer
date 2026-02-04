@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.ui.view.table;
 
+import lombok.Getter;
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.value.Value;
 
@@ -25,13 +26,34 @@ import java.util.Objects;
 /**
  * View item used in the view model
  */
+@Getter
 public class ViewItem {
 
     private static final String TOP_ITEM_NAME = "..";
 
+    private final Streamable streamable;
+
     private final boolean topItem;
 
-    private final Streamable streamable;
+    private final String id;
+
+    private final String name;
+
+    private final boolean parent;
+
+    private final boolean link;
+
+    private final boolean hidden;
+
+    private final String iconName;
+
+    private final boolean iconRounded;
+
+    private final Path path;
+
+    private final String description;
+
+    private final boolean file;
 
     public ViewItem(Streamable streamable) {
         this(streamable, false);
@@ -40,63 +62,25 @@ public class ViewItem {
     public ViewItem(Streamable streamable, boolean topItem) {
         this.streamable = streamable;
         this.topItem = topItem;
-    }
-
-    public Streamable getStreamable() {
-        return streamable;
-    }
-
-    public String getId() {
-        return streamable.getId();
-    }
-
-    public String getName() {
-        return streamable.getName();
-    }
-
-    public boolean isParent() {
-        return streamable.isParent();
-    }
-
-    public boolean isLink() {
-        return streamable.isLink();
-    }
-
-    public boolean isHidden() {
-        return streamable.isHidden();
-    }
-
-    public boolean isTopItem() {
-        return topItem;
-    }
-
-    public String getIconName() {
-        return streamable.getIconName();
-    }
-
-    public boolean isIconRounded() {
-        return streamable.isIconRounded();
-    }
-
-    public Path getPath() {
-        return streamable.getPath();
-    }
-
-    public String getDescription() {
-        return streamable.getDescription();
-    }
-
-    @Override
-    public String toString() {
-        return isTopItem() ? TOP_ITEM_NAME : streamable.getName();
+        this.id = streamable.getId();
+        this.name = streamable.getName();
+        this.parent = streamable.isParent();
+        this.link = streamable.isLink();
+        this.hidden = streamable.isHidden();
+        this.iconName = streamable.getIconName();
+        this.iconRounded = streamable.isIconRounded();
+        this.path = streamable.getPath();
+        this.description = streamable.getDescription();
+        this.file = streamable.isFile();
     }
 
     public Value getDetail(int detailIndex) {
         return streamable.details().get(detailIndex);
     }
 
-    public boolean isFile() {
-        return streamable.isFile();
+    @Override
+    public String toString() {
+        return isTopItem() ? TOP_ITEM_NAME : streamable.getName();
     }
 
     @Override
