@@ -26,6 +26,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_GOOGLE;
 
 public class GoogleDriveUserStreamer extends GoogleDriveParentStreamer {
 
@@ -47,7 +48,7 @@ public class GoogleDriveUserStreamer extends GoogleDriveParentStreamer {
 
     @Override
     public String getIconName() {
-        return "google";
+        return ICON_GOOGLE;
     }
 
     @Override

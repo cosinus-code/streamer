@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.util.stream.Stream.concat;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_GOOGLE_DRIVE;
 
 @RootStreamer("Google Drive")
 @GoogleDriveComponent
@@ -65,7 +66,7 @@ public class GoogleDriveMainStreamer extends MainStreamer<ParentStreamer<? exten
 
     @Override
     public String getIconName() {
-        return "google-drive";
+        return ICON_GOOGLE_DRIVE;
     }
 
     @Override

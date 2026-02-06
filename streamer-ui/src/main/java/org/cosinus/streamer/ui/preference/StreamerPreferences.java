@@ -18,28 +18,15 @@ package org.cosinus.streamer.ui.preference;
 
 public interface StreamerPreferences {
 
-    String THEME = "theme";
     String ROW_HEIGHT = "row-height";
     String ADDRESS_BAR = "address-bar";
     String ADDRESS_TOP = "address-top";
-    String ROOT_COMBO = "root-combo";
-    String COMMAND = "command";
-    String BUTTONS = "buttons";
     String TOP_VISIBLE = "top-visible";
     String BOUND = "bound";
-    String ALLOW_INTERNAL_OPEN = "allow-internal-open";
-    String OPEN_IN_NEW_TAB = "open-new-tab";
     String PREVIEW = "preview";
     String SHOW_HIDDEN = "show-hidden";
-    String CHECK_TYPE = "check-type";
     String VERIFY_COPY = "verify-copy";
-    String ICON_PATH = "icon-path";
-    String DOWNLOAD_DIR = "download-dir";
-    String EDIT_APP = "edit-app";
     String ASK_DELETE = "ask-delete-folders";
-    String TAB_SIZE = "tab-size";
-    String FULL_TYPE_DESCRIPTION = "full-type-description";
-    String FIT_IMAGE = "fit-image";
     String SHORT_SIZE = "short-size";
     String LAST_CONTENT = "last-content";
     String TOOLBAR_FILE = "toolbar-file";
@@ -48,24 +35,15 @@ public interface StreamerPreferences {
     String ICON_TAB = "icon-tab";
     String PACKET_SIZE = "packet-size";
     String GENERAL_FONT = "general-font";
-    String VIEW_FONT = "view-font";
-    String EDIT_FONT = "edit-font";
     String PREVIEW_LIMIT = "preview-limit";
     String LANGUAGE = "language";
     String ICON_SIZE = "icon-size";
     String RUN_BACKGROUND = "run-background";
     String SHOW_LINE_NUMBERS = "show-line-numbers";
-    String BIG_TOOLBAR_ICONS = "big-toolbar-icons";
-    String TEXT_TOOLBAR_ICONS = "text-toolbar-icons";
     String CHECK_UPDATE = "check-update";
     String SHOW_TREE_FILES = "show-tree-files";
     String SHOW_LEFT_VIEW = "show-left-view";
-    String CURRENT_BORDER = "current-border";
-    String CONSOLE = "console";
-    String DOUBLE_CLICK = "double-click";
-    String DOUBLE_CLICK_TREE = "double-click-tree";
-    String ALWAYS_SHOW_TAB = "always-show-tab";
-    String KEEP_DIVIDER_RELATIVE_LOCATION = "keep-divider-relative-location";
+    String KEEP_DIVIDER = "keep-divider";
     String LEFT_VIEW = "left-view";
     String RIGHT_VIEW = "right-view";
 }

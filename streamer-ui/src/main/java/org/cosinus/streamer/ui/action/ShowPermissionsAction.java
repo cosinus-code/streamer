@@ -29,6 +29,7 @@ import org.cosinus.swing.translate.Translator;
 import org.springframework.stereotype.Component;
 
 import static java.util.Optional.ofNullable;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_PERMISSIONS;
 
 @Component
 public class ShowPermissionsAction implements ActionInContext {
@@ -36,8 +37,6 @@ public class ShowPermissionsAction implements ActionInContext {
     public static final String SHOW_STREAMER_PERMISSIONS_ACTION_ID = "show-streamer-permissions";
 
     private static final String STREAMER_PERMISSIONS_DIALOG = "streamerPermissionsDialog.json";
-
-    private static final String ICON_PERMISSIONS = "permissions";
 
     private final StreamerViewHandler streamerViewHandler;
 

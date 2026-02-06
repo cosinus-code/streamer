@@ -33,12 +33,12 @@ import org.springframework.stereotype.Component;
 import javax.swing.*;
 import java.nio.file.Path;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.awt.event.KeyEvent.VK_P;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_PROPERTIES;
 
 @Component
 public class ShowStreamerPropertiesAction implements ActionInContext {
@@ -46,8 +46,6 @@ public class ShowStreamerPropertiesAction implements ActionInContext {
     public static final String SHOW_STREAMER_PROPERTIES_ACTION_ID = "show-streamer-properties";
 
     private static final String STREAMER_PROPERTIES_DIALOG = "streamerPropertiesDialog.json";
-
-    private static final String ICON_PROPERTIES = "properties";
 
     private final StreamerViewHandler streamerViewHandler;
 

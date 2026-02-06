@@ -23,12 +23,12 @@ import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.stereotype.Component;
 
+import static org.cosinus.swing.image.icon.IconProvider.ICON_HELP;
+
 @Component
 public class ShowHelpAction implements ActionInContext {
 
     public static final String SHOW_HELP_ACTION_NAME = "menu-help-index";
-
-    public static final String SHOW_HELP_ICON_NAME = "help";
 
     private final DialogHandler dialogHandler;
 
@@ -47,7 +47,7 @@ public class ShowHelpAction implements ActionInContext {
 
     @Override
     public String getIconName() {
-        return SHOW_HELP_ICON_NAME;
+        return ICON_HELP;
     }
 
     @Override

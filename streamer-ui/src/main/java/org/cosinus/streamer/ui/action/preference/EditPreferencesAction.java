@@ -22,6 +22,7 @@ import org.cosinus.swing.dialog.DialogHandler;
 import org.springframework.stereotype.Component;
 
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_SETTINGS;
 
 /**
  * Start draw action
@@ -44,7 +45,7 @@ public class EditPreferencesAction implements ActionInContext {
 
     @Override
     public String getIconName() {
-        return "settings";
+        return ICON_SETTINGS;
     }
 
     @Override
