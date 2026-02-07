@@ -121,6 +121,11 @@ public abstract class TableStreamerView<T extends Streamable>
     }
 
     @Override
+    public List<ViewItem> getAllViewItems() {
+        return table.getAllViewItems();
+    }
+
+    @Override
     public String getCurrentItemIdentifier() {
         return table.getTableModel().getCurrentItemIdentifier();
     }

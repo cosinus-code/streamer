@@ -16,6 +16,8 @@
 
     <cache alias="spring.swing.icons" uses-template="default"/>
 
+    <cache alias="spring.swing.image.thumbnails" uses-template="default"/>
+
     <cache alias="spring.swing.uniform.type.identifier" uses-template="default"/>
 
     <cache alias="spring.swing.file.type.description" uses-template="default"/>

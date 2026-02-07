@@ -18,9 +18,6 @@ package org.cosinus.streamer.ui.action.execute.load;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
-import org.cosinus.swing.progress.ProgressListener;
-import org.cosinus.swing.progress.ProgressModel;
-import org.cosinus.swing.worker.WorkerExecutor;
 import org.cosinus.streamer.ui.action.execute.load.image.LoadImageActionModel;
 import org.cosinus.streamer.ui.action.execute.load.image.LoadImageExecutor;
 import org.cosinus.streamer.ui.action.execute.save.SaveActionModel;
@@ -30,16 +27,29 @@ import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.streamer.ui.view.image.ImageStreamerView;
 import org.cosinus.swing.action.execute.ActionExecutor;
 import org.cosinus.swing.dialog.DialogHandler;
+import org.cosinus.swing.file.FileHandler;
 import org.cosinus.swing.file.mimetype.MimeTypeResolver;
+import org.cosinus.swing.image.LoadThumbnailsWorker;
+import org.cosinus.swing.preference.Preferences;
+import org.cosinus.swing.progress.ProgressListener;
+import org.cosinus.swing.progress.ProgressModel;
 import org.cosinus.swing.translate.Translator;
+import org.cosinus.swing.worker.WorkerExecutor;
+import org.cosinus.swing.worker.WorkerListener;
+import org.cosinus.swing.worker.WorkerModel;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.action.LoadStreamerAction.LOAD_STREAMER_ACTION_ID;
+import static org.cosinus.streamer.ui.preference.StreamerPreferences.PREVIEW;
 import static org.cosinus.streamer.ui.view.image.ImageStreamerView.IMAGE_VIEWER;
+import static org.cosinus.streamer.ui.view.table.icon.IconTable.PREVIEW_CELL_SIZE;
+import static org.cosinus.streamer.ui.view.table.icon.IconView.ICON_VIEW_NAME;
 import static org.cosinus.streamer.ui.view.text.TextStreamerView.TEXT_EDITOR;
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 
@@ -63,13 +73,19 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
 
     private final MimeTypeResolver mimeTypeResolver;
 
+    private final Preferences preferences;
+
+    private final FileHandler fileHandler;
+
     protected LoadActionExecutor(final StreamerViewHandler streamerViewHandler,
                                  final BinaryExpanderHandler binaryExpanderHandler,
                                  final DialogHandler dialogHandler,
                                  final Translator translator,
                                  final SaveWorkerExecutor saveWorkerExecutor,
                                  final LoadImageExecutor loadImageExecutor,
-                                 final MimeTypeResolver mimeTypeResolver) {
+                                 final MimeTypeResolver mimeTypeResolver,
+                                 final Preferences preferences,
+                                 final FileHandler fileHandler) {
         this.streamerViewHandler = streamerViewHandler;
         this.binaryExpanderHandler = binaryExpanderHandler;
         this.dialogHandler = dialogHandler;
@@ -77,6 +93,8 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
         this.saveWorkerExecutor = saveWorkerExecutor;
         this.loadImageExecutor = loadImageExecutor;
         this.mimeTypeResolver = mimeTypeResolver;
+        this.preferences = preferences;
+        this.fileHandler = fileHandler;
     }
 
     @Override
@@ -164,10 +182,29 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
             .getLoadWorkerModel()
             .setContentIdentifier(actionModel.getItemToSelectAfterLoad());
 
-        return new LoadWorker<>(
+        LoadWorker loadWorker = new LoadWorker<>(
             actionModel,
             actionModel.getStreamerToLoad(),
             actionModel.getStreamerViewToLoadTo());
+
+        loadWorker.registerListener(new WorkerListener() {
+            @Override
+            public void workerFinished(WorkerModel workerModel) {
+                boolean showPreview = preferences.booleanPreference(PREVIEW);
+                if (showPreview && ICON_VIEW_NAME.equals(actionModel.getStreamerViewToLoadTo().getName())) {
+                    new LoadThumbnailsWorker(PREVIEW_CELL_SIZE,
+                    files -> actionModel.getStreamerViewToLoadTo().refresh(),
+                    () -> actionModel.getStreamerViewToLoadTo()
+                            .getAllViewItems()
+                            .stream()
+                            .map(item -> fileHandler
+                                .createVirtualFile(item.getPath(), item.getName(), item.isParent()))
+                            .filter(File::exists))
+                        .execute();
+                }
+            }
+        });
+        return loadWorker;
     }
 
     @Override

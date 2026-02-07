@@ -250,7 +250,7 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
     }
 
     public void movePositionByName(String name) {
-        List<ViewItem> items = getAllItems();
+        List<ViewItem> items = getAllViewItems();
         if (!items.isEmpty()) {
             int min = model.isTopVisible() ? 1 : 0;
             int start = getSelectedRow() + (name.length() == 1 ? 1 : 0);
@@ -325,12 +325,12 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
         return getTableModel().getItemsCount();
     }
 
-    public List<ViewItem> getAllItems() {
+    public List<ViewItem> getAllViewItems() {
         return getTableModel().getAllViewItems();
     }
 
     public void findViewItem(String name) {
-        List<ViewItem> items = getAllItems();
+        List<ViewItem> items = getAllViewItems();
         range(0, items.size())
             .filter(i -> name.equals(items.get(i).getName()))
             .findFirst()

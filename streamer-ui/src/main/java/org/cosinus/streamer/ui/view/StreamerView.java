@@ -24,6 +24,7 @@ import org.cosinus.streamer.ui.action.ChangeViewActionContext;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
+import org.cosinus.streamer.ui.view.table.ViewItem;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.form.Panel;
@@ -45,6 +46,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static java.awt.BorderLayout.*;
+import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_STATUS;
 import static org.cosinus.streamer.ui.view.View.findByName;
@@ -348,6 +350,10 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
         return ofNullable(getCurrentStreamer())
             .or(() -> ofNullable(getParentStreamer()))
             .orElse(null);
+    }
+
+    public List<ViewItem> getAllViewItems() {
+        return emptyList();
     }
 
     public abstract String getStatus();

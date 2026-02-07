@@ -65,10 +65,10 @@ public class IconCellRenderer extends TableCellRenderer<IconTable> {
                                       int row,
                                       int column) {
 
-        Icon icon = getCellIcon(item);
+        boolean showPreview = preferences.booleanPreference(PREVIEW);
+        Icon icon = getCellIcon(item, showPreview);
         IconCellPanel cellPanel = new IconCellPanel(label, item, icon, table.getCellWidth(), isSelected);
 
-        boolean showPreview = preferences.booleanPreference(PREVIEW);
         ofNullable(icon)
             .map(Icon::getIconHeight)
             .map(iconHeight -> showPreview ? table.getIconDimension() : iconHeight)
@@ -79,8 +79,7 @@ public class IconCellRenderer extends TableCellRenderer<IconTable> {
         return cellPanel;
     }
 
-    private Icon getCellIcon(ViewItem item) {
-        boolean showPreview = preferences.booleanPreference(PREVIEW);
+    private Icon getCellIcon(ViewItem item, boolean showPreview) {
         Optional<Icon> icon = item.isTopItem() ?
             getUpIcon(table.getIconSize()) :
             getIcon(table.getIconSize(), item, showPreview);
