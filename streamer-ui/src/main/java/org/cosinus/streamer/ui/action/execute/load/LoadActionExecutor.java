@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.ui.action.execute.load;
 
+import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
 import org.cosinus.streamer.ui.action.execute.load.image.LoadImageActionModel;
@@ -25,9 +26,9 @@ import org.cosinus.streamer.ui.action.execute.save.SaveWorkerExecutor;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.streamer.ui.view.image.ImageStreamerView;
+import org.cosinus.streamer.ui.view.table.ViewItem;
 import org.cosinus.swing.action.execute.ActionExecutor;
 import org.cosinus.swing.dialog.DialogHandler;
-import org.cosinus.swing.file.FileHandler;
 import org.cosinus.swing.file.mimetype.MimeTypeResolver;
 import org.cosinus.swing.image.LoadThumbnailsWorker;
 import org.cosinus.swing.preference.Preferences;
@@ -39,9 +40,7 @@ import org.cosinus.swing.worker.WorkerListener;
 import org.cosinus.swing.worker.WorkerModel;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
@@ -75,8 +74,6 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
 
     private final Preferences preferences;
 
-    private final FileHandler fileHandler;
-
     protected LoadActionExecutor(final StreamerViewHandler streamerViewHandler,
                                  final BinaryExpanderHandler binaryExpanderHandler,
                                  final DialogHandler dialogHandler,
@@ -84,8 +81,7 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
                                  final SaveWorkerExecutor saveWorkerExecutor,
                                  final LoadImageExecutor loadImageExecutor,
                                  final MimeTypeResolver mimeTypeResolver,
-                                 final Preferences preferences,
-                                 final FileHandler fileHandler) {
+                                 final Preferences preferences) {
         this.streamerViewHandler = streamerViewHandler;
         this.binaryExpanderHandler = binaryExpanderHandler;
         this.dialogHandler = dialogHandler;
@@ -94,7 +90,6 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
         this.loadImageExecutor = loadImageExecutor;
         this.mimeTypeResolver = mimeTypeResolver;
         this.preferences = preferences;
-        this.fileHandler = fileHandler;
     }
 
     @Override
@@ -193,13 +188,13 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
                 boolean showPreview = preferences.booleanPreference(PREVIEW);
                 if (showPreview && ICON_VIEW_NAME.equals(actionModel.getStreamerViewToLoadTo().getName())) {
                     new LoadThumbnailsWorker(PREVIEW_CELL_SIZE,
-                    files -> actionModel.getStreamerViewToLoadTo().refresh(),
-                    () -> actionModel.getStreamerViewToLoadTo()
+                        files -> actionModel.getStreamerViewToLoadTo().refresh(),
+                        () -> actionModel.getStreamerViewToLoadTo()
                             .getAllViewItems()
                             .stream()
-                            .map(item -> fileHandler
-                                .createVirtualFile(item.getPath(), item.getName(), item.isParent()))
-                            .filter(File::exists))
+                            .map(ViewItem::getStreamable)
+                            .map(Streamable::getRealPath)
+                            .map(Path::toFile))
                         .execute();
                 }
             }

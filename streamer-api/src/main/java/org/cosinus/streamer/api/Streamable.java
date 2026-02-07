@@ -32,6 +32,10 @@ public interface Streamable {
 
     Path getPath();
 
+    default Path getRealPath() {
+        return getPath();
+    }
+
     default String getProtocol() {
         return ofNullable(getParent())
             .map(Streamable::getProtocol)

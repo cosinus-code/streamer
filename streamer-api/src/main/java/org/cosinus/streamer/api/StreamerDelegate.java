@@ -30,6 +30,11 @@ public abstract class StreamerDelegate<T, S extends Streamer<?>> implements Stre
     }
 
     @Override
+    public Path getRealPath() {
+        return delegate.getPath();
+    }
+
+    @Override
     public BinaryStreamer binaryStreamer() {
         return delegate.binaryStreamer();
     }

@@ -124,6 +124,6 @@ public class StreamerPropertiesModel implements UIModel {
     }
 
     private File createItemFile(Streamer<?> streamer) {
-        return fileHandler.createVirtualFile(streamer.getPath(), streamer.getName(), streamer.isParent());
+        return streamer.getRealPath().toFile();
     }
 }

@@ -51,6 +51,8 @@ public class ViewItem {
 
     private final Path path;
 
+    private final Path realPath;
+
     private final String description;
 
     private final boolean file;
@@ -70,6 +72,7 @@ public class ViewItem {
         this.iconName = streamable.getIconName();
         this.iconRounded = streamable.isIconRounded();
         this.path = streamable.getPath();
+        this.realPath = streamable.getRealPath();
         this.description = streamable.getDescription();
         this.file = streamable.isFile();
     }

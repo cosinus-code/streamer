@@ -55,7 +55,7 @@ public class FoundStreamer<S extends Streamer<S>> extends StreamerDelegate<S, S>
 
     @Override
     public String getDescription() {
-        return getPath().toString();
+        return getRealPath().toString();
     }
 
     @Override

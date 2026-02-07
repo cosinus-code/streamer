@@ -19,9 +19,9 @@ package org.cosinus.streamer.ui.view.table;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cosinus.swing.file.FileHandler;
+import org.cosinus.swing.icon.IconSize;
 import org.cosinus.swing.image.ImageHandler;
 import org.cosinus.swing.image.icon.IconHandler;
-import org.cosinus.swing.icon.IconSize;
 import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +31,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Optional;
 
 import static java.awt.Color.gray;
@@ -140,7 +141,9 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
     }
 
     public File createItemFile(ViewItem item) {
-        return fileHandler.createVirtualFile(item.getPath(), item.getName(), item.isParent());
+        return ofNullable(item.getRealPath())
+            .map(Path::toFile)
+            .orElseGet(() -> fileHandler.createVirtualFile(item.getRealPath(), item.getName(), item.isParent()));
     }
 
 }
