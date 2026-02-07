@@ -95,11 +95,15 @@ public class StravaActivityCommentsTextStreamer extends StravaStreamer<String> {
     }
 
     @Override
-    public void reset() {
+    public void initDetails() {
         details = asList(
             new TextValue(getName()),
             new IntegerValue(getCommentsCount())
         );
+    }
+
+    @Override
+    public void reset() {
         activityComments = null;
     }
 }

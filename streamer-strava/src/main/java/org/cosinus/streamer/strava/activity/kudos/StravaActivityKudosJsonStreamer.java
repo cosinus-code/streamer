@@ -98,11 +98,15 @@ public class StravaActivityKudosJsonStreamer extends StravaJsonStreamer {
     }
 
     @Override
-    public void reset() {
+    public void initDetails() {
         details = asList(
             new TextValue(getName()),
             new IntegerValue(getKudosCount())
         );
+    }
+
+    @Override
+    public void reset() {
         activityKudoers = null;
     }
 

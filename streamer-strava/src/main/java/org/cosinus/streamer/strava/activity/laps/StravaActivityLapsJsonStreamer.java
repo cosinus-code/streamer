@@ -86,11 +86,15 @@ public class StravaActivityLapsJsonStreamer extends StravaJsonStreamer {
     }
 
     @Override
-    public void reset() {
+    protected void initDetails() {
         details = asList(
             new TextValue(getName()),
             new IntegerValue(null)
         );
+    }
+
+    @Override
+    public void reset() {
         activityLaps = null;
     }
 

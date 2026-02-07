@@ -20,7 +20,7 @@ package org.cosinus.streamer.strava;
 import lombok.Getter;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.value.Value;
-import org.cosinus.streamer.strava.client.StravaClient;
+import org.cosinus.streamer.strava.client.StravaCacheClient;
 import org.cosinus.streamer.strava.client.StravaClientInvoker;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -49,7 +49,7 @@ public abstract class StravaStreamer<T> implements Streamer<T> {
         this.userName = stravaUserStreamer.getName();
     }
 
-    protected <V> V invokeStravaClient(Function<StravaClient, V> stravaClientCall) {
+    protected <V> V invokeStravaClient(Function<StravaCacheClient, V> stravaClientCall) {
         return stravaClientInvoker.invoke(userName, stravaClientCall);
     }
 
@@ -71,7 +71,7 @@ public abstract class StravaStreamer<T> implements Streamer<T> {
     @Override
     public List<Value> details() {
         if (details == null) {
-            reset();
+            initDetails();
         }
         return details;
     }
@@ -88,4 +88,6 @@ public abstract class StravaStreamer<T> implements Streamer<T> {
     public int hashCode() {
         return Objects.hashCode(getName());
     }
+
+    protected abstract void initDetails();
 }

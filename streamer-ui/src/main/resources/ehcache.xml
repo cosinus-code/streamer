@@ -16,6 +16,12 @@
 
     <cache alias="spring.swing.icons" uses-template="default"/>
 
+    <cache alias="spring.swing.uniform.type.identifier" uses-template="default"/>
+
+    <cache alias="spring.swing.file.type.description" uses-template="default"/>
+
     <cache alias="streamer.sizes" uses-template="default"/>
+
+    <cache alias="strava-client" uses-template="default"/>
 
 </config>

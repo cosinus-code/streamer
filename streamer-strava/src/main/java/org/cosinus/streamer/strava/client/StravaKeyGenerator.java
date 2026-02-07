@@ -18,23 +18,10 @@
 package org.cosinus.streamer.strava.client;
 
 import org.cosinus.streamer.strava.StravaComponent;
-import org.cosinus.swing.cloud.client.ClientInvoker;
+import org.cosinus.swing.cloud.client.CacheUserKeyGenerator;
 
-import java.util.function.Function;
+import static org.cosinus.streamer.strava.client.StravaCacheClient.STRAVA_KEY_GENERATOR;
 
-@StravaComponent
-public class StravaClientInvoker extends ClientInvoker<StravaCacheClient> {
-
-    public StravaClientInvoker(final StravaCacheClient stravaClient) {
-        super(stravaClient);
-    }
-
-    @Override
-    public <T> T invoke(String userId, Function<StravaCacheClient, T> clientCall) {
-        return super.invoke(userId, clientCall);
-    }
-
-    public void reset(String userName) {
-        client.evict(userName);
-    }
+@StravaComponent(STRAVA_KEY_GENERATOR)
+public class StravaKeyGenerator extends CacheUserKeyGenerator {
 }

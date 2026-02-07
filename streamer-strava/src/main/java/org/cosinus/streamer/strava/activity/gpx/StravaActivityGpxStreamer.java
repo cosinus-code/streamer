@@ -127,9 +127,8 @@ public class StravaActivityGpxStreamer extends StravaStreamer<byte[]> implements
         return null;
     }
 
-
     @Override
-    public void reset() {
+    protected void initDetails() {
         details = asList(
             new TextValue(getName()),
             new IntegerValue(null)
@@ -140,4 +139,10 @@ public class StravaActivityGpxStreamer extends StravaStreamer<byte[]> implements
     public String getDescription() {
         return fileHandler.getTypeDescription(getPath(), false)
             .orElse("");
-    }}
+    }
+
+    @Override
+    public void reset() {
+        stravaClientInvoker.reset(userName);
+    }
+}

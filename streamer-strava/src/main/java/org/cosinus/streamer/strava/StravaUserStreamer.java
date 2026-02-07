@@ -23,7 +23,7 @@ import org.cosinus.streamer.api.error.StreamerException;
 import org.cosinus.streamer.api.value.TextValue;
 import org.cosinus.streamer.api.value.Value;
 import org.cosinus.streamer.strava.activity.StravaActivitiesStreamer;
-import org.cosinus.streamer.strava.client.StravaClient;
+import org.cosinus.streamer.strava.client.StravaCacheClient;
 import org.cosinus.streamer.strava.client.StravaClientInvoker;
 import org.cosinus.streamer.strava.club.StravaClubsStreamer;
 import org.cosinus.streamer.strava.model.AthleteProfile;
@@ -220,7 +220,7 @@ public class StravaUserStreamer implements ParentStreamer<StravaStreamer<?>> {
     }
 
     protected AthleteProfile getAthleteProfile() {
-        return stravaClientInvoker.invoke(userName, StravaClient::getCurrentAthleteProfile);
+        return stravaClientInvoker.invoke(userName, StravaCacheClient::getCurrentAthleteProfile);
     }
 
     @Override
@@ -233,6 +233,11 @@ public class StravaUserStreamer implements ParentStreamer<StravaStreamer<?>> {
             .map(Object::toString)
             .filter(not(String::isBlank))
             .collect(joining(", "));
+    }
+
+    @Override
+    public void reset() {
+        stravaClientInvoker.reset(userName);
     }
 }
 

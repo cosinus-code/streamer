@@ -98,7 +98,7 @@ public class StravaActivityCommentsJsonStreamer extends StravaJsonStreamer {
     }
 
     @Override
-    public void reset() {
+    public void initDetails() {
         details = asList(
             new TextValue(getName()),
             new IntegerValue(getCommentsCount())
@@ -109,5 +109,10 @@ public class StravaActivityCommentsJsonStreamer extends StravaJsonStreamer {
     @Override
     public String getDescription() {
         return translator.translate("strava-activity-comments", details().get(DETAILS_INDEX_COUNT));
+    }
+
+    @Override
+    public void reset() {
+        stravaClientInvoker.reset(userName);
     }
 }

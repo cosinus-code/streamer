@@ -144,7 +144,7 @@ public class StravaActivityStreamer extends StravaParentStreamer<StravaStreamer<
     }
 
     @Override
-    public void reset() {
+    public void initDetails() {
         details = asList(
             new TextValue(getName()),
             new TextValue(getType()),

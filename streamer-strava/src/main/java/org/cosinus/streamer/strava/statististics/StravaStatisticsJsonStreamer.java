@@ -159,8 +159,12 @@ public class StravaStatisticsJsonStreamer extends StravaJsonStreamer {
     }
 
     @Override
-    public void reset() {
+    protected void initDetails() {
         details = singletonList(new TextValue(getName()));
+    }
+
+    @Override
+    public void reset() {
         athleteStatistics = null;
     }
 

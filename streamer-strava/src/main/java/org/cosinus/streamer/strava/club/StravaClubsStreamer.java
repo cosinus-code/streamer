@@ -68,4 +68,9 @@ public class StravaClubsStreamer extends StravaParentStreamer<StravaClubStreamer
     public String getDescription() {
         return translator.translate("strava-athlete-clubs");
     }
+
+    @Override
+    public void reset() {
+        stravaClientInvoker.reset(userName);
+    }
 }

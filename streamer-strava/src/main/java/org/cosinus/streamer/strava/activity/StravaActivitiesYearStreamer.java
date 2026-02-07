@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static java.lang.String.valueOf;
-import static java.time.LocalDateTime.now;
 import static org.cosinus.stream.Streams.pagedStream;
 import static org.cosinus.swing.util.DateUtils.*;
 
@@ -70,10 +69,11 @@ public class StravaActivitiesYearStreamer extends StravaParentStreamer<StravaAct
     @Override
     public Stream<StravaActivityStreamer> stream() {
         long startTime = toEpochSecond(startOfYear(year));
-        long endTime = toEpochSecond(year == now().getYear() ? now() : lastSecondOfYear(year));
+        long endTime = toEpochSecond(lastSecondOfYear(year));
 
-        return pagedStream((pageSize, page) -> stravaClientInvoker.invoke(userName, stravaClient ->
-            stravaClient.getCurrentAthleteActivities(startTime, endTime, pageSize, page)))
+        return pagedStream((pageSize, page) -> stravaClientInvoker
+            .invoke(userName, stravaClient -> stravaClient
+                .getCurrentAthleteActivities(startTime, endTime, pageSize, page)))
             .map(activity -> new StravaActivityStreamer(stravaUserStreamer, this, activity));
     }
 
@@ -90,5 +90,10 @@ public class StravaActivitiesYearStreamer extends StravaParentStreamer<StravaAct
     @Override
     public String getDescription() {
         return translator.translate("strava-athlete-year-activities", getName());
+    }
+
+    @Override
+    public void reset() {
+        stravaClientInvoker.reset(userName);
     }
 }

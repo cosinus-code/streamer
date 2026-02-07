@@ -60,7 +60,7 @@ public class StravaActivityKudoStreamer extends StravaJsonStreamer {
     }
 
     @Override
-    public void reset() {
+    public void initDetails() {
         details = singletonList(new TextValue(getName()));
     }
 }

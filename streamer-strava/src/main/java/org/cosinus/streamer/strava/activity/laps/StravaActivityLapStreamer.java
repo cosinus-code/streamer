@@ -80,7 +80,7 @@ public class StravaActivityLapStreamer extends StravaJsonStreamer {
     }
 
     @Override
-    public void reset() {
+    public void initDetails() {
         details = asList(
             new TextValue(formatHandler.formatIndexAsString(
                 activityLap.getLapIndex(),

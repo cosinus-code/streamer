@@ -18,6 +18,7 @@
 package org.cosinus.streamer.strava;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Documented;
@@ -34,4 +35,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Component
 @ConditionalOnProperty(name = "streamer.strava.enabled", matchIfMissing = true)
 public @interface StravaComponent {
+
+    @AliasFor(annotation = Component.class, attribute = "value")
+    String value() default "";
+
 }

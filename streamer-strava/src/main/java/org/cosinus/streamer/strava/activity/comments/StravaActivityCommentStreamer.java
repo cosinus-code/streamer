@@ -65,7 +65,7 @@ public class StravaActivityCommentStreamer extends StravaJsonStreamer {
     }
 
     @Override
-    public void reset() {
+    public void initDetails() {
         details = asList(
             new TextValue(activityComment.getText()),
             new TextValue(getAuthorFullName()),

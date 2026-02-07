@@ -50,7 +50,7 @@ public abstract class StravaParentStreamer<S extends Streamer>
     }
 
     @Override
-    public void reset() {
+    public void initDetails() {
         details = singletonList(new TextValue(getName()));
     }
 }
