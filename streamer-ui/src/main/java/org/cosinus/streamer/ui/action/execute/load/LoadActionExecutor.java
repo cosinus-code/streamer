@@ -41,6 +41,7 @@ import org.cosinus.swing.worker.WorkerModel;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
@@ -194,6 +195,7 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
                             .stream()
                             .map(ViewItem::getStreamable)
                             .map(Streamable::getRealPath)
+                            .filter(Objects::nonNull)
                             .map(Path::toFile))
                         .execute();
                 }
