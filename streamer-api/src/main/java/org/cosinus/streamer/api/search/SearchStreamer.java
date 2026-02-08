@@ -16,12 +16,12 @@
 
 package org.cosinus.streamer.api.search;
 
+import lombok.Getter;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.api.TextStreamer;
 import org.cosinus.swing.find.FindText;
-import org.cosinus.swing.find.TextFinder;
 import org.cosinus.swing.text.TextHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -33,6 +33,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
+import static org.cosinus.stream.FlatStreamingStrategy.IN_DEPTH;
+import static org.cosinus.stream.StreamingStrategy.NO_STRATEGY;
 import static org.cosinus.streamer.api.StreamerFilter.ALL_STREAMERS;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 import static org.springframework.util.MimeTypeUtils.ALL_VALUE;
@@ -54,6 +56,7 @@ public class SearchStreamer<S extends Streamer<S>> implements ParentStreamer<Fou
 
     private List<FoundStreamer<S>> foundStreamers;
 
+    @Getter
     private long searchTotalCount = -1;
 
     private final AtomicLong searchDoneCount;
@@ -67,9 +70,7 @@ public class SearchStreamer<S extends Streamer<S>> implements ParentStreamer<Fou
         this.streamerFilter = ofNullable(streamerNameFindText)
             .filter(findText -> !findText.getText().isBlank())
             .filter(findText -> !findText.getText().equals(ALL_VALUE))
-            .<StreamerFilter>map(findText -> streamer -> textHandler
-                .createTextFinder(streamer.getName(), findText)
-                .containsText())
+            .map(this::streamerNameFilter)
             .orElse(ALL_STREAMERS);
         this.streamerContetFindText = streamerContetFindText;
         this.deepSearch = deepSearch;
@@ -102,7 +103,9 @@ public class SearchStreamer<S extends Streamer<S>> implements ParentStreamer<Fou
     }
 
     private Stream<S> internalStream() {
-        return deepSearch ? currentStreamer.flatStream() : currentStreamer.stream();
+        return deepSearch ?
+            currentStreamer.flatStream(IN_DEPTH, NO_STRATEGY, ALL_STREAMERS) :
+            currentStreamer.stream();
     }
 
     private FoundStreamer<S> createFindStreamer(S streamer) {
@@ -115,10 +118,44 @@ public class SearchStreamer<S extends Streamer<S>> implements ParentStreamer<Fou
             .filter(Streamer::isTextCompatible)
             .map(Streamer::binaryStreamer)
             .map(TextStreamer::new)
-            .map(TextStreamer::stream)
-            .orElseGet(Stream::empty)
-            .map(text -> textHandler.createTextFinder(text, findText))
-            .anyMatch(TextFinder::containsText);
+            .map(textStreamer -> textStreamer
+                .stream()
+                .anyMatch(text -> contains(text, findText)))
+            .orElse(false);
+    }
+
+    protected boolean contains(String inputText, final FindText findText) {
+        if (findText.isWholeWord() || findText.isRegularExpression()) {
+            return textHandler.createTextFinder(inputText, findText).containsText();
+        }
+        return findText.isCaseSensitive() ?
+            inputText.contains(findText.getText()) :
+            inputText.toLowerCase().contains(findText.getText().toLowerCase());
+    }
+
+    private StreamerFilter streamerNameFilter(final FindText findText) {
+        if (findText.isWholeWord() || findText.isRegularExpression()) {
+            return streamer -> textHandler
+                .createTextFinder(streamer.getName(), findText)
+                .containsText();
+        }
+        if (findText.getText().startsWith("*.")) {
+            return findText.isCaseSensitive() ?
+                streamer -> streamer.getName()
+                    .endsWith(findText.getText().substring(1)) :
+                streamer -> streamer.getName().toLowerCase()
+                    .endsWith(findText.getText().toLowerCase().substring(1));
+        }
+        if (findText.getText().endsWith(".*")) {
+            return findText.isCaseSensitive() ?
+                streamer -> streamer.getName()
+                    .startsWith(findText.getText().substring(1)) :
+                streamer -> streamer.getName().toLowerCase()
+                    .startsWith(findText.getText().toLowerCase().substring(1));
+        }
+        return findText.isCaseSensitive() ?
+            streamer -> streamer.getName().contains(findText.getText()) :
+            streamer -> streamer.getName().toLowerCase().contains(findText.getText().toLowerCase());
     }
 
     @Override
@@ -144,10 +181,6 @@ public class SearchStreamer<S extends Streamer<S>> implements ParentStreamer<Fou
     @Override
     public long getSize() {
         return foundStreamers.size();
-    }
-
-    public long getSearchTotalCount() {
-        return searchTotalCount;
     }
 
     public long getSearchDoneCount() {

@@ -76,4 +76,9 @@ public interface Streamer<T> extends Streamable, StreamSupplier<T> {
     default void setPermissions(Permissions permissions) {
 
     }
+
+    @Override
+    default boolean isParent() {
+        return false;
+    }
 }
