@@ -52,6 +52,7 @@ import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_STATUS
 import static org.cosinus.streamer.ui.view.View.findByName;
 import static org.cosinus.streamer.ui.view.text.TextStreamerView.DIRTY_TEXT_MARKER;
 import static org.cosinus.swing.border.Borders.emptyBorder;
+import static org.cosinus.swing.file.FileHandler.PROTOCOL_MARK;
 
 public abstract class StreamerView<T, V> extends Panel implements WorkerListener<LoadWorkerModel<V>, V> {
 
@@ -269,7 +270,7 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
     protected Optional<String> getStreamerAddress() {
         return ofNullable(this.getParentStreamer())
             .map(Streamer::getUrlPath)
-            .map(address -> address.split("://"))
+            .map(address -> address.split(PROTOCOL_MARK))
             .map(address -> address.length > 1 ? address[address.length - 1] : "")
             .map(address -> isDirty() ? DIRTY_TEXT_MARKER + address : address);
     }

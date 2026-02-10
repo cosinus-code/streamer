@@ -20,17 +20,20 @@ package org.cosinus.streamer.ui.menu;
 import org.cosinus.streamer.ui.action.FindAndLoadStreamerAction;
 import org.cosinus.streamer.ui.favorites.FavoritesHandler;
 import org.cosinus.swing.action.ActionController;
+import org.cosinus.swing.action.execute.ActionModel;
 import org.cosinus.swing.image.icon.IconInitializer;
 import org.cosinus.swing.menu.MenuItem;
 import org.cosinus.swing.menu.PopupMenu;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import static java.awt.event.MouseEvent.BUTTON3;
 import static java.util.Arrays.stream;
+import static java.util.Optional.ofNullable;
+import static javax.swing.SwingUtilities.isRightMouseButton;
 
 @Component
 public class MenuHandler {
@@ -66,14 +69,15 @@ public class MenuHandler {
         return popupMenu;
     }
 
-    public void addMenuItems(PopupMenu popupMenu, String... actionIds) {
-        stream(actionIds)
-            .map(this::createMenuItem)
-            .forEach(popupMenu::add);
+    public MenuItem createMenuItem(String actionId) {
+        return createMenuItem(actionId, null);
     }
 
-    public MenuItem createMenuItem(String actionId) {
-        MenuItem menuItem = new MenuItem(e -> actionController.runAction(actionId), actionId);
+    public MenuItem createMenuItem(String actionId, ActionModel actionModel) {
+        ActionListener actionListener = ofNullable(actionModel)
+            .<ActionListener>map(model -> e -> actionController.runAction(actionId, model))
+            .orElse(e -> actionController.runAction(actionId));
+        MenuItem menuItem = new MenuItem(actionListener, actionId);
         menuItem.translate();
 
         //TODO: this shouldn't be necessary, but sometimes the icon is not loaded by the IconInitializer
@@ -85,7 +89,7 @@ public class MenuHandler {
         component.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(final MouseEvent mouseEvent) {
-                if (mouseEvent.getButton() == BUTTON3) {
+                if (isRightMouseButton(mouseEvent)) {
                     popupContextMenu.show(component,
                         mouseEvent.getX(),
                         mouseEvent.getY());

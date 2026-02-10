@@ -18,6 +18,7 @@ package org.cosinus.streamer.ui.action.execute.move;
 
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
+import org.cosinus.streamer.ui.view.StreamerView;
 
 import java.util.List;
 
@@ -39,8 +40,26 @@ public class MoveActionModel extends CopyActionModel {
     }
 
     @Override
+    public MoveActionModel from(StreamerView<?, ?> sourceView) {
+        super.from(sourceView);
+        return this;
+    }
+
+    @Override
     public MoveActionModel from(ParentStreamer<?> source) {
         super.from(source);
+        return this;
+    }
+
+    @Override
+    public MoveActionModel to(ParentStreamer<?> destination, StreamerView<?, ?> destinationView) {
+        super.to(destination, destinationView);
+        return this;
+    }
+
+    @Override
+    public MoveActionModel to(StreamerView<?, ?> destinationView) {
+        super.to(destinationView);
         return this;
     }
 

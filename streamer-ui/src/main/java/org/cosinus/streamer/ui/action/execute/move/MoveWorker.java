@@ -20,7 +20,7 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.execute.copy.CopyWorker;
-import org.cosinus.streamer.ui.action.execute.copy.CopyWorkerUnit;
+import org.cosinus.streamer.ui.action.execute.copy.CopyUnit;
 
 import java.util.List;
 
@@ -56,9 +56,9 @@ public class MoveWorker<S extends Streamer<S>, T extends Streamer<T>> extends Co
     }
 
     @Override
-    protected void copyStreamer(CopyWorkerUnit<S, T> copyWorkerUnit) {
-        super.copyStreamer(copyWorkerUnit);
-        S streamerToMove = copyWorkerUnit.source();
+    protected void copyStreamer(CopyUnit<S, T> copyUnit) {
+        super.copyStreamer(copyUnit);
+        S streamerToMove = copyUnit.source();
         if (!streamerToMove.isParent()) {
             streamerToMove.delete(false);
             moveWorkerModel.updateDeletedItems(singletonList(streamerToMove));

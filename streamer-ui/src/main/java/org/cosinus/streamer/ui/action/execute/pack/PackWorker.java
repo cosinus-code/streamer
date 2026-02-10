@@ -21,8 +21,7 @@ import org.cosinus.streamer.api.expand.ExpandedStreamer;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.execute.copy.CopyWorker;
 import org.cosinus.streamer.ui.action.execute.copy.CopyWorkerModel;
-import org.cosinus.streamer.ui.action.execute.copy.CopyWorkerUnit;
-import org.cosinus.swing.worker.WorkerModel;
+import org.cosinus.streamer.ui.action.execute.copy.CopyUnit;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -41,7 +40,7 @@ public class PackWorker<S extends Streamer<S>, T extends ExpandedStreamer<T>> ex
     }
 
     @Override
-    protected StreamConsumer<CopyWorkerUnit<S, T>> streamConsumer() {
+    protected StreamConsumer<CopyUnit<S, T>> streamConsumer() {
         return ofNullable(getDestination().outputStream(false))
             .map(PackStreamConsumer::new)
             .orElse(null);
@@ -52,7 +51,7 @@ public class PackWorker<S extends Streamer<S>, T extends ExpandedStreamer<T>> ex
         return super.getRelativePath(streamerToCopy);
     }
 
-    private class PackStreamConsumer implements StreamConsumer<CopyWorkerUnit<S, T>> {
+    private class PackStreamConsumer implements StreamConsumer<CopyUnit<S, T>> {
 
         private final OutputStream output;
 
@@ -61,8 +60,8 @@ public class PackWorker<S extends Streamer<S>, T extends ExpandedStreamer<T>> ex
         }
 
         @Override
-        public void accept(CopyWorkerUnit<S, T> copyWorkerUnit) {
-            copyStreamer(copyWorkerUnit);
+        public void accept(CopyUnit<S, T> copyUnit) {
+            copyStreamer(copyUnit);
         }
 
         @Override

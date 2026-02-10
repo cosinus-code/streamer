@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 import static java.util.Arrays.stream;
+import static org.cosinus.swing.file.mimetype.MimeTypeResolver.ZIP;
 
 /**
  * Handler for {@link BinaryExpander} components
@@ -79,5 +80,10 @@ public class BinaryExpanderHandler {
             .map(Streamer::binaryStreamer)
             .<Streamer<?>>map(TextStreamer::new)
             .orElse(streamerToCheck);
+    }
+
+    public String getDefaultPacker() {
+        //TODO
+        return ZIP;
     }
 }

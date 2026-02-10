@@ -18,9 +18,8 @@ package org.cosinus.streamer.ui.action.execute.copy;
 
 import lombok.Getter;
 import org.cosinus.streamer.api.ParentStreamer;
-import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
-import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
+import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.swing.action.execute.ActionModel;
 import org.cosinus.swing.ui.UIModel;
 
@@ -54,7 +53,13 @@ public class CopyActionModel implements ActionModel, UIModel {
     private List<?> streamersToCopy;
 
     @Getter
+    private StreamerView<?, ?> sourceView;
+
+    @Getter
     private ParentStreamer<?> source;
+
+    @Getter
+    private StreamerView<?, ?> destinationView;
 
     @Getter
     private ParentStreamer<?> destination;
@@ -66,8 +71,9 @@ public class CopyActionModel implements ActionModel, UIModel {
         this.executionId = randomUUID().toString();
     }
 
-    public static CopyActionModel copy() {
-        return new CopyActionModel();
+    public static CopyActionModel copy(List<?> streamersToCopy) {
+        return new CopyActionModel()
+            .streamers(streamersToCopy);
     }
 
     public void setTargetPath(Path targetPath) {
@@ -93,8 +99,30 @@ public class CopyActionModel implements ActionModel, UIModel {
         return this;
     }
 
+    public CopyActionModel from(StreamerView<?, ?> sourceView) {
+        this.sourceView = sourceView;
+        //TODO: to avoid cast
+        this.source = (ParentStreamer<?>) sourceView.getParentStreamer();
+        return this;
+    }
+
     public CopyActionModel from(ParentStreamer<?> source) {
         this.source = source;
+        return this;
+    }
+
+    public CopyActionModel to(ParentStreamer<?> destination, StreamerView<?, ?> destinationView) {
+        this.destinationView = destinationView;
+        this.destination = destination;
+        this.targetPath = destination.getPath();
+        return this;
+    }
+
+    public CopyActionModel to(StreamerView<?, ?> destinationView) {
+        this.destinationView = destinationView;
+        //TODO: to avoid cast
+        this.destination = (ParentStreamer<?>) destinationView.getParentStreamer();
+        this.targetPath = destination.getPath();
         return this;
     }
 

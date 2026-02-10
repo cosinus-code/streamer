@@ -69,8 +69,8 @@ public class MoveStreamerAction extends AbstractCopyAction<MoveActionModel> {
 
         return move()
             .streamers(sourceStreamerView.getSelectedItems())
-            .from((ParentStreamer<?>) sourceStreamerView.getParentStreamer())
-            .to((ParentStreamer<?>) destinationStreamerView.getParentStreamer());
+            .from(sourceStreamerView)
+            .to(destinationStreamerView);
     }
 
     @Override

@@ -18,6 +18,7 @@ package org.cosinus.streamer.ui.action.execute.pack;
 import lombok.Getter;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
+import org.cosinus.streamer.ui.view.StreamerView;
 
 import java.util.List;
 import java.util.Set;
@@ -40,13 +41,20 @@ public class PackActionModel extends CopyActionModel {
 
     private String[] packTypes;
 
-    public static PackActionModel pack() {
-        return new PackActionModel();
+    public static PackActionModel pack(List<?> streamersToCopy) {
+        return new PackActionModel()
+            .streamers(streamersToCopy);
     }
 
     @Override
     public PackActionModel streamers(List<?> streamersToCopy) {
         super.streamers(streamersToCopy);
+        return this;
+    }
+
+    @Override
+    public PackActionModel from(StreamerView<?, ?> sourceView) {
+        super.from(sourceView);
         return this;
     }
 
@@ -57,8 +65,25 @@ public class PackActionModel extends CopyActionModel {
     }
 
     @Override
+    public PackActionModel to(ParentStreamer<?> destination, StreamerView<?, ?> destinationView) {
+        super.to(destination, destinationView);
+        return this;
+    }
+
+    @Override
+    public PackActionModel to(StreamerView<?, ?> destinationView) {
+        super.to(destinationView);
+        return this;
+    }
+
+    @Override
     public PackActionModel to(ParentStreamer<?> destination) {
         super.to(destination);
+        return this;
+    }
+
+    public PackActionModel as(String packType) {
+        this.packType = packType;
         return this;
     }
 

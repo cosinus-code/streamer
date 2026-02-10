@@ -16,29 +16,56 @@
 
 package org.cosinus.streamer.ui.action.execute.copy;
 
-import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
+import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.execute.ActionExecutor;
+import org.cosinus.swing.worker.WorkerExecutor;
+import org.cosinus.swing.worker.WorkerListener;
+import org.cosinus.swing.worker.WorkerModel;
 import org.springframework.stereotype.Component;
 
+import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.action.CopyStreamerAction.COPY_STREAMER_ACTION_ID;
 
 /**
  * Implementation of {@link ActionExecutor} for copying streamers based on {@link CopyWorker}
  */
 @Component
-public class CopyWorkerExecutor extends AbstractCopyWorkerExecutor<CopyActionModel> {
+public class CopyWorkerExecutor
+    extends WorkerExecutor<CopyActionModel, WorkerModel<CopyUnit<?, ?>>, CopyUnit<?, ?>, CopyProgressModel<?>> {
+
+    protected final ProgressFormHandler progressFormHandler;
+
+    protected final StreamerViewHandler streamerViewHandler;
 
     protected CopyWorkerExecutor(final ProgressFormHandler progressFormHandler,
                                  final StreamerViewHandler streamerViewHandler) {
-        super(progressFormHandler, streamerViewHandler);
+        this.progressFormHandler = progressFormHandler;
+        this.streamerViewHandler = streamerViewHandler;
     }
 
     @Override
-    protected CopyWorker internalCreateWorker(CopyActionModel copyModel) {
-        return new CopyWorker<>(copyModel,
+    protected CopyWorker createWorker(CopyActionModel copyModel) {
+        CopyWorker copyWorker = new CopyWorker<>(copyModel,
             new CopyWorkerModel<>(streamerViewHandler.getOppositeView().getCopyWorkerModel()));
+        copyWorker.registerListener(new WorkerListener<WorkerModel<CopyUnit<?, ?>>, CopyUnit<?, ?>>() {
+            @Override
+            public void workerUpdated(WorkerModel<CopyUnit<?, ?>> workerModel) {
+                ofNullable(copyModel.getDestinationView())
+                    .ifPresent(StreamerView::fireContentChanged);
+            }
+
+            @Override
+            public void workerFinished(WorkerModel<CopyUnit<?, ?>> workerModel) {
+                ofNullable(copyModel.getSourceView())
+                    .ifPresent(StreamerView::reload);
+                ofNullable(copyModel.getDestinationView())
+                    .ifPresent(StreamerView::reload);
+            }
+        });
+        copyWorker.registerListener(progressFormHandler.createCopyProgressDialog(copyModel, copyWorker.getId()));
+        return copyWorker;
     }
 
     @Override

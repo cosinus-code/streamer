@@ -128,10 +128,9 @@ public class PackStreamerAction extends AbstractCopyAction<PackActionModel> {
         final StreamerView<?, ?> sourceStreamerView = streamerViewHandler.getCurrentView();
         final StreamerView<?, ?> destinationStreamerView = streamerViewHandler.getOppositeView();
 
-        return pack()
-            .streamers(sourceStreamerView.getSelectedItems())
-            .from((ParentStreamer<?>) sourceStreamerView.getParentStreamer())
-            .to((ParentStreamer<?>) destinationStreamerView.getParentStreamer())
+        return pack(sourceStreamerView.getSelectedItems())
+            .from(sourceStreamerView)
+            .to(destinationStreamerView)
             .packTypes(expanderHandler.getBinaryExpandersMap()
                 .entrySet()
                 .stream()
