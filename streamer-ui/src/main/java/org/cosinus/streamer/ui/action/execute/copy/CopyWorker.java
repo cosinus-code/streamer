@@ -43,7 +43,7 @@ import static org.cosinus.stream.FlatStreamingStrategy.IN_DEPTH;
  * {@link Worker} for copying streamers from a source parent streamer to target parent streamer
  */
 public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
-    extends PipelineWorker<WorkerModel<CopyWorkerUnit<S, T>>, CopyWorkerUnit<S, T>, CopyProgressModel<S>> {
+    extends PipelineWorker<WorkerModel<CopyUnit<S, T>>, CopyUnit<S, T>, CopyProgressModel<S>> {
 
     @Autowired
     protected FormatHandler formatHandler;
@@ -59,7 +59,7 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
 
     private final StreamingStrategy streamingStrategy;
 
-    public CopyWorker(CopyActionModel copyActionModel, WorkerModel<CopyWorkerUnit<S, T>> workerModel) {
+    public CopyWorker(CopyActionModel copyActionModel, WorkerModel<CopyUnit<S, T>> workerModel) {
         super(copyActionModel, workerModel, new CopyProgressModel<>());
         this.source = (ParentStreamer<S>) copyActionModel.getSource();
         this.destination = (ParentStreamer<T>) copyActionModel.getDestination();
@@ -75,7 +75,7 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
 
     @Override
     public void preparePipelineOpen(final PipelineStrategy pipelineStrategy,
-                                    final PipelineListener<CopyWorkerUnit<S, T>> pipelineListener) {
+                                    final PipelineListener<CopyUnit<S, T>> pipelineListener) {
         try (Stream<S> flatStreamers = source.flatStream(IN_DEPTH, streamingStrategy, getStreamerFilter())) {
             flatStreamers
                 .filter(not(Streamer::isParent))
@@ -94,19 +94,19 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
     }
 
     @Override
-    public Stream<CopyWorkerUnit<S, T>> openPipelineInputStream(PipelineStrategy pipelineStrategy) {
+    public Stream<CopyUnit<S, T>> openPipelineInputStream(PipelineStrategy pipelineStrategy) {
         return source.flatStream(IN_DEPTH, streamingStrategy, getStreamerFilter())
-            .map(source -> new CopyWorkerUnit<>(source, targetStreamer(source)));
+            .map(source -> new CopyUnit<>(source, targetStreamer(source)));
     }
 
     @Override
-    protected StreamConsumer<CopyWorkerUnit<S, T>> streamConsumer() {
+    protected StreamConsumer<CopyUnit<S, T>> streamConsumer() {
         return this::copyStreamer;
     }
 
-    protected void copyStreamer(final CopyWorkerUnit<S, T> copyWorkerUnit) {
-        S streamerToCopy = copyWorkerUnit.source();
-        T streamerToCopyTo = copyWorkerUnit.target();
+    protected void copyStreamer(final CopyUnit<S, T> copyUnit) {
+        S streamerToCopy = copyUnit.source();
+        T streamerToCopyTo = copyUnit.target();
         BinaryStreamer binarySource = streamerToCopy.binaryStreamer();
         BinaryStreamer binaryTarget = streamerToCopyTo.binaryStreamer();
         if (binarySource != null && binaryTarget != null) {
@@ -128,7 +128,7 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
     }
 
     protected Path getTargetPath(final S streamerToCopy) {
-        return destination.getPath().resolve(getRelativePath(streamerToCopy));
+        return destination.resolveStreamerPath(source, streamerToCopy);
     }
 
     protected Path getRelativePath(final Streamer<?> streamer) {

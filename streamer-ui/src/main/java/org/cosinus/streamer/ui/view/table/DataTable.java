@@ -170,31 +170,23 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
     @Override
     public void processMouseEvent(MouseEvent event) {
         try {
-            if (event.getID() == MOUSE_RELEASED) {
-//                setDragged(false);
-            } else if (event.getID() == MOUSE_EXITED) {
-//                setDragItself(false);
-            } else if (event.getID() == MOUSE_ENTERED) {
-//                setDragItself(true);
-            } else if (event.getID() == MOUSE_PRESSED) {
-                int clickedIndex = getIndexForItemAtPoint(event.getPoint());
-                if (event.isControlDown()) {
-                    addIndexToSelection(clickedIndex);
-                    event.consume();
-                } else if (event.isShiftDown()) {
-                    extendsSelectionToIndex(clickedIndex);
-                    event.consume();
-                } else {
-                    setCurrentIndex(clickedIndex);
-                }
-                resetContentIdentifier();
-            } else if (event.getID() == MOUSE_CLICKED) {
+            if (event.getID() == MOUSE_CLICKED) {
                 if (isLeftMouseButton(event)) {
                     if (event.getClickCount() == 2) {
                         actionController.runAction(EXECUTE_STREAMER_ACTION_ID);
+                    } else {
+                        int clickedIndex = getIndexForItemAtPoint(event.getPoint());
+                        if (event.isControlDown()) {
+                            addIndexToSelection(clickedIndex);
+                            event.consume();
+                        } else if (event.isShiftDown()) {
+                            extendsSelectionToIndex(clickedIndex);
+                            event.consume();
+                        } else {
+                            setCurrentIndex(clickedIndex);
+                        }
+                        resetContentIdentifier();
                     }
-                } else if (isRightMouseButton(event)) {
-                    //TODO: show context popup
                 }
             }
             super.processMouseEvent(event);

@@ -29,8 +29,9 @@ import java.util.function.Supplier;
 
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
-import static org.cosinus.streamer.ui.action.execute.find.FindActionModel.finaStreamerAndDo;
+import static org.cosinus.streamer.ui.action.execute.find.FindActionModel.findStreamerAndDo;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
+import static org.cosinus.swing.file.FileHandler.PROTOCOL_MARK;
 
 public class FindAndLoadStreamerAction implements Runnable {
 
@@ -63,7 +64,7 @@ public class FindAndLoadStreamerAction implements Runnable {
     }
 
     private FindActionModel createFindActionModel(String urlPath) {
-        return finaStreamerAndDo(streamerViewHandler.getCurrentLocation(), urlPath, this::loadStreamer);
+        return findStreamerAndDo(streamerViewHandler.getCurrentLocation(), urlPath, this::loadStreamer);
     }
 
     private void loadStreamer(Streamer<?> streamerToLoad) {
@@ -82,7 +83,7 @@ public class FindAndLoadStreamerAction implements Runnable {
 
     private String addProtocolIfMissing(String urlPath) {
         return ofNullable(urlPath)
-            .filter(not(url -> url.contains("://")))
+            .filter(not(url -> url.contains(PROTOCOL_MARK)))
             .flatMap(url -> ofNullable(streamerViewHandler.getCurrentView())
                 .map(StreamerView::getParentStreamer)
                 .map(Streamer::getProtocol)

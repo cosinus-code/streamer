@@ -17,6 +17,7 @@
 package org.cosinus.streamer.ui.view;
 
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.ui.view.table.TableStreamerView;
 import org.cosinus.streamer.ui.view.table.grid.GridViewCreator;
 import org.cosinus.swing.preference.Preference;
 import org.cosinus.swing.preference.Preferences;
@@ -51,6 +52,8 @@ public class StreamerViewHandler {
     private final ViewsMap viewsMap;
 
     private final Map<PanelLocation, String> preferredViewNames;
+
+    private TableStreamerView<?> dragAndDropSourceView;
 
     public StreamerViewHandler(final Preferences preferences,
                                final Set<StreamerViewCreator> streamerViewCreators,
@@ -167,5 +170,13 @@ public class StreamerViewHandler {
     public void reloadViews() {
         reloadCurrentView();
         reloadOppositeView();
+    }
+
+    public void setDragAndDropSourceView(final TableStreamerView<?> dragAndDropSourceView) {
+        this.dragAndDropSourceView = dragAndDropSourceView;
+    }
+
+    public TableStreamerView<?> getDragAndDropSourceView() {
+        return dragAndDropSourceView;
     }
 }

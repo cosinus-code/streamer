@@ -68,6 +68,12 @@ public class FileParentStreamer extends FileStreamer<FileStreamer<?>> implements
     }
 
     @Override
+    public FileStreamer<?> createLink(final Path linkPath, final Path targetPath) {
+        fileHandler.createLink(linkPath, targetPath);
+        return fileMainStreamer.create(linkPath, false);
+    }
+
+    @Override
     public long getFreeSpace() {
         return file.getFreeSpace();
     }

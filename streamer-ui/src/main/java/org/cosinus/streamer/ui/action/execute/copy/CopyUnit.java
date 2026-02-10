@@ -21,5 +21,5 @@ package org.cosinus.streamer.ui.action.execute.copy;
 
 import org.cosinus.streamer.api.Streamer;
 
-public record CopyWorkerUnit<S extends Streamer<S>, T extends Streamer<T>> (S source, T target) {
+public record CopyUnit<S extends Streamer<S>, T extends Streamer<T>> (S source, T target) {
 }

@@ -66,10 +66,9 @@ public class CopyStreamerAction extends AbstractCopyAction<CopyActionModel> {
         final StreamerView<?, ?> sourceStreamerView = streamerViewHandler.getCurrentView();
         final StreamerView<?, ?> destinationStreamerView = streamerViewHandler.getOppositeView();
 
-        return copy()
-            .streamers(sourceStreamerView.getSelectedItems())
-            .from((ParentStreamer<?>) sourceStreamerView.getParentStreamer())
-            .to((ParentStreamer<?>) destinationStreamerView.getParentStreamer());
+        return copy(sourceStreamerView.getSelectedItems())
+            .from(sourceStreamerView)
+            .to(destinationStreamerView);
     }
 
     @Override

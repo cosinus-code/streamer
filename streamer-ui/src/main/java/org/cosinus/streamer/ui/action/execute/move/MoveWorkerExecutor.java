@@ -16,32 +16,62 @@
 
 package org.cosinus.streamer.ui.action.execute.move;
 
-import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.action.execute.copy.AbstractCopyWorkerExecutor;
+import org.cosinus.streamer.ui.action.execute.copy.CopyProgressModel;
+import org.cosinus.streamer.ui.action.execute.copy.CopyUnit;
 import org.cosinus.streamer.ui.action.execute.copy.CopyWorker;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
+import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.execute.ActionExecutor;
+import org.cosinus.swing.worker.WorkerExecutor;
+import org.cosinus.swing.worker.WorkerListener;
+import org.cosinus.swing.worker.WorkerModel;
 import org.springframework.stereotype.Component;
 
+import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.action.MoveStreamerAction.MOVE_STREAMER_ACTION_ID;
 
 /**
  * Implementation of {@link ActionExecutor} for copying streamers based on {@link CopyWorker}
  */
 @Component
-public class MoveWorkerExecutor extends AbstractCopyWorkerExecutor<MoveActionModel> {
+public class MoveWorkerExecutor
+    extends WorkerExecutor<MoveActionModel, WorkerModel<CopyUnit<?, ?>>, CopyUnit<?, ?>, CopyProgressModel<?>> {
+
+    protected final ProgressFormHandler progressFormHandler;
+
+    protected final StreamerViewHandler streamerViewHandler;
 
     protected MoveWorkerExecutor(final ProgressFormHandler progressFormHandler,
                                  final StreamerViewHandler streamerViewHandler) {
-        super(progressFormHandler, streamerViewHandler);
+        this.progressFormHandler = progressFormHandler;
+        this.streamerViewHandler = streamerViewHandler;
     }
 
     @Override
-    protected MoveWorker internalCreateWorker(MoveActionModel actionModel) {
-        return new MoveWorker<>(actionModel, new MoveWorkerModel<>(
+    protected MoveWorker createWorker(MoveActionModel moveModel) {
+        MoveWorker moveWorker = new MoveWorker<>(moveModel, new MoveWorkerModel<>(
             streamerViewHandler.getOppositeView().getCopyWorkerModel(),
             streamerViewHandler.getCurrentView().getDeleteWorkerModel()));
+        moveWorker.registerListener(new WorkerListener<WorkerModel<CopyUnit<?, ?>>, CopyUnit<?, ?>>() {
+            @Override
+            public void workerUpdated(WorkerModel<CopyUnit<?, ?>> workerModel) {
+                ofNullable(moveModel.getSourceView())
+                    .ifPresent(StreamerView::fireContentChanged);
+                ofNullable(moveModel.getDestinationView())
+                    .ifPresent(StreamerView::fireContentChanged);
+            }
+
+            @Override
+            public void workerFinished(WorkerModel<CopyUnit<?, ?>> workerModel) {
+                ofNullable(moveModel.getSourceView())
+                    .ifPresent(StreamerView::reload);
+                ofNullable(moveModel.getDestinationView())
+                    .ifPresent(StreamerView::reload);
+            }
+        });
+        moveWorker.registerListener(progressFormHandler.createCopyProgressDialog(moveModel, moveWorker.getId()));
+        return moveWorker;
     }
 
     @Override

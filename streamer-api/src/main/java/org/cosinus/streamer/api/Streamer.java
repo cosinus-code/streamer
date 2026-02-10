@@ -18,10 +18,12 @@ package org.cosinus.streamer.api;
 
 import org.cosinus.stream.StreamSupplier;
 import org.cosinus.stream.consumer.StreamConsumer;
+import org.cosinus.streamer.api.parent.StreamParentsSpliterator;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.swing.security.Permissions;
 
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public interface Streamer<T> extends Streamable, StreamSupplier<T> {
 
@@ -45,6 +47,10 @@ public interface Streamer<T> extends Streamable, StreamSupplier<T> {
 
     default BinaryStreamer binaryStreamer() {
         return null;
+    }
+
+    default Stream<ParentStreamer<?>> parentsStream() {
+        return StreamSupport.stream(new StreamParentsSpliterator(this), false);
     }
 
     @Override

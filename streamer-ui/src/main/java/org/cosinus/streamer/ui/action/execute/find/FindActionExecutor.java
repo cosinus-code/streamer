@@ -40,7 +40,7 @@ public class FindActionExecutor extends WorkerExecutor<FindActionModel, FindWork
         findWorker.registerListener(new WorkerListener<>() {
             @Override
             public void workerFinished(FindWorkerModel workerModel) {
-                actionModel.streamerConsumer().accept(workerModel.getFoundStreamer());
+                actionModel.getStreamerConsumer().accept(workerModel.getFoundStreamer());
             }
         });
         streamerViewHandler.getView(actionModel.getLocation())

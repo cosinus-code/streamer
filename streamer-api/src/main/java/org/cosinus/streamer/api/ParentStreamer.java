@@ -24,6 +24,7 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import static java.util.Optional.ofNullable;
 import static org.cosinus.stream.FlatStreamingStrategy.LEVEL_UP_BOTTOM;
 import static org.cosinus.stream.StreamingStrategy.NO_STRATEGY;
 import static org.cosinus.streamer.api.StreamerFilter.ALL_STREAMERS;
@@ -103,7 +104,21 @@ public interface ParentStreamer<S extends Streamer> extends Streamer<S> {
         return null;
     }
 
+    default S createLink(final Path linkPath, final Path targetPath) {
+        return null;
+    }
+
     default String getViewId() {
         return FOLDER_VIEW_ID;
+    }
+
+    default Path resolveStreamerPath(final ParentStreamer<?> source, final Streamer<?> streamer) {
+        Path streamerPath = streamer.getPath();
+        Path relativePath = streamerPath.subpath(ofNullable(source.getPath())
+                .filter(streamerPath::startsWith)
+                .map(Path::getNameCount)
+                .orElse(0),
+            streamerPath.getNameCount());
+        return getPath().resolve(relativePath);
     }
 }

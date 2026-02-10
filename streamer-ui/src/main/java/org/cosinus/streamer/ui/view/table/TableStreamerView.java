@@ -19,6 +19,7 @@ package org.cosinus.streamer.ui.view.table;
 import org.cosinus.stream.swing.ExtendedContainer;
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.ui.action.DragHereModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.menu.MenuHandler;
 import org.cosinus.streamer.ui.view.DefaultStreamerView;
@@ -29,6 +30,7 @@ import org.cosinus.swing.menu.PopupMenu;
 import org.cosinus.swing.worker.WorkerModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -40,7 +42,11 @@ import java.util.stream.Stream;
 import static java.awt.BorderLayout.CENTER;
 import static java.lang.Math.max;
 import static java.util.Optional.ofNullable;
+import static org.cosinus.streamer.ui.action.CopyHereAction.COPY_HERE_ACTION_ID;
 import static org.cosinus.streamer.ui.action.CreateStreamerAction.CREATE_STREAMER_ACTION_ID;
+import static org.cosinus.streamer.ui.action.LinkHereAction.LINK_HERE_ACTION_ID;
+import static org.cosinus.streamer.ui.action.MoveHereAction.MOVE_HERE_ACTION_ID;
+import static org.cosinus.streamer.ui.action.PackHereAction.PACK_HERE_ACTION_ID;
 
 public abstract class TableStreamerView<T extends Streamable>
     extends DefaultStreamerView<T> implements ExtendedContainer {
@@ -77,6 +83,11 @@ public abstract class TableStreamerView<T extends Streamable>
                 table.requestFocus();
             }
         });
+
+//        scroll.addMouseListener(new DragMouseAdapter());
+//        scroll.addMouseMotionListener(new DragMouseMotionAdapter());
+
+
         streamerViewMainPanel.add(scroll, CENTER);
 
         addComponentListener(new ResizeListener());
@@ -85,7 +96,29 @@ public abstract class TableStreamerView<T extends Streamable>
             CREATE_STREAMER_ACTION_ID);
         menuHandler.addContextMenu(scroll, popupContextMenu);
 
+        table.setDragEnabled(true);
+        TransferHandler transferHandler = new TableTransferHandler<>(this);
+        table.setTransferHandler(transferHandler);
+        scroll.setTransferHandler(transferHandler);
+
         super.initComponents();
+    }
+
+    public void showDragAndDropPopup(final JComponent component,
+                                     final Point dropPoint,
+                                     final List<String> paths) {
+        DragHereModel model = DragHereModel
+            .builder()
+            .paths(paths)
+            .destinationView(this)
+            .build();
+
+        PopupMenu popupDragAndDrop = new PopupMenu();
+        popupDragAndDrop.add(menuHandler.createMenuItem(COPY_HERE_ACTION_ID, model));
+        popupDragAndDrop.add(menuHandler.createMenuItem(MOVE_HERE_ACTION_ID, model));
+        popupDragAndDrop.add(menuHandler.createMenuItem(PACK_HERE_ACTION_ID, model));
+        popupDragAndDrop.add(menuHandler.createMenuItem(LINK_HERE_ACTION_ID, model));
+        popupDragAndDrop.show(component, dropPoint.x, dropPoint.y);
     }
 
     @Override
@@ -263,4 +296,30 @@ public abstract class TableStreamerView<T extends Streamable>
     public WorkerModel<T> getCopyWorkerModel() {
         return getDataTableModel().getCopyWorkerModel();
     }
+
+//    public class DragMouseAdapter extends MouseAdapter {
+//        public void mousePressed(MouseEvent event) {
+//            int index = getClosestIndex(event.getPoint());
+//            if(index > -1) setCurrentIndex(index);
+//            requestFocus();
+//
+//            clearSelection();
+//            pointStart = event.getPoint();
+//        }
+//
+//        public void mouseReleased(MouseEvent e) {
+//            pointStart = null;
+//            pointEnd = null;
+//            repaint();
+//        }
+//    }
+//
+//    public class DragMouseMotionAdapter extends MouseMotionAdapter {
+//        public void mouseDragged(MouseEvent event) {
+//            pointEnd = event.getPoint();
+//            List<Integer> indexes = getIndexesInRect(pointStart, pointEnd);
+//            selectElements(indexes, true, null, false);
+//            repaint();
+//        }
+//    }
 }

@@ -25,7 +25,7 @@ import org.cosinus.swing.worker.WorkerModel;
 import java.util.List;
 
 public class CopyWorkerModel<S extends Streamer<S>, T extends Streamer<T>>
-    implements WorkerModel<CopyWorkerUnit<S, T>> {
+    implements WorkerModel<CopyUnit<S, T>> {
 
     private final WorkerModel<T> copyWorkerModel;
 
@@ -34,10 +34,10 @@ public class CopyWorkerModel<S extends Streamer<S>, T extends Streamer<T>>
     }
 
     @Override
-    public void update(List<CopyWorkerUnit<S, T>> items) {
+    public void update(List<CopyUnit<S, T>> items) {
         copyWorkerModel.update(items
             .stream()
-            .map(CopyWorkerUnit::target)
+            .map(CopyUnit::target)
             .toList());
     }
 }
