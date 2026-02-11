@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.ui.action.execute.load;
 
+import org.cosinus.stream.StreamSupplier;
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
@@ -40,6 +41,7 @@ import org.cosinus.swing.worker.WorkerListener;
 import org.cosinus.swing.worker.WorkerModel;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
@@ -187,16 +189,23 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
             @Override
             public void workerFinished(WorkerModel workerModel) {
                 boolean showPreview = preferences.booleanPreference(PREVIEW);
+                final StreamSupplier<File> streamSupplier = () -> actionModel.getStreamerViewToLoadTo()
+                    .getAllViewItems()
+                    .stream()
+                    .map(ViewItem::getStreamable)
+                    .map(Streamable::getRealPath)
+                    .filter(Objects::nonNull)
+                    .map(Path::toFile);
                 if (showPreview && ICON_VIEW_NAME.equals(actionModel.getStreamerViewToLoadTo().getName())) {
                     new LoadThumbnailsWorker(PREVIEW_CELL_SIZE,
                         files -> actionModel.getStreamerViewToLoadTo().refresh(),
-                        () -> actionModel.getStreamerViewToLoadTo()
-                            .getAllViewItems()
-                            .stream()
-                            .map(ViewItem::getStreamable)
-                            .map(Streamable::getRealPath)
-                            .filter(Objects::nonNull)
-                            .map(Path::toFile))
+                        streamSupplier,
+                        true)
+                        .execute();
+                    new LoadThumbnailsWorker(PREVIEW_CELL_SIZE,
+                        files -> actionModel.getStreamerViewToLoadTo().refresh(),
+                        streamSupplier,
+                        false)
                         .execute();
                 }
             }
