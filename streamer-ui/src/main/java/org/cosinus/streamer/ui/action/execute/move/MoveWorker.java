@@ -33,12 +33,6 @@ public class MoveWorker<S extends Streamer<S>, T extends Streamer<T>> extends Co
 
     private final MoveWorkerModel<S, T> moveWorkerModel;
 
-    public MoveWorker(CopyActionModel<S, T> copyModel) {
-        this(copyModel, new MoveWorkerModel<>(
-            copyModel.getStreamerViewTarget().getCopyWorkerModel(),
-            copyModel.getStreamerViewSource().getDeleteWorkerModel()));
-    }
-
     public MoveWorker(CopyActionModel<S, T> copyModel, MoveWorkerModel<S, T> moveWorkerModel) {
         super(copyModel, moveWorkerModel);
         this.moveWorkerModel = moveWorkerModel;

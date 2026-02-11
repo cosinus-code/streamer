@@ -20,8 +20,7 @@ import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.swing.action.ActionContext;
-import org.cosinus.swing.action.ActionInContext;
+import org.cosinus.swing.action.SwingAction;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
@@ -35,7 +34,7 @@ import static org.cosinus.swing.image.icon.IconProvider.ICON_EXECUTE;
  * Load streamer action
  */
 @Component
-public class ExecuteStreamerAction implements ActionInContext {
+public class ExecuteStreamerAction implements SwingAction {
 
     public static final String EXECUTE_STREAMER_ACTION_ID = "execute-streamer";
 
@@ -50,7 +49,7 @@ public class ExecuteStreamerAction implements ActionInContext {
     }
 
     @Override
-    public void run(ActionContext context) {
+    public void run() {
         StreamerView<?, ?> streamerView = streamerViewHandler.getCurrentView();
         ofNullable(streamerView.getCurrentStreamer())
             .ifPresent(streamerToExecute -> {

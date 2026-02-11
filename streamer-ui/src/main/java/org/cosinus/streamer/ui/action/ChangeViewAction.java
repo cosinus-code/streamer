@@ -19,12 +19,11 @@ package org.cosinus.streamer.ui.action;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.swing.action.ActionContext;
-import org.cosinus.swing.action.ActionInContext;
+import org.cosinus.swing.action.SwingActionInContext;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ChangeViewAction implements ActionInContext {
+public class ChangeViewAction implements SwingActionInContext<ChangeViewActionContext> {
 
     private final StreamerViewHandler streamerViewHandler;
 
@@ -37,8 +36,8 @@ public class ChangeViewAction implements ActionInContext {
     }
 
     @Override
-    public void run(ActionContext context) {
-        String viewName = ((ChangeViewActionContext) context).viewName();
+    public void run(ChangeViewActionContext context) {
+        String viewName = context.viewName();
         if (streamerViewHandler.getCurrentView().getName().equals(viewName)) {
             return;
         }

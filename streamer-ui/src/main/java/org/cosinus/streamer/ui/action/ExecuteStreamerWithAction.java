@@ -21,8 +21,7 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.model.ExecuteStreamerModel;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.swing.action.ActionContext;
-import org.cosinus.swing.action.ActionInContext;
+import org.cosinus.swing.action.SwingAction;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.exec.ProcessExecutor;
 import org.cosinus.swing.file.FileCompatibleApplications;
@@ -38,7 +37,7 @@ import static java.util.function.Predicate.not;
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 
 @Component
-public class ExecuteStreamerWithAction implements ActionInContext {
+public class ExecuteStreamerWithAction implements SwingAction {
 
     public static final String EXECUTE_STREAMER_WITH_ACTION_ID = "execute-streamer-with";
 
@@ -67,7 +66,7 @@ public class ExecuteStreamerWithAction implements ActionInContext {
     }
 
     @Override
-    public void run(ActionContext context) {
+    public void run() {
         StreamerView<?, ?> streamerView = streamerViewHandler.getCurrentView();
         ofNullable(streamerView.getCurrentStreamerOrParent())
             .filter(not(Streamer::isParent))

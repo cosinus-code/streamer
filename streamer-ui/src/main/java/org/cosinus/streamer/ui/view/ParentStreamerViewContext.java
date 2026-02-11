@@ -25,7 +25,6 @@ import java.util.List;
 
 public class ParentStreamerViewContext<T extends Streamer<T>> {
 
-    @Getter
     private final StreamerView<T, T> streamerView;
 
     @Getter
@@ -47,4 +46,7 @@ public class ParentStreamerViewContext<T extends Streamer<T>> {
         this.selectedItems = (List<Streamer<T>>) streamerView.getSelectedItems();
     }
 
+    public StreamerView<T, T> getStreamerView() {
+        return streamerView;
+    }
 }

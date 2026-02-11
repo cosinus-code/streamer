@@ -43,17 +43,17 @@ public class PackActionModel<S extends Streamer<S>, T extends Streamer<T>>
     @Setter
     private String[] packTypes;
 
-    public PackActionModel(String actionId, String actionName) {
-        super(actionId, actionName);
+    public PackActionModel(String actionId) {
+        super(actionId);
     }
 
     public static <S extends Streamer<S>, T extends Streamer<T>>
-    PackActionModel<S, T> pack(String actionId, String actionName, ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
-        PackActionModel<S, T> packActionModel = new PackActionModel<>(actionId, actionName);
+    PackActionModel<S, T> pack(String actionId, ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
+        PackActionModel<S, T> packActionModel = new PackActionModel<>(actionId);
         packActionModel
             .setStreamersToCopy(from.getSelectedItems())
-            .from(from.getStreamerView(), from.getParentStreamer())
-            .to(to.getStreamerView(), to.getParentStreamer());
+            .from(from.getParentStreamer())
+            .to(to.getParentStreamer());
         return packActionModel;
     }
 

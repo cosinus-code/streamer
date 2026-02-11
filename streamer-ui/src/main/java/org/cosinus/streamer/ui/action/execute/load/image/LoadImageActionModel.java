@@ -31,7 +31,7 @@ public class LoadImageActionModel extends ActionModel {
 
     public LoadImageActionModel(final BinaryStreamer streamerToLoad,
                                 final ImageStreamerView imageStreamerView) {
-        super(imageStreamerView.getCurrentLocation().name(), LOAD_IMAGE_ACTION_ID, LOAD_IMAGE_ACTION_ID);
+        super(imageStreamerView.getCurrentLocation().name(), LOAD_IMAGE_ACTION_ID);
         this.streamerToLoad = streamerToLoad;
         this.imageStreamerView = imageStreamerView;
     }

@@ -22,8 +22,7 @@ import org.cosinus.streamer.ui.action.execute.delete.DeleteStreamerExecutor;
 import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.swing.action.ActionContext;
-import org.cosinus.swing.action.ActionInContext;
+import org.cosinus.swing.action.SwingAction;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.translate.Translator;
 import org.cosinus.swing.ui.ApplicationUIHandler;
@@ -42,7 +41,7 @@ import static org.cosinus.swing.image.icon.IconProvider.ICON_DELETE;
  * Rename streamer action
  */
 @Component
-public class DeleteStreamerAction implements ActionInContext {
+public class DeleteStreamerAction implements SwingAction {
 
     public static final String DELETE_STREAMER_ACTION_NAME = "delete-streamer";
 
@@ -69,7 +68,7 @@ public class DeleteStreamerAction implements ActionInContext {
     }
 
     @Override
-    public void run(ActionContext context) {
+    public void run() {
         Streamer<?> currentParentStreamer = streamerViewHandler.getCurrentView().getParentStreamer();
         if (currentParentStreamer.isParent()) {
             deleteFromParentStreamer();
@@ -87,7 +86,7 @@ public class DeleteStreamerAction implements ActionInContext {
 
         DeleteActionModel<S> deleteAction = createDeleteActionModel(streamerViewContext);
 
-          //TODO: to clarify streamer permissions
+        //TODO: to clarify streamer permissions
 //        if (!deleteAction.getStreamer().canWriteTo(actionContext.getCurrentView().getLoadedStreamer())) {
 //            dialogHandler.showInfo(translator.translate("act_copy_delete_not_allowed"));
 //            return;

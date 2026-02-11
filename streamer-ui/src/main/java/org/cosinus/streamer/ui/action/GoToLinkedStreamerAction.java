@@ -22,8 +22,7 @@ import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.swing.action.ActionContext;
-import org.cosinus.swing.action.ActionInContext;
+import org.cosinus.swing.action.SwingAction;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.translate.Translator;
 import org.cosinus.swing.ui.ApplicationUIHandler;
@@ -37,7 +36,7 @@ import static java.util.Optional.ofNullable;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_FORWARD;
 
 @Component
-public class GoToLinkedStreamerAction implements ActionInContext {
+public class GoToLinkedStreamerAction implements SwingAction {
 
     public static final String GO_TO_LINKED_STREAMER_ACTION_NAME = "menu-go-to-linked-streamer";
 
@@ -64,7 +63,7 @@ public class GoToLinkedStreamerAction implements ActionInContext {
     }
 
     @Override
-    public void run(ActionContext context) {
+    public void run() {
         StreamerView<?, ?> currentStreamerView = streamerViewHandler.getCurrentView();
         ofNullable(currentStreamerView.getCurrentStreamer())
             .filter(Streamer::isLink)

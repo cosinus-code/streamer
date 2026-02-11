@@ -16,19 +16,18 @@
 
 package org.cosinus.streamer.ui.action;
 
-import org.cosinus.swing.action.ActionContext;
-import org.cosinus.swing.action.ActionInContext;
+import org.cosinus.swing.action.SwingAction;
 import org.springframework.stereotype.Component;
 
 import static java.lang.System.exit;
 
 @Component
-public class QuitAction implements ActionInContext {
+public class QuitAction implements SwingAction {
 
     private static final String MENU_STREAMER_QUIT = "menu-streamer-quit";
 
     @Override
-    public void run(ActionContext context) {
+    public void run() {
         exit(0);
     }
 

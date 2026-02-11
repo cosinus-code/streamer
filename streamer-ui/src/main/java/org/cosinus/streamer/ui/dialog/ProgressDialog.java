@@ -70,7 +70,7 @@ public abstract class ProgressDialog<M extends ProgressModel>
     public ProgressDialog(Frame frame, ActionModel actionModel) {
         super(frame, frame.getTitle(), true, false);
         this.actionModel = actionModel;
-        this.actionName = translator.translate(actionModel.getActionName());
+        this.actionName = translator.translate(actionModel.getActionId());
     }
 
     @Override

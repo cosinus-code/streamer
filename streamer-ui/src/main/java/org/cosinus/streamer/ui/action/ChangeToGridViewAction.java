@@ -16,14 +16,13 @@
 
 package org.cosinus.streamer.ui.action;
 
-import org.cosinus.swing.action.ActionContext;
-import org.cosinus.swing.action.ActionInContext;
+import org.cosinus.swing.action.SwingAction;
 import org.springframework.stereotype.Component;
 
 import static org.cosinus.streamer.ui.view.table.grid.GridView.GRID_VIEW_NAME;
 
 @Component
-public class ChangeToGridViewAction implements ActionInContext {
+public class ChangeToGridViewAction implements SwingAction {
 
     private final ChangeViewAction changeViewAction;
 
@@ -32,7 +31,7 @@ public class ChangeToGridViewAction implements ActionInContext {
     }
 
     @Override
-    public void run(ActionContext context) {
+    public void run() {
         changeViewAction.run(new ChangeViewActionContext(GRID_VIEW_NAME));
     }
 

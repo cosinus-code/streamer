@@ -17,8 +17,7 @@ package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.ui.action.execute.save.SaveActionModel;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.swing.action.ActionContext;
-import org.cosinus.swing.action.ActionInContext;
+import org.cosinus.swing.action.SwingAction;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.stereotype.Component;
@@ -29,7 +28,7 @@ import java.util.Optional;
 import static java.awt.event.KeyEvent.VK_S;
 
 @Component
-public class SaveAction implements ActionInContext {
+public class SaveAction implements SwingAction {
     public static final String SAVE_ACTION_ID = "save-streamer";
 
     private final ActionExecutors actionExecutors;
@@ -47,7 +46,7 @@ public class SaveAction implements ActionInContext {
     }
 
     @Override
-    public void run(ActionContext context) {
+    public void run() {
         actionExecutors.execute(new SaveActionModel(
             streamerViewHandler.getCurrentView()));
     }

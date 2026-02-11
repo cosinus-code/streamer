@@ -17,8 +17,7 @@
 package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.swing.action.ActionContext;
-import org.cosinus.swing.action.ActionInContext;
+import org.cosinus.swing.action.SwingAction;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
@@ -30,7 +29,7 @@ import static java.awt.event.KeyEvent.VK_END;
  * Go up streamer action
  */
 @Component
-public class GoToLastStreamerAction implements ActionInContext {
+public class GoToLastStreamerAction implements SwingAction {
 
     public static final String GO_TO_LAST_STREAMER_ACTION = "go-to-last-streamer";
 
@@ -41,7 +40,7 @@ public class GoToLastStreamerAction implements ActionInContext {
     }
 
     @Override
-    public void run(ActionContext context) {
+    public void run() {
         streamerViewHandler.getCurrentView().goEnd();
     }
 

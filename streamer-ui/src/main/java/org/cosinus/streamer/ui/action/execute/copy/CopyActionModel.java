@@ -21,7 +21,6 @@ import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
-import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.swing.action.execute.ActionModel;
 import org.cosinus.swing.ui.UIModel;
 
@@ -49,12 +48,6 @@ public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> exten
     private StreamerFilter sourceFilter = streamer -> true;
 
     @Getter
-    private StreamerView<S, S> streamerViewSource;
-
-    @Getter
-    private StreamerView<T, T> streamerViewTarget;
-
-    @Getter
     private List<Streamer<S>> streamersToCopy;
 
     @Getter
@@ -66,16 +59,16 @@ public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> exten
     @Getter
     private Path targetPath;
 
-    public CopyActionModel(String actionId, String actionName) {
-        super(randomUUID().toString(), actionId, actionName);
+    public CopyActionModel(String actionId) {
+        super(randomUUID().toString(), actionId);
     }
 
     public static <S extends Streamer<S>, T extends Streamer<T>>
-    CopyActionModel<S, T> copy(String actionId, String actionName, ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
-        return new CopyActionModel<S, T>(actionId, actionName)
+    CopyActionModel<S, T> copy(String actionId, ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
+        return new CopyActionModel<S, T>(actionId)
             .setStreamersToCopy(from.getSelectedItems())
-            .from(from.getStreamerView(), from.getParentStreamer())
-            .to(to.getStreamerView(), to.getParentStreamer());
+            .from(from.getParentStreamer())
+            .to(to.getParentStreamer());
     }
 
     public void setTargetPath(Path targetPath) {
@@ -101,16 +94,8 @@ public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> exten
         return this;
     }
 
-    public CopyActionModel<S, T> from(StreamerView<S, S> streamerViewSource, ParentStreamer<S> source) {
-        this.streamerViewSource = streamerViewSource;
+    public CopyActionModel<S, T> from(ParentStreamer<S> source) {
         this.source = source;
-        return this;
-    }
-
-    public CopyActionModel<S, T> to(StreamerView<T, T> streamerViewTarget, ParentStreamer<T> destination) {
-        this.streamerViewTarget = streamerViewTarget;
-        this.destination = destination;
-        this.targetPath = destination.getPath();
         return this;
     }
 

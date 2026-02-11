@@ -48,7 +48,7 @@ public class FindActionModel extends ActionModel {
                            boolean falloutToDefaultStreamer,
                            final String streamerUrlToFind,
                            final Consumer<Streamer<?>> streamerConsumer) {
-        super(UUID.randomUUID().toString(), FIND_STREAMER_ACTION_ID, FIND_STREAMER_ACTION_ID);
+        super(UUID.randomUUID().toString(), FIND_STREAMER_ACTION_ID);
         this.location = location;
         this.findingLastStreamer = findingLastStreamer;
         this.falloutToParentStreamer = falloutToParentStreamer;

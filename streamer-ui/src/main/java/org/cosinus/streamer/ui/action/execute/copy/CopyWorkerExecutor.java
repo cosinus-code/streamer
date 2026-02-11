@@ -37,8 +37,9 @@ public class CopyWorkerExecutor<S extends Streamer<S>, T extends Streamer<T>>
     }
 
     @Override
-    protected CopyWorker<S, T> createWorker(CopyActionModel<S, T> actionModel) {
-        return new CopyWorker<>(actionModel);
+    protected CopyWorker<S, T> createWorker(CopyActionModel<S, T> copyModel) {
+        return new CopyWorker<>(copyModel,
+            new CopyWorkerModel<>(streamerViewHandler.getOppositeView().getCopyWorkerModel()));
     }
 
     @Override

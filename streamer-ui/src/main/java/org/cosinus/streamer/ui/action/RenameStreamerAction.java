@@ -17,8 +17,7 @@
 package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.swing.action.ActionContext;
-import org.cosinus.swing.action.ActionInContext;
+import org.cosinus.swing.action.SwingAction;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
@@ -30,7 +29,7 @@ import static java.awt.event.KeyEvent.VK_F2;
  * Rename streamer action
  */
 @Component
-public class RenameStreamerAction implements ActionInContext {
+public class RenameStreamerAction implements SwingAction {
 
     public static final String RENAME_STREAMER_ACTION_ID = "rename-streamer";
 
@@ -41,7 +40,7 @@ public class RenameStreamerAction implements ActionInContext {
     }
 
     @Override
-    public void run(ActionContext context) {
+    public void run() {
         streamerViewHandler.getCurrentView().showDetailEditors();
     }
 

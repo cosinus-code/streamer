@@ -17,8 +17,7 @@ package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.swing.action.ActionContext;
-import org.cosinus.swing.action.ActionInContext;
+import org.cosinus.swing.action.SwingAction;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.stereotype.Component;
 
@@ -32,7 +31,7 @@ import static java.util.Optional.ofNullable;
  * Load streamer action
  */
 @Component
-public class FindStreamerAction implements ActionInContext {
+public class FindStreamerAction implements SwingAction {
 
     public static final String FIND_STREAMER_ACTION_ID = "find-streamer";
 
@@ -47,7 +46,7 @@ public class FindStreamerAction implements ActionInContext {
     }
 
     @Override
-    public void run(ActionContext context) {
+    public void run() {
         ofNullable(streamerViewHandler.getCurrentView())
             .map(StreamerView::getFindPanel)
             .ifPresent(findPanel -> findPanel.setVisible(true));

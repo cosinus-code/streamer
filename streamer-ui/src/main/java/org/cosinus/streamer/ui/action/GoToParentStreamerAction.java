@@ -21,8 +21,7 @@ import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.swing.action.ActionContext;
-import org.cosinus.swing.action.ActionInContext;
+import org.cosinus.swing.action.SwingAction;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.stereotype.Component;
 
@@ -36,7 +35,7 @@ import static java.util.Optional.ofNullable;
  * Go to parent streamer action
  */
 @Component
-public class GoToParentStreamerAction implements ActionInContext {
+public class GoToParentStreamerAction implements SwingAction {
 
     public static final String GO_TO_PARENT_ACTION = "menu-go-parent";
 
@@ -55,7 +54,7 @@ public class GoToParentStreamerAction implements ActionInContext {
     }
 
     @Override
-    public void run(ActionContext context) {
+    public void run() {
         StreamerView<?, ?> currentStreamerView = streamerViewHandler.getCurrentView();
         ofNullable(currentStreamerView.getParentStreamer())
             .map(Streamer::getParent)

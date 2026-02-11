@@ -20,8 +20,7 @@ import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.swing.action.ActionContext;
-import org.cosinus.swing.action.ActionInContext;
+import org.cosinus.swing.action.SwingAction;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.stereotype.Component;
 
@@ -35,7 +34,7 @@ import static java.util.Optional.ofNullable;
  * Load streamer action
  */
 @Component
-public class LoadStreamerAction implements ActionInContext {
+public class LoadStreamerAction implements SwingAction {
 
     public static final String LOAD_STREAMER_ACTION_ID = "load-streamer";
 
@@ -54,7 +53,7 @@ public class LoadStreamerAction implements ActionInContext {
     }
 
     @Override
-    public void run(ActionContext context) {
+    public void run() {
         StreamerView<?, ?> currentStreamerView = streamerViewHandler.getCurrentView();
         ofNullable(currentStreamerView.getCurrentStreamer())
             .ifPresent(currentStreamer -> loadActionExecutor
