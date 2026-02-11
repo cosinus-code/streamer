@@ -26,7 +26,6 @@ import org.cosinus.streamer.ui.action.execute.pack.PackWorkerExecutor;
 import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.swing.action.ActionContext;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.preference.Preferences;
@@ -52,9 +51,7 @@ import static org.cosinus.swing.util.FileUtils.setExtension;
 @Component
 public class PackStreamerAction extends AbstractCopyAction<PackActionModel> {
 
-    public static final String PACK_ACTION_NAME = "act-pack";
-
-    public static final String PACK_STREAMER_ACTION_ID = "pack-streamer";
+    public static final String PACK_STREAMER_ACTION_ID = "act-pack";
 
     private static final String PACK_CONFIRMATION_UI = "packConfirmationDialog.json";
 
@@ -85,13 +82,13 @@ public class PackStreamerAction extends AbstractCopyAction<PackActionModel> {
     }
 
     @Override
-    public void run(ActionContext actionContext) {
+    public void run() {
         if (binaryExpanderHandler.getBinaryExpandersMap().isEmpty()) {
             dialogHandler.showInfo(translator.translate("act_pack_no_pack_system"));
             return;
         }
 
-        super.run(actionContext);
+        super.run();
     }
 
     @Override
@@ -116,7 +113,7 @@ public class PackStreamerAction extends AbstractCopyAction<PackActionModel> {
 
     @Override
     protected <S extends Streamer<S>, T extends Streamer<T>> PackActionModel actionModel() {
-        PackActionModel packActionModel = pack(getId(), getActionName(),
+        PackActionModel packActionModel = pack(getId(),
             new ParentStreamerViewContext<>((StreamerView<S, S>) streamerViewHandler.getCurrentView()),
             new ParentStreamerViewContext<>((StreamerView<T, T>) streamerViewHandler.getOppositeView()));
 
@@ -132,11 +129,6 @@ public class PackStreamerAction extends AbstractCopyAction<PackActionModel> {
     @Override
     public String getId() {
         return PACK_STREAMER_ACTION_ID;
-    }
-
-    @Override
-    protected String getActionName() {
-        return PACK_ACTION_NAME;
     }
 
     @Override

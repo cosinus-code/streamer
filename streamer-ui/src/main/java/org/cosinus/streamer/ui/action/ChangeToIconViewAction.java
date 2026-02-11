@@ -16,14 +16,13 @@
 
 package org.cosinus.streamer.ui.action;
 
-import org.cosinus.swing.action.ActionContext;
-import org.cosinus.swing.action.ActionInContext;
+import org.cosinus.swing.action.SwingAction;
 import org.springframework.stereotype.Component;
 
 import static org.cosinus.streamer.ui.view.table.icon.IconView.ICON_VIEW_NAME;
 
 @Component
-public class ChangeToIconViewAction implements ActionInContext {
+public class ChangeToIconViewAction implements SwingAction {
 
     private final ChangeViewAction changeViewAction;
 
@@ -32,7 +31,7 @@ public class ChangeToIconViewAction implements ActionInContext {
     }
 
     @Override
-    public void run(ActionContext context) {
+    public void run() {
         changeViewAction.run(new ChangeViewActionContext(ICON_VIEW_NAME));
     }
 

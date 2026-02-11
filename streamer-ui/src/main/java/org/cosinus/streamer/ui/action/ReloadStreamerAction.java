@@ -20,8 +20,7 @@ import org.cosinus.streamer.api.StreamerSizeHandler;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.swing.action.ActionContext;
-import org.cosinus.swing.action.ActionInContext;
+import org.cosinus.swing.action.SwingAction;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.stereotype.Component;
 
@@ -34,7 +33,7 @@ import static java.awt.event.KeyEvent.VK_R;
  * Load streamer action
  */
 @Component
-public class ReloadStreamerAction implements ActionInContext {
+public class ReloadStreamerAction implements SwingAction {
 
     public static final String RELOAD_STREAMER_ACTION_ID = "menu-view-refresh";
 
@@ -57,7 +56,7 @@ public class ReloadStreamerAction implements ActionInContext {
     }
 
     @Override
-    public void run(ActionContext context) {
+    public void run() {
         streamerViewHandler.getCurrentView().getParentStreamer().reset();
         streamerSizeHandler.resetAllSizes();
         loadActionExecutor.execute(new LoadActionModel(

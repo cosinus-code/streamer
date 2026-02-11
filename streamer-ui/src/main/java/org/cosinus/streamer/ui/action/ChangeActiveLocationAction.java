@@ -17,8 +17,7 @@
 package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.swing.action.ActionContext;
-import org.cosinus.swing.action.ActionInContext;
+import org.cosinus.swing.action.SwingAction;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
@@ -30,7 +29,7 @@ import static java.awt.event.KeyEvent.VK_TAB;
  * Change active location action
  */
 @Component
-public class ChangeActiveLocationAction implements ActionInContext {
+public class ChangeActiveLocationAction implements SwingAction {
 
     public static final String CHANGE_ACTIVE_LOCATION_ACTION = "change-active-location";
 
@@ -41,7 +40,7 @@ public class ChangeActiveLocationAction implements ActionInContext {
     }
 
     @Override
-    public void run(ActionContext context) {
+    public void run() {
         streamerViewHandler.getOppositeView().requestFocus();
     }
 

@@ -16,12 +16,10 @@
 
 package org.cosinus.streamer.ui.action;
 
-import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.action.execute.compute.ComputeStreamerSizeModel;
 import org.cosinus.streamer.ui.action.execute.compute.ComputeStreamerSizeExecutor;
+import org.cosinus.streamer.ui.action.execute.compute.ComputeStreamerSizeModel;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.swing.action.ActionContext;
-import org.cosinus.swing.action.ActionInContext;
+import org.cosinus.swing.action.SwingAction;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
@@ -34,7 +32,7 @@ import static java.util.Optional.ofNullable;
  * Compute streamer size action
  */
 @Component
-public class ComputeStreamerSizeAction implements ActionInContext {
+public class ComputeStreamerSizeAction implements SwingAction {
 
     public static final String COMPUTE_STREAMER_SIZE_ACTION_ID = "compute-streamer-size";
 
@@ -48,7 +46,7 @@ public class ComputeStreamerSizeAction implements ActionInContext {
     }
 
     @Override
-    public void run(ActionContext context) {
+    public void run() {
         ofNullable(streamerViewHandler.getCurrentView().getCurrentStreamer())
             .ifPresent(streamer -> {
                 ComputeStreamerSizeModel computeStreamerSizeModel = new ComputeStreamerSizeModel(streamer);

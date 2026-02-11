@@ -31,7 +31,7 @@ public class MoveWorkerModel<S extends Streamer<S>, T extends Streamer<T>>
     private final WorkerModel<Streamer<S>> deleteWorkerModel;
 
     public MoveWorkerModel(final WorkerModel<T> copyWorkerModel,
-                           final WorkerModel<Streamer<S>> deleteWorkerModel) {
+                           final WorkerModel deleteWorkerModel) {
         super(copyWorkerModel);
         this.deleteWorkerModel = deleteWorkerModel;
     }

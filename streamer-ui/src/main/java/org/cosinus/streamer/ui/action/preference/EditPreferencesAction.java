@@ -16,8 +16,7 @@
 
 package org.cosinus.streamer.ui.action.preference;
 
-import org.cosinus.swing.action.ActionContext;
-import org.cosinus.swing.action.ActionInContext;
+import org.cosinus.swing.action.SwingAction;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +27,7 @@ import static org.cosinus.swing.image.icon.IconProvider.ICON_SETTINGS;
  * Start draw action
  */
 @Component
-public class EditPreferencesAction implements ActionInContext {
+public class EditPreferencesAction implements SwingAction {
 
     private static final String EDIT_PREFERENCES = "menu-edit-preferences";
 
@@ -39,7 +38,7 @@ public class EditPreferencesAction implements ActionInContext {
     }
 
     @Override
-    public void run(ActionContext context) {
+    public void run() {
         dialogHandler.showPreferencesDialog(applicationFrame);
     }
 

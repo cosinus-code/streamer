@@ -41,9 +41,7 @@ import static org.cosinus.streamer.ui.action.execute.copy.CopyActionModel.copy;
 @Component
 public class CopyStreamerAction extends AbstractCopyAction<CopyActionModel> {
 
-    public static final String COPY_ACTION_NAME = "act-copy";
-
-    public static final String COPY_STREAMER_ACTION_ID = "copy-streamer";
+    public static final String COPY_STREAMER_ACTION_ID = "act-copy";
 
     public CopyStreamerAction(final Preferences preferences,
                               final Translator translator,
@@ -67,7 +65,7 @@ public class CopyStreamerAction extends AbstractCopyAction<CopyActionModel> {
 
     @Override
     protected <S extends Streamer<S>, T extends Streamer<T>> CopyActionModel<S, T> actionModel() {
-        return copy(getId(), getActionName(),
+        return copy(getId(),
             new ParentStreamerViewContext<>((StreamerView<S, S>) streamerViewHandler.getCurrentView()),
             new ParentStreamerViewContext<>((StreamerView<T, T>) streamerViewHandler.getOppositeView()));
     }
@@ -75,11 +73,6 @@ public class CopyStreamerAction extends AbstractCopyAction<CopyActionModel> {
     @Override
     public String getId() {
         return COPY_STREAMER_ACTION_ID;
-    }
-
-    @Override
-    protected String getActionName() {
-        return COPY_ACTION_NAME;
     }
 
     @Override

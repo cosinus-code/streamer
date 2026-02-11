@@ -21,8 +21,7 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.swing.action.ActionContext;
-import org.cosinus.swing.action.ActionInContext;
+import org.cosinus.swing.action.SwingAction;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.preference.Preferences;
@@ -36,7 +35,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 /**
  * Abstract copy action
  */
-public abstract class AbstractCopyAction<M extends CopyActionModel> implements ActionInContext {
+public abstract class AbstractCopyAction<M extends CopyActionModel> implements SwingAction {
 
     private static final String COPY_CONFIRMATION_UI = "copyConfirmationDialog.json";
 
@@ -67,7 +66,7 @@ public abstract class AbstractCopyAction<M extends CopyActionModel> implements A
     }
 
     @Override
-    public void run(ActionContext actionContext) {
+    public void run() {
 
         if (preferences.booleanPreference(BOUND)) {
             return;
@@ -126,6 +125,4 @@ public abstract class AbstractCopyAction<M extends CopyActionModel> implements A
     }
 
     protected abstract <S extends Streamer<S>, T extends Streamer<T>> M actionModel();
-
-    protected abstract String getActionName();
 }

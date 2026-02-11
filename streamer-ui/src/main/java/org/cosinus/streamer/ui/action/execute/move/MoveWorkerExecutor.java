@@ -40,7 +40,9 @@ public class MoveWorkerExecutor<S extends Streamer<S>, T extends Streamer<T>>
 
     @Override
     protected MoveWorker<S, T> createWorker(MoveActionModel<S, T> actionModel) {
-        return new MoveWorker<>(actionModel);
+        return new MoveWorker<>(actionModel, new MoveWorkerModel<>(
+            streamerViewHandler.getOppositeView().getCopyWorkerModel(),
+            streamerViewHandler.getCurrentView().getDeleteWorkerModel()));
     }
 
     @Override

@@ -21,8 +21,7 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.permission.PermissionsHandler;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.swing.action.ActionContext;
-import org.cosinus.swing.action.ActionInContext;
+import org.cosinus.swing.action.SwingAction;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.security.Permissions;
 import org.cosinus.swing.translate.Translator;
@@ -32,7 +31,7 @@ import static java.util.Optional.ofNullable;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_PERMISSIONS;
 
 @Component
-public class ShowPermissionsAction implements ActionInContext {
+public class ShowPermissionsAction implements SwingAction {
 
     public static final String SHOW_STREAMER_PERMISSIONS_ACTION_ID = "show-streamer-permissions";
 
@@ -57,7 +56,7 @@ public class ShowPermissionsAction implements ActionInContext {
     }
 
     @Override
-    public void run(ActionContext context) {
+    public void run() {
         StreamerView<?, ?> streamerView = streamerViewHandler.getCurrentView();
         ofNullable(streamerView.getCurrentStreamer())
             .ifPresent(this::showStreamerPermissionsDialog);

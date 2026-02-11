@@ -23,8 +23,7 @@ import org.cosinus.streamer.ui.action.execute.compute.ComputeStreamerSizeModel;
 import org.cosinus.streamer.ui.model.StreamerPropertiesModel;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.swing.action.ActionContext;
-import org.cosinus.swing.action.ActionInContext;
+import org.cosinus.swing.action.SwingAction;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.cosinus.swing.window.Dialog;
@@ -41,7 +40,7 @@ import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_PROPERTIES;
 
 @Component
-public class ShowStreamerPropertiesAction implements ActionInContext {
+public class ShowStreamerPropertiesAction implements SwingAction {
 
     public static final String SHOW_STREAMER_PROPERTIES_ACTION_ID = "show-streamer-properties";
 
@@ -66,7 +65,7 @@ public class ShowStreamerPropertiesAction implements ActionInContext {
     }
 
     @Override
-    public void run(ActionContext context) {
+    public void run() {
         StreamerView<?, ?> streamerView = streamerViewHandler.getCurrentView();
         ofNullable(streamerView.getCurrentStreamer())
             .ifPresent(this::showStreamerPropertiesDialog);

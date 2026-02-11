@@ -59,10 +59,6 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
 
     private final StreamingStrategy streamingStrategy;
 
-    public CopyWorker(CopyActionModel<S, T> copyModel) {
-        this(copyModel, new CopyWorkerModel<>(copyModel.getStreamerViewTarget().getCopyWorkerModel()));
-    }
-
     public CopyWorker(CopyActionModel<S, T> copyModel, WorkerModel<CopyWorkerUnit<S, T>> workerModel) {
         super(copyModel, workerModel, new CopyProgressModel<>());
         this.source = copyModel.getSource();

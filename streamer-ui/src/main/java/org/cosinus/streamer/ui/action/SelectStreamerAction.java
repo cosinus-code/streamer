@@ -17,8 +17,7 @@
 package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.swing.action.ActionContext;
-import org.cosinus.swing.action.ActionInContext;
+import org.cosinus.swing.action.SwingAction;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
@@ -32,7 +31,7 @@ import static java.awt.event.KeyEvent.VK_INSERT;
  * Select streamer action
  */
 @Component
-public class SelectStreamerAction implements ActionInContext {
+public class SelectStreamerAction implements SwingAction {
 
     public static final String SELECT_STREAMER_ACTION_ID = "select-streamer";
 
@@ -43,7 +42,7 @@ public class SelectStreamerAction implements ActionInContext {
     }
 
     @Override
-    public void run(ActionContext context) {
+    public void run() {
         streamerViewHandler.getCurrentView().addCurrentItemToSelectionAndGoNext();
     }
 
