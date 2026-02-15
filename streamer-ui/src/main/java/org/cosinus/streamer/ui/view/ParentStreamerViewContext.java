@@ -25,8 +25,6 @@ import java.util.List;
 
 public class ParentStreamerViewContext<T extends Streamer<T>> {
 
-    private final StreamerView<T, T> streamerView;
-
     @Getter
     private final ParentStreamer<T> parentStreamer;
 
@@ -40,13 +38,8 @@ public class ParentStreamerViewContext<T extends Streamer<T>> {
         if (!streamerView.getParentStreamer().isParent()) {
             throw new StreamerException("Cannot create parent streamer context for a non parent streamer");
         }
-        this.streamerView = streamerView;
         this.parentStreamer = (ParentStreamer<T>) streamerView.getParentStreamer();
         this.currentItem = streamerView.getCurrentItem();
         this.selectedItems = (List<Streamer<T>>) streamerView.getSelectedItems();
-    }
-
-    public StreamerView<T, T> getStreamerView() {
-        return streamerView;
     }
 }

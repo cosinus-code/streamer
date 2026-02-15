@@ -42,7 +42,7 @@ import java.util.List;
 import static java.awt.Color.black;
 import static java.awt.event.MouseEvent.BUTTON3;
 import static java.util.Optional.ofNullable;
-import static org.cosinus.streamer.ui.action.DeleteStreamerAction.DELETE_STREAMER_ACTION_NAME;
+import static org.cosinus.streamer.ui.action.DeleteStreamerAction.DELETE_STREAMER_ACTION_ID;
 import static org.cosinus.streamer.ui.action.ExecuteStreamerAction.EXECUTE_STREAMER_ACTION_ID;
 import static org.cosinus.streamer.ui.action.ExecuteStreamerWithAction.EXECUTE_STREAMER_WITH_ACTION_ID;
 import static org.cosinus.streamer.ui.action.MoveToTrashStreamerAction.MOVE_TO_TRASH_STREAMER_ACTION_NAME;
@@ -177,7 +177,7 @@ public class ImagePanel extends Panel implements LoadWorkerModel<UpdatableImage>
             EXECUTE_STREAMER_WITH_ACTION_ID,
             SEPARATOR,
             MOVE_TO_TRASH_STREAMER_ACTION_NAME,
-            DELETE_STREAMER_ACTION_NAME,
+            DELETE_STREAMER_ACTION_ID,
             SEPARATOR);
 
         Menu imageQualityMenu = new Menu(IMAGE_QUALITY);

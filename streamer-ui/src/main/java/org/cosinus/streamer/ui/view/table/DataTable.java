@@ -48,7 +48,7 @@ import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.isLeftMouseButton;
 import static javax.swing.SwingUtilities.isRightMouseButton;
 import static org.cosinus.streamer.ui.action.CreateStreamerAction.CREATE_STREAMER_ACTION_ID;
-import static org.cosinus.streamer.ui.action.DeleteStreamerAction.DELETE_STREAMER_ACTION_NAME;
+import static org.cosinus.streamer.ui.action.DeleteStreamerAction.DELETE_STREAMER_ACTION_ID;
 import static org.cosinus.streamer.ui.action.ExecuteStreamerAction.EXECUTE_STREAMER_ACTION_ID;
 import static org.cosinus.streamer.ui.action.ExecuteStreamerWithAction.EXECUTE_STREAMER_WITH_ACTION_ID;
 import static org.cosinus.streamer.ui.action.GoToLinkedStreamerAction.GO_TO_LINKED_STREAMER_ACTION_NAME;
@@ -120,7 +120,7 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
             CREATE_STREAMER_ACTION_ID,
             RENAME_STREAMER_ACTION_ID,
             MOVE_TO_TRASH_STREAMER_ACTION_NAME,
-            DELETE_STREAMER_ACTION_NAME,
+            DELETE_STREAMER_ACTION_ID,
             SEPARATOR,
             SHOW_STREAMER_PERMISSIONS_ACTION_ID,
             SHOW_STREAMER_PROPERTIES_ACTION_ID
