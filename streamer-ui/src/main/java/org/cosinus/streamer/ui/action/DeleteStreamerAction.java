@@ -32,6 +32,7 @@ import javax.swing.*;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_DELETE;
+import static org.cosinus.streamer.ui.action.execute.delete.DeleteActionModel.delete;
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 import static org.cosinus.swing.dialog.OptionsDialog.YES_NO_CANCEL_OPTION;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_DELETE;
@@ -83,11 +84,6 @@ public class DeleteStreamerAction implements SwingAction {
             return;
         }
 
-        DeleteActionModel deleteActionModel = new DeleteActionModel()
-            .deleteStreamers(currentView.getSelectedItems())
-            .from((ParentStreamer<Streamer<?>>) currentView.getParentStreamer())
-            .moveToTrash(moveToTrash());
-
         //TODO: to clarify streamer permissions
 //        if (!deleteAction.getStreamer().canWriteTo(actionContext.getCurrentView().getLoadedStreamer())) {
 //            dialogHandler.showInfo(translator.translate("act_copy_delete_not_allowed"));
@@ -96,18 +92,20 @@ public class DeleteStreamerAction implements SwingAction {
 
         if (!askForConfirmation() || dialogHandler.confirm(applicationFrame,
             translator.translate("act-delete-are-you-sure-streamers"),
-            translator.translate(deleteActionModel.getActionId()),
+            translator.translate(getId()),
             YES_NO_CANCEL_OPTION)) {
-            deleteExecutor.execute(deleteActionModel);
+            deleteExecutor.execute(deleteAction()
+                .streamers(currentView.getSelectedItems())
+                .from((ParentStreamer<Streamer<?>>) currentView.getParentStreamer()));
         }
+    }
+
+    protected DeleteActionModel deleteAction() {
+        return delete();
     }
 
     protected boolean askForConfirmation() {
         return true;
-    }
-
-    protected boolean moveToTrash() {
-        return false;
     }
 
     @Override

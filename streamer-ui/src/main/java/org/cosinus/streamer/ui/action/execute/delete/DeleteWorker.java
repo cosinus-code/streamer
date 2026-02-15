@@ -20,7 +20,6 @@ import org.cosinus.stream.consumer.StreamConsumer;
 import org.cosinus.stream.pipeline.PipelineListener;
 import org.cosinus.stream.pipeline.PipelineStrategy;
 import org.cosinus.streamer.api.DefaultPipelineStrategy;
-import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.ui.action.progress.StreamersProgressModel;
@@ -61,7 +60,7 @@ public class DeleteWorker
     @Override
     public Stream<Streamer<?>> openPipelineInputStream(PipelineStrategy pipelineStrategy) {
         return deleteModel
-            .getFrom()
+            .source()
             .flatStream(LEVEL_BOTTOM_UP, this.pipelineStrategy, deleteModel.getStreamerFilter());
     }
 
@@ -76,9 +75,10 @@ public class DeleteWorker
 
     @Override
     public void preparePipelineOpen(PipelineStrategy pipelineStrategy, PipelineListener<Streamer<?>> pipelineListener) {
-        ParentStreamer<Streamer<?>> parentStreamer = deleteModel.getFrom();
         StreamerFilter streamerFilter = deleteModel.getStreamerFilter();
-        try (Stream<? extends Streamer<?>> flatStream = parentStreamer.flatStream(this.pipelineStrategy, streamerFilter)) {
+        try (Stream<? extends Streamer<?>> flatStream =
+                 deleteModel.source().flatStream(this.pipelineStrategy, streamerFilter)) {
+
             updateProgress(progress ->
                 progress.addTotalProgress(flatStream.count()));
         }
