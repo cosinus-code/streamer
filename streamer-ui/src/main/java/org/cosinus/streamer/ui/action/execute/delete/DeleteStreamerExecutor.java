@@ -27,14 +27,14 @@ import org.cosinus.swing.worker.WorkerListener;
 import org.cosinus.swing.worker.WorkerModel;
 import org.springframework.stereotype.Component;
 
-import static org.cosinus.streamer.ui.action.DeleteStreamerAction.DELETE_STREAMER_ACTION_NAME;
+import static org.cosinus.streamer.ui.action.DeleteStreamerAction.DELETE_STREAMER_ACTION_ID;
 
 /**
  * Implementation of {@link ActionExecutor} for deleting streamers based on {@link DeleteWorker}
  */
 @Component
 public class DeleteStreamerExecutor
-    extends WorkerExecutor<DeleteActionModel<?>, WorkerModel<Streamer<?>>, Streamer<?>, StreamersProgressModel> {
+    extends WorkerExecutor<DeleteActionModel, WorkerModel<Streamer<?>>, Streamer<?>, StreamersProgressModel> {
 
     protected final ProgressFormHandler progressFormHandler;
 
@@ -47,7 +47,7 @@ public class DeleteStreamerExecutor
     }
 
     @Override
-    protected WorkerListener<WorkerModel<Streamer<?>>, Streamer<?>> getWorkerListener(DeleteActionModel<?> deleteModel) {
+    protected WorkerListener<WorkerModel<Streamer<?>>, Streamer<?>> getWorkerListener(DeleteActionModel deleteModel) {
         return new WorkerListener<>() {
             @Override
             public void workerUpdated(WorkerModel<Streamer<?>> workerModel) {
@@ -62,17 +62,17 @@ public class DeleteStreamerExecutor
     }
 
     @Override
-    protected ProgressDialog<StreamersProgressModel> getProgressListener(DeleteActionModel<?> deleteModel) {
+    protected ProgressDialog<StreamersProgressModel> getProgressListener(DeleteActionModel deleteModel) {
         return progressFormHandler.createStreamersProgressDialog(deleteModel);
     }
 
     @Override
-    protected DeleteWorker createWorker(DeleteActionModel<?> deleteModel) {
-        return new DeleteWorker(deleteModel);
+    protected DeleteWorker createWorker(DeleteActionModel deleteModel) {
+        return new DeleteWorker(deleteModel, streamerViewHandler.getCurrentView().getDeleteWorkerModel());
     }
 
     @Override
     public String getHandledAction() {
-        return DELETE_STREAMER_ACTION_NAME;
+        return DELETE_STREAMER_ACTION_ID;
     }
 }

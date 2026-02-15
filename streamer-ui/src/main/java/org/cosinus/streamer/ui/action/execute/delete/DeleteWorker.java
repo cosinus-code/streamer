@@ -52,8 +52,8 @@ public class DeleteWorker
 
     private final PipelineStrategy pipelineStrategy;
 
-    public DeleteWorker(DeleteActionModel deleteModel) {
-        super(deleteModel, deleteModel.getStreamerView().getDeleteWorkerModel(), new StreamersProgressModel());
+    public DeleteWorker(DeleteActionModel deleteModel, WorkerModel<? extends Streamer<?>> workerModel) {
+        super(deleteModel, (WorkerModel<Streamer<?>>) workerModel, new StreamersProgressModel());
         this.deleteModel = deleteModel;
         this.pipelineStrategy = new DefaultPipelineStrategy();
     }
@@ -61,7 +61,7 @@ public class DeleteWorker
     @Override
     public Stream<Streamer<?>> openPipelineInputStream(PipelineStrategy pipelineStrategy) {
         return deleteModel
-            .getParentStreamer()
+            .getFrom()
             .flatStream(LEVEL_BOTTOM_UP, this.pipelineStrategy, deleteModel.getStreamerFilter());
     }
 
@@ -76,7 +76,7 @@ public class DeleteWorker
 
     @Override
     public void preparePipelineOpen(PipelineStrategy pipelineStrategy, PipelineListener<Streamer<?>> pipelineListener) {
-        ParentStreamer<Streamer<?>> parentStreamer = deleteModel.getParentStreamer();
+        ParentStreamer<Streamer<?>> parentStreamer = deleteModel.getFrom();
         StreamerFilter streamerFilter = deleteModel.getStreamerFilter();
         try (Stream<? extends Streamer<?>> flatStream = parentStreamer.flatStream(this.pipelineStrategy, streamerFilter)) {
             updateProgress(progress ->

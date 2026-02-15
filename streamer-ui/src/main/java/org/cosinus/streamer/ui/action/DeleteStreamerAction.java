@@ -16,10 +16,10 @@
 
 package org.cosinus.streamer.ui.action;
 
+import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.delete.DeleteActionModel;
 import org.cosinus.streamer.ui.action.execute.delete.DeleteStreamerExecutor;
-import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.SwingAction;
@@ -32,7 +32,6 @@ import javax.swing.*;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_DELETE;
-import static org.cosinus.streamer.ui.action.execute.delete.DeleteActionModel.delete;
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 import static org.cosinus.swing.dialog.OptionsDialog.YES_NO_CANCEL_OPTION;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_DELETE;
@@ -43,7 +42,7 @@ import static org.cosinus.swing.image.icon.IconProvider.ICON_DELETE;
 @Component
 public class DeleteStreamerAction implements SwingAction {
 
-    public static final String DELETE_STREAMER_ACTION_NAME = "delete-streamer";
+    public static final String DELETE_STREAMER_ACTION_ID = "delete-streamer";
 
     private final DialogHandler dialogHandler;
 
@@ -76,15 +75,18 @@ public class DeleteStreamerAction implements SwingAction {
 
     }
 
-    private <S extends Streamer<S>> void deleteFromParentStreamer() {
-        final StreamerView<S, S> currentView = (StreamerView<S, S>) streamerViewHandler.getCurrentView();
+    private void deleteFromParentStreamer() {
+        final StreamerView<Streamer<?>, ?> currentView =
+            (StreamerView<Streamer<?>, ?>) streamerViewHandler.getCurrentView();
 
-        ParentStreamerViewContext<S> streamerViewContext = new ParentStreamerViewContext<>(currentView);
-        if (streamerViewContext.getSelectedItems().isEmpty()) {
+        if (currentView.getSelectedItems().isEmpty()) {
             return;
         }
 
-        DeleteActionModel<S> deleteAction = createDeleteActionModel(streamerViewContext);
+        DeleteActionModel deleteActionModel = new DeleteActionModel(getId())
+            .deleteStreamers(currentView.getSelectedItems())
+            .from((ParentStreamer<Streamer<?>>) currentView.getParentStreamer())
+            .moveToTrash(moveToTrash());
 
         //TODO: to clarify streamer permissions
 //        if (!deleteAction.getStreamer().canWriteTo(actionContext.getCurrentView().getLoadedStreamer())) {
@@ -94,9 +96,9 @@ public class DeleteStreamerAction implements SwingAction {
 
         if (!askForConfirmation() || dialogHandler.confirm(applicationFrame,
             translator.translate("act-delete-are-you-sure-streamers"),
-            getActionName(),
+            translator.translate(deleteActionModel.getActionId()),
             YES_NO_CANCEL_OPTION)) {
-            deleteExecutor.execute(deleteAction);
+            deleteExecutor.execute(deleteActionModel);
         }
     }
 
@@ -104,13 +106,8 @@ public class DeleteStreamerAction implements SwingAction {
         return true;
     }
 
-    protected <S extends Streamer<S>> DeleteActionModel<S> createDeleteActionModel(
-        final ParentStreamerViewContext<S> streamerViewContext) {
-        return delete(getId(), getActionName(), streamerViewContext);
-    }
-
-    public String getActionName() {
-        return DELETE_STREAMER_ACTION_NAME;
+    protected boolean moveToTrash() {
+        return false;
     }
 
     @Override
@@ -120,7 +117,7 @@ public class DeleteStreamerAction implements SwingAction {
 
     @Override
     public String getId() {
-        return DELETE_STREAMER_ACTION_NAME;
+        return DELETE_STREAMER_ACTION_ID;
     }
 
     @Override

@@ -16,10 +16,7 @@
 
 package org.cosinus.streamer.ui.action;
 
-import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.action.execute.delete.DeleteActionModel;
 import org.cosinus.streamer.ui.action.execute.delete.DeleteStreamerExecutor;
-import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.translate.Translator;
@@ -55,20 +52,13 @@ public class MoveToTrashStreamerAction extends DeleteStreamerAction {
     }
 
     @Override
-    protected <S extends Streamer<S>> DeleteActionModel<S> createDeleteActionModel(
-        final ParentStreamerViewContext<S> streamerViewContext) {
-        return super.createDeleteActionModel(streamerViewContext)
-            .moveToTrash();
+    protected boolean moveToTrash() {
+        return true;
     }
 
     @Override
     public String getIconName() {
         return ICON_MOVE_TO_TRASH;
-    }
-
-    @Override
-    public String getActionName() {
-        return MOVE_TO_TRASH_STREAMER_ACTION_NAME;
     }
 
     @Override
