@@ -16,20 +16,17 @@
 package org.cosinus.streamer.ui.action.execute.pack;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
-import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
-import org.cosinus.swing.ui.UIModel;
 
+import java.util.List;
 import java.util.Set;
 
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.action.PackStreamerAction.PACK_STREAMER_ACTION_ID;
 
 @Getter
-public class PackActionModel<S extends Streamer<S>, T extends Streamer<T>>
-    extends CopyActionModel<S, T> implements UIModel {
+public class PackActionModel extends CopyActionModel {
 
     public static final String PACK_TYPE = "packType";
 
@@ -41,17 +38,33 @@ public class PackActionModel<S extends Streamer<S>, T extends Streamer<T>>
 
     private String packType;
 
-    @Setter
     private String[] packTypes;
 
-    public static <S extends Streamer<S>, T extends Streamer<T>>
-    PackActionModel<S, T> pack(ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
-        PackActionModel<S, T> packActionModel = new PackActionModel<>();
-        packActionModel
-            .setStreamersToCopy(from.getSelectedItems())
-            .from(from.getParentStreamer())
-            .to(to.getParentStreamer());
-        return packActionModel;
+    public static PackActionModel pack() {
+        return new PackActionModel();
+    }
+
+    @Override
+    public PackActionModel streamers(List<?> streamersToCopy) {
+        super.streamers(streamersToCopy);
+        return this;
+    }
+
+    @Override
+    public PackActionModel from(ParentStreamer<?> source) {
+        super.from(source);
+        return this;
+    }
+
+    @Override
+    public PackActionModel to(ParentStreamer<?> destination) {
+        super.to(destination);
+        return this;
+    }
+
+    public PackActionModel packTypes(String[] packTypes) {
+        this.packTypes = packTypes;
+        return this;
     }
 
     @Override

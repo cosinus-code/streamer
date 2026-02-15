@@ -33,8 +33,8 @@ public class MoveWorker<S extends Streamer<S>, T extends Streamer<T>> extends Co
 
     private final MoveWorkerModel<S, T> moveWorkerModel;
 
-    public MoveWorker(CopyActionModel<S, T> copyModel, MoveWorkerModel<S, T> moveWorkerModel) {
-        super(copyModel, moveWorkerModel);
+    public MoveWorker(CopyActionModel moveActionModel, MoveWorkerModel<S, T> moveWorkerModel) {
+        super(moveActionModel, moveWorkerModel);
         this.moveWorkerModel = moveWorkerModel;
     }
 

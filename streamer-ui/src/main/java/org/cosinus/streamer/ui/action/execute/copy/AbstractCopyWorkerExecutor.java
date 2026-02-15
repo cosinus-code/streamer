@@ -24,16 +24,12 @@ import org.cosinus.swing.action.execute.ActionExecutor;
 import org.cosinus.swing.worker.WorkerExecutor;
 import org.cosinus.swing.worker.WorkerListener;
 import org.cosinus.swing.worker.WorkerModel;
-import org.springframework.stereotype.Component;
 
 /**
  * Implementation of {@link ActionExecutor} for copying streamers based on {@link CopyWorker}
  */
-@Component
-public abstract class AbstractCopyWorkerExecutor<S extends Streamer<S>,
-    T extends Streamer<T>,
-    A extends CopyActionModel<S, T>>
-    extends WorkerExecutor<A, WorkerModel<CopyWorkerUnit<S, T>>, CopyWorkerUnit<S, T>, CopyProgressModel<S>> {
+public abstract class AbstractCopyWorkerExecutor<M extends CopyActionModel>
+    extends WorkerExecutor<M, WorkerModel<CopyWorkerUnit<?, ?>>, CopyWorkerUnit<?, ?>, CopyProgressModel<?>> {
 
     protected final ProgressFormHandler progressFormHandler;
 
@@ -46,23 +42,23 @@ public abstract class AbstractCopyWorkerExecutor<S extends Streamer<S>,
     }
 
     @Override
-    protected WorkerListener<WorkerModel<CopyWorkerUnit<S, T>>, CopyWorkerUnit<S, T>> getWorkerListener(A actionModel) {
+    protected WorkerListener<WorkerModel<CopyWorkerUnit<?, ?>>, CopyWorkerUnit<?, ?>> getWorkerListener(M actionModel) {
         return new WorkerListener<>() {
             @Override
-            public void workerUpdated(WorkerModel<CopyWorkerUnit<S, T>> workerModel) {
+            public void workerUpdated(WorkerModel<CopyWorkerUnit<?, ?>> workerModel) {
                 streamerViewHandler.getCurrentView().fireContentChanged();
                 streamerViewHandler.getOppositeView().fireContentChanged();
             }
 
             @Override
-            public void workerFinished(WorkerModel<CopyWorkerUnit<S, T>> workerModel) {
+            public void workerFinished(WorkerModel<CopyWorkerUnit<?, ?>> workerModel) {
                 streamerViewHandler.reloadViews();
             }
         };
     }
 
     @Override
-    protected ProgressDialog<CopyProgressModel<S>> getProgressListener(A copyModel) {
+    protected ProgressDialog<CopyProgressModel<?>> getProgressListener(M copyModel) {
         return progressFormHandler.createCopyProgressDialog(copyModel);
     }
 }

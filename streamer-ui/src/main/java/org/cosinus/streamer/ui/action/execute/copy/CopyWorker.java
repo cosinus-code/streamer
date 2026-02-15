@@ -59,11 +59,11 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
 
     private final StreamingStrategy streamingStrategy;
 
-    public CopyWorker(CopyActionModel<S, T> copyModel, WorkerModel<CopyWorkerUnit<S, T>> workerModel) {
-        super(copyModel, workerModel, new CopyProgressModel<>());
-        this.source = copyModel.getSource();
-        this.destination = copyModel.getDestination();
-        this.streamerFilter = copyModel.getSourceFilter();
+    public CopyWorker(CopyActionModel copyActionModel, WorkerModel<CopyWorkerUnit<S, T>> workerModel) {
+        super(copyActionModel, workerModel, new CopyProgressModel<>());
+        this.source = (ParentStreamer<S>) copyActionModel.getSource();
+        this.destination = (ParentStreamer<T>) copyActionModel.getDestination();
+        this.streamerFilter = copyActionModel.getSourceFilter();
         this.copyStrategy = new CopyStrategy();
         this.streamingStrategy = new DefaultPipelineStrategy();
     }

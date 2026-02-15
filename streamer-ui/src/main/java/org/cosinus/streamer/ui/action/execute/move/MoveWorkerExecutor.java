@@ -30,8 +30,7 @@ import static org.cosinus.streamer.ui.action.MoveStreamerAction.MOVE_STREAMER_AC
  * Implementation of {@link ActionExecutor} for copying streamers based on {@link CopyWorker}
  */
 @Component
-public class MoveWorkerExecutor<S extends Streamer<S>, T extends Streamer<T>>
-    extends AbstractCopyWorkerExecutor<S, T, MoveActionModel<S, T>> {
+public class MoveWorkerExecutor extends AbstractCopyWorkerExecutor<MoveActionModel> {
 
     protected MoveWorkerExecutor(final ProgressFormHandler progressFormHandler,
                                  final StreamerViewHandler streamerViewHandler) {
@@ -39,7 +38,7 @@ public class MoveWorkerExecutor<S extends Streamer<S>, T extends Streamer<T>>
     }
 
     @Override
-    protected MoveWorker<S, T> createWorker(MoveActionModel<S, T> actionModel) {
+    protected MoveWorker createWorker(MoveActionModel actionModel) {
         return new MoveWorker<>(actionModel, new MoveWorkerModel<>(
             streamerViewHandler.getOppositeView().getCopyWorkerModel(),
             streamerViewHandler.getCurrentView().getDeleteWorkerModel()));

@@ -23,7 +23,6 @@ import org.cosinus.streamer.pack.archive.ArchiveExpander;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.pack.PackActionModel;
 import org.cosinus.streamer.ui.action.execute.pack.PackWorkerExecutor;
-import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.execute.ActionExecutors;
@@ -41,6 +40,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_F5;
+import static java.util.Optional.empty;
+import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.action.execute.pack.PackActionModel.pack;
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 import static org.cosinus.swing.util.FileUtils.setExtension;
@@ -92,38 +93,49 @@ public class PackStreamerAction extends AbstractCopyAction<PackActionModel> {
     }
 
     @Override
-    protected <S extends Streamer<S>, T extends Streamer<T>> void executeStreamerCopy(PackActionModel copyAction) {
-        Optional.ofNullable(copyAction.getPackType()).map(binaryExpanderHandler.getBinaryExpandersMap()::get).ifPresent(expander -> {
-            StreamerView<S, S> currentView = (StreamerView<S, S>) streamerViewHandler.getCurrentView();
-            List<Streamer<S>> streamersToCopy = copyAction.getStreamersToCopy();
-            String name = streamersToCopy.size() == 1 ? streamersToCopy.get(0).getName() : currentView.getParentStreamer().getName();
-            String packName = setExtension(name, copyAction.getPackType());
-            Path packStreamerPath = copyAction.getTargetPath().resolve(packName);
-            Streamer destination = copyAction.getDestination().create(packStreamerPath, false);
-            ParentStreamer expandedDestination = (ParentStreamer) expander.expand(destination.binaryStreamer());
+    protected void executeStreamerCopy(PackActionModel packAction) {
+        ofNullable(packAction.getPackType())
+            .map(binaryExpanderHandler.getBinaryExpandersMap()::get)
+            .ifPresent(expander -> {
+                List<?> streamersToCopy = packAction.getStreamersToCopy();
+                Optional<String> streamerName = streamersToCopy.size() == 1 ?
+                    streamersToCopy
+                        .stream()
+                        .filter(item -> Streamer.class.isAssignableFrom(item.getClass()))
+                        .map(Streamer.class::cast)
+                        .map(Streamer::getName)
+                        .findFirst() :
+                    empty();
 
-            packWorkerExecutor.execute(copyAction.to(expandedDestination));
-        });
+                String name = streamerName
+                    .orElseGet(() -> packAction.getSource().getName());
+                String packName = setExtension(name, packAction.getPackType());
+                Path packStreamerPath = packAction.getTargetPath().resolve(packName);
+                Streamer destination = packAction.getDestination().create(packStreamerPath, false);
+                ParentStreamer expandedDestination = (ParentStreamer) expander.expand(destination.binaryStreamer());
+
+                packWorkerExecutor.execute(packAction.to(expandedDestination));
+            });
     }
 
     @Override
-    protected <S extends Streamer<S>, T extends Streamer<T>> Dialog<PackActionModel> copyConfirmationDialog(PackActionModel copyAction) {
+    protected Dialog<PackActionModel> copyConfirmationDialog(PackActionModel copyAction) {
         return dialogHandler.createDialog(applicationFrame, PACK_CONFIRMATION_UI, copyAction);
     }
 
     @Override
-    protected <S extends Streamer<S>, T extends Streamer<T>> PackActionModel actionModel() {
-        PackActionModel packActionModel = pack(
-            new ParentStreamerViewContext<>((StreamerView<S, S>) streamerViewHandler.getCurrentView()),
-            new ParentStreamerViewContext<>((StreamerView<T, T>) streamerViewHandler.getOppositeView()));
-
-        packActionModel.setPackTypes(expanderHandler.getBinaryExpandersMap()
-            .entrySet()
-            .stream()
-            .filter(entry -> entry.getValue() instanceof ArchiveExpander)
-            .map(Map.Entry::getKey)
-            .toArray(String[]::new));
-        return packActionModel;
+    protected PackActionModel actionModel(final StreamerView<?, ?> sourceStreamerView,
+                                          final StreamerView<?, ?> destinationStreamerView) {
+        return pack()
+            .streamers(sourceStreamerView.getSelectedItems())
+            .from((ParentStreamer<?>) sourceStreamerView.getParentStreamer())
+            .to((ParentStreamer<?>) destinationStreamerView.getParentStreamer())
+            .packTypes(expanderHandler.getBinaryExpandersMap()
+                .entrySet()
+                .stream()
+                .filter(entry -> entry.getValue() instanceof ArchiveExpander)
+                .map(Map.Entry::getKey)
+                .toArray(String[]::new));
     }
 
     @Override

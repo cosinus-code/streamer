@@ -37,7 +37,7 @@ import static org.cosinus.streamer.ui.action.CopyStreamerAction.COPY_STREAMER_AC
 /**
  * Encapsulates the model of the copy streamers action
  */
-public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> implements ActionModel, UIModel {
+public class CopyActionModel implements ActionModel, UIModel {
 
     public static final String COPY_TO = "copyTo";
 
@@ -51,13 +51,13 @@ public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> imple
     private StreamerFilter sourceFilter = streamer -> true;
 
     @Getter
-    private List<Streamer<S>> streamersToCopy;
+    private List<?> streamersToCopy;
 
     @Getter
-    private ParentStreamer<S> source;
+    private ParentStreamer<?> source;
 
     @Getter
-    private ParentStreamer<T> destination;
+    private ParentStreamer<?> destination;
 
     @Getter
     private Path targetPath;
@@ -66,12 +66,8 @@ public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> imple
         this.executionId = randomUUID().toString();
     }
 
-    public static <S extends Streamer<S>, T extends Streamer<T>>
-    CopyActionModel<S, T> copy(ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
-        return new CopyActionModel<S, T>()
-            .setStreamersToCopy(from.getSelectedItems())
-            .from(from.getParentStreamer())
-            .to(to.getParentStreamer());
+    public static CopyActionModel copy() {
+        return new CopyActionModel();
     }
 
     public void setTargetPath(Path targetPath) {
@@ -91,18 +87,18 @@ public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> imple
 
     }
 
-    public CopyActionModel<S, T> setStreamersToCopy(List<Streamer<S>> streamersToCopy) {
+    public CopyActionModel streamers(List<?> streamersToCopy) {
         this.streamersToCopy = streamersToCopy;
         this.sourceFilter = this.streamersToCopy::contains;
         return this;
     }
 
-    public CopyActionModel<S, T> from(ParentStreamer<S> source) {
+    public CopyActionModel from(ParentStreamer<?> source) {
         this.source = source;
         return this;
     }
 
-    public CopyActionModel<S, T> to(ParentStreamer<T> destination) {
+    public CopyActionModel to(ParentStreamer<?> destination) {
         this.destination = destination;
         this.targetPath = destination.getPath();
         return this;
