@@ -16,32 +16,37 @@
 
 package org.cosinus.streamer.ui.action;
 
+import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
+import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.SwingAction;
 import org.springframework.stereotype.Component;
 
 import static org.cosinus.streamer.ui.view.table.icon.IconView.ICON_VIEW_NAME;
 
 @Component
-public class ChangeToIconViewAction implements SwingAction {
+public class ChangeToIconViewAction extends ChangeViewAction {
 
-    private final ChangeViewAction changeViewAction;
+    public static final String CHANGE_TO_ICON_VIEW_ACTION_ID = "menu-view-icon";
 
-    public ChangeToIconViewAction(final ChangeViewAction changeViewAction) {
-        this.changeViewAction = changeViewAction;
+    public static final String VIEW_ICON_ICON_NAME = "view-icon";
+
+    protected ChangeToIconViewAction(final StreamerViewHandler streamerViewHandler,
+                                     final LoadActionExecutor loadActionExecutor) {
+        super(streamerViewHandler, loadActionExecutor);
     }
 
     @Override
-    public void run() {
-        changeViewAction.run(new ChangeViewActionContext(ICON_VIEW_NAME));
+    public ChangeViewActionModel createActionModel() {
+        return new ChangeViewActionModel(ICON_VIEW_NAME);
     }
 
     @Override
     public String getIconName() {
-        return "view-icon";
+        return VIEW_ICON_ICON_NAME;
     }
 
     @Override
     public String getId() {
-        return "menu-view-icon";
+        return CHANGE_TO_ICON_VIEW_ACTION_ID;
     }
 }

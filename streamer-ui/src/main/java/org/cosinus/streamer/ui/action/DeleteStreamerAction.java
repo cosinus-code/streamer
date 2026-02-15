@@ -22,16 +22,18 @@ import org.cosinus.streamer.ui.action.execute.delete.DeleteActionModel;
 import org.cosinus.streamer.ui.action.execute.delete.DeleteStreamerExecutor;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.swing.action.SwingAction;
+import org.cosinus.swing.action.SwingActionWithModel;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.translate.Translator;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
+import java.util.List;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_DELETE;
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.cosinus.streamer.ui.action.execute.delete.DeleteActionModel.delete;
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 import static org.cosinus.swing.dialog.OptionsDialog.YES_NO_CANCEL_OPTION;
@@ -41,19 +43,19 @@ import static org.cosinus.swing.image.icon.IconProvider.ICON_DELETE;
  * Rename streamer action
  */
 @Component
-public class DeleteStreamerAction implements SwingAction {
+public class DeleteStreamerAction implements SwingActionWithModel<DeleteActionModel> {
 
     public static final String DELETE_STREAMER_ACTION_ID = "delete-streamer";
 
-    private final DialogHandler dialogHandler;
+    protected final DialogHandler dialogHandler;
 
-    private final Translator translator;
+    protected final Translator translator;
 
-    private final DeleteStreamerExecutor deleteExecutor;
+    protected final DeleteStreamerExecutor deleteExecutor;
 
-    private final StreamerViewHandler streamerViewHandler;
+    protected final StreamerViewHandler streamerViewHandler;
 
-    private final ApplicationUIHandler uiHandler;
+    protected final ApplicationUIHandler uiHandler;
 
     public DeleteStreamerAction(final DialogHandler dialogHandler,
                                 final Translator translator,
@@ -68,24 +70,9 @@ public class DeleteStreamerAction implements SwingAction {
     }
 
     @Override
-    public void run() {
-        Streamer<?> currentParentStreamer = streamerViewHandler.getCurrentView().getParentStreamer();
-        if (currentParentStreamer.isParent()) {
-            deleteFromParentStreamer();
-        }
-
-    }
-
-    private void deleteFromParentStreamer() {
-        final StreamerView<Streamer<?>, ?> currentView =
-            (StreamerView<Streamer<?>, ?>) streamerViewHandler.getCurrentView();
-
-        if (currentView.getSelectedItems().isEmpty()) {
-            return;
-        }
-
+    public void run(final DeleteActionModel deleteActionModel) {
         //TODO: to clarify streamer permissions
-//        if (!deleteAction.getStreamer().canWriteTo(actionContext.getCurrentView().getLoadedStreamer())) {
+//        if (!deleteAction.getStreamer().canWriteTo(deleteActionModel.source())) {
 //            dialogHandler.showInfo(translator.translate("act_copy_delete_not_allowed"));
 //            return;
 //        }
@@ -94,14 +81,23 @@ public class DeleteStreamerAction implements SwingAction {
             translator.translate("act-delete-are-you-sure-streamers"),
             translator.translate(getId()),
             YES_NO_CANCEL_OPTION)) {
-            deleteExecutor.execute(deleteAction()
-                .streamers(currentView.getSelectedItems())
-                .from((ParentStreamer<Streamer<?>>) currentView.getParentStreamer()));
+            deleteExecutor.execute(deleteActionModel);
         }
     }
 
-    protected DeleteActionModel deleteAction() {
-        return delete();
+    @Override
+    public DeleteActionModel createActionModel() {
+        final StreamerView<?, ?> currentView = streamerViewHandler.getCurrentView();
+        if (!isEmpty(currentView.getSelectedItems()) &&
+            currentView.getParentStreamer().isParent()) {
+
+            return delete()
+                //TODO: to find a way to avoid cast (a dedicated StreamerView for Streamer<?>)
+                .streamers((List<Streamer<?>>) currentView.getSelectedItems())
+                .from((ParentStreamer<Streamer<?>>) currentView.getParentStreamer());
+        }
+
+        return null;
     }
 
     protected boolean askForConfirmation() {

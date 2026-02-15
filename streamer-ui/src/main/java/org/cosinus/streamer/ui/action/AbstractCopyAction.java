@@ -17,12 +17,10 @@
 package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.api.ParentStreamer;
-import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
-import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.swing.action.SwingAction;
+import org.cosinus.swing.action.SwingActionWithModel;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.preference.Preferences;
@@ -36,7 +34,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 /**
  * Abstract copy action
  */
-public abstract class AbstractCopyAction<M extends CopyActionModel> implements SwingAction {
+public abstract class AbstractCopyAction<M extends CopyActionModel> implements SwingActionWithModel<M> {
 
     private static final String COPY_CONFIRMATION_UI = "copyConfirmationDialog.json";
 
@@ -67,34 +65,23 @@ public abstract class AbstractCopyAction<M extends CopyActionModel> implements S
     }
 
     @Override
-    public void run() {
-
+    public void run(M copyActionModel) {
         if (preferences.booleanPreference(BOUND)) {
             return;
         }
 
-        final StreamerView<?, ?> sourceStreamerView = streamerViewHandler.getCurrentView();
-        final StreamerView<?, ?> targetStreamerView = streamerViewHandler.getOppositeView();
-        Streamer<?> sourceParentStreamer = sourceStreamerView.getParentStreamer();
-        Streamer<?> destinationParentStreamer = targetStreamerView.getParentStreamer();
-        if (sourceParentStreamer.isParent() && destinationParentStreamer.isParent()) {
-            copyParentStreamer(sourceStreamerView, targetStreamerView);
-        }
-    }
-
-    protected void copyParentStreamer(final StreamerView<?, ?> sourceStreamerView,
-                                      final StreamerView<?, ?> targetStreamerView) {
-        M copyAction = actionModel(sourceStreamerView, targetStreamerView);
-        if (isEmpty(copyAction.getStreamersToCopy())) {
+        if (!copyActionModel.getSource().isParent() ||
+            !copyActionModel.getDestination().isParent() ||
+            isEmpty(copyActionModel.getStreamersToCopy())) {
             return;
         }
 
-        if (!copyAction.getSource().canRead() || !copyAction.getDestination().canUpdate()) {
+        if (!copyActionModel.getSource().canRead() || !copyActionModel.getDestination().canUpdate()) {
             dialogHandler.showInfo(translator.translate("act_copy_not_allowed"));
             return;
         }
 
-        dialogHandler.showDialog(() -> copyConfirmationDialog(copyAction))
+        dialogHandler.showDialog(() -> copyConfirmationDialog(copyActionModel))
             .response()
             .ifPresent(this::executeStreamerCopy);
     }
@@ -126,6 +113,4 @@ public abstract class AbstractCopyAction<M extends CopyActionModel> implements S
         }
         return copyActionModel.getDestination();
     }
-
-    protected abstract M actionModel(StreamerView<?, ?> sourceStreamerView, StreamerView<?, ?> targetStreamerView);
 }

@@ -20,7 +20,7 @@ import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.swing.action.SwingAction;
+import org.cosinus.swing.action.SwingActionWithModel;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.stereotype.Component;
 
@@ -34,7 +34,7 @@ import static java.util.Optional.ofNullable;
  * Load streamer action
  */
 @Component
-public class LoadStreamerAction implements SwingAction {
+public class LoadStreamerAction implements SwingActionWithModel<LoadActionModel> {
 
     public static final String LOAD_STREAMER_ACTION_ID = "load-streamer";
 
@@ -53,14 +53,19 @@ public class LoadStreamerAction implements SwingAction {
     }
 
     @Override
-    public void run() {
+    public void run(LoadActionModel loadActionModel) {
+        loadActionExecutor.execute(loadActionModel);
+    }
+
+    @Override
+    public LoadActionModel createActionModel() {
         StreamerView<?, ?> currentStreamerView = streamerViewHandler.getCurrentView();
-        ofNullable(currentStreamerView.getCurrentStreamer())
-            .ifPresent(currentStreamer -> loadActionExecutor
-                .execute(new LoadActionModel(
-                    currentStreamerView.getCurrentLocation(),
-                    currentStreamer,
-                    currentStreamerView.getCurrentItemIdentifier())));
+        return ofNullable(currentStreamerView.getCurrentStreamer())
+            .map(currentStreamer -> new LoadActionModel(
+                currentStreamerView.getCurrentLocation(),
+                currentStreamer,
+                currentStreamerView.getCurrentItemIdentifier()))
+            .orElse(null);
     }
 
     @Override

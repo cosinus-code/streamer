@@ -124,8 +124,10 @@ public class PackStreamerAction extends AbstractCopyAction<PackActionModel> {
     }
 
     @Override
-    protected PackActionModel actionModel(final StreamerView<?, ?> sourceStreamerView,
-                                          final StreamerView<?, ?> destinationStreamerView) {
+    public PackActionModel createActionModel() {
+        final StreamerView<?, ?> sourceStreamerView = streamerViewHandler.getCurrentView();
+        final StreamerView<?, ?> destinationStreamerView = streamerViewHandler.getOppositeView();
+
         return pack()
             .streamers(sourceStreamerView.getSelectedItems())
             .from((ParentStreamer<?>) sourceStreamerView.getParentStreamer())

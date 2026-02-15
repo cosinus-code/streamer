@@ -17,11 +17,8 @@
 package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.api.ParentStreamer;
-import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.move.MoveActionModel;
-import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.execute.ActionExecutors;
@@ -34,7 +31,6 @@ import javax.swing.*;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_F6;
-import static org.cosinus.streamer.ui.action.execute.copy.CopyActionModel.copy;
 import static org.cosinus.streamer.ui.action.execute.move.MoveActionModel.move;
 
 /**
@@ -67,8 +63,10 @@ public class MoveStreamerAction extends AbstractCopyAction<MoveActionModel> {
     }
 
     @Override
-    protected MoveActionModel actionModel(final StreamerView<?, ?> sourceStreamerView,
-                                          final StreamerView<?, ?> destinationStreamerView) {
+    public MoveActionModel createActionModel() {
+        final StreamerView<?, ?> sourceStreamerView = streamerViewHandler.getCurrentView();
+        final StreamerView<?, ?> destinationStreamerView = streamerViewHandler.getOppositeView();
+
         return move()
             .streamers(sourceStreamerView.getSelectedItems())
             .from((ParentStreamer<?>) sourceStreamerView.getParentStreamer())
