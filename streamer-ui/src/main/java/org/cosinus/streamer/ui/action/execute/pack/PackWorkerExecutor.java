@@ -16,8 +16,6 @@
 
 package org.cosinus.streamer.ui.action.execute.pack;
 
-import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.expand.ExpandedStreamer;
 import org.cosinus.streamer.ui.action.execute.copy.AbstractCopyWorkerExecutor;
 import org.cosinus.streamer.ui.action.execute.copy.CopyWorkerModel;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
@@ -27,8 +25,7 @@ import org.springframework.stereotype.Component;
 import static org.cosinus.streamer.ui.action.PackStreamerAction.PACK_STREAMER_ACTION_ID;
 
 @Component
-public class PackWorkerExecutor<S extends Streamer<S>, T extends ExpandedStreamer<T>>
-    extends AbstractCopyWorkerExecutor<S, T, PackActionModel<S, T>> {
+public class PackWorkerExecutor extends AbstractCopyWorkerExecutor<PackActionModel> {
 
     protected PackWorkerExecutor(final ProgressFormHandler progressFormHandler,
                                  final StreamerViewHandler streamerViewHandler) {
@@ -36,7 +33,7 @@ public class PackWorkerExecutor<S extends Streamer<S>, T extends ExpandedStreame
     }
 
     @Override
-    protected PackWorker<S, T> createWorker(PackActionModel<S, T> packModel) {
+    protected PackWorker createWorker(PackActionModel packModel) {
         return new PackWorker<>(packModel,
             new CopyWorkerModel<>(streamerViewHandler.getOppositeView().getCopyWorkerModel()));
     }

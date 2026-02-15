@@ -17,10 +17,8 @@
 package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.api.ParentStreamer;
-import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
-import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.execute.ActionExecutors;
@@ -58,16 +56,18 @@ public class CopyStreamerAction extends AbstractCopyAction<CopyActionModel> {
     }
 
     @Override
-    protected <S extends Streamer<S>, T extends Streamer<T>> void executeStreamerCopy(CopyActionModel copyAction) {
-        ParentStreamer<T> destination = prepareDestination(copyAction);
+    protected void executeStreamerCopy(CopyActionModel copyAction) {
+        ParentStreamer<?> destination = prepareDestination(copyAction);
         super.executeStreamerCopy(copyAction.to(destination));
     }
 
     @Override
-    protected <S extends Streamer<S>, T extends Streamer<T>> CopyActionModel<S, T> actionModel() {
-        return copy(
-            new ParentStreamerViewContext<>((StreamerView<S, S>) streamerViewHandler.getCurrentView()),
-            new ParentStreamerViewContext<>((StreamerView<T, T>) streamerViewHandler.getOppositeView()));
+    protected CopyActionModel actionModel(final StreamerView<?, ?> sourceStreamerView,
+                                          final StreamerView<?, ?> destinationStreamerView) {
+        return copy()
+            .streamers(sourceStreamerView.getSelectedItems())
+            .from((ParentStreamer<?>) sourceStreamerView.getParentStreamer())
+            .to((ParentStreamer<?>) destinationStreamerView.getParentStreamer());
     }
 
     @Override

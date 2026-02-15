@@ -20,6 +20,7 @@ import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
+import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.SwingAction;
 import org.cosinus.swing.action.execute.ActionExecutors;
@@ -72,15 +73,18 @@ public abstract class AbstractCopyAction<M extends CopyActionModel> implements S
             return;
         }
 
-        Streamer<?> currentParentStreamer = streamerViewHandler.getCurrentView().getParentStreamer();
-        Streamer<?> oppositeParentStreamer = streamerViewHandler.getOppositeView().getParentStreamer();
-        if (currentParentStreamer.isParent() && oppositeParentStreamer.isParent()) {
-            copyParentStreamer();
+        final StreamerView<?, ?> sourceStreamerView = streamerViewHandler.getCurrentView();
+        final StreamerView<?, ?> targetStreamerView = streamerViewHandler.getOppositeView();
+        Streamer<?> sourceParentStreamer = sourceStreamerView.getParentStreamer();
+        Streamer<?> destinationParentStreamer = targetStreamerView.getParentStreamer();
+        if (sourceParentStreamer.isParent() && destinationParentStreamer.isParent()) {
+            copyParentStreamer(sourceStreamerView, targetStreamerView);
         }
     }
 
-    protected <S extends Streamer<S>, T extends Streamer<T>> void copyParentStreamer() {
-        M copyAction = actionModel();
+    protected void copyParentStreamer(final StreamerView<?, ?> sourceStreamerView,
+                                      final StreamerView<?, ?> targetStreamerView) {
+        M copyAction = actionModel(sourceStreamerView, targetStreamerView);
         if (isEmpty(copyAction.getStreamersToCopy())) {
             return;
         }
@@ -95,22 +99,21 @@ public abstract class AbstractCopyAction<M extends CopyActionModel> implements S
             .ifPresent(this::executeStreamerCopy);
     }
 
-    protected <S extends Streamer<S>, T extends Streamer<T>> void executeStreamerCopy(final M copyAction) {
+    protected void executeStreamerCopy(final M copyAction) {
         actionExecutors.execute(copyAction);
     }
 
-    protected <S extends Streamer<S>, T extends Streamer<T>> Dialog<M> copyConfirmationDialog( final M copyAction) {
+    protected Dialog<M> copyConfirmationDialog(final M copyAction) {
         return dialogHandler.createDialog(applicationFrame, COPY_CONFIRMATION_UI, copyAction);
     }
 
 
-    protected <S extends Streamer<S>, T extends Streamer<T>> ParentStreamer<T>
-    prepareDestination(CopyActionModel<S, T> copyAction) {
+    protected ParentStreamer<?> prepareDestination(M copyActionModel) {
 
-        if (!copyAction.getDestination().getPath().equals(copyAction.getTargetPath())) {
+        if (!copyActionModel.getDestination().getPath().equals(copyActionModel.getTargetPath())) {
             //TODO: to avoid cast
-            ParentStreamer<T> destination =
-                (ParentStreamer<T>) copyAction.getDestination().create(copyAction.getTargetPath(), true);
+            ParentStreamer<?> destination =
+                (ParentStreamer<?>) copyActionModel.getDestination().create(copyActionModel.getTargetPath(), true);
             if (destination == null) {
                 return null;
             }
@@ -121,8 +124,8 @@ public abstract class AbstractCopyAction<M extends CopyActionModel> implements S
             }
             return destination;
         }
-        return copyAction.getDestination();
+        return copyActionModel.getDestination();
     }
 
-    protected abstract <S extends Streamer<S>, T extends Streamer<T>> M actionModel();
+    protected abstract M actionModel(StreamerView<?, ?> sourceStreamerView, StreamerView<?, ?> targetStreamerView);
 }

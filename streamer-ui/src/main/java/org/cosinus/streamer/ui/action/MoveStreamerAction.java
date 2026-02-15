@@ -18,6 +18,7 @@ package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.move.MoveActionModel;
 import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
@@ -33,6 +34,7 @@ import javax.swing.*;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_F6;
+import static org.cosinus.streamer.ui.action.execute.copy.CopyActionModel.copy;
 import static org.cosinus.streamer.ui.action.execute.move.MoveActionModel.move;
 
 /**
@@ -58,17 +60,19 @@ public class MoveStreamerAction extends AbstractCopyAction<MoveActionModel> {
     }
 
     @Override
-    protected <S extends Streamer<S>, T extends Streamer<T>> void executeStreamerCopy(MoveActionModel moveAction) {
-        ParentStreamer<T> destination = prepareDestination(moveAction);
+    protected void executeStreamerCopy(MoveActionModel moveAction) {
+        ParentStreamer<?> destination = prepareDestination(moveAction);
         moveAction.to(destination);
         super.executeStreamerCopy(moveAction);
     }
 
     @Override
-    protected <S extends Streamer<S>, T extends Streamer<T>> MoveActionModel<S, T> actionModel() {
-        return move(
-            new ParentStreamerViewContext<>((StreamerView<S, S>) streamerViewHandler.getCurrentView()),
-            new ParentStreamerViewContext<>((StreamerView<T, T>) streamerViewHandler.getOppositeView()));
+    protected MoveActionModel actionModel(final StreamerView<?, ?> sourceStreamerView,
+                                          final StreamerView<?, ?> destinationStreamerView) {
+        return move()
+            .streamers(sourceStreamerView.getSelectedItems())
+            .from((ParentStreamer<?>) sourceStreamerView.getParentStreamer())
+            .to((ParentStreamer<?>) destinationStreamerView.getParentStreamer());
     }
 
     @Override

@@ -28,8 +28,7 @@ import static org.cosinus.streamer.ui.action.CopyStreamerAction.COPY_STREAMER_AC
  * Implementation of {@link ActionExecutor} for copying streamers based on {@link CopyWorker}
  */
 @Component
-public class CopyWorkerExecutor<S extends Streamer<S>, T extends Streamer<T>>
-    extends AbstractCopyWorkerExecutor<S, T, CopyActionModel<S, T>> {
+public class CopyWorkerExecutor extends AbstractCopyWorkerExecutor<CopyActionModel> {
 
     protected CopyWorkerExecutor(final ProgressFormHandler progressFormHandler,
                                  final StreamerViewHandler streamerViewHandler) {
@@ -37,7 +36,7 @@ public class CopyWorkerExecutor<S extends Streamer<S>, T extends Streamer<T>>
     }
 
     @Override
-    protected CopyWorker<S, T> createWorker(CopyActionModel<S, T> copyModel) {
+    protected CopyWorker createWorker(CopyActionModel copyModel) {
         return new CopyWorker<>(copyModel,
             new CopyWorkerModel<>(streamerViewHandler.getOppositeView().getCopyWorkerModel()));
     }
