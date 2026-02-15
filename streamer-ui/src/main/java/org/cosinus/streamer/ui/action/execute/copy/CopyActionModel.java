@@ -32,17 +32,20 @@ import java.util.Set;
 import static java.util.Optional.ofNullable;
 import static java.util.UUID.randomUUID;
 import static java.util.function.Predicate.not;
+import static org.cosinus.streamer.ui.action.CopyStreamerAction.COPY_STREAMER_ACTION_ID;
 
 /**
  * Encapsulates the model of the copy streamers action
  */
-public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> extends ActionModel implements UIModel {
+public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> implements ActionModel, UIModel {
 
     public static final String COPY_TO = "copyTo";
 
     public static final String COPY_FILTER = "copyFilter";
 
     public static final Set<String> COPY_KEYS = Set.of(COPY_TO, COPY_FILTER);
+
+    private final String executionId;
 
     @Getter
     private StreamerFilter sourceFilter = streamer -> true;
@@ -59,13 +62,13 @@ public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> exten
     @Getter
     private Path targetPath;
 
-    public CopyActionModel(String actionId) {
-        super(randomUUID().toString(), actionId);
+    public CopyActionModel() {
+        this.executionId = randomUUID().toString();
     }
 
     public static <S extends Streamer<S>, T extends Streamer<T>>
-    CopyActionModel<S, T> copy(String actionId, ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
-        return new CopyActionModel<S, T>(actionId)
+    CopyActionModel<S, T> copy(ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
+        return new CopyActionModel<S, T>()
             .setStreamersToCopy(from.getSelectedItems())
             .from(from.getParentStreamer())
             .to(to.getParentStreamer());
@@ -127,5 +130,15 @@ public class CopyActionModel<S extends Streamer<S>, T extends Streamer<T>> exten
     @Override
     public Object getValue(String key) {
         return key.equals(COPY_TO) ? getTargetPath().toFile() : null;
+    }
+
+    @Override
+    public String getExecutionId() {
+        return executionId;
+    }
+
+    @Override
+    public String getActionId() {
+        return COPY_STREAMER_ACTION_ID;
     }
 }

@@ -23,13 +23,17 @@ import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.swing.action.execute.ActionModel;
 
 import java.util.List;
-import java.util.UUID;
+
+import static java.util.UUID.randomUUID;
+import static org.cosinus.streamer.ui.action.DeleteStreamerAction.DELETE_STREAMER_ACTION_ID;
 
 /**
  * Encapsulates the model of the delete streamers action
  */
 @Getter
-public class DeleteActionModel extends ActionModel {
+public class DeleteActionModel implements ActionModel {
+
+    private final String executionId;
 
     private StreamerFilter streamerFilter;
 
@@ -37,8 +41,8 @@ public class DeleteActionModel extends ActionModel {
 
     private boolean moveToTrash;
 
-    public DeleteActionModel(String actionId) {
-        super(UUID.randomUUID().toString(), actionId);
+    public DeleteActionModel() {
+        this.executionId = randomUUID().toString();
     }
 
     public DeleteActionModel deleteStreamers(List<Streamer<?>> streamersToDelete) {
@@ -58,5 +62,15 @@ public class DeleteActionModel extends ActionModel {
 
     public ParentStreamer<Streamer<?>> getFrom() {
         return from;
+    }
+
+    @Override
+    public String getExecutionId() {
+        return executionId;
+    }
+
+    @Override
+    public String getActionId() {
+        return DELETE_STREAMER_ACTION_ID;
     }
 }

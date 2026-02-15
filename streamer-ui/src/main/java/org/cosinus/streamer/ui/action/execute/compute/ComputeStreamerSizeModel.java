@@ -32,7 +32,7 @@ import static org.cosinus.swing.context.ApplicationContextInjector.injectContext
 /**
  * Model for computing a streamer size
  */
-public class ComputeStreamerSizeModel extends ActionModel implements WorkerModel<Void> {
+public class ComputeStreamerSizeModel implements ActionModel, WorkerModel<Void> {
 
     @Getter
     private final Streamer<?> streamer;
@@ -40,7 +40,6 @@ public class ComputeStreamerSizeModel extends ActionModel implements WorkerModel
     private final Set<Refreshable> streamerSizeListeners;
 
     public ComputeStreamerSizeModel(final Streamer<?> streamer) {
-        super(streamer.getId(), COMPUTE_STREAMER_SIZE_ACTION_ID);
         injectContext(this);
         this.streamer = streamer;
         this.streamerSizeListeners = new HashSet<>();
@@ -53,5 +52,15 @@ public class ComputeStreamerSizeModel extends ActionModel implements WorkerModel
 
     public void registerListeners(Refreshable... componentListeners) {
         streamerSizeListeners.addAll(asList(componentListeners));
+    }
+
+    @Override
+    public String getExecutionId() {
+        return streamer.getId();
+    }
+
+    @Override
+    public String getActionId() {
+        return COMPUTE_STREAMER_SIZE_ACTION_ID;
     }
 }

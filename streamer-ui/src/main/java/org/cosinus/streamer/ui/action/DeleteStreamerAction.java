@@ -83,7 +83,7 @@ public class DeleteStreamerAction implements SwingAction {
             return;
         }
 
-        DeleteActionModel deleteActionModel = new DeleteActionModel(getId())
+        DeleteActionModel deleteActionModel = new DeleteActionModel()
             .deleteStreamers(currentView.getSelectedItems())
             .from((ParentStreamer<Streamer<?>>) currentView.getParentStreamer())
             .moveToTrash(moveToTrash());

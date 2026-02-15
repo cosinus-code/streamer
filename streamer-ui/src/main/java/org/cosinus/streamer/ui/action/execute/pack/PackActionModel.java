@@ -25,6 +25,7 @@ import org.cosinus.swing.ui.UIModel;
 import java.util.Set;
 
 import static java.util.Optional.ofNullable;
+import static org.cosinus.streamer.ui.action.PackStreamerAction.PACK_STREAMER_ACTION_ID;
 
 @Getter
 public class PackActionModel<S extends Streamer<S>, T extends Streamer<T>>
@@ -43,13 +44,9 @@ public class PackActionModel<S extends Streamer<S>, T extends Streamer<T>>
     @Setter
     private String[] packTypes;
 
-    public PackActionModel(String actionId) {
-        super(actionId);
-    }
-
     public static <S extends Streamer<S>, T extends Streamer<T>>
-    PackActionModel<S, T> pack(String actionId, ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
-        PackActionModel<S, T> packActionModel = new PackActionModel<>(actionId);
+    PackActionModel<S, T> pack(ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
+        PackActionModel<S, T> packActionModel = new PackActionModel<>();
         packActionModel
             .setStreamersToCopy(from.getSelectedItems())
             .from(from.getParentStreamer())
@@ -91,5 +88,10 @@ public class PackActionModel<S extends Streamer<S>, T extends Streamer<T>>
     @Override
     public Object[] getValues(String key) {
         return packTypes;
+    }
+
+    @Override
+    public String getActionId() {
+        return PACK_STREAMER_ACTION_ID;
     }
 }
