@@ -20,22 +20,25 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.view.ParentStreamerViewContext;
 
+import static org.cosinus.streamer.ui.action.MoveStreamerAction.MOVE_STREAMER_ACTION_ID;
+
 /**
  * Encapsulates the model of the copy streamers action
  */
 public class MoveActionModel<S extends Streamer<S>, T extends Streamer<T>> extends CopyActionModel<S, T> {
 
-    public MoveActionModel(String actionId) {
-        super(actionId);
-    }
-
     public static <S extends Streamer<S>, T extends Streamer<T>>
-    MoveActionModel<S, T> move(String actionId, ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
-        MoveActionModel<S, T> moveActionModel = new MoveActionModel<>(actionId);
+    MoveActionModel<S, T> move(ParentStreamerViewContext<S> from, ParentStreamerViewContext<T> to) {
+        MoveActionModel<S, T> moveActionModel = new MoveActionModel<>();
         moveActionModel.setStreamersToCopy(from.getSelectedItems())
             .from(from.getParentStreamer())
             .to(to.getParentStreamer());
 
         return moveActionModel;
+    }
+
+    @Override
+    public String getActionId() {
+        return MOVE_STREAMER_ACTION_ID;
     }
 }

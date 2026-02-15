@@ -24,7 +24,9 @@ import java.util.function.Consumer;
 
 import static org.cosinus.streamer.ui.action.FindStreamerAction.FIND_STREAMER_ACTION_ID;
 
-public class FindActionModel extends ActionModel {
+public class FindActionModel implements ActionModel {
+
+    private final String executionId;
 
     private final PanelLocation location;
 
@@ -48,7 +50,7 @@ public class FindActionModel extends ActionModel {
                            boolean falloutToDefaultStreamer,
                            final String streamerUrlToFind,
                            final Consumer<Streamer<?>> streamerConsumer) {
-        super(UUID.randomUUID().toString(), FIND_STREAMER_ACTION_ID);
+        this.executionId = UUID.randomUUID().toString();
         this.location = location;
         this.findingLastStreamer = findingLastStreamer;
         this.falloutToParentStreamer = falloutToParentStreamer;
@@ -90,5 +92,15 @@ public class FindActionModel extends ActionModel {
                                                     String urlPath,
                                                     final Consumer<Streamer<?>> consumer) {
         return new FindActionModel(location, false, false, false, urlPath, consumer);
+    }
+
+    @Override
+    public String getExecutionId() {
+        return executionId;
+    }
+
+    @Override
+    public String getActionId() {
+        return FIND_STREAMER_ACTION_ID;
     }
 }

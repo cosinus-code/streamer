@@ -26,7 +26,7 @@ import static org.cosinus.streamer.ui.action.LoadStreamerAction.LOAD_STREAMER_AC
 /**
  * Encapsulates the model of the load streamer action
  */
-public class LoadActionModel<T> extends ActionModel {
+public class LoadActionModel<T> implements ActionModel {
 
     private final PanelLocation locationToLoadTo;
 
@@ -72,7 +72,6 @@ public class LoadActionModel<T> extends ActionModel {
                            final String itemToSelectAfterLoad,
                            final String streamerViewNameToLoadIn,
                            boolean expanding) {
-        super(locationToLoadTo.name(), LOAD_STREAMER_ACTION_ID);
         this.locationToLoadTo = locationToLoadTo;
         this.initialStreamerToLoad = initialStreamerToLoad;
         this.itemToSelectAfterLoad = itemToSelectAfterLoad;
@@ -114,5 +113,15 @@ public class LoadActionModel<T> extends ActionModel {
 
     public void setStreamerToLoad(Streamer<T> streamerToLoad) {
         this.streamerToLoad = streamerToLoad;
+    }
+
+    @Override
+    public String getExecutionId() {
+        return locationToLoadTo.name();
+    }
+
+    @Override
+    public String getActionId() {
+        return LOAD_STREAMER_ACTION_ID;
     }
 }

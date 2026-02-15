@@ -66,7 +66,7 @@ public class MoveStreamerAction extends AbstractCopyAction<MoveActionModel> {
 
     @Override
     protected <S extends Streamer<S>, T extends Streamer<T>> MoveActionModel<S, T> actionModel() {
-        return move(getId(),
+        return move(
             new ParentStreamerViewContext<>((StreamerView<S, S>) streamerViewHandler.getCurrentView()),
             new ParentStreamerViewContext<>((StreamerView<T, T>) streamerViewHandler.getOppositeView()));
     }

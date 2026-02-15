@@ -65,7 +65,7 @@ public class CopyStreamerAction extends AbstractCopyAction<CopyActionModel> {
 
     @Override
     protected <S extends Streamer<S>, T extends Streamer<T>> CopyActionModel<S, T> actionModel() {
-        return copy(getId(),
+        return copy(
             new ParentStreamerViewContext<>((StreamerView<S, S>) streamerViewHandler.getCurrentView()),
             new ParentStreamerViewContext<>((StreamerView<T, T>) streamerViewHandler.getOppositeView()));
     }
