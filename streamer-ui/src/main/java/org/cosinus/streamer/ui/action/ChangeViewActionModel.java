@@ -16,8 +16,19 @@
 
 package org.cosinus.streamer.ui.action;
 
-import org.cosinus.swing.action.ActionContext;
+import org.cosinus.swing.action.execute.ActionModel;
 
-public record ChangeViewActionContext(String viewName) implements ActionContext {
+import static org.cosinus.streamer.ui.action.ChangeViewAction.CHANGE_VIEW_ACTION_ID;
 
+public record ChangeViewActionModel(String viewName) implements ActionModel {
+
+    @Override
+    public String getExecutionId() {
+        return CHANGE_VIEW_ACTION_ID;
+    }
+
+    @Override
+    public String getActionId() {
+        return CHANGE_VIEW_ACTION_ID;
+    }
 }

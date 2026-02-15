@@ -20,7 +20,7 @@ import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.streamer.ui.action.ChangeViewAction;
-import org.cosinus.streamer.ui.action.ChangeViewActionContext;
+import org.cosinus.streamer.ui.action.ChangeViewActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
@@ -146,7 +146,7 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
     }
 
     private ActionListener changeViewAction(String viewName) {
-        return event -> changeViewAction.run(new ChangeViewActionContext(viewName));
+        return event -> changeViewAction.run(new ChangeViewActionModel(viewName));
     }
 
     public PopupMenu getAlternativeViewsPopup() {

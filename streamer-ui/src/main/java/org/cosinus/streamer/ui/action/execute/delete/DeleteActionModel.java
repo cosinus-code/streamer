@@ -35,26 +35,29 @@ public class DeleteActionModel implements ActionModel {
 
     private final String executionId;
 
+    private List<Streamer<?>> streamersToDelete;
+
     private StreamerFilter streamerFilter;
 
     private ParentStreamer<Streamer<?>> from;
 
-    private final boolean moveToTrash;
+    private boolean moveToTrash;
 
-    public DeleteActionModel(final boolean moveToTrash) {
+    public DeleteActionModel() {
         this.executionId = randomUUID().toString();
-        this.moveToTrash = moveToTrash;
     }
 
     public static DeleteActionModel delete() {
-        return new DeleteActionModel(false);
+        return new DeleteActionModel();
     }
 
-    public static DeleteActionModel moveToTrash() {
-        return new DeleteActionModel(true);
+    public DeleteActionModel moveToTrash() {
+        this.moveToTrash = true;
+        return this;
     }
 
     public DeleteActionModel streamers(final List<Streamer<?>> streamersToDelete) {
+        this.streamersToDelete = streamersToDelete;
         this.streamerFilter = streamersToDelete::contains;
         return this;
     }
@@ -62,6 +65,10 @@ public class DeleteActionModel implements ActionModel {
     public DeleteActionModel from(ParentStreamer<Streamer<?>> parentStreamer) {
         this.from = parentStreamer;
         return this;
+    }
+
+    public List<Streamer<?>> getStreamersToDelete() {
+        return streamersToDelete;
     }
 
     public ParentStreamer<Streamer<?>> source() {

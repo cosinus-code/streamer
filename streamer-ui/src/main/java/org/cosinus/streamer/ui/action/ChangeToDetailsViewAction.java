@@ -20,32 +20,32 @@ import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.springframework.stereotype.Component;
 
-import static org.cosinus.streamer.ui.view.table.grid.GridView.GRID_VIEW_NAME;
+import static org.cosinus.streamer.ui.view.table.details.DetailsView.DETAILS_VIEW_NAME;
 
 @Component
-public class ChangeToGridViewAction extends ChangeViewAction {
+public class ChangeToDetailsViewAction extends ChangeViewAction {
 
-    public static final String CHANGE_TO_GRID_VIEW_ACTION_ID = "menu-view-grid";
+    public static final String CHANGE_TO_DETAILS_VIEW_ACTION_ID = "menu-view-details";
 
-    public static final String VIEW_GRID_ICON_NAME = "view-grid";
+    public static final String VIEW_DETAILS_ICON_NAME = "view-details";
 
-    protected ChangeToGridViewAction(final StreamerViewHandler streamerViewHandler,
-                                     final LoadActionExecutor loadActionExecutor) {
+    protected ChangeToDetailsViewAction(final StreamerViewHandler streamerViewHandler,
+                                        final LoadActionExecutor loadActionExecutor) {
         super(streamerViewHandler, loadActionExecutor);
     }
 
     @Override
     public ChangeViewActionModel createActionModel() {
-        return new ChangeViewActionModel(GRID_VIEW_NAME);
+        return new ChangeViewActionModel(DETAILS_VIEW_NAME);
     }
 
     @Override
     public String getIconName() {
-        return VIEW_GRID_ICON_NAME;
+        return VIEW_DETAILS_ICON_NAME;
     }
 
     @Override
     public String getId() {
-        return CHANGE_TO_GRID_VIEW_ACTION_ID;
+        return CHANGE_TO_DETAILS_VIEW_ACTION_ID;
     }
 }
