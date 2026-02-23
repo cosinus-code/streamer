@@ -33,7 +33,6 @@ import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.file.mimetype.MimeTypeResolver;
 import org.cosinus.swing.image.LoadThumbnailsWorker;
 import org.cosinus.swing.preference.Preferences;
-import org.cosinus.swing.progress.ProgressListener;
 import org.cosinus.swing.progress.ProgressModel;
 import org.cosinus.swing.translate.Translator;
 import org.cosinus.swing.worker.Worker;
@@ -153,19 +152,7 @@ public class LoadActionExecutor<T, V> extends WorkerExecutor<LoadActionModel<T, 
     }
 
     @Override
-    protected WorkerListener<LoadWorkerModel<V>, V> getWorkerListener(LoadActionModel<T, V> actionModel) {
-        return actionModel.getStreamerViewToLoadTo();
-    }
-
-    @Override
-    protected ProgressListener<ProgressModel> getProgressListener(
-        LoadActionModel<T, V> actionModel, Worker<LoadWorkerModel<V>, V, ProgressModel> worker) {
-
-        return actionModel.getStreamerViewToLoadTo().getLoadingIndicator();
-    }
-
-    @Override
-    protected Worker createWorker(LoadActionModel<T, V> actionModel) {
+    protected Worker createWorker(final LoadActionModel<T, V> actionModel) {
         if (actionModel instanceof LoadImageActionModel loadImageActionModel) {
             return new LoadImageWorker(loadImageActionModel);
         }
@@ -176,12 +163,14 @@ public class LoadActionExecutor<T, V> extends WorkerExecutor<LoadActionModel<T, 
             .setContentIdentifier(actionModel.getItemToSelectAfterLoad());
 
         LoadActionModel<V, V> loadActionModel = (LoadActionModel<V, V>) actionModel;
-        LoadWorker loadWorker = new LoadWorker<>(
-            loadActionModel,
-            loadActionModel.getStreamerToLoad(),
-            loadActionModel.getStreamerViewToLoadTo());
+        return new LoadWorker<>(loadActionModel)
+            .registerListener(actionModel.getStreamerViewToLoadTo())
+            .registerListener(createWorkerFinishListener(actionModel))
+            .registerListener(actionModel.getStreamerViewToLoadTo().getLoadingIndicator());
+    }
 
-        loadWorker.registerListener(new WorkerListener() {
+    protected WorkerListener createWorkerFinishListener(final LoadActionModel<T, V> actionModel) {
+        return new WorkerListener() {
             @Override
             public void workerFinished(WorkerModel workerModel) {
                 boolean showPreview = preferences.booleanPreference(PREVIEW);
@@ -205,8 +194,7 @@ public class LoadActionExecutor<T, V> extends WorkerExecutor<LoadActionModel<T, 
                         .execute();
                 }
             }
-        });
-        return loadWorker;
+        };
     }
 
     @Override

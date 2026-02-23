@@ -38,7 +38,7 @@ public class MoveWorkerExecutor extends AbstractCopyWorkerExecutor<MoveActionMod
     }
 
     @Override
-    protected MoveWorker createWorker(MoveActionModel actionModel) {
+    protected MoveWorker internalCreateWorker(MoveActionModel actionModel) {
         return new MoveWorker<>(actionModel, new MoveWorkerModel<>(
             streamerViewHandler.getOppositeView().getCopyWorkerModel(),
             streamerViewHandler.getCurrentView().getDeleteWorkerModel()));

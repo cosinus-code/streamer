@@ -15,9 +15,9 @@
  */
 package org.cosinus.streamer.ui.action.execute.compute;
 
-import org.cosinus.swing.progress.ProgressListener;
 import org.cosinus.swing.progress.ProgressModel;
-import org.cosinus.swing.worker.*;
+import org.cosinus.swing.worker.WorkerExecutor;
+import org.cosinus.swing.worker.WorkerModel;
 import org.springframework.stereotype.Component;
 
 import static org.cosinus.streamer.ui.action.ComputeStreamerSizeAction.COMPUTE_STREAMER_SIZE_ACTION_ID;
@@ -30,18 +30,7 @@ public class ComputeStreamerSizeExecutor
     extends WorkerExecutor<ComputeStreamerSizeModel, WorkerModel<Void>, Void, ProgressModel> {
 
     @Override
-    protected WorkerListener<WorkerModel<Void>, Void> getWorkerListener(ComputeStreamerSizeModel actionModel) {
-        return null;
-    }
-
-    @Override
-    protected ProgressListener<ProgressModel> getProgressListener(
-        ComputeStreamerSizeModel actionModel, Worker<WorkerModel<Void>, Void, ProgressModel> worker) {
-        return null;
-    }
-
-    @Override
-    protected Worker<WorkerModel<Void>, Void, ProgressModel> createWorker(ComputeStreamerSizeModel actionModel) {
+    protected ComputeStreamerSizeWorker createWorker(ComputeStreamerSizeModel actionModel) {
         return new ComputeStreamerSizeWorker(actionModel);
     }
 

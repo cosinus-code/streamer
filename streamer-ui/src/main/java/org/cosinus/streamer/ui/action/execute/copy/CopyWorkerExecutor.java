@@ -36,7 +36,7 @@ public class CopyWorkerExecutor extends AbstractCopyWorkerExecutor<CopyActionMod
     }
 
     @Override
-    protected CopyWorker createWorker(CopyActionModel copyModel) {
+    protected CopyWorker internalCreateWorker(CopyActionModel copyModel) {
         return new CopyWorker<>(copyModel,
             new CopyWorkerModel<>(streamerViewHandler.getOppositeView().getCopyWorkerModel()));
     }

@@ -30,16 +30,18 @@ public class LoadWorker<T> extends StreamWorker<LoadWorkerModel<T>, T, ProgressM
 
     private final StreamerView<T, T> streamerViewToLoadTo;
 
-    public LoadWorker(LoadActionModel<T, T> actionModel,
-                      final Streamer<T> streamerToLoad,
-                      final StreamerView<T, T> streamerViewToLoadTo) {
+    public LoadWorker(LoadActionModel<T, T> actionModel) {
         super(actionModel,
-            streamerViewToLoadTo.getLoadWorkerModel(),
-            streamerToLoad,
-            streamerViewToLoadTo.getLoadingIndicator().getProgressModel());
+            actionModel.getStreamerViewToLoadTo().getLoadWorkerModel(),
+            actionModel.getStreamerToLoad(),
+            actionModel.getStreamerViewToLoadTo().getLoadingIndicator().getProgressModel());
 
-        this.streamerToLoad = streamerToLoad;
-        this.streamerViewToLoadTo = streamerViewToLoadTo;
+        this.streamerToLoad = actionModel.getStreamerToLoad();
+        this.streamerViewToLoadTo = actionModel.getStreamerViewToLoadTo();
+    }
+
+    protected LoadActionModel<T, T> getActionModel() {
+        return (LoadActionModel<T, T>) actionModel;
     }
 
     @Override

@@ -44,8 +44,9 @@ public abstract class AbstractCopyWorkerExecutor<M extends CopyActionModel>
     }
 
     @Override
-    protected WorkerListener<WorkerModel<CopyWorkerUnit<?, ?>>, CopyWorkerUnit<?, ?>> getWorkerListener(M actionModel) {
-        return new WorkerListener<>() {
+    protected Worker<WorkerModel<CopyWorkerUnit<?, ?>>, CopyWorkerUnit<?, ?>, CopyProgressModel<?>> createWorker(M copyModel) {
+        CopyWorker copyWorker = internalCreateWorker(copyModel);
+        copyWorker.registerListener(new WorkerListener<WorkerModel<CopyWorkerUnit<?, ?>>, CopyWorkerUnit<?, ?>>() {
             @Override
             public void workerUpdated(WorkerModel<CopyWorkerUnit<?, ?>> workerModel) {
                 streamerViewHandler.getCurrentView().fireContentChanged();
@@ -56,13 +57,10 @@ public abstract class AbstractCopyWorkerExecutor<M extends CopyActionModel>
             public void workerFinished(WorkerModel<CopyWorkerUnit<?, ?>> workerModel) {
                 streamerViewHandler.reloadViews();
             }
-        };
+        });
+        copyWorker.registerListener(progressFormHandler.createCopyProgressDialog(copyModel, copyWorker.getId()));
+        return copyWorker;
     }
 
-    @Override
-    protected ProgressListener<CopyProgressModel<?>> getProgressListener(
-        M copyModel, Worker<WorkerModel<CopyWorkerUnit<?, ?>>, CopyWorkerUnit<?, ?>, CopyProgressModel<?>> worker) {
-
-        return progressFormHandler.createCopyProgressDialog(copyModel, worker.getId());
-    }
+    protected abstract CopyWorker internalCreateWorker(M actionModel);
 }

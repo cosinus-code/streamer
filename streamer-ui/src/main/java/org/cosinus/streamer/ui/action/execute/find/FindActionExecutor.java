@@ -16,13 +16,11 @@
 package org.cosinus.streamer.ui.action.execute.find;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.swing.progress.ProgressListener;
-import org.cosinus.swing.progress.ProgressModel;
-import org.cosinus.swing.worker.Worker;
-import org.cosinus.swing.worker.WorkerExecutor;
-import org.cosinus.swing.worker.WorkerListener;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
+import org.cosinus.swing.progress.ProgressModel;
+import org.cosinus.swing.worker.WorkerExecutor;
+import org.cosinus.swing.worker.WorkerListener;
 import org.springframework.stereotype.Component;
 
 import static org.cosinus.streamer.ui.action.FindStreamerAction.FIND_STREAMER_ACTION_ID;
@@ -37,27 +35,18 @@ public class FindActionExecutor extends WorkerExecutor<FindActionModel, FindWork
     }
 
     @Override
-    protected WorkerListener<FindWorkerModel, Streamer<?>> getWorkerListener(FindActionModel actionModel) {
-        return new WorkerListener<>() {
+    protected FindWorker createWorker(FindActionModel actionModel) {
+        FindWorker findWorker = new FindWorker(actionModel);
+        findWorker.registerListener(new WorkerListener<>() {
             @Override
             public void workerFinished(FindWorkerModel workerModel) {
                 actionModel.streamerConsumer().accept(workerModel.getFoundStreamer());
             }
-        };
-    }
-
-    @Override
-    protected ProgressListener<ProgressModel> getProgressListener(
-        FindActionModel actionModel, Worker<FindWorkerModel, Streamer<?>, ProgressModel> worker) {
-
-        return streamerViewHandler.getView(actionModel.getLocation())
+        });
+        streamerViewHandler.getView(actionModel.getLocation())
             .map(StreamerView::getLoadingIndicator)
-            .orElse(null);
-    }
-
-    @Override
-    protected Worker<FindWorkerModel, Streamer<?>, ProgressModel> createWorker(FindActionModel actionModel) {
-        return new FindWorker(actionModel);
+            .ifPresent(findWorker::registerListener);
+        return findWorker;
     }
 
     @Override

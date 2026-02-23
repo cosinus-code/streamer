@@ -19,11 +19,8 @@ package org.cosinus.streamer.ui.action.execute.delete;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.streamer.ui.action.progress.StreamersProgressModel;
-import org.cosinus.streamer.ui.dialog.ProgressDialog;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.execute.ActionExecutor;
-import org.cosinus.swing.progress.ProgressListener;
-import org.cosinus.swing.worker.Worker;
 import org.cosinus.swing.worker.WorkerExecutor;
 import org.cosinus.swing.worker.WorkerListener;
 import org.cosinus.swing.worker.WorkerModel;
@@ -49,8 +46,10 @@ public class DeleteStreamerExecutor
     }
 
     @Override
-    protected WorkerListener<WorkerModel<Streamer<?>>, Streamer<?>> getWorkerListener(DeleteActionModel deleteModel) {
-        return new WorkerListener<>() {
+    protected DeleteWorker createWorker(DeleteActionModel deleteModel) {
+        DeleteWorker deleteWorker =
+            new DeleteWorker(deleteModel, streamerViewHandler.getCurrentView().getDeleteWorkerModel());
+        deleteWorker.registerListener(new WorkerListener<>() {
             @Override
             public void workerUpdated(WorkerModel<Streamer<?>> workerModel) {
                 streamerViewHandler.getCurrentView().fireContentChanged();
@@ -60,19 +59,10 @@ public class DeleteStreamerExecutor
             public void workerFinished(WorkerModel<Streamer<?>> workerModel) {
                 streamerViewHandler.getCurrentView().reload();
             }
-        };
-    }
-
-    @Override
-    protected ProgressListener<StreamersProgressModel> getProgressListener(
-        DeleteActionModel deleteModel, Worker<WorkerModel<Streamer<?>>, Streamer<?>, StreamersProgressModel> worker) {
-
-        return progressFormHandler.createStreamersProgressDialog(deleteModel, worker.getId());
-    }
-
-    @Override
-    protected DeleteWorker createWorker(DeleteActionModel deleteModel) {
-        return new DeleteWorker(deleteModel, streamerViewHandler.getCurrentView().getDeleteWorkerModel());
+        });
+        deleteWorker.registerListener(
+            progressFormHandler.createStreamersProgressDialog(deleteModel, deleteWorker.getId()));
+        return deleteWorker;
     }
 
     @Override
