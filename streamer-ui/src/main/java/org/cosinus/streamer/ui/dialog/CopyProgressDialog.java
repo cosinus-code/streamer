@@ -44,8 +44,8 @@ public class CopyProgressDialog<S extends Streamer<S>> extends ProgressDialog<Co
     private JLabel copyFromLabel;
     private JLabel copyToLabel;
 
-    public CopyProgressDialog(Frame frame, ActionModel actionModel) {
-        super(frame, actionModel);
+    public CopyProgressDialog(Frame frame, ActionModel actionModel, String workerId) {
+        super(frame, actionModel, workerId);
         init();
     }
 

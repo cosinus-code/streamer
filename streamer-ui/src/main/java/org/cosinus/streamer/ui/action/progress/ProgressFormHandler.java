@@ -31,11 +31,11 @@ import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 public class ProgressFormHandler {
 
     public <S extends Streamer, T extends Streamer>
-    CopyProgressDialog createCopyProgressDialog(ActionModel action) {
-        return new CopyProgressDialog(applicationFrame, action);
+    CopyProgressDialog createCopyProgressDialog(ActionModel action, String workerId) {
+        return new CopyProgressDialog(applicationFrame, action, workerId);
     }
 
-    public StreamersProgressDialog createStreamersProgressDialog(ActionModel action) {
-        return new StreamersProgressDialog(applicationFrame, action);
+    public StreamersProgressDialog createStreamersProgressDialog(ActionModel action, String workerId) {
+        return new StreamersProgressDialog(applicationFrame, action, workerId);
     }
 }

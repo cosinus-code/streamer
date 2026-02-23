@@ -17,34 +17,30 @@
 package org.cosinus.streamer.ui.action.execute.load.image;
 
 import org.cosinus.streamer.api.BinaryStreamer;
+import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.view.image.ImageStreamerView;
-import org.cosinus.swing.action.execute.ActionModel;
+import org.cosinus.swing.image.UpdatableImage;
 
-public class LoadImageActionModel implements ActionModel {
+public class LoadImageActionModel extends LoadActionModel<byte[], UpdatableImage> {
 
     public static final String LOAD_IMAGE_ACTION_ID = "load-image-streamer";
 
-    private final BinaryStreamer streamerToLoad;
-
-    private final ImageStreamerView imageStreamerView;
-
     public LoadImageActionModel(final BinaryStreamer streamerToLoad,
                                 final ImageStreamerView imageStreamerView) {
-        this.streamerToLoad = streamerToLoad;
-        this.imageStreamerView = imageStreamerView;
+        super(streamerToLoad, imageStreamerView);
     }
 
     public BinaryStreamer getStreamerToLoad() {
-        return streamerToLoad;
+        return (BinaryStreamer) streamerToLoad;
     }
 
     public ImageStreamerView getImageStreamerView() {
-        return imageStreamerView;
+        return (ImageStreamerView) streamerViewToLoadTo;
     }
 
     @Override
     public String getExecutionId() {
-        return imageStreamerView.getCurrentLocation().name();
+        return streamerViewToLoadTo.getCurrentLocation().name();
     }
 
     @Override

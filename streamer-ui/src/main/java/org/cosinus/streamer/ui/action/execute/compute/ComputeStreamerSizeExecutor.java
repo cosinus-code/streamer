@@ -35,7 +35,8 @@ public class ComputeStreamerSizeExecutor
     }
 
     @Override
-    protected ProgressListener getProgressListener(ComputeStreamerSizeModel actionModel) {
+    protected ProgressListener<ProgressModel> getProgressListener(
+        ComputeStreamerSizeModel actionModel, Worker<WorkerModel<Void>, Void, ProgressModel> worker) {
         return null;
     }
 

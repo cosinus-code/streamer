@@ -38,8 +38,8 @@ public class StreamersProgressDialog extends ProgressDialog<StreamersProgressMod
 
     private JLabel lblStreamer;
 
-    public StreamersProgressDialog(Frame frame, ActionModel actionModel) {
-        super(frame, actionModel);
+    public StreamersProgressDialog(Frame frame, ActionModel actionModel, String workerId) {
+        super(frame, actionModel, workerId);
         init();
     }
 
