@@ -33,7 +33,7 @@ public class PackWorkerExecutor extends AbstractCopyWorkerExecutor<PackActionMod
     }
 
     @Override
-    protected PackWorker createWorker(PackActionModel packModel) {
+    protected PackWorker internalCreateWorker(PackActionModel packModel) {
         return new PackWorker<>(packModel,
             new CopyWorkerModel<>(streamerViewHandler.getOppositeView().getCopyWorkerModel()));
     }
