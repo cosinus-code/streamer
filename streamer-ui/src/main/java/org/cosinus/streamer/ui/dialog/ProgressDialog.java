@@ -55,6 +55,8 @@ public abstract class ProgressDialog<M extends ProgressModel>
 
     protected final ActionModel actionModel;
 
+    protected final String workerId;
+
     protected JLabel actionLabel;
 
     protected JButton cancelButton;
@@ -67,9 +69,10 @@ public abstract class ProgressDialog<M extends ProgressModel>
 
     protected final String actionName;
 
-    public ProgressDialog(Frame frame, ActionModel actionModel) {
+    public ProgressDialog(Frame frame, ActionModel actionModel, String workerId) {
         super(frame, frame.getTitle(), true, false);
         this.actionModel = actionModel;
+        this.workerId = workerId;
         this.actionName = translator.translate(actionModel.getActionId());
     }
 
@@ -135,7 +138,7 @@ public abstract class ProgressDialog<M extends ProgressModel>
     @Override
     public void cancel() {
         actionExecutors.getActionExecutor(actionModel)
-            .ifPresent(executor -> executor.cancel(actionModel.getExecutionId()));
+            .ifPresent(executor -> executor.cancel(workerId));
         super.cancel();
     }
 

@@ -43,7 +43,7 @@ public class FindStreamerPanel<S extends Streamer<S>> extends FindPanel {
     protected Translator translator;
 
     @Autowired
-    protected LoadActionExecutor<SearchStreamer<S>> loadActionExecutor;
+    protected LoadActionExecutor<SearchStreamer<S>, SearchStreamer<S>> loadActionExecutor;
 
     @Autowired
     private StreamerViewHandler streamerViewHandler;
@@ -112,7 +112,7 @@ public class FindStreamerPanel<S extends Streamer<S>> extends FindPanel {
                 deepInsideCheckBox.isSelected());
 
             final StreamerView<?, ?> currentView = streamerViewHandler.getCurrentView();
-            LoadActionModel<SearchStreamer<S>> loadActionModel =
+            LoadActionModel<SearchStreamer<S>, SearchStreamer<S>> loadActionModel =
                 new LoadActionModel<>(currentView.getCurrentLocation(), searchStreamer);
             loadActionExecutor.execute(loadActionModel);
         }

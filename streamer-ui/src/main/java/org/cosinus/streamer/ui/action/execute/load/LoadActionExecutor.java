@@ -21,7 +21,7 @@ import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
 import org.cosinus.streamer.ui.action.execute.load.image.LoadImageActionModel;
-import org.cosinus.streamer.ui.action.execute.load.image.LoadImageExecutor;
+import org.cosinus.streamer.ui.action.execute.load.image.LoadImageWorker;
 import org.cosinus.streamer.ui.action.execute.save.SaveActionModel;
 import org.cosinus.streamer.ui.action.execute.save.SaveWorkerExecutor;
 import org.cosinus.streamer.ui.view.StreamerView;
@@ -36,6 +36,7 @@ import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.progress.ProgressListener;
 import org.cosinus.swing.progress.ProgressModel;
 import org.cosinus.swing.translate.Translator;
+import org.cosinus.swing.worker.Worker;
 import org.cosinus.swing.worker.WorkerExecutor;
 import org.cosinus.swing.worker.WorkerListener;
 import org.cosinus.swing.worker.WorkerModel;
@@ -59,7 +60,7 @@ import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
  * Implementation of {@link ActionExecutor} based on {@link LoadWorker}
  */
 @Component
-public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, LoadWorkerModel<T>, T, ProgressModel> {
+public class LoadActionExecutor<T, V> extends WorkerExecutor<LoadActionModel<T, V>, LoadWorkerModel<V>, V, ProgressModel> {
 
     private final StreamerViewHandler streamerViewHandler;
 
@@ -71,8 +72,6 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
 
     private final SaveWorkerExecutor saveWorkerExecutor;
 
-    private final LoadImageExecutor loadImageExecutor;
-
     private final MimeTypeResolver mimeTypeResolver;
 
     private final Preferences preferences;
@@ -82,7 +81,6 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
                                  final DialogHandler dialogHandler,
                                  final Translator translator,
                                  final SaveWorkerExecutor saveWorkerExecutor,
-                                 final LoadImageExecutor loadImageExecutor,
                                  final MimeTypeResolver mimeTypeResolver,
                                  final Preferences preferences) {
         this.streamerViewHandler = streamerViewHandler;
@@ -90,13 +88,17 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
         this.dialogHandler = dialogHandler;
         this.translator = translator;
         this.saveWorkerExecutor = saveWorkerExecutor;
-        this.loadImageExecutor = loadImageExecutor;
         this.mimeTypeResolver = mimeTypeResolver;
         this.preferences = preferences;
     }
 
     @Override
-    public void execute(LoadActionModel<T> actionModel) {
+    public void execute(LoadActionModel<T, V> actionModel) {
+        if (actionModel instanceof LoadImageActionModel loadImageActionModel) {
+            super.execute((LoadActionModel) loadImageActionModel);
+            return;
+        }
+
         actionModel.setStreamerToLoad(actionModel.isExpanding() ?
             binaryExpanderHandler.expandStreamer(actionModel.getInitialStreamerToLoad()) :
             (Streamer<T>) actionModel.getInitialStreamerToLoad());
@@ -108,7 +110,7 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
             return;
         }
 
-        StreamerView<T, T> streamerViewToLoadTo = streamerViewHandler.createStreamerView(
+        StreamerView<T, V> streamerViewToLoadTo = streamerViewHandler.createStreamerView(
             actionModel.getLocationToLoadTo(),
             ofNullable(actionModel.getStreamerViewNameToLoadIn())
                 .filter(viewName -> !streamerToLoad.isTextCompatible() || TEXT_EDITOR.equals(viewName))
@@ -118,24 +120,12 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
 
         actionModel.setStreamerViewToLoadTo(streamerViewToLoadTo);
 
-        Optional.of(streamerViewToLoadTo)
+        super.execute(Optional.of(streamerViewToLoadTo)
             .filter(ImageStreamerView.class::isInstance)
             .map(ImageStreamerView.class::cast)
-            .map(imageStreamerView ->
+            .<LoadActionModel>map(imageStreamerView ->
                 new LoadImageActionModel(streamerToLoad.binaryStreamer(), imageStreamerView))
-            .ifPresentOrElse(
-                this::startLoadImageExecutor,
-                () -> startLoadExecutor(actionModel));
-    }
-
-    private void startLoadImageExecutor(LoadImageActionModel loadImageActionModel) {
-        cancel(loadImageActionModel.getExecutionId());
-        loadImageExecutor.execute(loadImageActionModel);
-    }
-
-    private void startLoadExecutor(LoadActionModel<T> actionModel) {
-        loadImageExecutor.cancel(actionModel.getExecutionId());
-        super.execute(actionModel);
+            .orElse(actionModel));
     }
 
     private String getDefaultViewName(Streamer<?> streamerToLoad) {
@@ -163,27 +153,33 @@ public class LoadActionExecutor<T> extends WorkerExecutor<LoadActionModel<T>, Lo
     }
 
     @Override
-    protected StreamerView<T, T> getWorkerListener(LoadActionModel<T> actionModel) {
+    protected WorkerListener<LoadWorkerModel<V>, V> getWorkerListener(LoadActionModel<T, V> actionModel) {
         return actionModel.getStreamerViewToLoadTo();
     }
 
     @Override
-    protected ProgressListener getProgressListener(LoadActionModel<T> actionModel) {
+    protected ProgressListener<ProgressModel> getProgressListener(
+        LoadActionModel<T, V> actionModel, Worker<LoadWorkerModel<V>, V, ProgressModel> worker) {
+
         return actionModel.getStreamerViewToLoadTo().getLoadingIndicator();
     }
 
-
     @Override
-    protected LoadWorker<T> createWorker(LoadActionModel<T> actionModel) {
+    protected Worker createWorker(LoadActionModel<T, V> actionModel) {
+        if (actionModel instanceof LoadImageActionModel loadImageActionModel) {
+            return new LoadImageWorker(loadImageActionModel);
+        }
+
         actionModel
             .getStreamerViewToLoadTo()
             .getLoadWorkerModel()
             .setContentIdentifier(actionModel.getItemToSelectAfterLoad());
 
+        LoadActionModel<V, V> loadActionModel = (LoadActionModel<V, V>) actionModel;
         LoadWorker loadWorker = new LoadWorker<>(
-            actionModel,
-            actionModel.getStreamerToLoad(),
-            actionModel.getStreamerViewToLoadTo());
+            loadActionModel,
+            loadActionModel.getStreamerToLoad(),
+            loadActionModel.getStreamerViewToLoadTo());
 
         loadWorker.registerListener(new WorkerListener() {
             @Override

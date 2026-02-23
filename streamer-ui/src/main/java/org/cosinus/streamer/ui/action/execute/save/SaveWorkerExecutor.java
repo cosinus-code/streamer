@@ -32,11 +32,8 @@ import static org.cosinus.streamer.ui.action.SaveAction.SAVE_ACTION_ID;
 public class SaveWorkerExecutor<T> extends WorkerExecutor<SaveActionModel, SaveWorkerModel<T>, T, ProgressModel> {
 
     @Override
-    public void execute(SaveActionModel actionModel) {
-        if (isWorkerRunning(actionModel.getExecutionId())) {
-            return;
-        }
-        super.execute(actionModel);
+    protected boolean isValid(Worker<SaveWorkerModel<T>, T, ProgressModel> workerModel) {
+        return !isWorkerRunning(workerModel.getId());
     }
 
     @Override
@@ -45,7 +42,9 @@ public class SaveWorkerExecutor<T> extends WorkerExecutor<SaveActionModel, SaveW
     }
 
     @Override
-    protected ProgressListener getProgressListener(SaveActionModel actionModel) {
+    protected ProgressListener<ProgressModel> getProgressListener(
+        SaveActionModel actionModel, Worker<SaveWorkerModel<T>, T, ProgressModel> worker) {
+
         return actionModel.getStreamerView().getLoadingIndicator();
     }
 

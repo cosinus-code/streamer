@@ -18,9 +18,9 @@ package org.cosinus.streamer.ui.view.image;
 
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.action.execute.load.image.LoadImageActionModel;
-import org.cosinus.streamer.ui.action.execute.load.image.LoadImageExecutor;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
@@ -29,7 +29,6 @@ import org.cosinus.swing.form.ScrollPane;
 import org.cosinus.swing.image.UpdatableImage;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -66,7 +65,7 @@ public class ImageStreamerView extends StreamerView<byte[], UpdatableImage> {
     private StreamerViewHandler streamerViewHandler;
 
     @Autowired
-    private LoadImageExecutor loadImageExecutor;
+    private LoadActionExecutor loadImageExecutor;
 
     private ImagePanel imagePanel;
 

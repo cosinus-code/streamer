@@ -26,21 +26,21 @@ import static org.cosinus.streamer.ui.action.LoadStreamerAction.LOAD_STREAMER_AC
 /**
  * Encapsulates the model of the load streamer action
  */
-public class LoadActionModel<T> implements ActionModel {
+public class LoadActionModel<T, V> implements ActionModel {
 
-    private final PanelLocation locationToLoadTo;
+    protected final PanelLocation locationToLoadTo;
 
-    private final Streamer<?> initialStreamerToLoad;
+    protected final Streamer<?> initialStreamerToLoad;
 
-    private final String itemToSelectAfterLoad;
+    protected final String itemToSelectAfterLoad;
 
-    private final String streamerViewNameToLoadIn;
+    protected final String streamerViewNameToLoadIn;
 
-    private final boolean expanding;
+    protected final boolean expanding;
 
-    private Streamer<T> streamerToLoad;
+    protected Streamer<T> streamerToLoad;
 
-    private StreamerView<T, T> streamerViewToLoadTo;
+    protected StreamerView<T, V> streamerViewToLoadTo;
 
     public LoadActionModel(final PanelLocation locationToLoadTo,
                            final Streamer<?> initialStreamerToLoad) {
@@ -65,6 +65,13 @@ public class LoadActionModel<T> implements ActionModel {
                            final String itemToSelectAfterLoad,
                            final String streamerViewNameToLoadIn) {
         this(locationToLoadTo, initialStreamerToLoad, itemToSelectAfterLoad, streamerViewNameToLoadIn, true);
+    }
+
+    public LoadActionModel(final Streamer<T> streamerToLoad,
+                           final StreamerView<T, V> streamerViewToLoadTo) {
+        this(streamerViewToLoadTo.getCurrentLocation(), streamerToLoad, null, null, false);
+        this.streamerToLoad = streamerToLoad;
+        this.streamerViewToLoadTo = streamerViewToLoadTo;
     }
 
     public LoadActionModel(final PanelLocation locationToLoadTo,
@@ -99,11 +106,11 @@ public class LoadActionModel<T> implements ActionModel {
         return expanding;
     }
 
-    public StreamerView<T, T> getStreamerViewToLoadTo() {
+    public StreamerView<T, V> getStreamerViewToLoadTo() {
         return streamerViewToLoadTo;
     }
 
-    public void setStreamerViewToLoadTo(StreamerView<T, T> streamerViewToLoadTo) {
+    public void setStreamerViewToLoadTo(StreamerView<T, V> streamerViewToLoadTo) {
         this.streamerViewToLoadTo = streamerViewToLoadTo;
     }
 

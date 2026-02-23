@@ -47,7 +47,9 @@ public class FindActionExecutor extends WorkerExecutor<FindActionModel, FindWork
     }
 
     @Override
-    protected ProgressListener getProgressListener(FindActionModel actionModel) {
+    protected ProgressListener<ProgressModel> getProgressListener(
+        FindActionModel actionModel, Worker<FindWorkerModel, Streamer<?>, ProgressModel> worker) {
+
         return streamerViewHandler.getView(actionModel.getLocation())
             .map(StreamerView::getLoadingIndicator)
             .orElse(null);

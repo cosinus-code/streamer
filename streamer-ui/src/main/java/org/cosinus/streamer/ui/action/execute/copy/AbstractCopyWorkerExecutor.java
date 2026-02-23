@@ -21,6 +21,8 @@ import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.streamer.ui.dialog.ProgressDialog;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.execute.ActionExecutor;
+import org.cosinus.swing.progress.ProgressListener;
+import org.cosinus.swing.worker.Worker;
 import org.cosinus.swing.worker.WorkerExecutor;
 import org.cosinus.swing.worker.WorkerListener;
 import org.cosinus.swing.worker.WorkerModel;
@@ -58,7 +60,9 @@ public abstract class AbstractCopyWorkerExecutor<M extends CopyActionModel>
     }
 
     @Override
-    protected ProgressDialog<CopyProgressModel<?>> getProgressListener(M copyModel) {
-        return progressFormHandler.createCopyProgressDialog(copyModel);
+    protected ProgressListener<CopyProgressModel<?>> getProgressListener(
+        M copyModel, Worker<WorkerModel<CopyWorkerUnit<?, ?>>, CopyWorkerUnit<?, ?>, CopyProgressModel<?>> worker) {
+
+        return progressFormHandler.createCopyProgressDialog(copyModel, worker.getId());
     }
 }

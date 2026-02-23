@@ -30,7 +30,7 @@ public class LoadWorker<T> extends StreamWorker<LoadWorkerModel<T>, T, ProgressM
 
     private final StreamerView<T, T> streamerViewToLoadTo;
 
-    public LoadWorker(LoadActionModel<T> actionModel,
+    public LoadWorker(LoadActionModel<T, T> actionModel,
                       final Streamer<T> streamerToLoad,
                       final StreamerView<T, T> streamerViewToLoadTo) {
         super(actionModel,

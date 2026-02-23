@@ -22,6 +22,8 @@ import org.cosinus.streamer.ui.action.progress.StreamersProgressModel;
 import org.cosinus.streamer.ui.dialog.ProgressDialog;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.execute.ActionExecutor;
+import org.cosinus.swing.progress.ProgressListener;
+import org.cosinus.swing.worker.Worker;
 import org.cosinus.swing.worker.WorkerExecutor;
 import org.cosinus.swing.worker.WorkerListener;
 import org.cosinus.swing.worker.WorkerModel;
@@ -62,8 +64,10 @@ public class DeleteStreamerExecutor
     }
 
     @Override
-    protected ProgressDialog<StreamersProgressModel> getProgressListener(DeleteActionModel deleteModel) {
-        return progressFormHandler.createStreamersProgressDialog(deleteModel);
+    protected ProgressListener<StreamersProgressModel> getProgressListener(
+        DeleteActionModel deleteModel, Worker<WorkerModel<Streamer<?>>, Streamer<?>, StreamersProgressModel> worker) {
+
+        return progressFormHandler.createStreamersProgressDialog(deleteModel, worker.getId());
     }
 
     @Override
