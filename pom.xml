@@ -38,6 +38,7 @@
         <google-oath-jetty.version>1.39.0</google-oath-jetty.version>
         <jenetics-jpx.version>3.2.1</jenetics-jpx.version>
         <junit.version>4.13.1</junit.version>
+        <google-maps.version>2.2.0</google-maps.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -116,6 +117,11 @@
                 <groupId>io.jenetics</groupId>
                 <artifactId>jpx</artifactId>
                 <version>${jenetics-jpx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.maps</groupId>
+                <artifactId>google-maps-services</artifactId>
+                <version>${google-maps.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

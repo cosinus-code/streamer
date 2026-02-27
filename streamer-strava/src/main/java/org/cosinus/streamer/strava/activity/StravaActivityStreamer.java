@@ -17,6 +17,7 @@
 
 package org.cosinus.streamer.strava.activity;
 
+import com.google.maps.internal.PolylineEncoding;
 import lombok.Getter;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.value.*;
@@ -28,10 +29,13 @@ import org.cosinus.streamer.strava.activity.gpx.StravaActivityGpxStreamer;
 import org.cosinus.streamer.strava.activity.kudos.StravaActivityKudosJsonStreamer;
 import org.cosinus.streamer.strava.activity.laps.StravaActivityLapsJsonStreamer;
 import org.cosinus.streamer.strava.model.Activity;
+import org.cosinus.streamer.strava.model.Map;
 import org.cosinus.swing.translate.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.awt.*;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -40,7 +44,11 @@ import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Stream.concat;
+import static org.cosinus.swing.color.Colors.getColorDescription;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
+import static org.cosinus.swing.image.icon.IconHandler.SHAPE_ICON;
+import static org.cosinus.swing.image.icon.IconHandler.SHAPE_SEPARATOR;
 
 public class StravaActivityStreamer extends StravaParentStreamer<StravaStreamer<?>> {
 
@@ -51,6 +59,10 @@ public class StravaActivityStreamer extends StravaParentStreamer<StravaStreamer<
     public static final int DETAILS_INDEX_DISTANCE = 2;
 
     public static final int DETAILS_INDEX_ELEVATION = 3;
+
+    public static final Color STRAVA_COLOR = new Color(252, 76, 2);
+
+    public static final Color BACKGROUND_COLOR = new Color(175, 229, 176);
 
     @Autowired
     private Translator translator;
@@ -157,5 +169,33 @@ public class StravaActivityStreamer extends StravaParentStreamer<StravaStreamer<
     @Override
     public List<TranslatableName> detailNames() {
         return detailNames;
+    }
+
+    @Override
+    public String getIconName() {
+        return ofNullable(activity.getMap())
+            .map(Map::getSummaryPolyline)
+            .map(this::buildShapeIconName)
+            .orElse(null);
+    }
+
+    protected String buildShapeIconName(String polyline) {
+        return concat(
+            Stream.of(SHAPE_ICON,
+                getColorDescription(BACKGROUND_COLOR),
+                getColorDescription(STRAVA_COLOR)),
+            ofNullable(polyline)
+                .map(PolylineEncoding::decode)
+                .stream()
+                .flatMap(Collection::stream)
+                .map(latlng -> Stream.of(latlng.lat, latlng.lng)
+                    .map(Object::toString)
+                    .collect(joining(","))))
+            .collect(joining(SHAPE_SEPARATOR));
+    }
+
+    @Override
+    public boolean isIconRounded() {
+        return true;
     }
 }
