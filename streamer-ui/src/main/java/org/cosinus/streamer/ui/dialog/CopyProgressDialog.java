@@ -33,7 +33,7 @@ import static javax.swing.JLabel.CENTER;
 /**
  * Dialog for showing the copy action progress
  */
-public class CopyProgressDialog<S extends Streamer<S>> extends ProgressDialog<CopyProgressModel<S>> {
+public class CopyProgressDialog<S extends Streamer<?>> extends ProgressDialog<CopyProgressModel<S, ?>> {
 
     @Autowired
     protected IconHandler iconHandler;

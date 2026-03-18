@@ -24,12 +24,12 @@ import org.cosinus.swing.worker.WorkerModel;
 
 import java.util.List;
 
-public class CopyWorkerModel<S extends Streamer<S>, T extends Streamer<T>>
+public class CopyWorkerModel<S extends Streamer<?>, T extends Streamer<?>>
     implements WorkerModel<CopyUnit<S, T>> {
 
     private final WorkerModel<T> copyWorkerModel;
 
-    public CopyWorkerModel(final WorkerModel<T> copyWorkerModel) {
+    public CopyWorkerModel(final WorkerModel copyWorkerModel) {
         this.copyWorkerModel = copyWorkerModel;
     }
 

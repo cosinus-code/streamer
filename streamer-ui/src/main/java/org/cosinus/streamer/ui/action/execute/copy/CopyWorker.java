@@ -42,8 +42,8 @@ import static org.cosinus.stream.FlatStreamingStrategy.IN_DEPTH;
 /**
  * {@link Worker} for copying streamers from a source parent streamer to target parent streamer
  */
-public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
-    extends PipelineWorker<WorkerModel<CopyUnit<S, T>>, CopyUnit<S, T>, CopyProgressModel<S>> {
+public class CopyWorker<S extends Streamer<?>, T extends Streamer<?>>
+    extends PipelineWorker<WorkerModel<CopyUnit<S, T>>, CopyUnit<S, T>, CopyProgressModel<S, T>> {
 
     @Autowired
     protected FormatHandler formatHandler;
@@ -60,7 +60,7 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
     private final StreamingStrategy streamingStrategy;
 
     public CopyWorker(CopyActionModel copyActionModel, WorkerModel<CopyUnit<S, T>> workerModel) {
-        super(copyActionModel, workerModel, new CopyProgressModel<>());
+        super(copyActionModel, workerModel, new CopyProgressModel());
         this.source = (ParentStreamer<S>) copyActionModel.getSource();
         this.destination = (ParentStreamer<T>) copyActionModel.getDestination();
         this.streamerFilter = copyActionModel.getSourceFilter();
@@ -162,7 +162,7 @@ public class CopyWorker<S extends Streamer<S>, T extends Streamer<T>>
 
         @Override
         public void beforePipelineOpen() {
-            updateProgress(progress -> progress.startStreamerProgress(source, target));
+            updateProgress(progress -> progress.startStreamerProgress((S) source, (T) target));
         }
 
         @Override

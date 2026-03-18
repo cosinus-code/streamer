@@ -33,7 +33,7 @@ import static org.cosinus.streamer.ui.action.CopyStreamerAction.COPY_STREAMER_AC
  */
 @Component
 public class CopyWorkerExecutor
-    extends WorkerExecutor<CopyActionModel, WorkerModel<CopyUnit<?, ?>>, CopyUnit<?, ?>, CopyProgressModel<?>> {
+    extends WorkerExecutor<CopyActionModel, WorkerModel<CopyUnit<?, ?>>, CopyUnit<?, ?>, CopyProgressModel<?, ?>> {
 
     protected final ProgressFormHandler progressFormHandler;
 
@@ -48,7 +48,7 @@ public class CopyWorkerExecutor
     @Override
     protected CopyWorker createWorker(CopyActionModel copyModel) {
         CopyWorker copyWorker = new CopyWorker<>(copyModel,
-            new CopyWorkerModel<>(streamerViewHandler.getOppositeView().getCopyWorkerModel()));
+            new CopyWorkerModel<>(copyModel.getDestinationView().getCopyWorkerModel()));
         copyWorker.registerListener(new WorkerListener<WorkerModel<CopyUnit<?, ?>>, CopyUnit<?, ?>>() {
             @Override
             public void workerUpdated(WorkerModel<CopyUnit<?, ?>> workerModel) {
