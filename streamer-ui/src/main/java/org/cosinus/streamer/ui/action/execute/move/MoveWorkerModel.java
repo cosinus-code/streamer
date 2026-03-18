@@ -25,18 +25,18 @@ import org.cosinus.swing.worker.WorkerModel;
 
 import java.util.List;
 
-public class MoveWorkerModel<S extends Streamer<S>, T extends Streamer<T>>
+public class MoveWorkerModel<S extends Streamer<?>, T extends Streamer<?>>
     extends CopyWorkerModel<S, T> {
 
-    private final WorkerModel<Streamer<S>> deleteWorkerModel;
+    private final WorkerModel<S> deleteWorkerModel;
 
-    public MoveWorkerModel(final WorkerModel<T> copyWorkerModel,
+    public MoveWorkerModel(final WorkerModel copyWorkerModel,
                            final WorkerModel deleteWorkerModel) {
         super(copyWorkerModel);
         this.deleteWorkerModel = deleteWorkerModel;
     }
 
-    public void updateDeletedItems(List<Streamer<S>> deletedItems) {
+    public void updateDeletedItems(List<S> deletedItems) {
         deleteWorkerModel.update(deletedItems);
     }
 }

@@ -36,7 +36,7 @@ import static org.cosinus.streamer.ui.action.MoveStreamerAction.MOVE_STREAMER_AC
  */
 @Component
 public class MoveWorkerExecutor
-    extends WorkerExecutor<MoveActionModel, WorkerModel<CopyUnit<?, ?>>, CopyUnit<?, ?>, CopyProgressModel<?>> {
+    extends WorkerExecutor<MoveActionModel, WorkerModel<CopyUnit<?, ?>>, CopyUnit<?, ?>, CopyProgressModel<?, ?>> {
 
     protected final ProgressFormHandler progressFormHandler;
 
@@ -51,8 +51,8 @@ public class MoveWorkerExecutor
     @Override
     protected MoveWorker createWorker(MoveActionModel moveModel) {
         MoveWorker moveWorker = new MoveWorker<>(moveModel, new MoveWorkerModel<>(
-            streamerViewHandler.getOppositeView().getCopyWorkerModel(),
-            streamerViewHandler.getCurrentView().getDeleteWorkerModel()));
+            moveModel.getDestinationView().getCopyWorkerModel(),
+            moveModel.getSourceView().getDeleteWorkerModel()));
         moveWorker.registerListener(new WorkerListener<WorkerModel<CopyUnit<?, ?>>, CopyUnit<?, ?>>() {
             @Override
             public void workerUpdated(WorkerModel<CopyUnit<?, ?>> workerModel) {

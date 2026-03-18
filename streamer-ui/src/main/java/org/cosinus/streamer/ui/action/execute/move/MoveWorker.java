@@ -27,7 +27,7 @@ import java.util.List;
 import static java.util.Collections.singletonList;
 import static org.cosinus.stream.FlatStreamingStrategy.LEVEL_BOTTOM_UP;
 
-public class MoveWorker<S extends Streamer<S>, T extends Streamer<T>> extends CopyWorker<S, T> {
+public class MoveWorker<S extends Streamer<?>, T extends Streamer<?>> extends CopyWorker<S, T> {
 
     private List<S> streamersToCopy;
 

@@ -32,7 +32,7 @@ import static org.cosinus.streamer.ui.action.PackStreamerAction.PACK_STREAMER_AC
 
 @Component
 public class PackWorkerExecutor
-    extends WorkerExecutor<PackActionModel, WorkerModel<CopyUnit<?, ?>>, CopyUnit<?, ?>, CopyProgressModel<?>> {
+    extends WorkerExecutor<PackActionModel, WorkerModel<CopyUnit<?, ?>>, CopyUnit<?, ?>, CopyProgressModel<?, ?>> {
 
     protected final ProgressFormHandler progressFormHandler;
 
@@ -47,7 +47,7 @@ public class PackWorkerExecutor
     @Override
     protected PackWorker createWorker(PackActionModel packModel) {
         PackWorker packWorker = new PackWorker<>(packModel,
-            new CopyWorkerModel<>(streamerViewHandler.getOppositeView().getCopyWorkerModel()));
+            new CopyWorkerModel<>(packModel.getDestinationView().getCopyWorkerModel()));
         packWorker.registerListener(new WorkerListener<WorkerModel<CopyUnit<?, ?>>, CopyUnit<?, ?>>() {
             @Override
             public void workerUpdated(WorkerModel<CopyUnit<?, ?>> workerModel) {

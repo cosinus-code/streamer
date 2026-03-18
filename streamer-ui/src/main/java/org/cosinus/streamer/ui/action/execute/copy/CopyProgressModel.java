@@ -24,7 +24,7 @@ import org.cosinus.swing.progress.ProgressModel;
 /**
  * Model for a progress over multiple streamers for actions with source and target
  */
-public class CopyProgressModel<S extends Streamer<S>> extends ProgressModel {
+public class CopyProgressModel<S extends Streamer<?>, T extends Streamer<?>> extends ProgressModel {
 
     private final ProgressModel streamerProgressModel;
 
@@ -33,10 +33,10 @@ public class CopyProgressModel<S extends Streamer<S>> extends ProgressModel {
     private long totalItems;
 
     @Getter
-    private Streamer<?> source;
+    private S source;
 
     @Getter
-    private Streamer<?> target;
+    private T target;
 
     public CopyProgressModel() {
         streamerProgressModel = new ProgressModel();
@@ -46,7 +46,7 @@ public class CopyProgressModel<S extends Streamer<S>> extends ProgressModel {
         return streamerProgressModel.getProgressPercent();
     }
 
-    public void startStreamerProgress(Streamer<?> source, Streamer<?> target) {
+    public void startStreamerProgress(S source, T target) {
         streamerProgressModel.startProgress(source.getSize());
         this.source = source;
         this.target = target;
