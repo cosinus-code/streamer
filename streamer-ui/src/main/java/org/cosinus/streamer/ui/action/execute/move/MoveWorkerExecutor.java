@@ -16,7 +16,6 @@
 
 package org.cosinus.streamer.ui.action.execute.move;
 
-import org.cosinus.streamer.ui.action.execute.copy.CopyProgressModel;
 import org.cosinus.streamer.ui.action.execute.copy.CopyUnit;
 import org.cosinus.streamer.ui.action.execute.copy.CopyWorker;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
@@ -35,8 +34,7 @@ import static org.cosinus.streamer.ui.action.MoveStreamerAction.MOVE_STREAMER_AC
  * Implementation of {@link ActionExecutor} for copying streamers based on {@link CopyWorker}
  */
 @Component
-public class MoveWorkerExecutor
-    extends WorkerExecutor<MoveActionModel, WorkerModel<CopyUnit<?, ?>>, CopyUnit<?, ?>, CopyProgressModel<?, ?>> {
+public class MoveWorkerExecutor extends WorkerExecutor<MoveActionModel, MoveWorker<?, ?>> {
 
     protected final ProgressFormHandler progressFormHandler;
 

@@ -43,7 +43,7 @@ public class FindStreamerPanel<S extends Streamer<S>> extends FindPanel {
     protected Translator translator;
 
     @Autowired
-    protected LoadActionExecutor<SearchStreamer<S>, SearchStreamer<S>> loadActionExecutor;
+    protected LoadActionExecutor loadActionExecutor;
 
     @Autowired
     private StreamerViewHandler streamerViewHandler;

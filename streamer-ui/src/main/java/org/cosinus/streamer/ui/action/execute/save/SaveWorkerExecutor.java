@@ -18,8 +18,6 @@ package org.cosinus.streamer.ui.action.execute.save;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.streamer.ui.view.StreamerView;
-import org.cosinus.swing.progress.ProgressModel;
-import org.cosinus.swing.worker.Worker;
 import org.cosinus.swing.worker.WorkerExecutor;
 import org.springframework.stereotype.Component;
 
@@ -27,21 +25,21 @@ import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.action.SaveAction.SAVE_ACTION_ID;
 
 @Component
-public class SaveWorkerExecutor<T> extends WorkerExecutor<SaveActionModel<T>, SaveWorkerModel<T>, T, ProgressModel> {
+public class SaveWorkerExecutor extends WorkerExecutor<SaveActionModel<?>, SaveWorker<?>> {
 
     @Override
-    protected boolean isValid(Worker<SaveWorkerModel<T>, T, ProgressModel> workerModel) {
-        return !isWorkerRunning(workerModel.getId());
+    protected boolean isValid(SaveWorker<?> saveWorker) {
+        return !isWorkerRunning(saveWorker.getId());
     }
 
     @Override
-    protected Worker<SaveWorkerModel<T>, T, ProgressModel> createWorker(SaveActionModel<T> actionModel) {
-        Streamer<T> streamerToSave = actionModel.getStreamerView().getParentStreamer();
-        StreamerView<T> streamerView = actionModel.getStreamerView();
+    protected SaveWorker<?> createWorker(SaveActionModel<?> actionModel) {
+        Streamer<?> streamerToSave = actionModel.getStreamerView().getParentStreamer();
+        StreamerView<?> streamerView = actionModel.getStreamerView();
 
-        SaveWorkerModel<T> saveWorkerModel = ofNullable(streamerToSave)
+        SaveWorkerModel saveWorkerModel = ofNullable(streamerToSave)
             .filter(Streamer::isParent)
-            .map(streamer -> (SaveWorkerModel<T>) streamer.saveModel())
+            .map(streamer -> (SaveWorkerModel) streamer.saveModel())
             .orElseGet(streamerView::getSaveWorkerModel);
 
         return ofNullable(saveWorkerModel)
@@ -50,8 +48,8 @@ public class SaveWorkerExecutor<T> extends WorkerExecutor<SaveActionModel<T>, Sa
             .orElse(null);
     }
 
-    private Worker<SaveWorkerModel<T>, T, ProgressModel> createSaveWorker(final SaveActionModel<T> actionModel,
-                                                                          final SaveWorkerModel<T> workerModel) {
+    private SaveWorker<?> createSaveWorker(final SaveActionModel<?> actionModel,
+                                           final SaveWorkerModel<?> workerModel) {
         return new SaveWorker<>(actionModel, workerModel)
             .registerListener(actionModel.getStreamerView().getSaveListener())
             .registerListener(actionModel.getStreamerView().getLoadingIndicator());

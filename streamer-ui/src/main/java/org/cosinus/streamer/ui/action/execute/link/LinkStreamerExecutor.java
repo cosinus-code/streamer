@@ -18,7 +18,6 @@
 package org.cosinus.streamer.ui.action.execute.link;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.action.progress.StreamersProgressModel;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.worker.WorkerExecutor;
@@ -30,8 +29,7 @@ import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.action.execute.link.LinkStreamersModel.LINK_STREAMER_ACTION_ID;
 
 @Component
-public class LinkStreamerExecutor
-    extends WorkerExecutor<LinkStreamersModel, WorkerModel<Streamer<?>>, Streamer<?>, StreamersProgressModel> {
+public class LinkStreamerExecutor extends WorkerExecutor<LinkStreamersModel, LinkStreamerWorker> {
 
     private final StreamerViewHandler streamerViewHandler;
 

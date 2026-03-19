@@ -16,7 +16,6 @@
 
 package org.cosinus.streamer.ui.action.execute.pack;
 
-import org.cosinus.streamer.ui.action.execute.copy.CopyProgressModel;
 import org.cosinus.streamer.ui.action.execute.copy.CopyUnit;
 import org.cosinus.streamer.ui.action.execute.copy.CopyWorkerModel;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
@@ -31,8 +30,7 @@ import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.action.PackStreamerAction.PACK_STREAMER_ACTION_ID;
 
 @Component
-public class PackWorkerExecutor
-    extends WorkerExecutor<PackActionModel, WorkerModel<CopyUnit<?, ?>>, CopyUnit<?, ?>, CopyProgressModel<?, ?>> {
+public class PackWorkerExecutor extends WorkerExecutor<PackActionModel, PackWorker<?, ?>> {
 
     protected final ProgressFormHandler progressFormHandler;
 

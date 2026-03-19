@@ -18,8 +18,11 @@ package org.cosinus.streamer.ui.action.execute.save;
 import org.cosinus.stream.consumer.StreamConsumer;
 import org.cosinus.stream.pipeline.PipelineStrategy;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
+import org.cosinus.swing.progress.ProgressListener;
 import org.cosinus.swing.progress.ProgressModel;
 import org.cosinus.swing.worker.PipelineWorker;
+import org.cosinus.swing.worker.Worker;
+import org.cosinus.swing.worker.WorkerListener;
 
 import java.util.stream.Stream;
 
@@ -37,5 +40,17 @@ public class SaveWorker<T> extends PipelineWorker<SaveWorkerModel<T>, T, Progres
     @Override
     protected StreamConsumer<T> streamConsumer() {
         return workerModel.streamConsumer();
+    }
+
+    @Override
+    public SaveWorker<T> registerListener(WorkerListener<SaveWorkerModel<T>, T> workerListener) {
+        super.registerListener(workerListener);
+        return this;
+    }
+
+    @Override
+    public SaveWorker<T> registerListener(ProgressListener<ProgressModel> progressListener) {
+        super.registerListener(progressListener);
+        return this;
     }
 }

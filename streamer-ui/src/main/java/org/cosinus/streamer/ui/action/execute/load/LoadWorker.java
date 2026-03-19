@@ -18,8 +18,10 @@ package org.cosinus.streamer.ui.action.execute.load;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.view.StreamerView;
+import org.cosinus.swing.progress.ProgressListener;
 import org.cosinus.swing.progress.ProgressModel;
 import org.cosinus.swing.worker.StreamWorker;
+import org.cosinus.swing.worker.WorkerListener;
 
 /**
  * {@link javax.swing.SwingWorker} for loading a streamer
@@ -38,10 +40,6 @@ public class LoadWorker<T> extends StreamWorker<LoadWorkerModel<T>, T, ProgressM
 
         this.streamerToLoad = actionModel.getStreamerToLoad();
         this.streamerViewToLoadTo = actionModel.getStreamerViewToLoadTo();
-    }
-
-    protected LoadActionModel<T> getActionModel() {
-        return (LoadActionModel<T>) actionModel;
     }
 
     @Override
@@ -63,5 +61,17 @@ public class LoadWorker<T> extends StreamWorker<LoadWorkerModel<T>, T, ProgressM
     @Override
     public void afterPipelineClose(boolean pipelineFailed) {
         progressModel.finishProgress();
+    }
+
+    @Override
+    public LoadWorker<T> registerListener(WorkerListener<LoadWorkerModel<T>, T> workerListener) {
+        super.registerListener(workerListener);
+        return this;
+    }
+
+    @Override
+    public LoadWorker<T> registerListener(ProgressListener<ProgressModel> progressListener) {
+        super.registerListener(progressListener);
+        return this;
     }
 }

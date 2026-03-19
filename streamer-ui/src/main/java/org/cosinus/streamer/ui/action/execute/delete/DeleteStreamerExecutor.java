@@ -18,7 +18,6 @@ package org.cosinus.streamer.ui.action.execute.delete;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
-import org.cosinus.streamer.ui.action.progress.StreamersProgressModel;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.execute.ActionExecutor;
 import org.cosinus.swing.worker.WorkerExecutor;
@@ -32,8 +31,7 @@ import static org.cosinus.streamer.ui.action.DeleteStreamerAction.DELETE_STREAME
  * Implementation of {@link ActionExecutor} for deleting streamers based on {@link DeleteWorker}
  */
 @Component
-public class DeleteStreamerExecutor
-    extends WorkerExecutor<DeleteActionModel, WorkerModel<Streamer<?>>, Streamer<?>, StreamersProgressModel> {
+public class DeleteStreamerExecutor extends WorkerExecutor<DeleteActionModel, DeleteWorker> {
 
     protected final ProgressFormHandler progressFormHandler;
 
