@@ -48,7 +48,7 @@ public class FindStreamerPanel<S extends Streamer<S>> extends FindPanel {
     @Autowired
     private StreamerViewHandler streamerViewHandler;
 
-    private final StreamerView<?, ?> streamerView;
+    private final StreamerView<?> streamerView;
 
     private FindTextField streamerContentFindTextField;
 
@@ -56,7 +56,7 @@ public class FindStreamerPanel<S extends Streamer<S>> extends FindPanel {
 
     private Button findButton;
 
-    public FindStreamerPanel(StreamerView<?, ?> streamerView) {
+    public FindStreamerPanel(StreamerView<?> streamerView) {
         this.streamerView = streamerView;
     }
 
@@ -111,8 +111,8 @@ public class FindStreamerPanel<S extends Streamer<S>> extends FindPanel {
                 streamerContentFindTextField.getControlValue(),
                 deepInsideCheckBox.isSelected());
 
-            final StreamerView<?, ?> currentView = streamerViewHandler.getCurrentView();
-            LoadActionModel<SearchStreamer<S>, SearchStreamer<S>> loadActionModel =
+            final StreamerView<?> currentView = streamerViewHandler.getCurrentView();
+            LoadActionModel<SearchStreamer<S>> loadActionModel =
                 new LoadActionModel<>(currentView.getCurrentLocation(), searchStreamer);
             loadActionExecutor.execute(loadActionModel);
         }

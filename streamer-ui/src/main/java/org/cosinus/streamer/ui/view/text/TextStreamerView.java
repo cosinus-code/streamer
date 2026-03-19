@@ -15,14 +15,15 @@
  */
 package org.cosinus.streamer.ui.view.text;
 
+import lombok.Getter;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
-import org.cosinus.swing.worker.WorkerListener;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.FindPanel;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.swing.form.ScrollPane;
+import org.cosinus.swing.worker.WorkerListener;
 
 import java.awt.*;
 import java.util.List;
@@ -34,7 +35,7 @@ import static java.util.Optional.ofNullable;
 /**
  * Text streamer view
  */
-public class TextStreamerView extends StreamerView<String, String> {
+public class TextStreamerView extends StreamerView<String> {
 
     public static final String TEXT_EDITOR = "text-editor";
 
@@ -44,9 +45,8 @@ public class TextStreamerView extends StreamerView<String, String> {
 
     public static final String STATUS_DIRTY_TEXT_SIZE = "status-dirty-text-size";
 
+    @Getter
     private final TextStreamerEditor textEditor;
-
-    private WorkerListener<SaveTextWorkerModel, String> saveListener;
 
     public TextStreamerView(PanelLocation location) {
         super(location);
@@ -67,24 +67,6 @@ public class TextStreamerView extends StreamerView<String, String> {
         streamerViewMainPanel.add(scroll, CENTER);
 
         textEditor.initComponent();
-        this.saveListener = new WorkerListener<>() {
-            @Override
-            public void workerStarted(SaveTextWorkerModel saveTextModel) {
-                loadingIndicator.startLoading(saveTextModel.totalItemsToSave());
-            }
-
-            @Override
-            public void workerUpdated(SaveTextWorkerModel saveTextModel) {
-                loadingIndicator.updateLoading(saveTextModel.getSavedItemsCount(), saveTextModel.totalItemsToSave());
-            }
-
-            @Override
-            public void workerFinished(SaveTextWorkerModel workerModel) {
-                textEditor.setDirty(false);
-                loadingIndicator.finishLoading();
-            }
-        };
-
     }
 
     @Override
@@ -125,26 +107,15 @@ public class TextStreamerView extends StreamerView<String, String> {
     }
 
     @Override
-    public void workerStarted(LoadWorkerModel<String> loadWorkerModel) {
-        super.workerStarted(loadWorkerModel);
-        textEditor.setDirty(false);
-        textEditor.setLoading(true);
-    }
-
-    @Override
-    public void workerFinished(LoadWorkerModel<String> loadWorkerModel) {
-        super.workerFinished(loadWorkerModel);
-        textEditor.setCaretPosition(0);
-        textEditor.requestFocus();
-        textEditor.setDirty(false);
-        textEditor.setLoading(false);
-    }
-
-    @Override
     public boolean isDirty() {
         return super.isDirty() || ofNullable(textEditor)
             .map(TextStreamerEditor::isDirty)
             .orElse(false);
+    }
+
+    @Override
+    public TextStreamerViewLoadWorkerListener getLoadWorkerListener() {
+        return new TextStreamerViewLoadWorkerListener(this);
     }
 
     @Override
@@ -154,7 +125,23 @@ public class TextStreamerView extends StreamerView<String, String> {
 
     @Override
     public WorkerListener<SaveTextWorkerModel, String> getSaveListener() {
-        return saveListener;
+        return new WorkerListener<>() {
+            @Override
+            public void workerStarted(SaveTextWorkerModel saveTextModel) {
+                loadingIndicator.startLoading(saveTextModel.totalItemsToSave());
+            }
+
+            @Override
+            public void workerUpdated(SaveTextWorkerModel saveTextModel) {
+                loadingIndicator.updateLoading(saveTextModel.getSavedItemsCount(), saveTextModel.totalItemsToSave());
+            }
+
+            @Override
+            public void workerFinished(SaveTextWorkerModel workerModel) {
+                textEditor.setDirty(false);
+                loadingIndicator.finishLoading();
+            }
+        };
     }
 
     @Override

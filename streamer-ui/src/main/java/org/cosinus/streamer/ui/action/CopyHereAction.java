@@ -42,7 +42,7 @@ public class CopyHereAction extends DragHereAction {
     @Override
     protected ActionModel createActionModel(final List<Streamer<?>> streamerToCopy,
                                             final ParentStreamer<?> source,
-                                            final StreamerView<?, ?> destinationView,
+                                            final StreamerView<?> destinationView,
                                             final ParentStreamer<?> destination) {
         return copy(streamerToCopy)
             .from(source)

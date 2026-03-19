@@ -53,7 +53,7 @@ public class MoveHereAction extends DragHereAction {
     @Override
     protected ActionModel createActionModel(final List<Streamer<?>> streamersToMove,
                                             final ParentStreamer<?> source,
-                                            final StreamerView<?, ?> destinationView,
+                                            final StreamerView<?> destinationView,
                                             final ParentStreamer<?> destination) {
         return move()
             .streamers(streamersToMove)

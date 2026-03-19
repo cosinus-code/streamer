@@ -40,7 +40,7 @@ public class MoveActionModel extends CopyActionModel {
     }
 
     @Override
-    public MoveActionModel from(StreamerView<?, ?> sourceView) {
+    public MoveActionModel from(StreamerView<?> sourceView) {
         super.from(sourceView);
         return this;
     }
@@ -52,13 +52,13 @@ public class MoveActionModel extends CopyActionModel {
     }
 
     @Override
-    public MoveActionModel to(ParentStreamer<?> destination, StreamerView<?, ?> destinationView) {
+    public MoveActionModel to(ParentStreamer<?> destination, StreamerView<?> destinationView) {
         super.to(destination, destinationView);
         return this;
     }
 
     @Override
-    public MoveActionModel to(StreamerView<?, ?> destinationView) {
+    public MoveActionModel to(StreamerView<?> destinationView) {
         super.to(destinationView);
         return this;
     }

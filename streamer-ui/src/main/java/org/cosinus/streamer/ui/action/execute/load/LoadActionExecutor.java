@@ -59,7 +59,7 @@ import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
  * Implementation of {@link ActionExecutor} based on {@link LoadWorker}
  */
 @Component
-public class LoadActionExecutor<T, V> extends WorkerExecutor<LoadActionModel<T, V>, LoadWorkerModel<V>, V, ProgressModel> {
+public class LoadActionExecutor<T, V> extends WorkerExecutor<LoadActionModel<T>, LoadWorkerModel<V>, V, ProgressModel> {
 
     private final StreamerViewHandler streamerViewHandler;
 
@@ -92,7 +92,7 @@ public class LoadActionExecutor<T, V> extends WorkerExecutor<LoadActionModel<T, 
     }
 
     @Override
-    public void execute(LoadActionModel<T, V> actionModel) {
+    public void execute(LoadActionModel<T> actionModel) {
         if (actionModel instanceof LoadImageActionModel loadImageActionModel) {
             super.execute((LoadActionModel) loadImageActionModel);
             return;
@@ -103,13 +103,13 @@ public class LoadActionExecutor<T, V> extends WorkerExecutor<LoadActionModel<T, 
             (Streamer<T>) actionModel.getInitialStreamerToLoad());
 
         Streamer<T> streamerToLoad = actionModel.getStreamerToLoad();
-        StreamerView<T, T> currentStreamerView = (StreamerView<T, T>) streamerViewHandler.getCurrentView();
+        StreamerView<T> currentStreamerView = (StreamerView<T>) streamerViewHandler.getCurrentView();
         if (isCurrentStreamerViewDirty() && !streamerToLoad.isDirty() && !isCurrentStreamerSaving() && shouldSave()) {
             saveWorkerExecutor.execute(new SaveActionModel<>(currentStreamerView));
             return;
         }
 
-        StreamerView<T, V> streamerViewToLoadTo = streamerViewHandler.createStreamerView(
+        StreamerView<T> streamerViewToLoadTo = streamerViewHandler.createStreamerView(
             actionModel.getLocationToLoadTo(),
             ofNullable(actionModel.getStreamerViewNameToLoadIn())
                 .filter(viewName -> !streamerToLoad.isTextCompatible() || TEXT_EDITOR.equals(viewName))
@@ -152,24 +152,23 @@ public class LoadActionExecutor<T, V> extends WorkerExecutor<LoadActionModel<T, 
     }
 
     @Override
-    protected Worker createWorker(final LoadActionModel<T, V> actionModel) {
-        if (actionModel instanceof LoadImageActionModel loadImageActionModel) {
-            return new LoadImageWorker(loadImageActionModel);
-        }
-
-        actionModel
+    protected Worker createWorker(final LoadActionModel<T> loadActionModel) {
+        loadActionModel
             .getStreamerViewToLoadTo()
             .getLoadWorkerModel()
-            .setContentIdentifier(actionModel.getItemToSelectAfterLoad());
+            .setContentIdentifier(loadActionModel.getItemToSelectAfterLoad());
 
-        LoadActionModel<V, V> loadActionModel = (LoadActionModel<V, V>) actionModel;
-        return new LoadWorker<>(loadActionModel)
-            .registerListener(actionModel.getStreamerViewToLoadTo())
-            .registerListener(createWorkerFinishListener(actionModel))
-            .registerListener(actionModel.getStreamerViewToLoadTo().getLoadingIndicator());
+        Worker worker = loadActionModel instanceof LoadImageActionModel loadImageActionModel ?
+            new LoadImageWorker(loadImageActionModel) :
+            new LoadWorker<>(loadActionModel);
+
+        return worker
+            .registerListener(loadActionModel.getStreamerViewToLoadTo().getLoadWorkerListener())
+            .registerListener(createWorkerFinishListener(loadActionModel))
+            .registerListener(loadActionModel.getStreamerViewToLoadTo().getLoadingIndicator());
     }
 
-    protected WorkerListener createWorkerFinishListener(final LoadActionModel<T, V> actionModel) {
+    protected WorkerListener createWorkerFinishListener(final LoadActionModel<T> actionModel) {
         return new WorkerListener() {
             @Override
             public void workerFinished(WorkerModel workerModel) {

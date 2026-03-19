@@ -37,7 +37,7 @@ public class SaveWorkerExecutor<T> extends WorkerExecutor<SaveActionModel<T>, Sa
     @Override
     protected Worker<SaveWorkerModel<T>, T, ProgressModel> createWorker(SaveActionModel<T> actionModel) {
         Streamer<T> streamerToSave = actionModel.getStreamerView().getParentStreamer();
-        StreamerView<T, T> streamerView = actionModel.getStreamerView();
+        StreamerView<T> streamerView = actionModel.getStreamerView();
 
         SaveWorkerModel<T> saveWorkerModel = ofNullable(streamerToSave)
             .filter(Streamer::isParent)

@@ -64,8 +64,8 @@ public class MoveStreamerAction extends AbstractCopyAction<MoveActionModel> {
 
     @Override
     public MoveActionModel createActionModel() {
-        final StreamerView<?, ?> sourceStreamerView = streamerViewHandler.getCurrentView();
-        final StreamerView<?, ?> destinationStreamerView = streamerViewHandler.getOppositeView();
+        final StreamerView<?> sourceStreamerView = streamerViewHandler.getCurrentView();
+        final StreamerView<?> destinationStreamerView = streamerViewHandler.getOppositeView();
 
         return move()
             .streamers(sourceStreamerView.getSelectedItems())

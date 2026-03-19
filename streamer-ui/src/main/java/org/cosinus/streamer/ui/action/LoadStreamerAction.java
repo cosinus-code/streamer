@@ -34,7 +34,7 @@ import static java.util.Optional.ofNullable;
  * Load streamer action
  */
 @Component
-public class LoadStreamerAction implements SwingActionWithModel<LoadActionModel<?, ?>> {
+public class LoadStreamerAction implements SwingActionWithModel<LoadActionModel<?>> {
 
     public static final String LOAD_STREAMER_ACTION_ID = "load-streamer";
 
@@ -53,13 +53,13 @@ public class LoadStreamerAction implements SwingActionWithModel<LoadActionModel<
     }
 
     @Override
-    public void run(LoadActionModel<?, ?> loadActionModel) {
+    public void run(LoadActionModel<?> loadActionModel) {
         loadActionExecutor.execute(loadActionModel);
     }
 
     @Override
-    public LoadActionModel<?, ?> createActionModel() {
-        StreamerView<?, ?> currentStreamerView = streamerViewHandler.getCurrentView();
+    public LoadActionModel<?> createActionModel() {
+        StreamerView<?> currentStreamerView = streamerViewHandler.getCurrentView();
         return ofNullable(currentStreamerView.getCurrentStreamer())
             .map(currentStreamer -> new LoadActionModel<>(
                 currentStreamerView.getCurrentLocation(),

@@ -77,7 +77,7 @@ public class FindAndLoadStreamerAction implements Runnable {
         dialogHandler.showInfo(translator.translate("no-streamer-found", urlPathSupplier.get()));
     }
 
-    private LoadActionModel<?, ?> createLoadActionModel(Streamer<?> streamerToLoad) {
+    private LoadActionModel<?> createLoadActionModel(Streamer<?> streamerToLoad) {
         return new LoadActionModel<>(streamerViewHandler.getCurrentLocation(), streamerToLoad, null);
     }
 

@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.ui.view.image;
 
+import lombok.Getter;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
@@ -27,6 +28,7 @@ import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.form.ScrollPane;
 import org.cosinus.swing.image.UpdatableImage;
+import org.cosinus.swing.worker.WorkerListener;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
@@ -52,7 +54,7 @@ import static org.cosinus.streamer.ui.action.GoToParentStreamerAction.GO_TO_PARE
 /**
  * Image streamer view
  */
-public class ImageStreamerView extends StreamerView<byte[], UpdatableImage> {
+public class ImageStreamerView extends StreamerView<byte[]> {
 
     public static final String IMAGE_VIEWER = "image-viewer";
 
@@ -67,6 +69,7 @@ public class ImageStreamerView extends StreamerView<byte[], UpdatableImage> {
     @Autowired
     private LoadActionExecutor loadImageExecutor;
 
+    @Getter
     private ImagePanel imagePanel;
 
     private List<BinaryStreamer> imageStreamers;
@@ -174,15 +177,8 @@ public class ImageStreamerView extends StreamerView<byte[], UpdatableImage> {
     }
 
     @Override
-    public void workerUpdated(LoadWorkerModel<UpdatableImage> loadWorkerModel) {
-        super.workerUpdated(loadWorkerModel);
-        imagePanel.repaint();
-    }
-
-    @Override
-    public void workerFinished(LoadWorkerModel<UpdatableImage> loadWorkerModel) {
-        super.workerFinished(loadWorkerModel);
-        imagePanel.finish();
+    public ImageStreamerViewLoadWorkerListener getLoadWorkerListener() {
+        return new ImageStreamerViewLoadWorkerListener(this);
     }
 
     @Override

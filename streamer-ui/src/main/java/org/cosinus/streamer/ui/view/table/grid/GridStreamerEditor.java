@@ -90,7 +90,7 @@ public class GridStreamerEditor<T extends Streamable> implements StreamerEditor<
     }
 
     @Override
-    public StreamerView<T, T> getView() {
+    public StreamerView<T> getView() {
         return view;
     }
 

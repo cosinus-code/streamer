@@ -26,7 +26,7 @@ import static org.cosinus.streamer.ui.action.LoadStreamerAction.LOAD_STREAMER_AC
 /**
  * Encapsulates the model of the load streamer action
  */
-public class LoadActionModel<T, V> implements ActionModel {
+public class LoadActionModel<T> implements ActionModel {
 
     protected final PanelLocation locationToLoadTo;
 
@@ -40,7 +40,7 @@ public class LoadActionModel<T, V> implements ActionModel {
 
     protected Streamer<T> streamerToLoad;
 
-    protected StreamerView<T, V> streamerViewToLoadTo;
+    protected StreamerView<T> streamerViewToLoadTo;
 
     public LoadActionModel(final PanelLocation locationToLoadTo,
                            final Streamer<?> initialStreamerToLoad) {
@@ -68,7 +68,7 @@ public class LoadActionModel<T, V> implements ActionModel {
     }
 
     public LoadActionModel(final Streamer<T> streamerToLoad,
-                           final StreamerView<T, V> streamerViewToLoadTo) {
+                           final StreamerView<T> streamerViewToLoadTo) {
         this(streamerViewToLoadTo.getCurrentLocation(), streamerToLoad, null, null, false);
         this.streamerToLoad = streamerToLoad;
         this.streamerViewToLoadTo = streamerViewToLoadTo;
@@ -106,11 +106,11 @@ public class LoadActionModel<T, V> implements ActionModel {
         return expanding;
     }
 
-    public StreamerView<T, V> getStreamerViewToLoadTo() {
+    public StreamerView<T> getStreamerViewToLoadTo() {
         return streamerViewToLoadTo;
     }
 
-    public void setStreamerViewToLoadTo(StreamerView<T, V> streamerViewToLoadTo) {
+    public void setStreamerViewToLoadTo(StreamerView<T> streamerViewToLoadTo) {
         this.streamerViewToLoadTo = streamerViewToLoadTo;
     }
 

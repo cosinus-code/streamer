@@ -34,7 +34,7 @@ public class ParentStreamerViewContext<T extends Streamer<T>> {
     @Getter
     private final List<Streamer<T>> selectedItems;
 
-    public ParentStreamerViewContext(final StreamerView<T, T> streamerView) {
+    public ParentStreamerViewContext(final StreamerView<T> streamerView) {
         if (!streamerView.getParentStreamer().isParent()) {
             throw new StreamerException("Cannot create parent streamer context for a non parent streamer");
         }

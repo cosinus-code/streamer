@@ -80,7 +80,7 @@ public class StreamerPanel extends Panel {
 
     private NoBorderButton showFavoritesButton;
 
-    private StreamerView<?, ?> view;
+    private StreamerView<?> view;
 
     public StreamerPanel() {
         this.addressTop = new TextField();
@@ -173,7 +173,7 @@ public class StreamerPanel extends Panel {
             });
     }
 
-    public void setView(StreamerView<?, ?> view) {
+    public void setView(StreamerView<?> view) {
         if (this.view == view) {
             return;
         }
@@ -222,7 +222,7 @@ public class StreamerPanel extends Panel {
             "add-as-favorite"));
     }
 
-    public StreamerView<?, ?> getView() {
+    public StreamerView<?> getView() {
         return view;
     }
 

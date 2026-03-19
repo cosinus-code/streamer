@@ -21,7 +21,7 @@ import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.view.image.ImageStreamerView;
 import org.cosinus.swing.image.UpdatableImage;
 
-public class LoadImageActionModel extends LoadActionModel<byte[], UpdatableImage> {
+public class LoadImageActionModel extends LoadActionModel<byte[]> {
 
     public static final String LOAD_IMAGE_ACTION_ID = "load-image-streamer";
 

@@ -64,7 +64,7 @@ public class GoToLinkedStreamerAction implements SwingAction {
 
     @Override
     public void run() {
-        StreamerView<?, ?> currentStreamerView = streamerViewHandler.getCurrentView();
+        StreamerView<?> currentStreamerView = streamerViewHandler.getCurrentView();
         ofNullable(currentStreamerView.getCurrentStreamer())
             .filter(Streamer::isLink)
             .map(Streamer::getLinkedStreamer)

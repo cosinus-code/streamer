@@ -34,11 +34,11 @@ public class LinkStreamersModel implements ActionModel {
 
     private List<Streamer<?>> streamersToLink;
 
-    private StreamerView<?, ?> sourceView;
+    private StreamerView<?> sourceView;
 
     private ParentStreamer<?> source;
 
-    private StreamerView<?, ?> destinationView;
+    private StreamerView<?> destinationView;
 
     private ParentStreamer<?> destination;
 
@@ -51,7 +51,7 @@ public class LinkStreamersModel implements ActionModel {
         return this;
     }
 
-    public LinkStreamersModel fromView(StreamerView<?, ?> sourceView) {
+    public LinkStreamersModel fromView(StreamerView<?> sourceView) {
         this.sourceView = sourceView;
         //TODO: to avoid cast
         this.source = (ParentStreamer<?>) sourceView.getParentStreamer();
@@ -63,7 +63,7 @@ public class LinkStreamersModel implements ActionModel {
         return this;
     }
 
-    public LinkStreamersModel toView(StreamerView<?, ?> destinationView) {
+    public LinkStreamersModel toView(StreamerView<?> destinationView) {
         this.destinationView = destinationView;
         //TODO: to avoid cast
         this.destination = (ParentStreamer<?>) destinationView.getParentStreamer();

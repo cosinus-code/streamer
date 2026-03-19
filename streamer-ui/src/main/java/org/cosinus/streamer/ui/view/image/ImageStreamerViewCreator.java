@@ -27,7 +27,7 @@ import static org.cosinus.streamer.ui.view.image.ImageStreamerView.IMAGE_VIEWER;
 public class ImageStreamerViewCreator implements StreamerViewCreator {
 
     @Override
-    public StreamerView<?, ?> createStreamerView(PanelLocation location) {
+    public StreamerView<?> createStreamerView(PanelLocation location) {
         return new ImageStreamerView(location);
     }
 

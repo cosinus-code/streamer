@@ -27,6 +27,7 @@ import java.util.*;
 
 import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
+import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toMap;
 import static org.cosinus.streamer.api.ParentStreamer.FOLDER_VIEW_ID;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.*;
@@ -82,7 +83,7 @@ public class StreamerViewHandler {
         }
     }
 
-    public StreamerView<?, ?> getCurrentView() {
+    public StreamerView<?> getCurrentView() {
         return getPanel(currentLocation)
             .map(StreamerPanel::getView)
             .orElse(null);
@@ -93,7 +94,7 @@ public class StreamerViewHandler {
             .ifPresent(view -> view.setActive(location == currentLocation)));
     }
 
-    public <T, V> StreamerView<T, V> createStreamerView(PanelLocation location, String streamerViewName) {
+    public <T> StreamerView<T> createStreamerView(PanelLocation location, String streamerViewName) {
         Optional<String> resolvedViewName = ofNullable(streamerViewName)
             .filter(viewName -> !viewName.equals(FOLDER_VIEW_ID))
             .or(() -> getPreferredViewName(location));
@@ -101,11 +102,11 @@ public class StreamerViewHandler {
         return resolvedViewName
             .map(streamerViewCreatorsMap::get)
             //TODO: to avoid cast
-            .map(streamerViewCreator -> (StreamerView<T, V>) streamerViewCreator.createStreamerView(location))
-            .orElseGet(() -> (StreamerView<T, V>) defaultStreamerViewCreator.createStreamerView(location));
+            .map(streamerViewCreator -> (StreamerView<T>) streamerViewCreator.createStreamerView(location))
+            .orElseGet(() -> (StreamerView<T>) defaultStreamerViewCreator.createStreamerView(location));
     }
 
-    public <T, V> void setView(PanelLocation location, final StreamerView<T, V> view) {
+    public <T> void setView(PanelLocation location, final StreamerView<T> view) {
         getPanel(location)
             .ifPresent(panel -> panel.setView(view));
     }
@@ -178,5 +179,11 @@ public class StreamerViewHandler {
 
     public TableStreamerView<?> getDragAndDropSourceView() {
         return dragAndDropSourceView;
+    }
+
+    public void ensureFocusOnCurrentView() {
+        ofNullable(getCurrentView())
+            .filter(not(StreamerView::hasFocus))
+            .ifPresent(StreamerView::requestFocus);
     }
 }

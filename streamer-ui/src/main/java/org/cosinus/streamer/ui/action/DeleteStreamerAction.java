@@ -87,7 +87,7 @@ public class DeleteStreamerAction implements SwingActionWithModel<DeleteActionMo
 
     @Override
     public DeleteActionModel createActionModel() {
-        final StreamerView<?, ?> currentView = streamerViewHandler.getCurrentView();
+        final StreamerView<?> currentView = streamerViewHandler.getCurrentView();
         if (!isEmpty(currentView.getSelectedItems()) &&
             currentView.getParentStreamer().isParent()) {
 

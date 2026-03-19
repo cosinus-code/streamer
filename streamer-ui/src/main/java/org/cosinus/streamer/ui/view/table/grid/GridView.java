@@ -59,7 +59,7 @@ public class GridView<T extends Streamable> extends TableStreamerView<T> {
             public void workerFinished(SaveWorkerModel<T> saveModel) {
                 loadingIndicator.finishLoading();
                 saveModel.setDirty(false);
-                updateAddressBarAndStreamerPanel();
+                updateStreamerViewIdentifiers();
             }
         };
 

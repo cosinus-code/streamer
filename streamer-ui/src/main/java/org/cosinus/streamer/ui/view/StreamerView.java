@@ -54,7 +54,7 @@ import static org.cosinus.streamer.ui.view.text.TextStreamerView.DIRTY_TEXT_MARK
 import static org.cosinus.swing.border.Borders.emptyBorder;
 import static org.cosinus.swing.file.FileHandler.PROTOCOL_MARK;
 
-public abstract class StreamerView<T, V> extends Panel implements WorkerListener<LoadWorkerModel<V>, V> {
+public abstract class StreamerView<T> extends Panel {
 
     @Autowired
     private Preferences preferences;
@@ -218,29 +218,7 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
         return loadingIndicator;
     }
 
-    @Override
-    public void workerStarted(LoadWorkerModel<V> loadWorkerModel) {
-        requestFocus();
-    }
-
-    @Override
-    public void workerUpdated(LoadWorkerModel<V> loadWorkerModel) {
-        updateStatus();
-    }
-
-    @Override
-    public void workerFinished(LoadWorkerModel<V> loadWorkerModel) {
-        updateAddressBarAndStreamerPanel();
-
-        streamerViewStorage.saveLastLoadedStreamer(this.getParentStreamer(), getCurrentLocation());
-
-        StreamerView<?, ?> currentView = streamerViewHandler.getCurrentView();
-        if (currentView != null && !currentView.hasFocus()) {
-            currentView.requestFocus();
-        }
-    }
-
-    public void updateAddressBarAndStreamerPanel() {
+    public void updateStreamerViewIdentifiers() {
         getStreamerAddress().ifPresent(address -> {
             addressBar.setAddress(address);
             getPanel().ifPresent(panel -> {
@@ -287,7 +265,7 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
         getPanel().ifPresent(panel -> {
             panel.setEnabled(active);
             if (active) {
-                updateAddressBarAndStreamerPanel();
+                updateStreamerViewIdentifiers();
             }
         });
     }
@@ -310,6 +288,14 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
 
     public void findContent(String name) {
 
+    }
+
+    protected void saveStreamerViewSnapshot() {
+        streamerViewStorage.saveLastLoadedStreamer(this.getParentStreamer(), getCurrentLocation());
+    }
+
+    public <V> WorkerListener<LoadWorkerModel<V>, V> getLoadWorkerListener() {
+        return new StreamerViewLoadWorkerListener<>(this);
     }
 
     public SaveWorkerModel<T> getSaveWorkerModel() {
@@ -369,7 +355,7 @@ public abstract class StreamerView<T, V> extends Panel implements WorkerListener
 
     public abstract String getNextItemIdentifier();
 
-    public abstract LoadWorkerModel<V> getLoadWorkerModel();
+    public abstract <V> LoadWorkerModel<V> getLoadWorkerModel();
 
     protected abstract Container getContainer();
 }

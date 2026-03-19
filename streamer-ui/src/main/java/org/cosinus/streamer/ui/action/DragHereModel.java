@@ -30,7 +30,7 @@ public class DragHereModel implements ActionModel {
     public static final String DRAG_HERE_ID = "drag-here";
 
     @Getter
-    private StreamerView<?, ?> destinationView;
+    private StreamerView<?> destinationView;
 
     @Getter
     private final List<String> paths;

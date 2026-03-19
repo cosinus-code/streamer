@@ -56,7 +56,7 @@ public class CreateStreamerAction implements SwingAction {
 
     @Override
     public void run() {
-        StreamerView<?, ?> currentView = streamerViewHandler.getCurrentView();
+        StreamerView<?> currentView = streamerViewHandler.getCurrentView();
         if (currentView.getParentStreamer() instanceof ParentStreamer<?> parent) {
             if (!parent.canUpdate()) {
                 return;

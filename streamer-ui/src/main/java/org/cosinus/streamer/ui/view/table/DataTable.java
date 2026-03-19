@@ -77,7 +77,7 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
     @Autowired
     private MenuHandler menuHandler;
 
-    protected StreamerView<T, T> view;
+    protected StreamerView<T> view;
 
     //TODO
     protected boolean ctrlDown, shiftDown, altDown;
@@ -163,7 +163,7 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
     public void focusLost(FocusEvent e) {
     }
 
-    public void init(StreamerView<T, T> view) {
+    public void init(StreamerView<T> view) {
         this.view = view;
     }
 

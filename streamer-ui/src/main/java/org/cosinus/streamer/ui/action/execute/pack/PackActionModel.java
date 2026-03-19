@@ -53,7 +53,7 @@ public class PackActionModel extends CopyActionModel {
     }
 
     @Override
-    public PackActionModel from(StreamerView<?, ?> sourceView) {
+    public PackActionModel from(StreamerView<?> sourceView) {
         super.from(sourceView);
         return this;
     }
@@ -65,13 +65,13 @@ public class PackActionModel extends CopyActionModel {
     }
 
     @Override
-    public PackActionModel to(ParentStreamer<?> destination, StreamerView<?, ?> destinationView) {
+    public PackActionModel to(ParentStreamer<?> destination, StreamerView<?> destinationView) {
         super.to(destination, destinationView);
         return this;
     }
 
     @Override
-    public PackActionModel to(StreamerView<?, ?> destinationView) {
+    public PackActionModel to(StreamerView<?> destinationView) {
         super.to(destinationView);
         return this;
     }

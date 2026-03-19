@@ -52,7 +52,7 @@ public class PackHereAction extends DragHereAction {
     @Override
     protected ActionModel createActionModel(final List<Streamer<?>> streamers,
                                             final ParentStreamer<?> source,
-                                            final StreamerView<?, ?> destinationView,
+                                            final StreamerView<?> destinationView,
                                             final ParentStreamer<?> destination) {
         return pack(streamers)
             .as(expanderHandler.getDefaultPacker())

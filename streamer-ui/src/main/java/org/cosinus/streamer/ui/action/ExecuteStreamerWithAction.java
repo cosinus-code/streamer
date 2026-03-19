@@ -67,7 +67,7 @@ public class ExecuteStreamerWithAction implements SwingAction {
 
     @Override
     public void run() {
-        StreamerView<?, ?> streamerView = streamerViewHandler.getCurrentView();
+        StreamerView<?> streamerView = streamerViewHandler.getCurrentView();
         ofNullable(streamerView.getCurrentStreamerOrParent())
             .filter(not(Streamer::isParent))
             .map(Streamer::getPath)

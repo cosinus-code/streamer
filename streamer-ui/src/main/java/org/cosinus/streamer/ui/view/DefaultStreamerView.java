@@ -21,7 +21,7 @@ import org.cosinus.streamer.api.Streamer;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 
-public abstract class DefaultStreamerView<T extends Streamable> extends StreamerView<T, T> {
+public abstract class DefaultStreamerView<T extends Streamable> extends StreamerView<T> {
 
     protected StreamerEditor<T> streamerEditor;
 

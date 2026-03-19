@@ -57,7 +57,7 @@ public class ShowPermissionsAction implements SwingAction {
 
     @Override
     public void run() {
-        StreamerView<?, ?> streamerView = streamerViewHandler.getCurrentView();
+        StreamerView<?> streamerView = streamerViewHandler.getCurrentView();
         ofNullable(streamerView.getCurrentStreamer())
             .ifPresent(this::showStreamerPermissionsDialog);
     }

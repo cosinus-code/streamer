@@ -50,7 +50,7 @@ public class ExecuteStreamerAction implements SwingAction {
 
     @Override
     public void run() {
-        StreamerView<?, ?> streamerView = streamerViewHandler.getCurrentView();
+        StreamerView<?> streamerView = streamerViewHandler.getCurrentView();
         ofNullable(streamerView.getCurrentStreamer())
             .ifPresent(streamerToExecute -> {
                 if (streamerToExecute.isParent()) {

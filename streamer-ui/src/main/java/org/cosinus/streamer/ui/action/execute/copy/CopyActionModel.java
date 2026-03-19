@@ -53,13 +53,13 @@ public class CopyActionModel implements ActionModel, UIModel {
     private List<?> streamersToCopy;
 
     @Getter
-    private StreamerView<?, ?> sourceView;
+    private StreamerView<?> sourceView;
 
     @Getter
     private ParentStreamer<?> source;
 
     @Getter
-    private StreamerView<?, ?> destinationView;
+    private StreamerView<?> destinationView;
 
     @Getter
     private ParentStreamer<?> destination;
@@ -99,7 +99,7 @@ public class CopyActionModel implements ActionModel, UIModel {
         return this;
     }
 
-    public CopyActionModel from(StreamerView<?, ?> sourceView) {
+    public CopyActionModel from(StreamerView<?> sourceView) {
         this.sourceView = sourceView;
         //TODO: to avoid cast
         this.source = (ParentStreamer<?>) sourceView.getParentStreamer();
@@ -111,14 +111,14 @@ public class CopyActionModel implements ActionModel, UIModel {
         return this;
     }
 
-    public CopyActionModel to(ParentStreamer<?> destination, StreamerView<?, ?> destinationView) {
+    public CopyActionModel to(ParentStreamer<?> destination, StreamerView<?> destinationView) {
         this.destinationView = destinationView;
         this.destination = destination;
         this.targetPath = destination.getPath();
         return this;
     }
 
-    public CopyActionModel to(StreamerView<?, ?> destinationView) {
+    public CopyActionModel to(StreamerView<?> destinationView) {
         this.destinationView = destinationView;
         //TODO: to avoid cast
         this.destination = (ParentStreamer<?>) destinationView.getParentStreamer();

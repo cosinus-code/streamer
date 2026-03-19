@@ -100,7 +100,7 @@ public class IconCellEditor<T extends Streamable> implements StreamerEditor<T>, 
     }
 
     @Override
-    public StreamerView<T, T> getView() {
+    public StreamerView<T> getView() {
         return view;
     }
 

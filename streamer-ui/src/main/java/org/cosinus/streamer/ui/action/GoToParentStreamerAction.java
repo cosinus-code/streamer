@@ -55,7 +55,7 @@ public class GoToParentStreamerAction implements SwingAction {
 
     @Override
     public void run() {
-        StreamerView<?, ?> currentStreamerView = streamerViewHandler.getCurrentView();
+        StreamerView<?> currentStreamerView = streamerViewHandler.getCurrentView();
         ofNullable(currentStreamerView.getParentStreamer())
             .map(Streamer::getParent)
             .map(parent -> new LoadActionModel(

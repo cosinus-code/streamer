@@ -27,6 +27,7 @@ import org.cosinus.streamer.ui.view.FindPanel;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.swing.form.ScrollPane;
 import org.cosinus.swing.menu.PopupMenu;
+import org.cosinus.swing.worker.WorkerListener;
 import org.cosinus.swing.worker.WorkerModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -216,29 +217,8 @@ public abstract class TableStreamerView<T extends Streamable>
     }
 
     @Override
-    public void workerStarted(LoadWorkerModel<T> loadWorkerModel) {
-        getDataTableModel().fireContentChanged();
-        super.workerStarted(loadWorkerModel);
-    }
-
-    @Override
-    public void workerUpdated(LoadWorkerModel<T> loadWorkerModel) {
-        getDataTableModel().fireContentChanged();
-        super.workerUpdated(loadWorkerModel);
-    }
-
-    @Override
-    public void workerFinished(LoadWorkerModel<T> loadWorkerModel) {
-        super.workerFinished(loadWorkerModel);
-        if (isActive()) {
-            ofNullable(loadWorkerModel.getContentIdentifier())
-                .ifPresent(this::findContent);
-            if (table.getCurrentIndex() < 0) {
-                table.setCurrentIndex(0, true);
-            } else if (table.getCurrentIndex() >= table.getItemsCount()) {
-                table.setCurrentIndex(table.getItemsCount() - 1, true);
-            }
-        }
+    public <V> WorkerListener<LoadWorkerModel<V>, V> getLoadWorkerListener() {
+        return new TableStreamerViewLoadWorkerListener<>(this);
     }
 
     @Override

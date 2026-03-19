@@ -49,7 +49,7 @@ public class LinkHereAction extends DragHereAction {
     @Override
     protected ActionModel createActionModel(final List<Streamer<?>> streamers,
                                             final ParentStreamer<?> source,
-                                            final StreamerView<?, ?> destinationView,
+                                            final StreamerView<?> destinationView,
                                             final ParentStreamer<?> destination) {
         return link()
             .streamers(streamers)

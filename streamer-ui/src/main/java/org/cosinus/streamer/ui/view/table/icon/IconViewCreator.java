@@ -29,7 +29,7 @@ import static org.cosinus.streamer.ui.view.table.icon.IconView.ICON_VIEW_NAME;
 public class IconViewCreator implements StreamerViewCreator {
 
     @Override
-    public StreamerView<?, ?> createStreamerView(PanelLocation location) {
+    public StreamerView<?> createStreamerView(PanelLocation location) {
         return new IconView<>(location);
     }
 

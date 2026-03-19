@@ -86,6 +86,6 @@ public abstract class DragHereAction implements SwingActionWithModel<DragHereMod
 
     protected abstract ActionModel createActionModel(List<Streamer<?>> streamers,
                                                      ParentStreamer<?> source,
-                                                     StreamerView<?, ?> destinationView,
+                                                     StreamerView<?> destinationView,
                                                      ParentStreamer<?> destination);
 }

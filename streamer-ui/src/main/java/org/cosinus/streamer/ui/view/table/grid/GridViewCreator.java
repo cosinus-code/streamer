@@ -27,7 +27,7 @@ import static org.cosinus.streamer.ui.view.table.grid.GridView.GRID_VIEW_NAME;
 public class GridViewCreator implements StreamerViewCreator {
 
     @Override
-    public StreamerView<?, ?> createStreamerView(PanelLocation location) {
+    public StreamerView<?> createStreamerView(PanelLocation location) {
         return new GridView<>(location);
     }
 

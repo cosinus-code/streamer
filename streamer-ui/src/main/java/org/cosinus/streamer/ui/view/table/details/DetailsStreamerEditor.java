@@ -85,7 +85,7 @@ public class DetailsStreamerEditor<T extends Streamable> implements StreamerEdit
     }
 
     @Override
-    public StreamerView<T, T> getView() {
+    public StreamerView<T> getView() {
         return view;
     }
 
