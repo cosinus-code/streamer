@@ -31,7 +31,7 @@ import java.util.List;
 import static org.cosinus.streamer.ui.action.execute.link.LinkStreamersModel.link;
 
 @Component
-public class LinkHereAction extends DragHereAction {
+public class LinkHereAction extends DoHereAction {
 
     public static final String LINK_HERE_ACTION_ID = "link-here";
 

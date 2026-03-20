@@ -30,7 +30,7 @@ import java.util.List;
 import static org.cosinus.streamer.ui.action.execute.copy.CopyActionModel.copy;
 
 @Component
-public class CopyHereAction extends DragHereAction {
+public class CopyHereAction extends DoHereAction {
 
     public static final String COPY_HERE_ACTION_ID = "copy-here";
 

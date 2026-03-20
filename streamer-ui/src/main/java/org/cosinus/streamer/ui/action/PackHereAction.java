@@ -31,7 +31,7 @@ import java.util.List;
 import static org.cosinus.streamer.ui.action.execute.pack.PackActionModel.pack;
 
 @Component
-public class PackHereAction extends DragHereAction {
+public class PackHereAction extends DoHereAction {
 
     public static final String PACK_HERE_ACTION_ID = "pack-here";
 

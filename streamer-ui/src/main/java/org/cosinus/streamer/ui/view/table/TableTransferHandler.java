@@ -20,8 +20,12 @@ package org.cosinus.streamer.ui.view.table;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.cosinus.streamer.api.Streamable;
+import org.cosinus.streamer.ui.action.DoHereModel;
+import org.cosinus.streamer.ui.action.execute.delete.DeleteStreamerExecutor;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
+import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.file.PathListTransferable;
+import org.cosinus.swing.file.PathListTransferable.PathListTransferData;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
@@ -41,15 +45,23 @@ import static java.lang.System.lineSeparator;
 import static java.util.Arrays.stream;
 import static java.util.Optional.empty;
 import static java.util.function.Predicate.not;
+import static org.cosinus.streamer.ui.action.CopyHereAction.COPY_HERE_ACTION_ID;
+import static org.cosinus.streamer.ui.action.MoveHereAction.MOVE_HERE_ACTION_ID;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
-import static org.cosinus.swing.file.PathListTransferable.PATH_FLAVORS;
 import static org.cosinus.swing.file.PathListTransferable.PATH_FLAVOR;
+import static org.cosinus.swing.file.PathListTransferable.PATH_FLAVORS;
 
 @Slf4j
 public class TableTransferHandler<T extends Streamable> extends TransferHandler {
 
     @Autowired
     private StreamerViewHandler streamerViewHandler;
+
+    @Autowired
+    private ActionController actionController;
+
+    @Autowired
+    private DeleteStreamerExecutor deleteExecutor;
 
     private final TableStreamerView<T> view;
 
@@ -83,13 +95,40 @@ public class TableTransferHandler<T extends Streamable> extends TransferHandler 
                 .or(() -> tryGetPaths(transferable, stringFlavor))
                 .filter(not(CollectionUtils::isEmpty))
                 .ifPresent(paths -> {
-                    Point dropPoint = support.getDropLocation().getDropPoint();
-                    view.showDragAndDropPopup(component, dropPoint, paths);
+                    if (support.isDrop()) {
+                        Point dropPoint = support.getDropLocation().getDropPoint();
+                        view.showDragAndDropPopup(component, dropPoint, paths);
+                    } else {
+                        actionController.runAction(
+                            isMoveTransfer(transferable) ? MOVE_HERE_ACTION_ID : COPY_HERE_ACTION_ID,
+                            DoHereModel
+                                .builder()
+                                .paths(paths)
+                                .destinationView(view)
+                                .useSelectedItemAsDestination(false)
+                                .build());
+                    }
                     imported.set(true);
                 });
         }
 
         return imported.get();
+    }
+
+    protected boolean isMoveTransfer(Transferable transferable) {
+        try {
+            return transferable.getTransferData(PATH_FLAVOR) instanceof PathListTransferData pathListTransferData &&
+                pathListTransferData.isMoveTransfer();
+        } catch (UnsupportedFlavorException | IOException e) {
+            return false;
+        }
+    }
+
+    @Override
+    protected void exportDone(JComponent source, Transferable transferable, int action) {
+        if (action == MOVE && transferable instanceof PathListTransferable pathListTransferable ) {
+            pathListTransferable.getPaths().setMoveTransfer(true);
+        }
     }
 
     @Override

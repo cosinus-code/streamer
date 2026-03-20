@@ -31,7 +31,7 @@ import java.util.List;
 import static org.cosinus.streamer.ui.action.execute.move.MoveActionModel.move;
 
 @Component
-public class MoveHereAction extends DragHereAction {
+public class MoveHereAction extends DoHereAction {
 
     public static final String MOVE_HERE_ACTION_ID = "move-here";
 

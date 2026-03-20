@@ -25,7 +25,7 @@ import org.cosinus.swing.action.execute.ActionModel;
 import java.util.List;
 
 @Builder
-public class DragHereModel implements ActionModel {
+public class DoHereModel implements ActionModel {
 
     public static final String DRAG_HERE_ID = "drag-here";
 
@@ -34,6 +34,9 @@ public class DragHereModel implements ActionModel {
 
     @Getter
     private final List<String> paths;
+
+    @Getter
+    private boolean useSelectedItemAsDestination;
 
     @Override
     public String getExecutionId() {

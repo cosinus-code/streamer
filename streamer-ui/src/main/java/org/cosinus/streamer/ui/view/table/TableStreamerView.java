@@ -19,7 +19,7 @@ package org.cosinus.streamer.ui.view.table;
 import org.cosinus.stream.swing.ExtendedContainer;
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.action.DragHereModel;
+import org.cosinus.streamer.ui.action.DoHereModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.menu.MenuHandler;
 import org.cosinus.streamer.ui.view.DefaultStreamerView;
@@ -43,6 +43,8 @@ import java.util.stream.Stream;
 import static java.awt.BorderLayout.CENTER;
 import static java.lang.Math.max;
 import static java.util.Optional.ofNullable;
+import static javax.swing.KeyStroke.getKeyStroke;
+import static javax.swing.TransferHandler.*;
 import static org.cosinus.streamer.ui.action.CopyHereAction.COPY_HERE_ACTION_ID;
 import static org.cosinus.streamer.ui.action.CreateStreamerAction.CREATE_STREAMER_ACTION_ID;
 import static org.cosinus.streamer.ui.action.LinkHereAction.LINK_HERE_ACTION_ID;
@@ -53,7 +55,14 @@ public abstract class TableStreamerView<T extends Streamable>
     extends DefaultStreamerView<T> implements ExtendedContainer {
 
     public static final String STATUS_ITEMS_COUNT_KEY = "status-items-count";
+
     public static final String STATUS_SELECTED_ITEMS_COUNT_KEY = "status-selected-items-count";
+
+    public static final String COPY_ACTION_ID = "copy";
+
+    public static final String PASTE_ACTION_ID = "paste";
+
+    public static final String CUT_ACTION_ID = "cut";
 
     @Autowired
     private MenuHandler menuHandler;
@@ -102,16 +111,27 @@ public abstract class TableStreamerView<T extends Streamable>
         table.setTransferHandler(transferHandler);
         scroll.setTransferHandler(transferHandler);
 
+        InputMap inputMap = getInputMap();
+        inputMap.put(getKeyStroke("ctrl C"), COPY_ACTION_ID);
+        inputMap.put(getKeyStroke("ctrl V"), PASTE_ACTION_ID);
+        inputMap.put(getKeyStroke("ctrl X"), CUT_ACTION_ID);
+
+        ActionMap actionMap = getActionMap();
+        actionMap.put(COPY_ACTION_ID, getCopyAction());
+        actionMap.put(PASTE_ACTION_ID, getPasteAction());
+        actionMap.put(CUT_ACTION_ID, getCutAction());
+
         super.initComponents();
     }
 
     public void showDragAndDropPopup(final JComponent component,
                                      final Point dropPoint,
                                      final List<String> paths) {
-        DragHereModel model = DragHereModel
+        DoHereModel model = DoHereModel
             .builder()
             .paths(paths)
             .destinationView(this)
+            .useSelectedItemAsDestination(true)
             .build();
 
         PopupMenu popupDragAndDrop = new PopupMenu();

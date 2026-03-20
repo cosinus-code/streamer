@@ -32,56 +32,68 @@ import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.file.FileMainStreamer.FILE_PROTOCOL;
 import static org.cosinus.swing.file.FileHandler.PROTOCOL_MARK;
 
-public abstract class DragHereAction implements SwingActionWithModel<DragHereModel> {
+public abstract class DoHereAction implements SwingActionWithModel<DoHereModel> {
 
     private final StreamerHandler streamerHandler;
 
     private final ActionExecutors actionExecutors;
 
-    protected DragHereAction(final StreamerHandler streamerHandler,
-                             final ActionExecutors actionExecutors) {
+    protected DoHereAction(final StreamerHandler streamerHandler,
+                           final ActionExecutors actionExecutors) {
         this.streamerHandler = streamerHandler;
         this.actionExecutors = actionExecutors;
     }
 
     @Override
-    public void run(DragHereModel dragHereModel) {
-        ofNullable(dragHereModel.getDestinationView())
-            .map(streamerView -> streamerView
-                .getSelectedItems()
-                .stream()
-                .filter(item -> Streamer.class.isAssignableFrom(item.getClass()))
-                .map(Streamer.class::cast)
-                .findFirst()
-                .orElseGet(streamerView::getParentStreamer))
+    public void run(DoHereModel doHereModel) {
+        ofNullable(doHereModel.getDestinationView())
+            .map(streamerView ->
+                findDestination(streamerView, doHereModel.isUseSelectedItemAsDestination()))
             .map(currentStreamer -> Optional.of(currentStreamer)
-                .filter(streamer -> ParentStreamer.class.isAssignableFrom(streamer.getClass()))
                 .map(ParentStreamer.class::cast)
                 .orElseGet(currentStreamer::getParent))
             .ifPresent(destination -> {
-                List<Streamer<?>> streamerToCopy = dragHereModel.getPaths()
-                    .stream()
-                    .map(path -> path.contains(PROTOCOL_MARK) ? path : FILE_PROTOCOL + path)
-                    .map(streamerHandler::findStreamerForUrlPath)
-                    .filter(Optional::isPresent)
-                    .<Streamer<?>>map(Optional::get)
-                    .toList();
-
-                if (!streamerToCopy.isEmpty()) {
-                    ParentStreamer<?> commonParent = streamerToCopy.stream()
-                        .findFirst()
-                        .flatMap(firstStreamer -> firstStreamer.parentsStream()
-                            .filter(parent -> streamerToCopy.stream()
-                                .allMatch(streamer -> streamer.getPath().startsWith(parent.getPath())))
-                            .findFirst()
-                        )
-                        .orElse(null);
-
+                List<Streamer<?>> streamers = findStreamersForAction(doHereModel.getPaths());
+                if (!streamers.isEmpty()) {
+                    ParentStreamer<?> commonParent = findCommonParent(streamers);
                     ActionModel actionModel = createActionModel(
-                        streamerToCopy, commonParent, dragHereModel.getDestinationView(), destination);
+                        streamers, commonParent, doHereModel.getDestinationView(), destination);
                     actionExecutors.execute(actionModel);
                 }
             });
+    }
+
+    protected Streamer<?> findDestination(StreamerView<?> viewDestination, boolean useSelectedItemAsDestination) {
+        return useSelectedItemAsDestination ?
+            viewDestination
+                .getSelectedItems()
+                .stream()
+                .filter(item -> ParentStreamer.class.isAssignableFrom(item.getClass()))
+                .map(Streamer.class::cast)
+                .findFirst()
+                .orElseGet(viewDestination::getParentStreamer) :
+            viewDestination.getParentStreamer();
+    }
+
+    protected List<Streamer<?>> findStreamersForAction(List<String> streamerPaths) {
+        return streamerPaths
+            .stream()
+            .map(path -> path.contains(PROTOCOL_MARK) ? path : FILE_PROTOCOL + path)
+            .map(streamerHandler::findStreamerForUrlPath)
+            .filter(Optional::isPresent)
+            .<Streamer<?>>map(Optional::get)
+            .toList();
+    }
+
+    protected ParentStreamer<?> findCommonParent(List<Streamer<?>> streamers) {
+        return streamers.stream()
+            .findFirst()
+            .flatMap(firstStreamer -> firstStreamer.parentsStream()
+                .filter(parent -> streamers.stream()
+                    .allMatch(streamer -> streamer.getPath().startsWith(parent.getPath())))
+                .findFirst()
+            )
+            .orElse(null);
     }
 
     protected abstract ActionModel createActionModel(List<Streamer<?>> streamers,
