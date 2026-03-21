@@ -27,6 +27,7 @@ import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.worker.WorkerModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -262,7 +263,10 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
         return items -> {
             items
                 .stream()
-                .filter(streamable -> streamable.getPath().getParent().equals(parentStreamer.getPath()))
+                .filter(streamable -> ofNullable(streamable.getPath())
+                    .map(Path::getParent)
+                    .map(parentStreamer.getPath()::equals)
+                    .orElse(false))
                 .map(this::toViewItem)
                 .filter(Objects::nonNull)
                 .filter(viewItem -> !streamableMap.containsKey(viewItem.getId()))

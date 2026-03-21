@@ -50,32 +50,42 @@ public final class ArchiveEntryCreators {
 
     public static final BiFunction<String, Long, ArchiveEntry> ZIP_ARCHIVE_ENTRY_CREATOR = (archiveName, size) -> {
         ZipArchiveEntry archiveEntry = new ZipArchiveEntry(archiveName);
-        archiveEntry.setSize(size);
+        if (size >= 0) {
+            archiveEntry.setSize(size);
+        }
         return archiveEntry;
     };
 
     public static final BiFunction<String, Long, ArchiveEntry> JAR_ARCHIVE_ENTRY_CREATOR = (archiveName, size) -> {
         JarArchiveEntry archiveEntry = new JarArchiveEntry(archiveName);
-        archiveEntry.setSize(size);
+        if (size >= 0) {
+            archiveEntry.setSize(size);
+        }
         return archiveEntry;
     };
 
     public static final BiFunction<String, Long, ArchiveEntry> TAR_ARCHIVE_ENTRY_CREATOR = (archiveName, size) -> {
         TarArchiveEntry archiveEntry = new TarArchiveEntry(archiveName);
-        archiveEntry.setSize(size);
+        if (size >= 0) {
+            archiveEntry.setSize(size);
+        }
         return archiveEntry;
     };
 
     public static final BiFunction<String, Long, ArchiveEntry> DUMP_ARCHIVE_ENTRY_CREATOR = (archiveName, size) -> {
         DumpArchiveEntry archiveEntry = new DumpArchiveEntry(archiveName, archiveName);
-        archiveEntry.setSize(size);
+        if (size >= 0) {
+            archiveEntry.setSize(size);
+        }
         return archiveEntry;
     };
 
     public static final BiFunction<String, Long, ArchiveEntry> SEVEN_Z_ARCHIVE_ENTRY_CREATOR = (archiveName, size) -> {
         SevenZArchiveEntry archiveEntry = new SevenZArchiveEntry();
         archiveEntry.setName(archiveName);
-        archiveEntry.setSize(size);
+        if (size >= 0) {
+            archiveEntry.setSize(size);
+        }
         return archiveEntry;
     };
 

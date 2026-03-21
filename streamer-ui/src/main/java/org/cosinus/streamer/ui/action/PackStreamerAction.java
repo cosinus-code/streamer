@@ -146,6 +146,6 @@ public class PackStreamerAction extends AbstractCopyAction<PackActionModel> {
 
     @Override
     public Optional<KeyStroke> getKeyStroke() {
-        return Optional.of(uiHandler.getAltDownKeyStroke(VK_F5));
+        return Optional.of(uiHandler.getControlDownKeyStroke(VK_F5));
     }
 }

@@ -85,11 +85,13 @@ public class CopyActionModel implements ActionModel, UIModel {
     }
 
     public void setCopyFilter(String pattern) {
-        String regularExpression = "^" + pattern
-            .replace(".", "\\.")
-            .replace("*", ".*") + "$";
+        String regularExpression = !pattern.isBlank() ?
+            "^" + pattern
+                .replace(".", "\\.")
+                .replace("*", ".*") + "$" :
+            "";
         sourceFilter = streamer -> streamersToCopy.contains(streamer)
-            && streamer.getName().matches(regularExpression);
+            && (regularExpression.isEmpty() || streamer.getName().matches(regularExpression));
 
     }
 

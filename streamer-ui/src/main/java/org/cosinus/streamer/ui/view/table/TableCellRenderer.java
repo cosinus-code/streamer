@@ -140,6 +140,7 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
     public File createItemFile(ViewItem item) {
         return ofNullable(item.getRealPath())
             .map(Path::toFile)
+            .filter(File::exists)
             .orElseGet(() -> fileHandler.createVirtualFile(item.getRealPath(), item.getName(), item.isParent()));
     }
 

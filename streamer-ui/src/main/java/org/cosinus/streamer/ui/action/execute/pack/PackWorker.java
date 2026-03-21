@@ -18,10 +18,9 @@ package org.cosinus.streamer.ui.action.execute.pack;
 import org.cosinus.stream.consumer.StreamConsumer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.expand.ExpandedStreamer;
-import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
+import org.cosinus.streamer.ui.action.execute.copy.CopyUnit;
 import org.cosinus.streamer.ui.action.execute.copy.CopyWorker;
 import org.cosinus.streamer.ui.action.execute.copy.CopyWorkerModel;
-import org.cosinus.streamer.ui.action.execute.copy.CopyUnit;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -31,7 +30,7 @@ import static java.util.Optional.ofNullable;
 
 public class PackWorker<S extends Streamer<S>, T extends ExpandedStreamer<T>> extends CopyWorker<S, T> {
 
-    public PackWorker(CopyActionModel copyModel, CopyWorkerModel workerModel) {
+    public PackWorker(PackActionModel copyModel, CopyWorkerModel workerModel) {
         super(copyModel, workerModel);
     }
 

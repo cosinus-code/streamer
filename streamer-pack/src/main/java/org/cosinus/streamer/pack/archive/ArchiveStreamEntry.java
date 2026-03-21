@@ -27,7 +27,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import static java.util.Optional.ofNullable;
-import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 public class ArchiveStreamEntry implements Comparable<ArchiveStreamEntry> {
 
@@ -43,7 +42,6 @@ public class ArchiveStreamEntry implements Comparable<ArchiveStreamEntry> {
 
     public ArchiveStreamEntry(final ArchiveEntry archiveEntry,
                               final Supplier<InputStream> inputStreamSupplier) {
-        injectContext(this);
         this.archiveEntry = archiveEntry;
         this.inputStreamSupplier = inputStreamSupplier;
         this.path = Paths.get(archiveEntry.getName());
