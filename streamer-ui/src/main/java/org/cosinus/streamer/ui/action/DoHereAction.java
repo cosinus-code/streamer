@@ -57,7 +57,9 @@ public abstract class DoHereAction implements SwingActionWithModel<DoHereModel> 
                 if (!streamers.isEmpty()) {
                     ParentStreamer<?> commonParent = findCommonParent(streamers);
                     ActionModel actionModel = createActionModel(
-                        streamers, commonParent, doHereModel.getDestinationView(), destination);
+                        streamers,
+                        doHereModel.getSourceView(), commonParent,
+                        doHereModel.getDestinationView(), destination);
                     actionExecutors.execute(actionModel);
                 }
             });
@@ -97,6 +99,7 @@ public abstract class DoHereAction implements SwingActionWithModel<DoHereModel> 
     }
 
     protected abstract ActionModel createActionModel(List<Streamer<?>> streamers,
+                                                     StreamerView<?> sourceView,
                                                      ParentStreamer<?> source,
                                                      StreamerView<?> destinationView,
                                                      ParentStreamer<?> destination);

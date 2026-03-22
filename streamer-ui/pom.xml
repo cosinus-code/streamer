@@ -186,8 +186,10 @@
                                     <additionalResources>
                                         <additionalResource>src/main/resources/image/${application.splash.file.name}</additionalResource>
                                         <additionalResource>src/main/resources/image/${application.icon.name}</additionalResource>
-Ω                                    </additionalResources>
+                                    </additionalResources>
                                     <vmArgs>
+                                        <vmArg>-Dapp.name=${application.name}</vmArg>
+                                        <vmArg>-Dvisualvm.display.name=${application.name}</vmArg>
                                         <vmArg>-Dswing.aatext=true</vmArg>
                                         <vmArg>-splash:splash.png</vmArg>
                                         <vmArg>-Dapple.laf.useScreenMenuBar=true</vmArg>
@@ -195,9 +197,9 @@
                                     </vmArgs>
                                     <linuxConfig>
                                         <pngFile>src/main/resources/image/${application.icon.name}</pngFile>
-                                        <generateAppImage>false</generateAppImage>
+                                        <generateAppImage>true</generateAppImage>
                                         <generateDeb>true</generateDeb>
-                                        <generateRpm>false</generateRpm>
+                                        <generateRpm>true</generateRpm>
                                         <wrapJar>false</wrapJar>
                                     </linuxConfig>
                                     <macConfig>

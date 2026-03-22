@@ -22,6 +22,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.ui.action.DoHereModel;
 import org.cosinus.streamer.ui.action.execute.delete.DeleteStreamerExecutor;
+import org.cosinus.streamer.ui.view.PanelLocation;
+import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.file.PathListTransferable;
@@ -72,12 +74,13 @@ public class TableTransferHandler<T extends Streamable> extends TransferHandler 
 
     @Override
     protected Transferable createTransferable(JComponent c) {
-        streamerViewHandler.setDragAndDropSourceView(view);
-        return new PathListTransferable(view.getSelectedItems()
+        PathListTransferable pathListTransferable = new PathListTransferable(view.getSelectedItems()
             .stream()
             .map(Streamable::getPath)
             .filter(Objects::nonNull)
             .toList());
+        pathListTransferable.getPaths().setViewId(view.getCurrentLocation().name());
+        return pathListTransferable;
     }
 
     @Override
@@ -95,15 +98,21 @@ public class TableTransferHandler<T extends Streamable> extends TransferHandler 
                 .or(() -> tryGetPaths(transferable, stringFlavor))
                 .filter(not(CollectionUtils::isEmpty))
                 .ifPresent(paths -> {
+                    StreamerView<?> sourceView = getViewId(transferable)
+                        .map(PanelLocation::valueOf)
+                        .flatMap(streamerViewHandler::getView)
+                        .orElse(null);
+
                     if (support.isDrop()) {
                         Point dropPoint = support.getDropLocation().getDropPoint();
-                        view.showDragAndDropPopup(component, dropPoint, paths);
+                        view.showDragAndDropPopup(component, sourceView, dropPoint, paths);
                     } else {
                         actionController.runAction(
                             isMoveTransfer(transferable) ? MOVE_HERE_ACTION_ID : COPY_HERE_ACTION_ID,
                             DoHereModel
                                 .builder()
                                 .paths(paths)
+                                .sourceView(sourceView)
                                 .destinationView(view)
                                 .useSelectedItemAsDestination(false)
                                 .build());
@@ -116,17 +125,19 @@ public class TableTransferHandler<T extends Streamable> extends TransferHandler 
     }
 
     protected boolean isMoveTransfer(Transferable transferable) {
-        try {
-            return transferable.getTransferData(PATH_FLAVOR) instanceof PathListTransferData pathListTransferData &&
-                pathListTransferData.isMoveTransfer();
-        } catch (UnsupportedFlavorException | IOException e) {
-            return false;
-        }
+        return getPathListTransferData(transferable)
+            .map(PathListTransferData::isMoveTransfer)
+            .orElse(false);
+    }
+
+    protected Optional<String> getViewId(Transferable transferable) {
+        return getPathListTransferData(transferable)
+            .map(PathListTransferData::getViewId);
     }
 
     @Override
     protected void exportDone(JComponent source, Transferable transferable, int action) {
-        if (action == MOVE && transferable instanceof PathListTransferable pathListTransferable ) {
+        if (action == MOVE && transferable instanceof PathListTransferable pathListTransferable) {
             pathListTransferable.getPaths().setMoveTransfer(true);
         }
     }
@@ -149,6 +160,18 @@ public class TableTransferHandler<T extends Streamable> extends TransferHandler 
                 } else if (data instanceof String string) {
                     return Optional.of(List.of(string.split(lineSeparator())));
                 }
+            }
+        } catch (UnsupportedFlavorException | IOException e) {
+            //ignore unknown flavors
+        }
+        return empty();
+    }
+
+    protected Optional<PathListTransferData> getPathListTransferData(Transferable transferable) {
+        try {
+            if (transferable.isDataFlavorSupported(PATH_FLAVOR) &&
+                transferable.getTransferData(PATH_FLAVOR) instanceof PathListTransferData pathListTransferData) {
+                return Optional.of(pathListTransferData);
             }
         } catch (UnsupportedFlavorException | IOException e) {
             //ignore unknown flavors

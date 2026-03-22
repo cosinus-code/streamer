@@ -30,6 +30,9 @@ public class DoHereModel implements ActionModel {
     public static final String DRAG_HERE_ID = "drag-here";
 
     @Getter
+    private StreamerView<?> sourceView;
+
+    @Getter
     private StreamerView<?> destinationView;
 
     @Getter

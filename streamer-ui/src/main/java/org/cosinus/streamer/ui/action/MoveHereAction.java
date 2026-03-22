@@ -52,12 +52,13 @@ public class MoveHereAction extends DoHereAction {
 
     @Override
     protected ActionModel createActionModel(final List<Streamer<?>> streamersToMove,
+                                            final StreamerView<?> sourceView,
                                             final ParentStreamer<?> source,
                                             final StreamerView<?> destinationView,
                                             final ParentStreamer<?> destination) {
         return move()
             .streamers(streamersToMove)
-            .from(streamerViewHandler.getDragAndDropSourceView())
+            .from(sourceView)
             .to(destination, destinationView);
     }
 }

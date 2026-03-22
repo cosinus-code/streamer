@@ -48,6 +48,7 @@ public class LinkHereAction extends DoHereAction {
 
     @Override
     protected ActionModel createActionModel(final List<Streamer<?>> streamers,
+                                            final StreamerView<?> sourceView,
                                             final ParentStreamer<?> source,
                                             final StreamerView<?> destinationView,
                                             final ParentStreamer<?> destination) {

@@ -41,6 +41,7 @@ public class CopyHereAction extends DoHereAction {
 
     @Override
     protected ActionModel createActionModel(final List<Streamer<?>> streamerToCopy,
+                                            final StreamerView<?> sourceView,
                                             final ParentStreamer<?> source,
                                             final StreamerView<?> destinationView,
                                             final ParentStreamer<?> destination) {

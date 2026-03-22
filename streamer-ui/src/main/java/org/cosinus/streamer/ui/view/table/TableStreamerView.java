@@ -25,6 +25,7 @@ import org.cosinus.streamer.ui.menu.MenuHandler;
 import org.cosinus.streamer.ui.view.DefaultStreamerView;
 import org.cosinus.streamer.ui.view.FindPanel;
 import org.cosinus.streamer.ui.view.PanelLocation;
+import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.swing.form.ScrollPane;
 import org.cosinus.swing.menu.PopupMenu;
 import org.cosinus.swing.worker.WorkerListener;
@@ -125,11 +126,13 @@ public abstract class TableStreamerView<T extends Streamable>
     }
 
     public void showDragAndDropPopup(final JComponent component,
+                                     final StreamerView<?> sourceView,
                                      final Point dropPoint,
                                      final List<String> paths) {
         DoHereModel model = DoHereModel
             .builder()
             .paths(paths)
+            .sourceView(sourceView)
             .destinationView(this)
             .useSelectedItemAsDestination(true)
             .build();
