@@ -29,7 +29,6 @@ import org.cosinus.swing.window.Dialog;
 
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.BOUND;
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
-import static org.springframework.util.CollectionUtils.isEmpty;
 
 /**
  * Abstract copy action
@@ -67,17 +66,6 @@ public abstract class AbstractCopyAction<M extends CopyActionModel> implements S
     @Override
     public void run(M copyActionModel) {
         if (preferences.booleanPreference(BOUND)) {
-            return;
-        }
-
-        if (!copyActionModel.getSource().isParent() ||
-            !copyActionModel.getDestination().isParent() ||
-            isEmpty(copyActionModel.getStreamersToCopy())) {
-            return;
-        }
-
-        if (!copyActionModel.getSource().canRead() || !copyActionModel.getDestination().canUpdate()) {
-            dialogHandler.showInfo(translator.translate("act_copy_not_allowed"));
             return;
         }
 

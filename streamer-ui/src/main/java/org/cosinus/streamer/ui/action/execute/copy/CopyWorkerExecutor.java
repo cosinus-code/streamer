@@ -16,10 +16,14 @@
 
 package org.cosinus.streamer.ui.action.execute.copy;
 
+import org.cosinus.streamer.api.ParentStreamer;
+import org.cosinus.streamer.api.meta.RootStreamer;
 import org.cosinus.streamer.ui.action.progress.ProgressFormHandler;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.execute.ActionExecutor;
+import org.cosinus.swing.dialog.DialogHandler;
+import org.cosinus.swing.translate.Translator;
 import org.cosinus.swing.worker.WorkerExecutor;
 import org.cosinus.swing.worker.WorkerListener;
 import org.cosinus.swing.worker.WorkerModel;
@@ -27,6 +31,7 @@ import org.springframework.stereotype.Component;
 
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.action.CopyStreamerAction.COPY_STREAMER_ACTION_ID;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 /**
  * Implementation of {@link ActionExecutor} for copying streamers based on {@link CopyWorker}
@@ -38,10 +43,45 @@ public class CopyWorkerExecutor extends WorkerExecutor<CopyActionModel, CopyWork
 
     protected final StreamerViewHandler streamerViewHandler;
 
+    protected final Translator translator;
+
+    protected final DialogHandler dialogHandler;
+
     protected CopyWorkerExecutor(final ProgressFormHandler progressFormHandler,
-                                 final StreamerViewHandler streamerViewHandler) {
+                                 final StreamerViewHandler streamerViewHandler,
+                                 final Translator translator,
+                                 final DialogHandler dialogHandler) {
         this.progressFormHandler = progressFormHandler;
         this.streamerViewHandler = streamerViewHandler;
+        this.translator = translator;
+        this.dialogHandler = dialogHandler;
+    }
+
+    @Override
+    public void execute(CopyActionModel copyActionModel) {
+        if (isEmpty(copyActionModel.getStreamersToCopy())) {
+            return;
+        }
+
+        if (!isCopyAllowed(copyActionModel)) {
+            dialogHandler.showInfo(translator.translate("act_copy_not_allowed"));
+            return;
+        }
+
+        super.execute(copyActionModel);
+    }
+
+    public boolean isCopyAllowed(CopyActionModel copyActionModel) {
+        return isParentButNotRoot(copyActionModel.getSource()) &&
+            isParentButNotRoot(copyActionModel.getDestination()) &&
+            copyActionModel.getSource().canRead() &&
+            copyActionModel.getDestination().canUpdate();
+    }
+
+    protected boolean isParentButNotRoot(ParentStreamer<?> streamer) {
+        return streamer.isParent() &&
+            streamer.getParent() != null &&
+            !(streamer instanceof RootStreamer);
     }
 
     @Override

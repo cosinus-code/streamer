@@ -88,11 +88,18 @@ public abstract class DoHereAction implements SwingActionWithModel<DoHereModel> 
     }
 
     protected ParentStreamer<?> findCommonParent(List<Streamer<?>> streamers) {
+        if (streamers.size() == 1) {
+            return streamers.getFirst().getParent();
+        }
+
         return streamers.stream()
             .findFirst()
             .flatMap(firstStreamer -> firstStreamer.parentsStream()
                 .filter(parent -> streamers.stream()
-                    .allMatch(streamer -> streamer.getPath().startsWith(parent.getPath())))
+                    .map(Streamer::getPath)
+                    .allMatch(streamerPath -> ofNullable(parent.getPath())
+                        .map(streamerPath::startsWith)
+                        .orElse(false)))
                 .findFirst()
             )
             .orElse(null);

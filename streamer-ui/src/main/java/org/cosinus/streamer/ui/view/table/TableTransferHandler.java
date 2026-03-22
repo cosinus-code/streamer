@@ -76,7 +76,7 @@ public class TableTransferHandler<T extends Streamable> extends TransferHandler 
     protected Transferable createTransferable(JComponent c) {
         PathListTransferable pathListTransferable = new PathListTransferable(view.getSelectedItems()
             .stream()
-            .map(Streamable::getPath)
+            .map(Streamable::getUrlPath)
             .filter(Objects::nonNull)
             .toList());
         pathListTransferable.getPaths().setViewId(view.getCurrentLocation().name());
