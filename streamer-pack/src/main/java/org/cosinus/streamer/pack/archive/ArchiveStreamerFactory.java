@@ -130,11 +130,7 @@ public class ArchiveStreamerFactory extends ArchiveStreamFactory {
                                    final BinaryStreamer binaryStreamer,
                                    final ArchiveStreamEntry archiveEntry) {
         EntryInputStream entryInputStream = createArchiveInputStream(archiveType, binaryStreamer);
-        return StreamSupport
-            .stream(new ArchiveSpliterator(entryInputStream, null), false)
-            .filter(archiveEntry::equals)
-            .findFirst()
-            .map(ArchiveStreamEntry::getArchiveEntry)
+        return entryInputStream.findArchiveEntry(archiveEntry)
             .map(entryInputStream::getInputStream)
             .orElse(null);
     }

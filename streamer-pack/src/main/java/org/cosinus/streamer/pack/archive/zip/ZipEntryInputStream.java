@@ -15,52 +15,62 @@
  *
  */
 
-package org.cosinus.streamer.pack.archive.rar;
+package org.cosinus.streamer.pack.archive.zip;
 
-import com.github.junrar.Archive;
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.cosinus.streamer.pack.archive.ArchiveStreamEntry;
 import org.cosinus.streamer.pack.archive.EntryInputStream;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
+import java.util.Enumeration;
+import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 
-public class RarEntryInputStream implements EntryInputStream {
+public class ZipEntryInputStream implements EntryInputStream {
 
-    private final Archive rarArchive;
+    private final ZipFile zipFile;
 
-    public RarEntryInputStream(Archive rarArchive) {
-        this.rarArchive = rarArchive;
+    private final Enumeration<ZipArchiveEntry> zipEntries;
+
+    public ZipEntryInputStream(final ZipFile zipFile) {
+        this.zipFile = zipFile;
+        this.zipEntries = zipFile.getEntries();
     }
 
     @Override
     public ArchiveEntry getNextEntry() throws IOException {
-        return ofNullable(rarArchive.nextFileHeader())
-            .map(RarArchiveEntry::new)
-            .orElse(null);
+        return zipEntries.hasMoreElements() ? zipEntries.nextElement() : null;
     }
 
     @Override
     public InputStream getInputStream(ArchiveEntry archiveEntry) {
         return ofNullable(archiveEntry)
-            .filter(RarArchiveEntry.class::isInstance)
-            .map(RarArchiveEntry.class::cast)
+            .filter(ZipArchiveEntry.class::isInstance)
+            .map(ZipArchiveEntry.class::cast)
             .map(this::getInputStream)
             .orElse(null);
     }
 
-    public InputStream getInputStream(RarArchiveEntry archiveEntry) {
+    public InputStream getInputStream(ZipArchiveEntry zipArchiveEntry) {
         try {
-            return rarArchive.getInputStream(archiveEntry.getFileHeader());
+            return zipFile.getInputStream(zipArchiveEntry);
         } catch (IOException e) {
-            throw new UncheckedIOException(e);
+            throw new RuntimeException(e);
         }
     }
 
     @Override
+    public Optional<ArchiveEntry> findArchiveEntry(ArchiveStreamEntry archiveEntry) {
+        return ofNullable(zipFile.getEntry(archiveEntry.getName()));
+    }
+
+    @Override
     public void closeStream() throws IOException {
-        rarArchive.close();
+        zipFile.close();
     }
 }

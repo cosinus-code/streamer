@@ -17,9 +17,12 @@
 package org.cosinus.streamer.pack.archive;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.cosinus.streamer.pack.archive.stream.ArchiveSpliterator;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 public interface EntryInputStream {
 
@@ -29,5 +32,11 @@ public interface EntryInputStream {
 
     void closeStream() throws IOException;
 
-    boolean isClosed();
+    default Optional<ArchiveEntry> findArchiveEntry(final ArchiveStreamEntry archiveEntry) {
+        return StreamSupport
+            .stream(new ArchiveSpliterator(this, null), false)
+            .filter(archiveEntry::equals)
+            .findFirst()
+            .map(ArchiveStreamEntry::getArchiveEntry);
+    }
 }

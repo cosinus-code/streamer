@@ -24,8 +24,6 @@ import java.io.IOException;
 
 public class ArchiveEntryInputStream extends FilterInputStream implements EntryInputStream {
 
-    private boolean closed;
-
     public ArchiveEntryInputStream(ArchiveInputStream archiveInputStream) {
         super(archiveInputStream);
     }
@@ -47,11 +45,5 @@ public class ArchiveEntryInputStream extends FilterInputStream implements EntryI
     @Override
     public void closeStream() throws IOException {
         super.close();
-        closed = true;
-    }
-
-    @Override
-    public boolean isClosed() {
-        return closed;
     }
 }

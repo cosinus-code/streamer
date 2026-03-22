@@ -27,10 +27,12 @@ import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.cosinus.streamer.api.error.StreamerException;
 import org.cosinus.streamer.pack.archive.rar.RarEntryInputStream;
 import org.cosinus.streamer.pack.archive.sevenz.SevenZEntryInputStream;
+import org.cosinus.streamer.pack.archive.zip.ZipEntryInputStream;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -88,6 +90,22 @@ public final class ArchiveEntryCreators {
         }
         return archiveEntry;
     };
+
+    public static final Function<Path, EntryInputStream> ZIP_ARCHIVE_INPUT_STREAM_CREATOR = path ->
+        ofNullable(path)
+            .map(Path::toFile)
+            .filter(File::exists)
+            .map(file -> {
+                try {
+                    return ZipFile.builder()
+                        .setFile(path.toFile())
+                        .get();
+                } catch (IOException e) {
+                    throw new StreamerException("Cannot create zip from file: " + file.getPath(), e);
+                }
+            })
+            .map(ZipEntryInputStream::new)
+            .orElse(null);
 
     public static final Function<Path, EntryInputStream> SEVEN_Z_ARCHIVE_INPUT_STREAM_CREATOR = path ->
         ofNullable(path)
