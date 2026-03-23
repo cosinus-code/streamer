@@ -27,9 +27,13 @@ import org.cosinus.streamer.google.drive.model.GoogleDriveShareHandler;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
+import static java.util.Optional.ofNullable;
+import static java.util.stream.IntStream.range;
 import static java.util.stream.Stream.concat;
+import static org.cosinus.streamer.google.drive.GoogleDriveSharesStreamer.SHARES;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_GOOGLE_DRIVE;
 
 @RootStreamer("Google Drive")
@@ -76,6 +80,27 @@ public class GoogleDriveMainStreamer extends MainStreamer<ParentStreamer<? exten
 
     @Override
     public Optional<Streamer<?>> findByPath(Path path) {
+        if (path.startsWith(SHARES)) {
+            if (path.equals(googleDriveSharesStreamer.getPath())) {
+                return Optional.of(googleDriveSharesStreamer);
+            }
+
+            AtomicReference<Streamer<?>> streamer = new AtomicReference<>(googleDriveSharesStreamer);
+            range(1, path.getNameCount())
+                .mapToObj(path::getName)
+                .map(Object::toString)
+                .forEach(name -> streamer.set(
+                    ofNullable(streamer.get())
+                        .map(Streamer::stream)
+                        .orElseGet(Stream::empty)
+                        .filter(Streamer.class::isInstance)
+                        .map(Streamer.class::cast)
+                        .filter(child -> child.getName().equals(name))
+                        .findFirst()
+                        .orElse(null)));
+            return ofNullable(streamer.get());
+        }
+
         return googleDriveUserIds
             .stream()
             .filter(path::startsWith)

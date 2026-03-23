@@ -68,7 +68,7 @@ public class GoogleDriveParentStreamer
             .map(Boolean::parseBoolean)
             .orElse(false);
         if (!localFile) {
-            cache.cacheFile(path, file);
+            cacheFile();
         }
         return FOLDER_MIME_TYPE.equals(file.getMimeType()) ?
             new GoogleDriveParentStreamer(file, path, userId) :
@@ -82,6 +82,10 @@ public class GoogleDriveParentStreamer
             throw new SaveStreamerException("Failed to save streamer:" + getPath().toString());
         }
 
+        cacheFile();
+    }
+
+    public void cacheFile() {
         cache.cacheFile(path, file);
     }
 

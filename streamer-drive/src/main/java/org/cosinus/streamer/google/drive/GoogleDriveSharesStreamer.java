@@ -46,22 +46,28 @@ public class GoogleDriveSharesStreamer implements ParentStreamer<GoogleDriveShar
 
     protected final GoogleDriveMainStreamer googleDriveMainStreamer;
 
-    protected final GoogleDriveShareHandler GoogleDriveShareHandler;
+    protected final GoogleDriveShareHandler googleDriveShareHandler;
 
     protected List<Value> details;
 
     public GoogleDriveSharesStreamer(final GoogleDriveMainStreamer googleDriveMainStreamer,
-                                     final GoogleDriveShareHandler GoogleDriveShareHandler) {
+                                     final GoogleDriveShareHandler googleDriveShareHandler) {
         this.googleDriveMainStreamer = googleDriveMainStreamer;
-        this.GoogleDriveShareHandler = GoogleDriveShareHandler;
+        this.googleDriveShareHandler = googleDriveShareHandler;
     }
 
     @Override
     public Stream<GoogleDriveShareStreamer> stream() {
-        return GoogleDriveShareHandler
+        return googleDriveShareHandler
             .getGoogleDriveShares()
-            .map(googleDriveShares ->
-                new GoogleDriveShareStreamer(this, googleDriveShares));
+            .map(this::createGoogleDriveShareStreamer);
+    }
+
+    protected GoogleDriveShareStreamer createGoogleDriveShareStreamer(final GoogleDriveShare googleDriveShare) {
+        GoogleDriveShareStreamer googleDriveShareStreamer =
+            new GoogleDriveShareStreamer(this, googleDriveShare);
+        googleDriveShareStreamer.cacheFile();
+        return googleDriveShareStreamer;
     }
 
     @Override
