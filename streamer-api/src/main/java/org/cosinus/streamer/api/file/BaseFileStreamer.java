@@ -109,4 +109,19 @@ public abstract class BaseFileStreamer<T> implements Streamer<T> {
     public void reset() {
         details = null;
     }
+
+    @Override
+    public boolean canRead() {
+        return true;
+    }
+
+    @Override
+    public boolean canUpdate() {
+        return true;
+    }
+
+    @Override
+    public boolean canDelete() {
+        return true;
+    }
 }

@@ -67,7 +67,8 @@ public class DeleteWorker
     @Override
     protected StreamConsumer<Streamer<?>> streamConsumer() {
         return streamerToDelete -> {
-            if (streamerToDelete.exists() && !streamerToDelete.delete(deleteModel.isMoveToTrash())) {
+            if (!streamerToDelete.canDelete() ||
+                (streamerToDelete.exists() && !streamerToDelete.delete(deleteModel.isMoveToTrash()))) {
                 throw new ActionException("act-delete-cannot", streamerToDelete.getPath());
             }
         };

@@ -72,16 +72,10 @@ public class CopyWorkerExecutor extends WorkerExecutor<CopyActionModel, CopyWork
     }
 
     public boolean isCopyAllowed(CopyActionModel copyActionModel) {
-        return isParentButNotRoot(copyActionModel.getSource()) &&
-            isParentButNotRoot(copyActionModel.getDestination()) &&
+        return copyActionModel.getSource().isParent() &&
+            copyActionModel.getDestination().isParent() &&
             copyActionModel.getSource().canRead() &&
             copyActionModel.getDestination().canUpdate();
-    }
-
-    protected boolean isParentButNotRoot(ParentStreamer<?> streamer) {
-        return streamer.isParent() &&
-            streamer.getParent() != null &&
-            !(streamer instanceof RootStreamer);
     }
 
     @Override

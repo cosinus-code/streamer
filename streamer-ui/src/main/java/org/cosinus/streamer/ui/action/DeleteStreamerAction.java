@@ -71,12 +71,6 @@ public class DeleteStreamerAction implements SwingActionWithModel<DeleteActionMo
 
     @Override
     public void run(final DeleteActionModel deleteActionModel) {
-        //TODO: to clarify streamer permissions
-//        if (!deleteAction.getStreamer().canWriteTo(deleteActionModel.source())) {
-//            dialogHandler.showInfo(translator.translate("act_copy_delete_not_allowed"));
-//            return;
-//        }
-
         if (!askForConfirmation() || dialogHandler.confirm(applicationFrame,
             translator.translate("act-delete-are-you-sure-streamers"),
             translator.translate(getId()),

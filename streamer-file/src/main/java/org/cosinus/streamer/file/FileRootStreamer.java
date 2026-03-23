@@ -184,4 +184,9 @@ public class FileRootStreamer extends FileParentStreamer {
     public boolean delete(boolean moveToTrash) {
         return false;
     }
+
+    @Override
+    public boolean canDelete() {
+        return false;
+    }
 }

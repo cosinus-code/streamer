@@ -133,11 +133,15 @@ public interface Streamable {
     }
 
     default boolean canRead() {
-        return true;
+        return false;
     }
 
     default boolean canUpdate() {
-        return true;
+        return false;
+    }
+
+    default boolean canDelete() {
+        return false;
     }
 
     default List<TranslatableName> detailNames() {
