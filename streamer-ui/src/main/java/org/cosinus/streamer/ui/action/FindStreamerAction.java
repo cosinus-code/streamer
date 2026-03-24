@@ -33,7 +33,7 @@ import static java.util.Optional.ofNullable;
 @Component
 public class FindStreamerAction implements SwingAction {
 
-    public static final String FIND_STREAMER_ACTION_ID = "find-streamer";
+    public static final String FIND_STREAMER_ACTION_ID = "find-action";
 
     private final ApplicationUIHandler uiHandler;
 

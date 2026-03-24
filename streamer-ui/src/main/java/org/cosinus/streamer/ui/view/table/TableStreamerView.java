@@ -26,6 +26,7 @@ import org.cosinus.streamer.ui.view.DefaultStreamerView;
 import org.cosinus.streamer.ui.view.FindPanel;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
+import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.form.ScrollPane;
 import org.cosinus.swing.menu.PopupMenu;
 import org.cosinus.swing.worker.WorkerListener;
@@ -44,13 +45,13 @@ import java.util.stream.Stream;
 import static java.awt.BorderLayout.CENTER;
 import static java.lang.Math.max;
 import static java.util.Optional.ofNullable;
-import static javax.swing.KeyStroke.getKeyStroke;
-import static javax.swing.TransferHandler.*;
 import static org.cosinus.streamer.ui.action.CopyHereAction.COPY_HERE_ACTION_ID;
 import static org.cosinus.streamer.ui.action.CreateStreamerAction.CREATE_STREAMER_ACTION_ID;
 import static org.cosinus.streamer.ui.action.LinkHereAction.LINK_HERE_ACTION_ID;
 import static org.cosinus.streamer.ui.action.MoveHereAction.MOVE_HERE_ACTION_ID;
 import static org.cosinus.streamer.ui.action.PackHereAction.PACK_HERE_ACTION_ID;
+import static org.cosinus.streamer.ui.menu.MenuHandler.SEPARATOR;
+import static org.cosinus.swing.action.ActionController.*;
 
 public abstract class TableStreamerView<T extends Streamable>
     extends DefaultStreamerView<T> implements ExtendedContainer {
@@ -58,15 +59,6 @@ public abstract class TableStreamerView<T extends Streamable>
     public static final String STATUS_ITEMS_COUNT_KEY = "status-items-count";
 
     public static final String STATUS_SELECTED_ITEMS_COUNT_KEY = "status-selected-items-count";
-
-    public static final String COPY_ACTION_ID = "copy";
-
-    public static final String PASTE_ACTION_ID = "paste";
-
-    public static final String CUT_ACTION_ID = "cut";
-
-    @Autowired
-    private MenuHandler menuHandler;
 
     protected DataTable<T> table;
 
@@ -95,32 +87,25 @@ public abstract class TableStreamerView<T extends Streamable>
             }
         });
 
-//        scroll.addMouseListener(new DragMouseAdapter());
-//        scroll.addMouseMotionListener(new DragMouseMotionAdapter());
-
-
         streamerViewMainPanel.add(scroll, CENTER);
 
         addComponentListener(new ResizeListener());
 
-        popupContextMenu = menuHandler.createPopupMenu(
+        popupContextMenu = menuHandler.createPopupMenu(this,
+            CUT_ACTION_ID,
+            COPY_ACTION_ID,
+            PASTE_ACTION_ID,
+            SEPARATOR,
             CREATE_STREAMER_ACTION_ID);
         menuHandler.addContextMenu(scroll, popupContextMenu);
 
         table.setDragEnabled(true);
+
         TransferHandler transferHandler = new TableTransferHandler<>(this);
         table.setTransferHandler(transferHandler);
-        scroll.setTransferHandler(transferHandler);
+        this.setTransferHandler(transferHandler);
 
-        InputMap inputMap = getInputMap();
-        inputMap.put(getKeyStroke("ctrl C"), COPY_ACTION_ID);
-        inputMap.put(getKeyStroke("ctrl V"), PASTE_ACTION_ID);
-        inputMap.put(getKeyStroke("ctrl X"), CUT_ACTION_ID);
-
-        ActionMap actionMap = getActionMap();
-        actionMap.put(COPY_ACTION_ID, getCopyAction());
-        actionMap.put(PASTE_ACTION_ID, getPasteAction());
-        actionMap.put(CUT_ACTION_ID, getCutAction());
+        actionController.addCutCopyPasteActions(this);
 
         super.initComponents();
     }
@@ -138,10 +123,10 @@ public abstract class TableStreamerView<T extends Streamable>
             .build();
 
         PopupMenu popupDragAndDrop = new PopupMenu();
-        popupDragAndDrop.add(menuHandler.createMenuItem(COPY_HERE_ACTION_ID, model));
-        popupDragAndDrop.add(menuHandler.createMenuItem(MOVE_HERE_ACTION_ID, model));
-        popupDragAndDrop.add(menuHandler.createMenuItem(PACK_HERE_ACTION_ID, model));
-        popupDragAndDrop.add(menuHandler.createMenuItem(LINK_HERE_ACTION_ID, model));
+        popupDragAndDrop.add(menuHandler.createMenuItem(this, COPY_HERE_ACTION_ID, model));
+        popupDragAndDrop.add(menuHandler.createMenuItem(this, MOVE_HERE_ACTION_ID, model));
+        popupDragAndDrop.add(menuHandler.createMenuItem(this, PACK_HERE_ACTION_ID, model));
+        popupDragAndDrop.add(menuHandler.createMenuItem(this, LINK_HERE_ACTION_ID, model));
         popupDragAndDrop.show(component, dropPoint.x, dropPoint.y);
     }
 

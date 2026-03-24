@@ -46,7 +46,6 @@ import static java.util.stream.IntStream.concat;
 import static java.util.stream.IntStream.range;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.isLeftMouseButton;
-import static javax.swing.SwingUtilities.isRightMouseButton;
 import static org.cosinus.streamer.ui.action.CreateStreamerAction.CREATE_STREAMER_ACTION_ID;
 import static org.cosinus.streamer.ui.action.DeleteStreamerAction.DELETE_STREAMER_ACTION_ID;
 import static org.cosinus.streamer.ui.action.ExecuteStreamerAction.EXECUTE_STREAMER_ACTION_ID;
@@ -57,6 +56,8 @@ import static org.cosinus.streamer.ui.action.RenameStreamerAction.RENAME_STREAME
 import static org.cosinus.streamer.ui.action.ShowPermissionsAction.SHOW_STREAMER_PERMISSIONS_ACTION_ID;
 import static org.cosinus.streamer.ui.action.ShowStreamerPropertiesAction.SHOW_STREAMER_PROPERTIES_ACTION_ID;
 import static org.cosinus.streamer.ui.menu.MenuHandler.SEPARATOR;
+import static org.cosinus.streamer.ui.view.table.TableStreamerView.*;
+import static org.cosinus.swing.action.ActionController.*;
 
 public abstract class DataTable<T extends Streamable> extends Table implements FocusListener, ExtendedContainer {
 
@@ -112,10 +113,14 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
         getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
             .put(getKeyStroke(KeyEvent.VK_ENTER, 0), "no-action");
 
-        popupContextMenu = menuHandler.createPopupMenu(
+        popupContextMenu = menuHandler.createPopupMenu(this,
             EXECUTE_STREAMER_ACTION_ID,
             EXECUTE_STREAMER_WITH_ACTION_ID,
             GO_TO_LINKED_STREAMER_ACTION_NAME,
+            SEPARATOR,
+            CUT_ACTION_ID,
+            COPY_ACTION_ID,
+            PASTE_ACTION_ID,
             SEPARATOR,
             CREATE_STREAMER_ACTION_ID,
             RENAME_STREAMER_ACTION_ID,
@@ -174,20 +179,20 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
                 if (isLeftMouseButton(event)) {
                     if (event.getClickCount() == 2) {
                         actionController.runAction(EXECUTE_STREAMER_ACTION_ID);
-                    } else {
-                        int clickedIndex = getIndexForItemAtPoint(event.getPoint());
-                        if (event.isControlDown()) {
-                            addIndexToSelection(clickedIndex);
-                            event.consume();
-                        } else if (event.isShiftDown()) {
-                            extendsSelectionToIndex(clickedIndex);
-                            event.consume();
-                        } else {
-                            setCurrentIndex(clickedIndex);
-                        }
-                        resetContentIdentifier();
                     }
                 }
+            } else if (event.getID() == MOUSE_PRESSED) {
+                int clickedIndex = getIndexForItemAtPoint(event.getPoint());
+                if (event.isControlDown()) {
+                    addIndexToSelection(clickedIndex);
+                    event.consume();
+                } else if (event.isShiftDown()) {
+                    extendsSelectionToIndex(clickedIndex);
+                    event.consume();
+                } else {
+                    setCurrentIndex(clickedIndex);
+                }
+                resetContentIdentifier();
             }
             super.processMouseEvent(event);
         } catch (Exception ex) {

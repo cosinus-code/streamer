@@ -24,7 +24,9 @@ import org.cosinus.streamer.ui.action.ChangeViewActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
+import org.cosinus.streamer.ui.menu.MenuHandler;
 import org.cosinus.streamer.ui.view.table.ViewItem;
+import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.form.Panel;
@@ -85,6 +87,12 @@ public abstract class StreamerView<T> extends Panel {
 
     @Autowired
     protected IconInitializer iconInitializer;
+
+    @Autowired
+    protected MenuHandler menuHandler;
+
+    @Autowired
+    protected ActionController actionController;
 
     protected final String id;
 

@@ -172,7 +172,7 @@ public class ImagePanel extends Panel implements LoadWorkerModel<UpdatableImage>
     }
 
     public void initHeaderPopup() {
-        popupContextMenu = menuHandler.createPopupMenu(
+        popupContextMenu = menuHandler.createPopupMenu(this,
             EXECUTE_STREAMER_ACTION_ID,
             EXECUTE_STREAMER_WITH_ACTION_ID,
             SEPARATOR,

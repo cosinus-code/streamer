@@ -6,6 +6,20 @@
     }
   },
   "menu-edit": {
+    "find-action": {
+      "shortcut": "control F"
+    },
+    "separator-1": {},
+    "cut": {
+        "shortcut": "control X"
+    },
+    "copy": {
+      "shortcut": "control C"
+    },
+    "paste": {
+      "shortcut": "control V"
+    },
+    "separator-2": {},
     "menu-edit-preferences": {
       "shortcut": "control P"
     }

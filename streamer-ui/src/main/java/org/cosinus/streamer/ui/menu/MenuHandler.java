@@ -56,29 +56,34 @@ public class MenuHandler {
         this.iconInitializer = iconInitializer;
     }
 
-    public PopupMenu createPopupMenu(String... actionIds) {
+    public PopupMenu createPopupMenu(JComponent component, String... actionIds) {
         PopupMenu popupMenu = new PopupMenu();
         stream(actionIds)
             .forEach(actionId -> {
                 if (SEPARATOR.equals(actionId)) {
                     popupMenu.addSeparator();
                 } else {
-                    popupMenu.add(createMenuItem(actionId));
+                    popupMenu.add(createMenuItem(component, actionId));
                 }
             });
         return popupMenu;
     }
 
-    public MenuItem createMenuItem(String actionId) {
-        return createMenuItem(actionId, null);
+    public MenuItem createMenuItem(JComponent component, String actionId) {
+        return createMenuItem(component, actionId, null);
     }
 
-    public MenuItem createMenuItem(String actionId, ActionModel actionModel) {
+    public MenuItem createMenuItem(JComponent component, String actionId, ActionModel actionModel) {
         ActionListener actionListener = ofNullable(actionModel)
             .<ActionListener>map(model -> e -> actionController.runAction(actionId, model))
-            .orElse(e -> actionController.runAction(actionId));
+            .orElse(e -> actionController.runAction(component, actionId));
         MenuItem menuItem = new MenuItem(actionListener, actionId);
         menuItem.translate();
+
+        ofNullable(component.getActionMap())
+            .map(actionMap -> actionMap.get(actionId))
+            .filter(Action::isEnabled)
+            .ifPresent(menuItem::setAction);
 
         //TODO: this shouldn't be necessary, but sometimes the icon is not loaded by the IconInitializer
         iconInitializer.updateIcon(menuItem);
