@@ -186,10 +186,10 @@ public class StreamerPanel extends Panel {
         this.view.initComponents();
         this.view.triggerFormUpdate();
 
-        ofNullable(view.getName())
+        showViewsButton.setIconName(ofNullable(view.getName())
             .flatMap(View::findByName)
             .map(View::getIconName)
-            .ifPresent(showViewsButton::setIconName);
+            .orElse(null));
         iconInitializer.updateIcon(showViewsButton);
 
         revalidate();

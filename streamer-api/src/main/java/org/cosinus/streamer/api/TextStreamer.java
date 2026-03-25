@@ -25,6 +25,8 @@ import static org.cosinus.stream.text.TextStream.lines;
 
 public class TextStreamer extends StreamerDelegate<String, BinaryStreamer> implements Streamer<String> {
 
+    public static final String TEXT_VIEW_ID = "text";
+
     public TextStreamer(BinaryStreamer delegate) {
         super(delegate);
     }
@@ -51,4 +53,8 @@ public class TextStreamer extends StreamerDelegate<String, BinaryStreamer> imple
             .orElse(null);
     }
 
+    @Override
+    public String getViewId() {
+        return TEXT_VIEW_ID;
+    }
 }

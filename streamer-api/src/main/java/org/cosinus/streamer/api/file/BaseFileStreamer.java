@@ -20,6 +20,7 @@ package org.cosinus.streamer.api.file;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.value.*;
 import org.cosinus.swing.file.FileHandler;
+import org.cosinus.swing.file.mimetype.MimeTypeResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -30,6 +31,7 @@ import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.joining;
+import static org.cosinus.streamer.api.TextStreamer.TEXT_VIEW_ID;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 public abstract class BaseFileStreamer<T> implements Streamer<T> {
@@ -37,8 +39,15 @@ public abstract class BaseFileStreamer<T> implements Streamer<T> {
     protected static final int DETAIL_INDEX_NAME = 0;
     protected static final int DETAIL_INDEX_SIZE = 2;
 
+    public static final String BINARY_VIEW_ID = "binary";
+
+    public static final String IMAGE_VIEW_ID = "image";
+
     @Autowired
     protected FileHandler fileHandler;
+
+    @Autowired
+    private MimeTypeResolver mimeTypeResolver;
 
     protected final List<TranslatableName> detailNames;
 
@@ -124,4 +133,21 @@ public abstract class BaseFileStreamer<T> implements Streamer<T> {
     public boolean canDelete() {
         return true;
     }
+
+    @Override
+    public String getViewId() {
+        return isImageCompatible() ? IMAGE_VIEW_ID :
+            isTextCompatible() ? TEXT_VIEW_ID :
+                BINARY_VIEW_ID;
+    }
+
+    public boolean isImageCompatible() {
+        return mimeTypeResolver.isImageCompatible(getPath());
+    }
+
+    public boolean isTextCompatible() {
+        return mimeTypeResolver.isTextCompatible(getPath()) ||
+            mimeTypeResolver.hasUnknownMimeType(getPath());
+    }
+
 }

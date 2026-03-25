@@ -30,7 +30,6 @@ import org.cosinus.streamer.ui.view.image.ImageStreamerView;
 import org.cosinus.streamer.ui.view.table.ViewItem;
 import org.cosinus.swing.action.execute.ActionExecutor;
 import org.cosinus.swing.dialog.DialogHandler;
-import org.cosinus.swing.file.mimetype.MimeTypeResolver;
 import org.cosinus.swing.image.LoadThumbnailsWorker;
 import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.translate.Translator;
@@ -48,10 +47,8 @@ import java.util.Optional;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.action.LoadStreamerAction.LOAD_STREAMER_ACTION_ID;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.PREVIEW;
-import static org.cosinus.streamer.ui.view.image.ImageStreamerView.IMAGE_VIEWER;
 import static org.cosinus.streamer.ui.view.table.icon.IconTable.PREVIEW_CELL_SIZE;
 import static org.cosinus.streamer.ui.view.table.icon.IconView.ICON_VIEW_NAME;
-import static org.cosinus.streamer.ui.view.text.TextStreamerView.TEXT_EDITOR;
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 
 /**
@@ -70,8 +67,6 @@ public class LoadActionExecutor extends WorkerExecutor<LoadActionModel<?>, Worke
 
     private final SaveWorkerExecutor saveWorkerExecutor;
 
-    private final MimeTypeResolver mimeTypeResolver;
-
     private final Preferences preferences;
 
     protected LoadActionExecutor(final StreamerViewHandler streamerViewHandler,
@@ -79,14 +74,12 @@ public class LoadActionExecutor extends WorkerExecutor<LoadActionModel<?>, Worke
                                  final DialogHandler dialogHandler,
                                  final Translator translator,
                                  final SaveWorkerExecutor saveWorkerExecutor,
-                                 final MimeTypeResolver mimeTypeResolver,
                                  final Preferences preferences) {
         this.streamerViewHandler = streamerViewHandler;
         this.binaryExpanderHandler = binaryExpanderHandler;
         this.dialogHandler = dialogHandler;
         this.translator = translator;
         this.saveWorkerExecutor = saveWorkerExecutor;
-        this.mimeTypeResolver = mimeTypeResolver;
         this.preferences = preferences;
     }
 
@@ -111,7 +104,6 @@ public class LoadActionExecutor extends WorkerExecutor<LoadActionModel<?>, Worke
         StreamerView streamerViewToLoadTo = streamerViewHandler.createStreamerView(
             actionModel.getLocationToLoadTo(),
             ofNullable(actionModel.getStreamerViewNameToLoadIn())
-                .filter(viewName -> !streamerToLoad.isTextCompatible() || TEXT_EDITOR.equals(viewName))
                 .orElseGet(() -> getDefaultViewName(streamerToLoad)));
         streamerViewHandler.setView(actionModel.getLocationToLoadTo(), streamerViewToLoadTo);
         streamerViewToLoadTo.setParentStreamer(streamerToLoad);
@@ -128,26 +120,13 @@ public class LoadActionExecutor extends WorkerExecutor<LoadActionModel<?>, Worke
 
     private String getDefaultViewName(Streamer<?> streamerToLoad) {
         if (!streamerToLoad.isParent()) {
-            if (streamerToLoad.getViewId() != null) {
-                return streamerToLoad.getViewId();
-            }
-            if (isImageCompatible(streamerToLoad.getPath())) {
-                return IMAGE_VIEWER;
-            }
-            if (isTextCompatible(streamerToLoad.getPath())) {
-                return TEXT_EDITOR;
-            }
+            //TODO: to remember the last view used for this streamer type
+            return streamerViewHandler.getAvailableViewNames(streamerToLoad)
+                .stream()
+                .findFirst()
+                .orElse(null);
         }
         return null;
-    }
-
-    private boolean isImageCompatible(Path path) {
-        return mimeTypeResolver.isImageCompatible(path);
-    }
-
-    private boolean isTextCompatible(Path path) {
-        return mimeTypeResolver.isTextCompatible(path) ||
-            mimeTypeResolver.hasUnknownMimeType(path);
     }
 
     @Override

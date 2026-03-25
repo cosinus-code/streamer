@@ -123,8 +123,6 @@ public class StreamerViewHandler {
         StreamerPanel panel = new StreamerPanel();
         panelsMap.put(location, panel);
         panel.initComponents();
-        //TODO: the creation of the view can be skipped here, and let the load action to create it
-        panel.setView(createStreamerView(location, null));
         return panel;
     }
 
