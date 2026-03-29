@@ -284,30 +284,4 @@ public abstract class TableStreamerView<T extends Streamable>
     public WorkerModel<T> getCopyWorkerModel() {
         return getDataTableModel().getCopyWorkerModel();
     }
-
-//    public class DragMouseAdapter extends MouseAdapter {
-//        public void mousePressed(MouseEvent event) {
-//            int index = getClosestIndex(event.getPoint());
-//            if(index > -1) setCurrentIndex(index);
-//            requestFocus();
-//
-//            clearSelection();
-//            pointStart = event.getPoint();
-//        }
-//
-//        public void mouseReleased(MouseEvent e) {
-//            pointStart = null;
-//            pointEnd = null;
-//            repaint();
-//        }
-//    }
-//
-//    public class DragMouseMotionAdapter extends MouseMotionAdapter {
-//        public void mouseDragged(MouseEvent event) {
-//            pointEnd = event.getPoint();
-//            List<Integer> indexes = getIndexesInRect(pointStart, pointEnd);
-//            selectElements(indexes, true, null, false);
-//            repaint();
-//        }
-//    }
 }

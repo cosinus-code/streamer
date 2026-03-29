@@ -28,7 +28,6 @@ import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.form.ScrollPane;
 import org.cosinus.swing.image.UpdatableImage;
-import org.cosinus.swing.worker.WorkerListener;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
@@ -85,7 +84,7 @@ public class ImageStreamerView extends StreamerView<byte[]> {
         super.initComponents();
 
         imagePanel = new ImagePanel(this);
-        imagePanel.initHeaderPopup();
+        imagePanel.initContextMenu();
 
         ScrollPane scroll = new ScrollPane();
         scroll.setViewportView(imagePanel);
@@ -133,7 +132,7 @@ public class ImageStreamerView extends StreamerView<byte[]> {
 
     @Override
     public byte[] getCurrentItem() {
-        return new byte[0];
+        return null;
     }
 
     @Override
@@ -160,7 +159,7 @@ public class ImageStreamerView extends StreamerView<byte[]> {
 
     @Override
     protected Container getContainer() {
-        return null;
+        return imagePanel;
     }
 
     @Override

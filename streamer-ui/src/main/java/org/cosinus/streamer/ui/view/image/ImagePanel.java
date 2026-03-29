@@ -171,7 +171,7 @@ public class ImagePanel extends Panel implements LoadWorkerModel<UpdatableImage>
         repaint();
     }
 
-    public void initHeaderPopup() {
+    public void initContextMenu() {
         popupContextMenu = menuHandler.createPopupMenu(this,
             EXECUTE_STREAMER_ACTION_ID,
             EXECUTE_STREAMER_WITH_ACTION_ID,

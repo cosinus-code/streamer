@@ -56,7 +56,6 @@ import static org.cosinus.streamer.ui.action.RenameStreamerAction.RENAME_STREAME
 import static org.cosinus.streamer.ui.action.ShowPermissionsAction.SHOW_STREAMER_PERMISSIONS_ACTION_ID;
 import static org.cosinus.streamer.ui.action.ShowStreamerPropertiesAction.SHOW_STREAMER_PROPERTIES_ACTION_ID;
 import static org.cosinus.streamer.ui.menu.MenuHandler.SEPARATOR;
-import static org.cosinus.streamer.ui.view.table.TableStreamerView.*;
 import static org.cosinus.swing.action.ActionController.*;
 
 public abstract class DataTable<T extends Streamable> extends Table implements FocusListener, ExtendedContainer {
