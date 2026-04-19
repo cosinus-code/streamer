@@ -17,17 +17,16 @@
 
 package org.cosinus.streamer.ui.view.table;
 
-import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.StreamerViewLoadWorkerListener;
 
 import static java.util.Optional.ofNullable;
 
-public class TableStreamerViewLoadWorkerListener<T extends Streamable, V> extends StreamerViewLoadWorkerListener<T, V> {
+public class TableStreamerViewLoadWorkerListener<V> extends StreamerViewLoadWorkerListener<V> {
 
-    protected final DataTable<T> table;
+    protected final DataTable<?> table;
 
-    public TableStreamerViewLoadWorkerListener(final TableStreamerView<T> streamerView) {
+    public TableStreamerViewLoadWorkerListener(final TableStreamerView<?> streamerView) {
         super(streamerView);
         this.table = streamerView.table;
     }

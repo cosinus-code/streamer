@@ -16,6 +16,8 @@
 
 package org.cosinus.streamer.ui.action.execute.load;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
@@ -34,13 +36,21 @@ public class LoadActionModel<T> implements ActionModel {
 
     protected final String itemToSelectAfterLoad;
 
-    protected final String streamerViewNameToLoadIn;
-
     protected final boolean expanding;
+
+    protected String streamerViewNameToLoadIn;
 
     protected Streamer<T> streamerToLoad;
 
     protected StreamerView<T> streamerViewToLoadTo;
+
+    @Getter
+    @Setter
+    protected long offset;
+
+    @Getter
+    @Setter
+    protected long limit = -1;
 
     public LoadActionModel(final PanelLocation locationToLoadTo,
                            final Streamer<?> initialStreamerToLoad) {
@@ -72,6 +82,14 @@ public class LoadActionModel<T> implements ActionModel {
         this(streamerViewToLoadTo.getCurrentLocation(), streamerToLoad, null, null, false);
         this.streamerToLoad = streamerToLoad;
         this.streamerViewToLoadTo = streamerViewToLoadTo;
+    }
+
+    public LoadActionModel(final StreamerView<T> streamerViewToLoadTo) {
+        this(streamerViewToLoadTo.getCurrentLocation(),
+            streamerViewToLoadTo.getParentStreamer(), null, null, false);
+        this.streamerToLoad = streamerViewToLoadTo.getParentStreamer();
+        this.streamerViewToLoadTo = streamerViewToLoadTo;
+        this.streamerViewNameToLoadIn = streamerViewToLoadTo.getName();
     }
 
     public LoadActionModel(final PanelLocation locationToLoadTo,

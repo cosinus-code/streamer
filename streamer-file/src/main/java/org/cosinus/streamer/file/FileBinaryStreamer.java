@@ -18,13 +18,19 @@ package org.cosinus.streamer.file;
 
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.error.SaveStreamerException;
+import org.cosinus.swing.file.channel.LazyFileChannel;
 
 import java.io.*;
+import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 
+import static java.nio.file.StandardOpenOption.READ;
+import static java.nio.file.StandardOpenOption.WRITE;
 import static java.util.Optional.ofNullable;
 
 public class FileBinaryStreamer extends FileStreamer<byte[]> implements BinaryStreamer {
+
+    protected FileChannel fileChannel;
 
     public FileBinaryStreamer(Path path) {
         super(path);
@@ -34,9 +40,22 @@ public class FileBinaryStreamer extends FileStreamer<byte[]> implements BinarySt
     public InputStream inputStream() {
         try {
             return new FileInputStream(file);
-        } catch (FileNotFoundException ex) {
+        } catch (IOException ex) {
             throw new UncheckedIOException(ex);
         }
+    }
+
+    @Override
+    public FileChannel fileChannel() throws IOException {
+        if (fileChannel == null) {
+            fileChannel = new LazyFileChannel(FileChannel.open(file.toPath(), READ, WRITE));
+        }
+        return fileChannel;
+    }
+
+    @Override
+    public boolean supportsChannel() {
+        return true;
     }
 
     @Override

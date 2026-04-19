@@ -176,8 +176,8 @@ public class ImageStreamerView extends StreamerView<byte[]> {
     }
 
     @Override
-    public ImageStreamerViewLoadWorkerListener getLoadWorkerListener() {
-        return new ImageStreamerViewLoadWorkerListener(this);
+    public ImageLoadWorkerListener getLoadWorkerListener() {
+        return new ImageLoadWorkerListener(this);
     }
 
     @Override

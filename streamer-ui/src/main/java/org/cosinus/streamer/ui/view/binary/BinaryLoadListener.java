@@ -20,9 +20,13 @@ package org.cosinus.streamer.ui.view.binary;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.StreamerViewLoadWorkerListener;
 
-public class BinaryLoadListener extends StreamerViewLoadWorkerListener<byte[], byte[]> {
+import java.nio.ByteBuffer;
 
-    private final BinaryEditor binaryEditor;
+import static javax.swing.SwingUtilities.invokeLater;
+
+public class BinaryLoadListener extends StreamerViewLoadWorkerListener<ByteBuffer> {
+
+    private final BinaryHexaEditor binaryEditor;
 
     public BinaryLoadListener(final BinaryStreamerView streamerView) {
         super(streamerView);
@@ -30,20 +34,19 @@ public class BinaryLoadListener extends StreamerViewLoadWorkerListener<byte[], b
     }
 
     @Override
-    public void workerStarted(LoadWorkerModel<byte[]> loadWorkerModel) {
+    public void workerStarted(LoadWorkerModel<ByteBuffer> loadWorkerModel) {
         super.workerStarted(loadWorkerModel);
     }
 
     @Override
-    public void workerUpdated(LoadWorkerModel<byte[]> loadWorkerModel) {
+    public void workerUpdated(LoadWorkerModel<ByteBuffer> loadWorkerModel) {
         super.workerUpdated(loadWorkerModel);
-        binaryEditor.getBinaryHexaView().sync(binaryEditor.getBytes());
-        binaryEditor.getBinaryTextView().sync(binaryEditor.getBytes());
+        invokeLater(binaryEditor::repaint);
     }
 
     @Override
-    public void workerFinished(LoadWorkerModel<byte[]> loadWorkerModel) {
+    public void workerFinished(LoadWorkerModel<ByteBuffer> loadWorkerModel) {
         super.workerFinished(loadWorkerModel);
-        binaryEditor.repaint();
+        invokeLater(binaryEditor::repaint);
     }
 }

@@ -16,8 +16,10 @@
 
 package org.cosinus.streamer.api;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.FileChannel;
 
 public class BinaryStreamerDelegate extends StreamerDelegate<byte[], BinaryStreamer> implements BinaryStreamer {
 
@@ -48,5 +50,10 @@ public class BinaryStreamerDelegate extends StreamerDelegate<byte[], BinaryStrea
     @Override
     public OutputStream outputStream(boolean append) {
         return delegate.outputStream(append);
+    }
+
+    @Override
+    public FileChannel fileChannel() throws IOException {
+        return delegate.fileChannel();
     }
 }

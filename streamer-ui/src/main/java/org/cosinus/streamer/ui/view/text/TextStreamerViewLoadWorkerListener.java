@@ -20,7 +20,7 @@ package org.cosinus.streamer.ui.view.text;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.StreamerViewLoadWorkerListener;
 
-public class TextStreamerViewLoadWorkerListener extends StreamerViewLoadWorkerListener<String, String> {
+public class TextStreamerViewLoadWorkerListener extends StreamerViewLoadWorkerListener<String> {
 
     private final TextStreamerEditor textEditor;
 

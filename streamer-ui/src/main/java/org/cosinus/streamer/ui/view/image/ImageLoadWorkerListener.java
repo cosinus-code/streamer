@@ -21,11 +21,11 @@ import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.StreamerViewLoadWorkerListener;
 import org.cosinus.swing.image.UpdatableImage;
 
-public class ImageStreamerViewLoadWorkerListener extends StreamerViewLoadWorkerListener<byte[], UpdatableImage> {
+public class ImageLoadWorkerListener extends StreamerViewLoadWorkerListener<UpdatableImage> {
 
     private final ImagePanel imagePanel;
 
-    public ImageStreamerViewLoadWorkerListener(final ImageStreamerView streamerView) {
+    public ImageLoadWorkerListener(final ImageStreamerView streamerView) {
         super(streamerView);
         this.imagePanel = streamerView.getImagePanel();
     }

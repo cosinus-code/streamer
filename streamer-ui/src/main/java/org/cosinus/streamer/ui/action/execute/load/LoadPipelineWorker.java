@@ -26,13 +26,13 @@ import org.cosinus.swing.worker.WorkerListener;
 /**
  * {@link javax.swing.SwingWorker} for loading a streamer
  */
-public class LoadWorker<T> extends StreamWorker<LoadWorkerModel<T>, T, ProgressModel> {
+public class LoadPipelineWorker<T> extends StreamWorker<LoadWorkerModel<T>, T, ProgressModel> {
 
     private final Streamer<T> streamerToLoad;
 
     private final StreamerView<T> streamerViewToLoadTo;
 
-    public LoadWorker(LoadActionModel<T> actionModel) {
+    public LoadPipelineWorker(LoadActionModel<T> actionModel) {
         super(actionModel,
             actionModel.getStreamerViewToLoadTo().getLoadWorkerModel(),
             actionModel.getStreamerToLoad(),
@@ -64,13 +64,13 @@ public class LoadWorker<T> extends StreamWorker<LoadWorkerModel<T>, T, ProgressM
     }
 
     @Override
-    public LoadWorker<T> registerListener(WorkerListener<LoadWorkerModel<T>, T> workerListener) {
+    public LoadPipelineWorker<T> registerListener(WorkerListener<LoadWorkerModel<T>, T> workerListener) {
         super.registerListener(workerListener);
         return this;
     }
 
     @Override
-    public LoadWorker<T> registerListener(ProgressListener<ProgressModel> progressListener) {
+    public LoadPipelineWorker<T> registerListener(ProgressListener<ProgressModel> progressListener) {
         super.registerListener(progressListener);
         return this;
     }

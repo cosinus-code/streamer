@@ -96,7 +96,7 @@ public class StreamerPanel extends Panel {
 
         freeSpaceLabel.setVisible(false);
 
-        addressTop.addActionListener(event -> findAndLoadStreamer(addressTop::getText));
+        addressTop.addActionListener(event -> findAndLoadStreamer(addressTop::getText).run());
 
         showViewsButton = new NoBorderButton("⏷", this::showViewsSelector);
         addAsFavoriteButton = new NoBorderButton("★", this::addCurrentAddressAsFavorite);

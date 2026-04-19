@@ -19,20 +19,17 @@ package org.cosinus.streamer.ui.view.binary;
 
 import lombok.Getter;
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
-import org.cosinus.swing.form.BlockCaret;
-import org.cosinus.swing.form.ScrollPane;
+import org.cosinus.streamer.ui.view.text.SaveTextWorkerModel;
+import org.cosinus.swing.worker.WorkerListener;
 
-import javax.swing.text.DefaultCaret;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.List;
 
 import static java.awt.BorderLayout.CENTER;
+import static java.awt.BorderLayout.EAST;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 
@@ -43,9 +40,7 @@ public class BinaryStreamerView extends StreamerView<byte[]> {
     public static final String STATUS_BINARY_SIZE = "status-binary-size";
 
     @Getter
-    private BinaryEditor binaryEditor;
-
-    private ScrollPane scroll;
+    private BinaryHexaEditor binaryEditor;
 
     public BinaryStreamerView(PanelLocation location) {
         super(location);
@@ -55,53 +50,31 @@ public class BinaryStreamerView extends StreamerView<byte[]> {
     public void initComponents() {
         super.initComponents();
 
-        binaryEditor = new BinaryEditor(this);
+        binaryEditor = new BinaryHexaEditor(this);
         binaryEditor.initComponents();
 
-        scroll = new ScrollPane();
-        scroll.setViewportView(binaryEditor);
-        scroll.setEnabled(false);
-        scroll.setFocusable(false);
-        scroll.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                binaryEditor.getBinaryHexaView().requestFocus();
-            }
-        });
+        streamerViewMainPanel.add(binaryEditor, CENTER);
+        streamerViewMainPanel.add(binaryEditor.getScrollBar(), EAST);
+    }
 
-        ofNullable(binaryEditor.getBackground())
-            .map(Color::getRGB)
-            .map(Color::new)
-            .ifPresent(scroll.getViewport()::setBackground);
-
-        streamerViewMainPanel.add(scroll, CENTER);
-
-        addComponentListener(new ResizeListener());
+    @Override
+    public void reset(Streamer<byte[]> parentStreamer) {
+        super.reset(parentStreamer);
+        binaryEditor.reset();
     }
 
     @Override
     public void requestFocus() {
         super.requestFocus();
-        binaryEditor.getBinaryHexaView().requestFocus();
+        if (binaryEditor != null) {
+            binaryEditor.requestFocus();
+        }
     }
 
     @Override
     public void setActive(boolean active) {
-        if (active) {
-            binaryEditor.getBinaryHexaView().setCaret(new BlockCaret(binaryEditor.getBinaryHexaView()));
-            int binaryPosition = binaryEditor.byteIndexToBinaryPosition(binaryEditor.getCurrentByteIndex());
-            binaryEditor.getBinaryHexaView().setCaretPosition(binaryPosition);
-        } else {
-            binaryEditor.getBinaryHexaView().setCaret(new DefaultCaret());
-        }
+        binaryEditor.setHideCaret(!active);
         super.setActive(active);
-    }
-
-    private class ResizeListener extends ComponentAdapter {
-        @Override
-        public void componentResized(ComponentEvent e) {
-            binaryEditor.onResize(scroll.getWidth(), scroll.getHeight());
-        }
     }
 
     @Override
@@ -137,7 +110,7 @@ public class BinaryStreamerView extends StreamerView<byte[]> {
     }
 
     @Override
-    public BinaryEditor getLoadWorkerModel() {
+    public BinaryHexaEditor getLoadWorkerModel() {
         return binaryEditor;
     }
 
@@ -150,4 +123,12 @@ public class BinaryStreamerView extends StreamerView<byte[]> {
     protected Container getContainer() {
         return binaryEditor;
     }
+
+    @Override
+    public boolean isDirty() {
+        return super.isDirty() || ofNullable(binaryEditor)
+            .map(BinaryHexaEditor::isDirty)
+            .orElse(false);
+    }
 }
+

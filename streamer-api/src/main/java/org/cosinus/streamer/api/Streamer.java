@@ -25,6 +25,8 @@ import org.cosinus.swing.security.Permissions;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import static java.util.Optional.ofNullable;
+
 public interface Streamer<T> extends Streamable, StreamSupplier<T> {
 
     String DETAIL_KEY_NAME = "name";
@@ -86,5 +88,11 @@ public interface Streamer<T> extends Streamable, StreamSupplier<T> {
     @Override
     default boolean isParent() {
         return false;
+    }
+
+    default boolean supportsChannel() {
+        return ofNullable(binaryStreamer())
+            .filter(BinaryStreamer::supportsChannel)
+            .isPresent();
     }
 }

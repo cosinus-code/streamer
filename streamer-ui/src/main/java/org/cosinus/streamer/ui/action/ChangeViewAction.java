@@ -49,7 +49,6 @@ public class ChangeViewAction implements SwingActionWithModel<ChangeViewActionMo
             streamerViewHandler.getCurrentView().getParentStreamer(),
             streamerViewHandler.getCurrentView().getCurrentItemIdentifier(),
             viewName));
-        streamerViewHandler.setPreferredViewName(streamerViewHandler.getCurrentLocation(), viewName);
     }
 
     @Override

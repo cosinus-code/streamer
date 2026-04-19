@@ -110,7 +110,7 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
         setFocusTraversalKeysEnabled(false);
         addFocusListener(this);
         getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-            .put(getKeyStroke(KeyEvent.VK_ENTER, 0), "no-action");
+            .put(getKeyStroke(KeyEvent.VK_ENTER, 0), NO_ACTION_ID);
 
         popupContextMenu = menuHandler.createPopupMenu(this,
             EXECUTE_STREAMER_ACTION_ID,

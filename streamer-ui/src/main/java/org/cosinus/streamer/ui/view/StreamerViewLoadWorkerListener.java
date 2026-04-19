@@ -23,14 +23,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
-public class StreamerViewLoadWorkerListener<T, V> implements WorkerListener<LoadWorkerModel<V>, V> {
+public class StreamerViewLoadWorkerListener<V> implements WorkerListener<LoadWorkerModel<V>, V> {
 
     @Autowired
     private StreamerViewHandler streamerViewHandler;
 
-    protected final StreamerView<T> streamerView;
+    protected final StreamerView<?> streamerView;
 
-    public StreamerViewLoadWorkerListener(final StreamerView<T> streamerView) {
+    public StreamerViewLoadWorkerListener(final StreamerView<?> streamerView) {
         injectContext(this);
         this.streamerView = streamerView;
     }

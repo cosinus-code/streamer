@@ -29,6 +29,7 @@ import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.streamer.ui.view.image.ImageStreamerView;
 import org.cosinus.streamer.ui.view.table.ViewItem;
 import org.cosinus.swing.action.execute.ActionExecutor;
+import org.cosinus.swing.boot.cleanup.ApplicationShutDown;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.image.LoadThumbnailsWorker;
 import org.cosinus.swing.preference.Preferences;
@@ -47,12 +48,13 @@ import java.util.Optional;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.action.LoadStreamerAction.LOAD_STREAMER_ACTION_ID;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.PREVIEW;
+import static org.cosinus.streamer.ui.view.binary.BinaryStreamerView.BINARY_VIEWER;
 import static org.cosinus.streamer.ui.view.table.icon.IconTable.PREVIEW_CELL_SIZE;
 import static org.cosinus.streamer.ui.view.table.icon.IconView.ICON_VIEW_NAME;
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 
 /**
- * Implementation of {@link ActionExecutor} based on {@link LoadWorker}
+ * Implementation of {@link ActionExecutor} based on {@link LoadPipelineWorker}
  */
 @Component
 public class LoadActionExecutor extends WorkerExecutor<LoadActionModel<?>, Worker<?, ?, ?>> {
@@ -69,18 +71,22 @@ public class LoadActionExecutor extends WorkerExecutor<LoadActionModel<?>, Worke
 
     private final Preferences preferences;
 
+    private final ApplicationShutDown applicationShutDown;
+
     protected LoadActionExecutor(final StreamerViewHandler streamerViewHandler,
                                  final BinaryExpanderHandler binaryExpanderHandler,
                                  final DialogHandler dialogHandler,
                                  final Translator translator,
                                  final SaveWorkerExecutor saveWorkerExecutor,
-                                 final Preferences preferences) {
+                                 final Preferences preferences,
+                                 final ApplicationShutDown applicationShutDown) {
         this.streamerViewHandler = streamerViewHandler;
         this.binaryExpanderHandler = binaryExpanderHandler;
         this.dialogHandler = dialogHandler;
         this.translator = translator;
         this.saveWorkerExecutor = saveWorkerExecutor;
         this.preferences = preferences;
+        this.applicationShutDown = applicationShutDown;
     }
 
     @Override
@@ -96,15 +102,29 @@ public class LoadActionExecutor extends WorkerExecutor<LoadActionModel<?>, Worke
 
         Streamer streamerToLoad = actionModel.getStreamerToLoad();
         StreamerView currentStreamerView = streamerViewHandler.getCurrentView();
-        if (isCurrentStreamerViewDirty() && !streamerToLoad.isDirty() && !isCurrentStreamerSaving() && shouldSave()) {
-            saveWorkerExecutor.execute(new SaveActionModel(currentStreamerView));
-            return;
-        }
+        ofNullable(currentStreamerView)
+            .map(StreamerView::getParentStreamer)
+            .ifPresent(currentStreamer -> {
+                if (currentStreamerView.isDirty() &&
+                    !streamerToLoad.isDirty() &&
+                    !isStreamerSaving(currentStreamer) &&
+                    shouldSave()) {
 
-        StreamerView streamerViewToLoadTo = streamerViewHandler.createStreamerView(
-            actionModel.getLocationToLoadTo(),
-            ofNullable(actionModel.getStreamerViewNameToLoadIn())
-                .orElseGet(() -> getDefaultViewName(streamerToLoad)));
+                    saveWorkerExecutor.execute(new SaveActionModel(currentStreamerView));
+                    return;
+                }
+
+                if (currentStreamer.supportsChannel() && !streamerToLoad.equals(currentStreamer)) {
+                    applicationShutDown.shutDown(currentStreamer.getId());
+                }
+            });
+
+        String viewName = ofNullable(actionModel.getStreamerViewNameToLoadIn())
+            .orElseGet(() -> getDefaultViewName(streamerToLoad));
+
+        StreamerView streamerViewToLoadTo = ofNullable(currentStreamerView)
+            .filter(view -> view.getName().equals(viewName) && view.getName() != null)
+            .orElseGet(() -> streamerViewHandler.createStreamerView(actionModel.getLocationToLoadTo(), viewName));
         streamerViewHandler.setView(actionModel.getLocationToLoadTo(), streamerViewToLoadTo);
         streamerViewToLoadTo.setParentStreamer(streamerToLoad);
 
@@ -138,7 +158,10 @@ public class LoadActionExecutor extends WorkerExecutor<LoadActionModel<?>, Worke
 
         Worker worker = loadActionModel instanceof LoadImageActionModel loadImageActionModel ?
             new LoadImageWorker(loadImageActionModel) :
-            new LoadWorker<>(loadActionModel);
+            loadActionModel.getStreamerViewToLoadTo().getName().equals(BINARY_VIEWER) &&
+                loadActionModel.getStreamerToLoad().supportsChannel() ?
+                new LoadChannelWorker(loadActionModel) :
+                new LoadPipelineWorker<>(loadActionModel);
 
         return worker
             .registerListener(loadActionModel.getStreamerViewToLoadTo().getLoadWorkerListener())
@@ -179,19 +202,12 @@ public class LoadActionExecutor extends WorkerExecutor<LoadActionModel<?>, Worke
         return LOAD_STREAMER_ACTION_ID;
     }
 
-    private boolean isCurrentStreamerViewDirty() {
-        return ofNullable(streamerViewHandler.getCurrentView())
-            .map(StreamerView::isDirty)
-            .orElse(false);
-    }
-
     private boolean shouldSave() {
         return dialogHandler.confirm(applicationFrame, translator.translate("do-you-want-to-save"));
     }
 
-    private boolean isCurrentStreamerSaving() {
-        return ofNullable(streamerViewHandler.getCurrentView())
-            .map(StreamerView::getParentStreamer)
+    private boolean isStreamerSaving(Streamer<?> streamer) {
+        return ofNullable(streamer)
             .map(Streamer::getId)
             .map(saveWorkerExecutor::isWorkerRunning)
             .orElse(false);
