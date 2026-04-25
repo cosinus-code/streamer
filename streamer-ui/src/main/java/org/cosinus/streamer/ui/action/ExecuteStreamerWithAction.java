@@ -24,8 +24,8 @@ import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.SwingAction;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.exec.ProcessExecutor;
-import org.cosinus.swing.file.FileCompatibleApplications;
-import org.cosinus.swing.file.FileSystem;
+import org.cosinus.swing.file.api.FileCompatibleApplications;
+import org.cosinus.swing.file.api.FileSystem;
 import org.cosinus.swing.image.icon.IconInitializer;
 import org.springframework.stereotype.Component;
 

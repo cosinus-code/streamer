@@ -21,8 +21,11 @@ import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.api.meta.MainStreamer;
 import org.cosinus.streamer.api.meta.RootStreamer;
 import org.cosinus.streamer.api.value.TranslatableName;
+import org.cosinus.swing.file.DiskMonitorController;
 import org.cosinus.swing.file.FileHandler;
-import org.cosinus.swing.file.FileSystemRoot;
+import org.cosinus.swing.file.api.DiskEvent;
+import org.cosinus.swing.file.api.DiskEventListener;
+import org.cosinus.swing.file.api.FileSystemRoot;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import java.io.File;
@@ -37,7 +40,7 @@ import static org.cosinus.swing.image.icon.IconProvider.ICON_COMPUTER;
 
 @RootStreamer("Filesystem")
 @ConditionalOnProperty(name = "streamer.file.enabled", matchIfMissing = true)
-public class FileMainStreamer extends MainStreamer<FileStreamer<?>> {
+public class FileMainStreamer extends MainStreamer<FileStreamer<?>> implements DiskEventListener {
 
     public static final String FILE_PROTOCOL = "file://";
 
@@ -45,8 +48,10 @@ public class FileMainStreamer extends MainStreamer<FileStreamer<?>> {
 
     private List<TranslatableName> detailNames;
 
-    public FileMainStreamer(FileHandler fileHandler) {
+    public FileMainStreamer(final FileHandler fileHandler,
+                            final DiskMonitorController diskMonitorController) {
         this.fileHandler = fileHandler;
+        diskMonitorController.register(this);
     }
 
     @Override
@@ -145,5 +150,10 @@ public class FileMainStreamer extends MainStreamer<FileStreamer<?>> {
     @Override
     public void reset() {
         fileHandler.reset();
+    }
+
+    @Override
+    public void onEvent(DiskEvent diskEvent) {
+        reset();
     }
 }

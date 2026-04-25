@@ -17,13 +17,19 @@
 package org.cosinus.streamer.ui.view;
 
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.file.FileMainStreamer;
 import org.cosinus.streamer.ui.view.table.grid.GridViewCreator;
+import org.cosinus.swing.file.DiskMonitorController;
+import org.cosinus.swing.file.api.DiskEvent;
+import org.cosinus.swing.file.api.DiskEventListener;
+import org.cosinus.swing.file.api.FileSystemRoot;
 import org.cosinus.swing.preference.Preference;
 import org.cosinus.swing.preference.Preferences;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+import static java.util.Arrays.stream;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
 import static java.util.function.Predicate.not;
@@ -37,7 +43,7 @@ import static org.cosinus.streamer.ui.view.PanelLocation.RIGHT;
  * Handler for data views
  */
 @Component
-public class StreamerViewHandler {
+public class StreamerViewHandler implements DiskEventListener {
 
     private PanelLocation currentLocation;
 
@@ -56,7 +62,8 @@ public class StreamerViewHandler {
     public StreamerViewHandler(final Preferences preferences,
                                final Set<StreamerViewCreator> streamerViewCreators,
                                final GridViewCreator defaultStreamerViewCreator,
-                               final ViewsMapProvider viewsMapProvider) {
+                               final ViewsMapProvider viewsMapProvider,
+                               final DiskMonitorController diskMonitorController) {
         this.preferences = preferences;
         this.streamerViewCreatorsMap = streamerViewCreators
             .stream()
@@ -67,6 +74,7 @@ public class StreamerViewHandler {
             .getViewsMap()
             .orElseGet(ViewsMap::new);
         this.preferredViewNames = new HashMap<>();
+        diskMonitorController.register(this);
     }
 
     public PanelLocation getCurrentLocation() {
@@ -172,5 +180,15 @@ public class StreamerViewHandler {
         ofNullable(getCurrentView())
             .filter(not(StreamerView::hasFocus))
             .ifPresent(StreamerView::requestFocus);
+    }
+
+    @Override
+    public void onEvent(DiskEvent diskEvent) {
+        stream(PanelLocation.values())
+            .map(this::getView)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .filter(view -> view.getParentStreamer() instanceof FileMainStreamer)
+            .forEach(StreamerView::reload);
     }
 }

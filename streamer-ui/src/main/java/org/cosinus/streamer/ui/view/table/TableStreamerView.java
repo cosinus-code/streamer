@@ -144,10 +144,12 @@ public abstract class TableStreamerView<T extends Streamable>
 
     @Override
     public void setActive(boolean active) {
-        if (active) {
-            table.setCurrentIndex(max(table.getCurrentIndex(), 0), true);
-        } else {
-            table.getSelectionModel().clearSelection();
+        if (table != null) {
+            if (active) {
+                table.setCurrentIndex(max(table.getCurrentIndex(), 0), true);
+            } else {
+                table.getSelectionModel().clearSelection();
+            }
         }
         super.setActive(active);
     }

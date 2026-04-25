@@ -19,7 +19,7 @@ package org.cosinus.streamer.ui.permission;
 
 import org.cosinus.streamer.api.permissions.PermissionsDialogHandler;
 import org.cosinus.swing.dialog.DialogHandler;
-import org.cosinus.swing.file.FilePermissions;
+import org.cosinus.swing.file.api.FilePermissions;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;

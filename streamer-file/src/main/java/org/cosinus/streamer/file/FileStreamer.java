@@ -22,7 +22,7 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.error.StreamerException;
 import org.cosinus.streamer.api.file.BaseFileStreamer;
 import org.cosinus.streamer.api.value.Value;
-import org.cosinus.swing.file.FilePermissions;
+import org.cosinus.swing.file.api.FilePermissions;
 import org.cosinus.swing.security.Permissions;
 import org.cosinus.swing.util.AutoRemovableTemporaryFile;
 import org.springframework.beans.factory.annotation.Autowired;

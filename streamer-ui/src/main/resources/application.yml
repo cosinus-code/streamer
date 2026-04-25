@@ -47,3 +47,9 @@ spring:
             port: 8889
             storing-location: strava
             file-name: authorizedClients
+file:
+  disk:
+    event:
+      listener:
+        enabled: true
+        expirationLimit: 2000

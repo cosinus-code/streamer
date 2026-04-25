@@ -18,7 +18,7 @@
 package org.cosinus.streamer.ui.permission;
 
 import lombok.Getter;
-import org.cosinus.swing.file.FilePermissions;
+import org.cosinus.swing.file.api.FilePermissions;
 import org.cosinus.swing.form.control.CheckBoxValue;
 import org.cosinus.swing.translate.Translator;
 import org.cosinus.swing.ui.UIModel;
