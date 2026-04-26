@@ -26,6 +26,7 @@ import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.menu.MenuHandler;
 import org.cosinus.streamer.ui.view.table.ViewItem;
+import org.cosinus.streamer.ui.view.text.SaveTextWorkerModel;
 import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.error.ErrorHandler;
@@ -306,7 +307,7 @@ public abstract class StreamerView<T> extends Panel {
         return new StreamerViewLoadWorkerListener<>(this);
     }
 
-    public SaveWorkerModel<T> getSaveWorkerModel() {
+    public <V> SaveWorkerModel<V> getSaveWorkerModel() {
         return null;
     }
 
@@ -323,7 +324,26 @@ public abstract class StreamerView<T> extends Panel {
     }
 
     public <V> WorkerListener<SaveWorkerModel<V>, V> getSaveListener() {
-        return null;
+        return new WorkerListener<SaveWorkerModel<V>, V>() {
+            @Override
+            public void workerStarted(SaveWorkerModel<V> saveTextModel) {
+                loadingIndicator.startLoading(saveTextModel.totalItemsToSave());
+            }
+
+            @Override
+            public void workerUpdated(SaveWorkerModel<V> saveTextModel) {
+                loadingIndicator.updateLoading(saveTextModel.getSavedItemsCount(), saveTextModel.totalItemsToSave());
+            }
+
+            @Override
+            public void workerFinished(SaveWorkerModel<V> workerModel) {
+                setDirty(false);
+                loadingIndicator.finishLoading();
+            }
+        };
+    }
+
+    public void setDirty(boolean dirty) {
     }
 
     protected FindPanel createFindTextPanel() {

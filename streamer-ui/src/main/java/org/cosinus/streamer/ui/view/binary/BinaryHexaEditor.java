@@ -20,6 +20,7 @@ package org.cosinus.streamer.ui.view.binary;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
@@ -82,6 +83,7 @@ public class BinaryHexaEditor extends SwingComponent implements LoadWorkerModel<
 
     private final BinaryStreamerView view;
 
+    @Getter
     private final Map<Long, Byte> editedBytes;
 
     private final int padding = 5;
@@ -111,6 +113,9 @@ public class BinaryHexaEditor extends SwingComponent implements LoadWorkerModel<
 
     private int caretWidth;
     private int lineHeight;
+
+    @Getter
+    private BinaryStreamer binaryStreamer;
 
     @Getter
     private JScrollBar scrollBar;
@@ -163,7 +168,8 @@ public class BinaryHexaEditor extends SwingComponent implements LoadWorkerModel<
     }
 
     public void reset() {
-        totalSize = ofNullable(view.getParentStreamer())
+        binaryStreamer = view.getParentStreamer().binaryStreamer();
+        totalSize = ofNullable(binaryStreamer)
             .map(Streamer::getSize)
             .orElse(0L);
         offsetLineIndex = getLineIndex(offset);
@@ -275,14 +281,13 @@ public class BinaryHexaEditor extends SwingComponent implements LoadWorkerModel<
                         e.isControlDown() ? 0 : getStartLineIndexForPosition(caretPosition));
                     case VK_END -> moveCaretToPosition(
                         e.isControlDown() ? totalSize - 1 : getEndLineIndexForPosition(caretPosition));
+                    case VK_DELETE, VK_BACK_SPACE -> deleteCurrentByte();
                 }
             }
 
             @Override
             public void keyTyped(KeyEvent keyEvent) {
-                if (keyEvent.getKeyCode() == VK_DELETE) {
-                    deleteCurrentByte();
-                } else if (hexaMode) {
+                if (hexaMode) {
                     updateCurrentByteByHexaChar(keyEvent.getKeyChar());
                 } else {
                     updateCurrentByteByTextChar(keyEvent.getKeyChar());
@@ -525,8 +530,10 @@ public class BinaryHexaEditor extends SwingComponent implements LoadWorkerModel<
     }
 
     public void setDirty(boolean dirty) {
-        if (dirty) {
+        if (!dirty) {
             editedBytes.clear();
         }
+        view.updateStreamerViewIdentifiers();
+        view.updateStatus();
     }
 }

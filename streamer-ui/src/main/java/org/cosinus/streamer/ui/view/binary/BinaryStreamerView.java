@@ -26,6 +26,7 @@ import org.cosinus.streamer.ui.view.text.SaveTextWorkerModel;
 import org.cosinus.swing.worker.WorkerListener;
 
 import java.awt.*;
+import java.nio.ByteBuffer;
 import java.util.List;
 
 import static java.awt.BorderLayout.CENTER;
@@ -73,7 +74,9 @@ public class BinaryStreamerView extends StreamerView<byte[]> {
 
     @Override
     public void setActive(boolean active) {
-        binaryEditor.setHideCaret(!active);
+        if (binaryEditor != null) {
+            binaryEditor.setHideCaret(!active);
+        }
         super.setActive(active);
     }
 
@@ -117,6 +120,16 @@ public class BinaryStreamerView extends StreamerView<byte[]> {
     @Override
     public BinaryLoadListener getLoadWorkerListener() {
         return new BinaryLoadListener(this);
+    }
+
+    @Override
+    public SaveWorkerModel<BinarySaveUnit> getSaveWorkerModel() {
+        return new BinarySaveModel(binaryEditor);
+    }
+
+    @Override
+    public void setDirty(boolean dirty) {
+        binaryEditor.setDirty(dirty);
     }
 
     @Override

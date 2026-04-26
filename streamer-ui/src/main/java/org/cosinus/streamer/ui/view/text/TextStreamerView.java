@@ -124,24 +124,8 @@ public class TextStreamerView extends StreamerView<String> {
     }
 
     @Override
-    public WorkerListener<SaveTextWorkerModel, String> getSaveListener() {
-        return new WorkerListener<>() {
-            @Override
-            public void workerStarted(SaveTextWorkerModel saveTextModel) {
-                loadingIndicator.startLoading(saveTextModel.totalItemsToSave());
-            }
-
-            @Override
-            public void workerUpdated(SaveTextWorkerModel saveTextModel) {
-                loadingIndicator.updateLoading(saveTextModel.getSavedItemsCount(), saveTextModel.totalItemsToSave());
-            }
-
-            @Override
-            public void workerFinished(SaveTextWorkerModel workerModel) {
-                textEditor.setDirty(false);
-                loadingIndicator.finishLoading();
-            }
-        };
+    public void setDirty(boolean dirty) {
+        textEditor.setDirty(dirty);
     }
 
     @Override
