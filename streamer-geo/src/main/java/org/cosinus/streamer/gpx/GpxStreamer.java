@@ -18,8 +18,6 @@ package org.cosinus.streamer.gpx;
 import io.jenetics.jpx.GPX;
 import io.jenetics.jpx.Track;
 import io.jenetics.jpx.TrackSegment;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.cosinus.stream.consumer.StreamConsumer;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.Streamer;
@@ -37,16 +35,14 @@ import static org.cosinus.streamer.gpx.GpxExpander.GPX_PROTOCOL;
 
 public class GpxStreamer extends ExpandedStreamer<GpxPoint> implements Streamer<GpxPoint> {
 
-    private static final Logger LOG = LogManager.getLogger(GpxStreamer.class);
-
     protected static final String DETAIL_KEY_TIME = "time";
     protected static final String DETAIL_KEY_LATITUDE = "latitude";
     protected static final String DETAIL_KEY_LONGITUDE = "longitude";
     protected static final String DETAIL_KEY_ELEVATION = "elevation";
 
-    private final List<TranslatableName> detailNames;
+    protected final List<TranslatableName> detailNames;
 
-    private GPX gpx;
+    protected GPX gpx;
 
     public GpxStreamer(final BinaryStreamer binaryStreamer) {
         super(binaryStreamer);
@@ -69,7 +65,7 @@ public class GpxStreamer extends ExpandedStreamer<GpxPoint> implements Streamer<
             .map(point -> new GpxPoint(this, Long.toString(index.incrementAndGet()), point));
     }
 
-    private GPX gpx() {
+    protected GPX gpx() {
         if (gpx == null) {
             try (InputStream input = binaryStreamer.inputStream()) {
                 gpx = GPX.Reader.DEFAULT.read(input);
