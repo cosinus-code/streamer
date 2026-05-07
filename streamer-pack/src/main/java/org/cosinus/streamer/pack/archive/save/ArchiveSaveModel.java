@@ -66,7 +66,7 @@ public class ArchiveSaveModel<A extends ArchiveStreamer<?>> extends AbstractSave
     }
 
     @Override
-    public StreamConsumer<OutputWriter<ArchiveOutputStream>> streamConsumer() {
+    public StreamConsumer<OutputWriter<ArchiveOutputStream>> saver() {
         try {
             File binaryFile = archivePackStreamer.getPath().toFile();
             final TemporaryFileOutputStream temporaryOutputStream =

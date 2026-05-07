@@ -24,7 +24,7 @@ public interface SaveWorkerModel<T> extends WorkerModel<T> {
 
     Stream<T> streamToSave();
 
-    StreamConsumer<T> streamConsumer();
+    StreamConsumer<T> saver();
 
     long totalItemsToSave();
 

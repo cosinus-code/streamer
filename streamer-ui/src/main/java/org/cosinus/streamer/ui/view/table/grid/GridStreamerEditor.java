@@ -101,8 +101,8 @@ public class GridStreamerEditor<T extends Streamable> implements StreamerEditor<
     }
 
     @Override
-    public StreamConsumer<T> streamConsumer() {
-        return view.getParentStreamer().streamConsumer();
+    public StreamConsumer<T> saver() {
+        return view.getParentStreamer().saver();
     }
 
     @Override

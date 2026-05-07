@@ -43,7 +43,7 @@ public interface Streamer<T> extends Streamable, StreamSupplier<T> {
         return null;
     }
 
-    default StreamConsumer<T> streamConsumer() {
+    default StreamConsumer<T> saver() {
         return null;
     }
 

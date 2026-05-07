@@ -77,7 +77,7 @@ public class GpxStreamer extends ExpandedStreamer<GpxPoint> implements Streamer<
     }
 
     @Override
-    public StreamConsumer<GpxPoint> streamConsumer() {
+    public StreamConsumer<GpxPoint> saver() {
         return new GpxSaver(gpx(), binaryStreamer.outputStream(false));
     }
 

@@ -43,7 +43,7 @@ public class BinarySaveModel extends AbstractSaveWorkerModel<BinarySaveUnit> {
     }
 
     @Override
-    public StreamConsumer<BinarySaveUnit> streamConsumer() {
+    public StreamConsumer<BinarySaveUnit> saver() {
         return saveUnit -> {
             try {
                 FileChannel fileChannel = binaryEditor.getBinaryStreamer().fileChannel();

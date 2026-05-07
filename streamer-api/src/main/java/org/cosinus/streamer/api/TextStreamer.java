@@ -47,7 +47,7 @@ public class TextStreamer extends StreamerDelegate<String, BinaryStreamer> imple
     }
 
     @Override
-    public StreamConsumer<String> streamConsumer() {
+    public StreamConsumer<String> saver() {
         return ofNullable(delegate.outputStream(false))
             .map(TextStreamConsumer::new)
             .orElse(null);

@@ -96,8 +96,8 @@ public class DetailsStreamerEditor<T extends Streamable> implements StreamerEdit
     }
 
     @Override
-    public StreamConsumer<T> streamConsumer() {
-        return view.getParentStreamer().streamConsumer();
+    public StreamConsumer<T> saver() {
+        return view.getParentStreamer().saver();
     }
 
     @Override

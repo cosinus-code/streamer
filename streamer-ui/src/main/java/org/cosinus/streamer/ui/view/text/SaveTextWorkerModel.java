@@ -42,9 +42,9 @@ public class SaveTextWorkerModel extends AbstractSaveWorkerModel<String> {
     }
 
     @Override
-    public StreamConsumer<String> streamConsumer() {
+    public StreamConsumer<String> saver() {
         return ofNullable(textEditor.getParentStreamer())
-            .map(Streamer::streamConsumer)
+            .map(Streamer::saver)
             .orElse(null);
     }
 
