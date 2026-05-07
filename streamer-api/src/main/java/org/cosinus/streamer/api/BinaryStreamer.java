@@ -17,12 +17,10 @@
 package org.cosinus.streamer.api;
 
 import org.cosinus.stream.binary.BinaryStream;
-import org.cosinus.stream.consumer.StreamConsumer;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UncheckedIOException;
 import java.nio.channels.FileChannel;
 
 import static org.cosinus.swing.format.FormatHandler.MEGA_INT;
@@ -61,16 +59,5 @@ public interface BinaryStreamer extends Streamer<byte[]> {
     }
 
     default void finalizeCopy(BinaryStreamer source) {
-    }
-
-    @Override
-    default StreamConsumer<byte[]> streamConsumer() {
-        return bytes -> {
-            try {
-                FileChannel fileChannel = fileChannel();
-            } catch (IOException ex) {
-                throw new UncheckedIOException(ex);
-            }
-        };
     }
 }

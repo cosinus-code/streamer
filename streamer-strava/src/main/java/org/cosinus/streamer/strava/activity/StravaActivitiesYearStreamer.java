@@ -17,6 +17,7 @@
 
 package org.cosinus.streamer.strava.activity;
 
+import org.cosinus.stream.page.Page;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.value.TranslatableName;
 import org.cosinus.streamer.strava.StravaParentStreamer;
@@ -71,9 +72,9 @@ public class StravaActivitiesYearStreamer extends StravaParentStreamer<StravaAct
         long startTime = toEpochSecond(startOfYear(year));
         long endTime = toEpochSecond(lastSecondOfYear(year));
 
-        return pagedStream((pageSize, page) -> stravaClientInvoker
+        return pagedStream(pageable -> Page.of(stravaClientInvoker
             .invoke(userName, stravaClient -> stravaClient
-                .getCurrentAthleteActivities(startTime, endTime, pageSize, page)))
+                .getCurrentAthleteActivities(startTime, endTime, pageable.getPageSize(), pageable.getPageNumber()))))
             .map(activity -> new StravaActivityStreamer(stravaUserStreamer, this, activity));
     }
 

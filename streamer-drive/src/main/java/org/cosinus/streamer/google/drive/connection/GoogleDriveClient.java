@@ -294,6 +294,12 @@ public class GoogleDriveClient extends Drive {
             }
 
             @Override
+            public GoogleDriveList setPageToken(String pageToken) {
+                super.setPageToken(pageToken);
+                return this;
+            }
+
+            @Override
             public FileList execute() {
                 try {
                     return super.execute();

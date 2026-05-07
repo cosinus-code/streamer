@@ -21,10 +21,13 @@ import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInsta
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.services.drive.model.About.StorageQuota;
 import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.FileList;
 import com.google.api.services.drive.model.Permission;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cosinus.stream.page.Page;
+import org.cosinus.stream.page.Pageable;
 import org.cosinus.streamer.api.remote.Connection;
 import org.cosinus.streamer.google.drive.connection.GoogleDriveClient.Builder;
 import org.cosinus.swing.context.ApplicationProperties;
@@ -40,12 +43,16 @@ import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static org.cosinus.stream.Streams.pagedStream;
+import static org.cosinus.stream.page.Page.empty;
 import static org.cosinus.streamer.google.drive.connection.GoogleDriveConnectionFactory.GSON_FACTORY;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 public class GoogleDriveConnection implements Connection<File> {
 
     private static final Logger LOG = LogManager.getLogger(GoogleDriveConnection.class);
+
+    public static final int PAGE_SIZE = 100;
 
     public static final String DRIVE = "drive";
 
@@ -68,6 +75,8 @@ public class GoogleDriveConnection implements Connection<File> {
     public static final String FILE_FIELDS = "id,name,mimeType,parents,size,modifiedTime,permissions,owners,webViewLink";
 
     public static final String FILES_FIELDS = "files(%s)".formatted(FILE_FIELDS);
+
+    public static final String FILES_PAGE_FIELDS = "nextPageToken,files(%s)".formatted(FILE_FIELDS);
 
     public static final String QUERY_FOR_PARENT = "'%s' in parents";
 
@@ -154,8 +163,7 @@ public class GoogleDriveConnection implements Connection<File> {
             .getStorageQuota();
     }
 
-    @Override
-    public Stream<File> stream(String query) {
+    public List<File> files(String query) {
         List<File> files = client
             .files()
             .list()
@@ -168,7 +176,32 @@ public class GoogleDriveConnection implements Connection<File> {
             .getFiles();
         files.forEach(this::populateFile);
 
-        return files.stream();
+        return files;
+    }
+
+    @Override
+    public Stream<File> stream(String query) {
+        return pagedStream(pageable -> filesPage(pageable, query), PAGE_SIZE);
+    }
+
+    public Page<File> filesPage(Pageable pageable, String query) {
+        if (pageable.isLastPage()) {
+            return empty();
+        }
+
+        FileList files = client
+            .files()
+            .list()
+            .setSpaces(DRIVE)
+            .setSupportsAllDrives(true)
+            .setIncludeItemsFromAllDrives(true)
+            .setQ(query)
+            .setFields(FILES_PAGE_FIELDS)
+            .setPageToken(pageable.getPageToken())
+            .execute();
+        files.getFiles().forEach(this::populateFile);
+
+        return Page.of(files.getFiles(), files.getNextPageToken());
     }
 
     public Optional<File> findFileByPath(Path path) {

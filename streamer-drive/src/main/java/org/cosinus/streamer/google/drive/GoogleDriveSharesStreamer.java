@@ -126,4 +126,9 @@ public class GoogleDriveSharesStreamer implements ParentStreamer<GoogleDriveShar
             );
         }
     }
+
+    @Override
+    public boolean canUpdate() {
+        return true;
+    }
 }

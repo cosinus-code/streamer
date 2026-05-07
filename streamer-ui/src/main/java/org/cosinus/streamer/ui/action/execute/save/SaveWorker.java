@@ -21,25 +21,27 @@ import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.swing.progress.ProgressListener;
 import org.cosinus.swing.progress.ProgressModel;
 import org.cosinus.swing.worker.PipelineWorker;
-import org.cosinus.swing.worker.Worker;
 import org.cosinus.swing.worker.WorkerListener;
 
 import java.util.stream.Stream;
 
 public class SaveWorker<T> extends PipelineWorker<SaveWorkerModel<T>, T, ProgressModel> {
 
-    public SaveWorker(final SaveActionModel<?> actionModel, final SaveWorkerModel<T> workerModel) {
-        super(actionModel, workerModel, new ProgressModel());
+    private final SaveWorkerModel<T> saveModel;
+
+    public SaveWorker(final SaveActionModel<?> actionModel, final SaveWorkerModel<T> saveModel) {
+        super(actionModel, saveModel, new ProgressModel());
+        this.saveModel = saveModel;
     }
 
     @Override
     public Stream<T> openPipelineInputStream(PipelineStrategy pipelineStrategy) {
-        return workerModel.streamToSave();
+        return saveModel.streamToSave();
     }
 
     @Override
     protected StreamConsumer<T> streamConsumer() {
-        return workerModel.streamConsumer();
+        return saveModel.streamConsumer();
     }
 
     @Override

@@ -57,7 +57,7 @@ public class KmzStreamer extends GpxStreamer {
                                 .points(trackPoints))));
                 gpx = gpxBuilder.build();
             } catch (IOException e) {
-                throw new UncheckedIOException(e);
+                throw new UncheckedIOException("Failed to parse kmz file", e);
             }
         }
         return gpx;
