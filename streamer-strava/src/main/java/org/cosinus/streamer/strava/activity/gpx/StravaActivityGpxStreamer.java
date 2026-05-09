@@ -30,12 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.*;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
-import static java.util.function.Predicate.not;
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.IntStream.range;
 import static org.cosinus.streamer.strava.model.ActivityStreamType.*;
 

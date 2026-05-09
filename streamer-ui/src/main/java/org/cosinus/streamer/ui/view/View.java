@@ -30,7 +30,8 @@ public enum View {
     TREE("view-tree", ICON_VIEW_TREE),
     TEXT_EDITOR("text-editor", ICON_TEXT_EDITOR),
     IMAGE_VIEWER("image-viewer", ICON_IMAGE),
-    BINARY_VIEWER("binary-viewer", ICON_BINARY);
+    BINARY_VIEWER("binary-viewer", ICON_BINARY),
+    MAP_VIEWER("map-viewer", ICON_MAP);
 
     private final String key;
 

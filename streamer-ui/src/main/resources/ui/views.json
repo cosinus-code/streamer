@@ -3,5 +3,5 @@
   "text": ["text-editor", "binary-viewer"],
   "image": ["image-viewer", "binary-viewer"],
   "binary": ["binary-viewer"],
-  "gpx": ["icon", "grid", "gpx"]
+  "gpx": ["map-viewer", "grid", "icon", "details"]
 }

@@ -22,11 +22,8 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
-import org.cosinus.streamer.ui.view.text.SaveTextWorkerModel;
-import org.cosinus.swing.worker.WorkerListener;
 
 import java.awt.*;
-import java.nio.ByteBuffer;
 import java.util.List;
 
 import static java.awt.BorderLayout.CENTER;
@@ -56,20 +53,15 @@ public class BinaryStreamerView extends StreamerView<byte[]> {
 
         streamerViewMainPanel.add(binaryEditor, CENTER);
         streamerViewMainPanel.add(binaryEditor.getScrollBar(), EAST);
+
+        initCancelHandler();
+        initFocusHandling();
     }
 
     @Override
     public void reset(Streamer<byte[]> parentStreamer) {
         super.reset(parentStreamer);
         binaryEditor.reset();
-    }
-
-    @Override
-    public void requestFocus() {
-        super.requestFocus();
-        if (binaryEditor != null) {
-            binaryEditor.requestFocus();
-        }
     }
 
     @Override
@@ -92,24 +84,14 @@ public class BinaryStreamerView extends StreamerView<byte[]> {
 
     @Override
     public byte[] getCurrentItem() {
+        //TODO: implement current item retrieval based on the current position in the binary editor
         return null;
     }
 
     @Override
     public List<byte[]> getSelectedItems() {
+        //TODO: implement selected items retrieval based on the selection in the binary editor
         return emptyList();
-    }
-
-    @Override
-    public String getCurrentItemIdentifier() {
-        return ofNullable(parentStreamer)
-            .map(Streamer::getName)
-            .orElse(null);
-    }
-
-    @Override
-    public String getNextItemIdentifier() {
-        return "";
     }
 
     @Override

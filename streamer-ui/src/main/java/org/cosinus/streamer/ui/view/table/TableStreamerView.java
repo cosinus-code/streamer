@@ -21,17 +21,14 @@ import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.DoHereModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
-import org.cosinus.streamer.ui.menu.MenuHandler;
 import org.cosinus.streamer.ui.view.DefaultStreamerView;
 import org.cosinus.streamer.ui.view.FindPanel;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
-import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.form.ScrollPane;
 import org.cosinus.swing.menu.PopupMenu;
 import org.cosinus.swing.worker.WorkerListener;
 import org.cosinus.swing.worker.WorkerModel;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import java.awt.*;
@@ -108,6 +105,8 @@ public abstract class TableStreamerView<T extends Streamable>
         actionController.addCutCopyPasteActions(this);
 
         super.initComponents();
+
+        initFocusHandling();
     }
 
     public void showDragAndDropPopup(final JComponent component,
@@ -172,17 +171,6 @@ public abstract class TableStreamerView<T extends Streamable>
     @Override
     public String getCurrentItemIdentifier() {
         return table.getTableModel().getCurrentItemIdentifier();
-    }
-
-    @Override
-    public String getNextItemIdentifier() {
-        return table.getTableModel().getNextItemIdentifier();
-    }
-
-    @Override
-    public void requestFocus() {
-        super.requestFocus();
-        table.requestFocus();
     }
 
     @Override

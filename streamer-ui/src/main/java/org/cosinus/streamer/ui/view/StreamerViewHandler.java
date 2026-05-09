@@ -22,7 +22,6 @@ import org.cosinus.streamer.ui.view.table.grid.GridViewCreator;
 import org.cosinus.swing.file.DiskMonitorController;
 import org.cosinus.swing.file.api.DiskEvent;
 import org.cosinus.swing.file.api.DiskEventListener;
-import org.cosinus.swing.file.api.FileSystemRoot;
 import org.cosinus.swing.preference.Preference;
 import org.cosinus.swing.preference.Preferences;
 import org.springframework.stereotype.Component;

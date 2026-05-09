@@ -70,9 +70,6 @@ public class BinaryHexaEditor extends SwingComponent implements LoadWorkerModel<
     protected ApplicationUIHandler uiHandler;
 
     @Autowired
-    protected ErrorHandler errorHandler;
-
-    @Autowired
     protected StreamerViewHandler streamerViewHandler;
 
     @Autowired
@@ -163,7 +160,6 @@ public class BinaryHexaEditor extends SwingComponent implements LoadWorkerModel<
 
         initKeyHandling();
         initMouseHandling();
-        initFocusHandling();
         initResizeHandling();
     }
 
@@ -322,7 +318,7 @@ public class BinaryHexaEditor extends SwingComponent implements LoadWorkerModel<
     }
 
     protected void updateCurrentByteByTextChar(char character) {
-        if (isLetter(character)) {
+        if (uiHandler.isLetter(character)) {
             updateCurrentPosition((byte) character);
             moveCaret(1);
             repaintAndUpdateView();
@@ -378,8 +374,6 @@ public class BinaryHexaEditor extends SwingComponent implements LoadWorkerModel<
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                requestFocus();
-
                 int line = e.getY() / lineHeight;
                 hexaMode = e.getX() < getWidth() - textWidth;
                 int col = hexaMode ?
@@ -389,23 +383,6 @@ public class BinaryHexaEditor extends SwingComponent implements LoadWorkerModel<
                 if (col >= 0 && col < bytesPerLine) {
                     caretPosition = offset + (long) line * bytesPerLine + col;
                     repaint();
-                }
-            }
-        });
-    }
-
-    protected void initFocusHandling() {
-        setFocusable(true);
-        setFocusCycleRoot(true);
-        setFocusTraversalKeysEnabled(false);
-        addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                super.focusGained(e);
-                try {
-                    streamerViewHandler.setCurrentLocation(view.getCurrentLocation());
-                } catch (Exception ex) {
-                    errorHandler.handleError(view, ex);
                 }
             }
         });
@@ -484,13 +461,13 @@ public class BinaryHexaEditor extends SwingComponent implements LoadWorkerModel<
 
     protected String getTextRepresentation(byte byteValue) {
         char character = (char) (byteValue & 0xFF);
-        return "" + (isLetter(character) ? character : '.');
+        return "" + (uiHandler.isLetter(character) ? character : '.');
     }
 
     protected boolean isKeyAllowed(KeyEvent keyEvent) {
-        return isLetter(keyEvent.getKeyChar()) ||
-            isMovementKey(keyEvent) ||
-            isDeleteKey(keyEvent);
+        return uiHandler.isLetter(keyEvent.getKeyChar()) ||
+            uiHandler.isMovementKey(keyEvent) ||
+            uiHandler.isDeleteKey(keyEvent);
     }
 
     public Color getHexaViewBackground() {

@@ -26,7 +26,6 @@ import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.menu.MenuHandler;
 import org.cosinus.streamer.ui.view.table.ViewItem;
-import org.cosinus.streamer.ui.view.text.SaveTextWorkerModel;
 import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.error.ErrorHandler;
@@ -38,19 +37,22 @@ import org.cosinus.swing.menu.RadioButtonMenuItem;
 import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.progress.CustomProgressBar;
 import org.cosinus.swing.translate.Translator;
+import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.cosinus.swing.worker.WorkerListener;
 import org.cosinus.swing.worker.WorkerModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static java.awt.BorderLayout.*;
+import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
+import static org.cosinus.streamer.ui.action.GoToParentStreamerAction.GO_TO_PARENT_ACTION;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_STATUS;
 import static org.cosinus.streamer.ui.view.View.findByName;
 import static org.cosinus.streamer.ui.view.text.TextStreamerView.DIRTY_TEXT_MARKER;
@@ -95,6 +97,9 @@ public abstract class StreamerView<T> extends Panel {
     @Autowired
     protected ActionController actionController;
 
+    @Autowired
+    protected ApplicationUIHandler uiHandler;
+
     protected final String id;
 
     protected final PanelLocation location;
@@ -110,6 +115,8 @@ public abstract class StreamerView<T> extends Panel {
     protected PopupMenu alternativeViewsPopup;
 
     private Label statusBar;
+
+    private boolean cancelActionPrevented;
 
     public StreamerView(PanelLocation location) {
         this.id = UUID.randomUUID().toString();
@@ -199,6 +206,61 @@ public abstract class StreamerView<T> extends Panel {
         }
     }
 
+    protected void initKeyActionsHandler() {
+        getContainer().addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                actionController.runActionByKeyStroke(e);
+            }
+        });
+    }
+
+    protected void initCancelHandler() {
+        getContainer().addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent keyEvent) {
+                if (keyEvent.getKeyCode() == VK_ESCAPE) {
+                    if (!cancelActionPrevented) {
+                        actionController.runAction(GO_TO_PARENT_ACTION);
+                    }
+                    cancelActionPrevented = false;
+                }
+            }
+        });
+    }
+
+    protected void initFocusHandling() {
+        getContainer().setFocusable(true);
+        getContainer().setFocusCycleRoot(true);
+        getContainer().setFocusTraversalKeysEnabled(false);
+        getContainer().addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                try {
+                    streamerViewHandler.setCurrentLocation(getCurrentLocation());
+                } catch (Exception ex) {
+                    errorHandler.handleError(getContainer(), ex);
+                }
+            }
+        });
+        getContainer().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                getContainer().requestFocus();
+            }
+        });
+    }
+
+    @Override
+    public void requestFocus() {
+        super.requestFocus();
+        if (getContainer() != null) {
+            getContainer().requestFocus();
+        }
+    }
+    public void preventCancelAction() {
+        cancelActionPrevented = true;
+    }
 
     public void showDetailEditors() {
     }
@@ -371,6 +433,12 @@ public abstract class StreamerView<T> extends Panel {
         return emptyList();
     }
 
+    public String getCurrentItemIdentifier() {
+        return ofNullable(parentStreamer)
+            .map(Streamer::getName)
+            .orElse(null);
+    }
+
     public abstract String getStatus();
 
     public abstract String getName();
@@ -378,10 +446,6 @@ public abstract class StreamerView<T> extends Panel {
     public abstract T getCurrentItem();
 
     public abstract List<T> getSelectedItems();
-
-    public abstract String getCurrentItemIdentifier();
-
-    public abstract String getNextItemIdentifier();
 
     public abstract <V> LoadWorkerModel<V> getLoadWorkerModel();
 

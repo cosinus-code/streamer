@@ -23,7 +23,6 @@ import org.cosinus.streamer.ui.view.FindPanel;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.swing.form.ScrollPane;
-import org.cosinus.swing.worker.WorkerListener;
 
 import java.awt.*;
 import java.util.List;
@@ -67,6 +66,10 @@ public class TextStreamerView extends StreamerView<String> {
         streamerViewMainPanel.add(scroll, CENTER);
 
         textEditor.initComponent();
+
+        initCancelHandler();
+        initFocusHandling();
+        initKeyActionsHandler();
     }
 
     @Override
@@ -82,18 +85,6 @@ public class TextStreamerView extends StreamerView<String> {
     @Override
     public List<String> getSelectedItems() {
         return singletonList(textEditor.getSelectedText());
-    }
-
-    @Override
-    public String getCurrentItemIdentifier() {
-        return ofNullable(parentStreamer)
-            .map(Streamer::getName)
-            .orElse(null);
-    }
-
-    @Override
-    public String getNextItemIdentifier() {
-        return null;
     }
 
     @Override

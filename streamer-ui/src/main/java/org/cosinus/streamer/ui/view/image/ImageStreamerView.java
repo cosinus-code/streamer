@@ -24,31 +24,18 @@ import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.action.execute.load.image.LoadImageActionModel;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
-import org.cosinus.streamer.ui.view.StreamerViewHandler;
-import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.form.ScrollPane;
 import org.cosinus.swing.image.UpdatableImage;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import static java.awt.BorderLayout.CENTER;
-import static java.awt.event.KeyEvent.VK_DELETE;
-import static java.awt.event.KeyEvent.VK_END;
-import static java.awt.event.KeyEvent.VK_ESCAPE;
-import static java.awt.event.KeyEvent.VK_HOME;
-import static java.awt.event.KeyEvent.VK_LEFT;
-import static java.awt.event.KeyEvent.VK_RIGHT;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
-import static org.cosinus.streamer.ui.action.GoToParentStreamerAction.GO_TO_PARENT_ACTION;
 
 /**
  * Image streamer view
@@ -58,12 +45,6 @@ public class ImageStreamerView extends StreamerView<byte[]> {
     public static final String IMAGE_VIEWER = "image-viewer";
 
     public static final String STATUS_CURRENT_IMAGE_POSITION = "status-current-image-position";
-
-    @Autowired
-    private ActionController actionController;
-
-    @Autowired
-    private StreamerViewHandler streamerViewHandler;
 
     @Autowired
     private LoadActionExecutor loadImageExecutor;
@@ -90,39 +71,8 @@ public class ImageStreamerView extends StreamerView<byte[]> {
         scroll.setViewportView(imagePanel);
         streamerViewMainPanel.add(scroll, CENTER);
 
-        setFocusTraversalKeysEnabled(false);
-        addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent keyEvent) {
-                if (keyEvent.getKeyCode() == VK_ESCAPE) {
-                    actionController.runAction(GO_TO_PARENT_ACTION);
-                } else if (keyEvent.getKeyCode() == VK_RIGHT) {
-                    showNextImage();
-                } else if (keyEvent.getKeyCode() == VK_LEFT) {
-                    showPreviousImage();
-                } else if (keyEvent.getKeyCode() == VK_HOME) {
-                    showFirstImage();
-                } else if (keyEvent.getKeyCode() == VK_END) {
-                    showLastImage();
-                } else if (keyEvent.getKeyCode() == VK_DELETE) {
-                    deleteCurrentImage();
-                } else {
-                    actionController.runActionByKeyStroke(keyEvent);
-                }
-            }
-        });
-
-        addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                super.focusGained(e);
-                try {
-                    streamerViewHandler.setCurrentLocation(getCurrentLocation());
-                } catch (Exception ex) {
-                    errorHandler.handleError(ImageStreamerView.this, ex);
-                }
-            }
-        });
+        initCancelHandler();
+        initFocusHandling();
     }
 
     @Override
@@ -138,18 +88,6 @@ public class ImageStreamerView extends StreamerView<byte[]> {
     @Override
     public List<byte[]> getSelectedItems() {
         return emptyList();
-    }
-
-    @Override
-    public String getCurrentItemIdentifier() {
-        return ofNullable(parentStreamer)
-            .map(Streamer::getName)
-            .orElse(null);
-    }
-
-    @Override
-    public String getNextItemIdentifier() {
-        return "";
     }
 
     @Override
@@ -187,25 +125,25 @@ public class ImageStreamerView extends StreamerView<byte[]> {
             imageStreamers.size());
     }
 
-    private void showNextImage() {
+    public void showNextImage() {
         getNextSibling()
             .map(nextStreamer -> new LoadImageActionModel(nextStreamer, this))
             .ifPresent(loadImageExecutor::execute);
     }
 
-    private void showPreviousImage() {
+    public void showPreviousImage() {
         getPreviousSibling()
             .map(nextStreamer -> new LoadImageActionModel(nextStreamer, this))
             .ifPresent(loadImageExecutor::execute);
     }
 
-    private void showFirstImage() {
+    public void showFirstImage() {
         getFirstSibling()
             .map(nextStreamer -> new LoadImageActionModel(nextStreamer, this))
             .ifPresent(loadImageExecutor::execute);
     }
 
-    private void showLastImage() {
+    public void showLastImage() {
         getLastSibling()
             .map(nextStreamer -> new LoadImageActionModel(nextStreamer, this))
             .ifPresent(loadImageExecutor::execute);
@@ -238,10 +176,11 @@ public class ImageStreamerView extends StreamerView<byte[]> {
         return current.getName().compareTo(next.getName()) * (ascending ? 1 : -1) < 0;
     }
 
-    private void deleteCurrentImage() {
+    public void deleteCurrentImage() {
         ofNullable(imagePanel.getParentStreamer())
             .ifPresent(binaryStreamer -> {
                 binaryStreamer.delete(true);
+                imageStreamers.remove(binaryStreamer);
                 getNextSibling()
                     .or(this::getLastSibling)
                     .map(streamer -> new LoadImageActionModel(streamer, this))

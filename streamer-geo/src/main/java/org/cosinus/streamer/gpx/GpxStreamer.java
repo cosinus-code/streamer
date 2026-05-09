@@ -35,6 +35,8 @@ import static org.cosinus.streamer.gpx.GpxExpander.GPX_PROTOCOL;
 
 public class GpxStreamer extends ExpandedStreamer<GpxPoint> implements Streamer<GpxPoint> {
 
+    public static final String GPX_TYPE = "gpx";
+
     protected static final String DETAIL_KEY_TIME = "time";
     protected static final String DETAIL_KEY_LATITUDE = "latitude";
     protected static final String DETAIL_KEY_LONGITUDE = "longitude";
@@ -89,5 +91,10 @@ public class GpxStreamer extends ExpandedStreamer<GpxPoint> implements Streamer<
     @Override
     public List<TranslatableName> detailNames() {
         return detailNames;
+    }
+
+    @Override
+    public String getViewId() {
+        return GPX_TYPE;
     }
 }

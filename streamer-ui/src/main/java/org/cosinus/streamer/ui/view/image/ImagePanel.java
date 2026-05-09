@@ -19,6 +19,7 @@ package org.cosinus.streamer.ui.view.image;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.menu.MenuHandler;
+import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.form.Panel;
 import org.cosinus.swing.image.ImageHandler;
 import org.cosinus.swing.image.ImageSettings;
@@ -31,20 +32,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.List;
 
 import static java.awt.Color.black;
+import static java.awt.event.KeyEvent.*;
 import static java.awt.event.MouseEvent.BUTTON3;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.action.DeleteStreamerAction.DELETE_STREAMER_ACTION_ID;
 import static org.cosinus.streamer.ui.action.ExecuteStreamerAction.EXECUTE_STREAMER_ACTION_ID;
 import static org.cosinus.streamer.ui.action.ExecuteStreamerWithAction.EXECUTE_STREAMER_WITH_ACTION_ID;
+import static org.cosinus.streamer.ui.action.GoToParentStreamerAction.GO_TO_PARENT_ACTION;
 import static org.cosinus.streamer.ui.action.MoveToTrashStreamerAction.MOVE_TO_TRASH_STREAMER_ACTION_NAME;
 import static org.cosinus.streamer.ui.menu.MenuHandler.SEPARATOR;
 import static org.cosinus.swing.image.ImageSettings.*;
@@ -56,6 +56,9 @@ public class ImagePanel extends Panel implements LoadWorkerModel<UpdatableImage>
     public static final String IMAGE_SETTINGS_BALANCED = "image-settings-balanced";
 
     public static final String IMAGE_QUALITY = "image-quality";
+
+    @Autowired
+    private ActionController actionController;
 
     @Autowired
     private transient ClasspathResourceResolver resourceResolver;
@@ -87,6 +90,28 @@ public class ImagePanel extends Panel implements LoadWorkerModel<UpdatableImage>
         imageSettingsMap.put(IMAGE_SETTINGS_SPEED, SPEED);
         imageSettingsMap.put(IMAGE_SETTINGS_QUALITY, QUALITY);
         imageSettingsMap.put(IMAGE_SETTINGS_BALANCED, SPEED_QUALITY_BALANCE);
+    }
+
+    @Override
+    protected void processComponentKeyEvent(KeyEvent keyEvent) {
+        super.processComponentKeyEvent(keyEvent);
+        if (keyEvent.getID() == KEY_PRESSED) {
+            if (keyEvent.getKeyCode() == VK_RIGHT) {
+                streamerView.showNextImage();
+            } else if (keyEvent.getKeyCode() == VK_LEFT) {
+                streamerView.showPreviousImage();
+            } else if (keyEvent.getKeyCode() == VK_HOME) {
+                streamerView.showFirstImage();
+            } else if (keyEvent.getKeyCode() == VK_END) {
+                streamerView.showLastImage();
+            } else if (keyEvent.getKeyCode() == VK_DELETE) {
+                streamerView.deleteCurrentImage();
+            } else if (keyEvent.getKeyCode() == VK_ESCAPE) {
+                actionController.runAction(GO_TO_PARENT_ACTION);
+            } else {
+                actionController.runActionByKeyStroke(keyEvent);
+            }
+        }
     }
 
     public void reset(final Streamer<byte[]> binaryStreamer) {

@@ -241,15 +241,6 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
             .orElse(null);
     }
 
-    public String getNextItemIdentifier() {
-        int index = currentIndex < viewItems.size() - 1 ? currentIndex + 1 : currentIndex - 1;
-        return index < 0 ? null :
-            ofNullable(getViewItemAt(getRowForIndex(index), getColumnForIndex(index)))
-                .filter(not(ViewItem::isTopItem))
-                .map(ViewItem::getName)
-                .orElseGet(parentStreamer::getName);
-    }
-
     public WorkerModel<Streamer<T>> getDeleteWorkerModel() {
         return items -> items
             .stream()
