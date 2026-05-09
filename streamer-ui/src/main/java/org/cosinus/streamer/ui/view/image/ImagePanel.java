@@ -19,6 +19,8 @@ package org.cosinus.streamer.ui.view.image;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.menu.MenuHandler;
+import org.cosinus.streamer.ui.view.StreamerView;
+import org.cosinus.streamer.ui.view.Viewer;
 import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.form.Panel;
 import org.cosinus.swing.image.ImageHandler;
@@ -38,6 +40,7 @@ import java.util.*;
 import java.util.List;
 
 import static java.awt.Color.black;
+import static java.awt.Color.gray;
 import static java.awt.event.KeyEvent.*;
 import static java.awt.event.MouseEvent.BUTTON3;
 import static java.util.Optional.ofNullable;
@@ -49,7 +52,7 @@ import static org.cosinus.streamer.ui.action.MoveToTrashStreamerAction.MOVE_TO_T
 import static org.cosinus.streamer.ui.menu.MenuHandler.SEPARATOR;
 import static org.cosinus.swing.image.ImageSettings.*;
 
-public class ImagePanel extends Panel implements LoadWorkerModel<UpdatableImage>, ActionListener {
+public class ImagePanel extends Panel implements Viewer<byte[]>, LoadWorkerModel<UpdatableImage>, ActionListener {
 
     public static final String IMAGE_SETTINGS_SPEED = "image-settings-speed";
     public static final String IMAGE_SETTINGS_QUALITY = "image-settings-quality";
@@ -69,27 +72,44 @@ public class ImagePanel extends Panel implements LoadWorkerModel<UpdatableImage>
     @Autowired
     private MenuHandler menuHandler;
 
-    private final ImageStreamerView streamerView;
+    private ImageStreamerView streamerView;
 
-    private final transient Map<String, ImageSettings> imageSettingsMap;
+    private Map<String, ImageSettings> imageSettingsMap;
 
     private PopupMenu popupContextMenu;
 
-    private transient Streamer<byte[]> binaryStreamer;
+    private Streamer<byte[]> binaryStreamer;
 
-    private transient UpdatableImage originalImage;
+    private UpdatableImage originalImage;
 
-    private transient ImageSettings imageSettings = QUALITY;
+    private ImageSettings imageSettings = QUALITY;
 
     private boolean finished;
 
-    public ImagePanel(final ImageStreamerView streamerView) {
-        this.streamerView = streamerView;
+    private boolean active;
+
+    @Override
+    public void initComponents() {
+        super.initComponents();
 
         imageSettingsMap = new LinkedHashMap<>();
         imageSettingsMap.put(IMAGE_SETTINGS_SPEED, SPEED);
         imageSettingsMap.put(IMAGE_SETTINGS_QUALITY, QUALITY);
         imageSettingsMap.put(IMAGE_SETTINGS_BALANCED, SPEED_QUALITY_BALANCE);
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        ofNullable(originalImage)
+            .map(UpdatableImage::getImage)
+            .ifPresentOrElse(
+                image -> drawImage(g, image),
+                () -> drawBrokenImage(g));
+        if (active) {
+            g.setColor(getInactiveColor());
+            g.drawRect(0, 0, getWidth(), getHeight());
+        }
     }
 
     @Override
@@ -114,6 +134,7 @@ public class ImagePanel extends Panel implements LoadWorkerModel<UpdatableImage>
         }
     }
 
+    @Override
     public void reset(final Streamer<byte[]> binaryStreamer) {
         this.binaryStreamer = binaryStreamer;
         if (binaryStreamer == null) {
@@ -124,16 +145,6 @@ public class ImagePanel extends Panel implements LoadWorkerModel<UpdatableImage>
 
     public Streamer<byte[]> getParentStreamer() {
         return binaryStreamer;
-    }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        ofNullable(originalImage)
-            .map(UpdatableImage::getImage)
-            .ifPresentOrElse(
-                image -> drawImage(g, image),
-                () -> drawBrokenImage(g));
     }
 
     private void drawImage(Graphics g, BufferedImage image) {
@@ -160,8 +171,8 @@ public class ImagePanel extends Panel implements LoadWorkerModel<UpdatableImage>
     }
 
     private void drawImageBackground(Graphics g) {
-        g.setColor(black);
-        g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+        g.setColor(active ? getBackground() : getInactiveColor());
+        g.fillRect(0, 0, getWidth(), getHeight());
     }
 
     @Override
@@ -186,7 +197,7 @@ public class ImagePanel extends Panel implements LoadWorkerModel<UpdatableImage>
             .map(imageHandler::getImage);
     }
 
-    public void finish() {
+    public void zfinish() {
         finished = true;
         repaint();
     }
@@ -248,5 +259,24 @@ public class ImagePanel extends Panel implements LoadWorkerModel<UpdatableImage>
     @Override
     public void translate() {
         popupContextMenu.translate();
+    }
+
+    @Override
+    public void setView(StreamerView<byte[]> streamerView) {
+        this.streamerView = (ImageStreamerView) streamerView;
+    }
+
+    @Override
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    @Override
+    public Color getBackground() {
+        return black;
+    }
+
+    private Color getInactiveColor() {
+        return gray;
     }
 }

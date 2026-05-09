@@ -22,6 +22,7 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.menu.MenuHandler;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
+import org.cosinus.streamer.ui.view.Viewer;
 import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.form.Table;
@@ -39,6 +40,7 @@ import java.util.stream.Stream;
 import static java.awt.event.KeyEvent.KEY_PRESSED;
 import static java.awt.event.MouseEvent.*;
 import static java.lang.Math.abs;
+import static java.lang.Math.max;
 import static java.util.Arrays.stream;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
@@ -58,7 +60,9 @@ import static org.cosinus.streamer.ui.action.ShowStreamerPropertiesAction.SHOW_S
 import static org.cosinus.streamer.ui.menu.MenuHandler.SEPARATOR;
 import static org.cosinus.swing.action.ActionController.*;
 
-public abstract class DataTable<T extends Streamable> extends Table implements FocusListener, ExtendedContainer {
+public abstract class DataTable<T extends Streamable>
+    extends Table
+    implements Viewer<T>, FocusListener, ExtendedContainer {
 
     public static final int FIND_STREAMER_SPEED = 500;
 
@@ -333,6 +337,7 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
             .ifPresent(index -> setCurrentIndex(index, true));
     }
 
+    @Override
     public void reset(final Streamer<T> parentStreamer) {
         nameToFind = "";
         lastActionTime = 0;
@@ -412,6 +417,20 @@ public abstract class DataTable<T extends Streamable> extends Table implements F
         scrollRectToVisible(getCellRect(currentIndex, 0, false));
         repaint();
         view.updateStatus();
+    }
+
+    @Override
+    public void setActive(boolean active) {
+        if (active) {
+            setCurrentIndex(max(getCurrentIndex(), 0), true);
+        } else {
+            getSelectionModel().clearSelection();
+        }
+    }
+
+    @Override
+    public void setView(StreamerView<T> view) {
+        this.view = view;
     }
 
     protected abstract DataTableModel<T> createDataTableModel();

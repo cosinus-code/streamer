@@ -16,12 +16,12 @@
 package org.cosinus.streamer.ui.view.text;
 
 import lombok.Getter;
-import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.FindPanel;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
+import org.cosinus.streamer.ui.view.Viewer;
 import org.cosinus.swing.form.ScrollPane;
 
 import java.awt.*;
@@ -45,16 +45,17 @@ public class TextStreamerView extends StreamerView<String> {
     public static final String STATUS_DIRTY_TEXT_SIZE = "status-dirty-text-size";
 
     @Getter
-    private final TextStreamerEditor textEditor;
+    private TextStreamerEditor textEditor;
 
     public TextStreamerView(PanelLocation location) {
         super(location);
-        textEditor = new TextStreamerEditor(this);
     }
 
     @Override
     public void initComponents() {
         super.initComponents();
+
+        textEditor = (TextStreamerEditor) viewer;
 
         ScrollPane scroll = new ScrollPane();
         scroll.setViewportView(textEditor);
@@ -93,8 +94,8 @@ public class TextStreamerView extends StreamerView<String> {
     }
 
     @Override
-    protected Container getContainer() {
-        return textEditor;
+    protected Viewer<String> createViewer() {
+        return new TextStreamerEditor();
     }
 
     @Override
@@ -120,13 +121,7 @@ public class TextStreamerView extends StreamerView<String> {
     }
 
     @Override
-    public void reset(final Streamer<String> parentStreamer) {
-        super.reset(parentStreamer);
-        textEditor.reset();
-    }
-
-    @Override
-    protected FindPanel createFindTextPanel() {
+    protected FindPanel createTextFinder() {
         return new FindTextPanel(textEditor);
     }
 

@@ -18,15 +18,14 @@
 package org.cosinus.streamer.ui.view.geo;
 
 import io.jenetics.jpx.WayPoint;
-import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.gpx.GpxPoint;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
+import org.cosinus.streamer.ui.view.Viewer;
 import org.cosinus.swing.form.ScrollPane;
 import org.cosinus.swing.worker.WorkerListener;
 
-import java.awt.*;
 import java.util.List;
 
 import static java.awt.BorderLayout.CENTER;
@@ -51,7 +50,7 @@ public class MapStreamerView extends StreamerView<GpxPoint> {
     public void initComponents() {
         super.initComponents();
 
-        mapViewer = new MapView();
+        mapViewer = (MapView) viewer;
         mapViewer.initComponents();
 
         mapModel = mapViewer.getMapModel();
@@ -63,14 +62,6 @@ public class MapStreamerView extends StreamerView<GpxPoint> {
         initKeyActionsHandler();
         initCancelHandler();
         initFocusHandling();
-    }
-
-    @Override
-    public void setActive(boolean active) {
-        if (mapViewer != null) {
-            mapViewer.setActive(active);
-        }
-        super.setActive(active);
     }
 
     @Override
@@ -123,13 +114,7 @@ public class MapStreamerView extends StreamerView<GpxPoint> {
     }
 
     @Override
-    public void reset(Streamer<GpxPoint> parentStreamer) {
-        super.reset(parentStreamer);
-        mapModel.reset();
-    }
-
-    @Override
-    protected Container getContainer() {
-        return mapViewer;
+    protected Viewer<GpxPoint> createViewer() {
+        return new MapView();
     }
 }

@@ -18,12 +18,11 @@
 package org.cosinus.streamer.ui.view.binary;
 
 import lombok.Getter;
-import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
+import org.cosinus.streamer.ui.view.Viewer;
 
-import java.awt.*;
 import java.util.List;
 
 import static java.awt.BorderLayout.CENTER;
@@ -48,28 +47,13 @@ public class BinaryStreamerView extends StreamerView<byte[]> {
     public void initComponents() {
         super.initComponents();
 
-        binaryEditor = new BinaryHexaEditor(this);
-        binaryEditor.initComponents();
+        binaryEditor = (BinaryHexaEditor) viewer;
 
         streamerViewMainPanel.add(binaryEditor, CENTER);
         streamerViewMainPanel.add(binaryEditor.getScrollBar(), EAST);
 
         initCancelHandler();
         initFocusHandling();
-    }
-
-    @Override
-    public void reset(Streamer<byte[]> parentStreamer) {
-        super.reset(parentStreamer);
-        binaryEditor.reset();
-    }
-
-    @Override
-    public void setActive(boolean active) {
-        if (binaryEditor != null) {
-            binaryEditor.setHideCaret(!active);
-        }
-        super.setActive(active);
     }
 
     @Override
@@ -115,8 +99,8 @@ public class BinaryStreamerView extends StreamerView<byte[]> {
     }
 
     @Override
-    protected Container getContainer() {
-        return binaryEditor;
+    protected Viewer<byte[]> createViewer() {
+        return new BinaryHexaEditor();
     }
 
     @Override

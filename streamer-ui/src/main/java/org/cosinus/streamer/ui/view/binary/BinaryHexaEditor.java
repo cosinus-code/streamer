@@ -25,9 +25,10 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
+import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
+import org.cosinus.streamer.ui.view.Viewer;
 import org.cosinus.swing.action.ActionController;
-import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.form.SwingComponent;
 import org.cosinus.swing.form.TextComponent;
 import org.cosinus.swing.ui.ApplicationUIHandler;
@@ -57,7 +58,7 @@ import static org.cosinus.swing.image.ImageSettings.QUALITY;
 import static org.cosinus.swing.math.MoreMath.fitInRange;
 
 @Slf4j
-public class BinaryHexaEditor extends SwingComponent implements LoadWorkerModel<byte[]>, TextComponent {
+public class BinaryHexaEditor extends SwingComponent implements Viewer<byte[]>, LoadWorkerModel<byte[]>, TextComponent {
 
     public static final String OFFSET_FORMAT = "%08X";
     public static final String HEXA_FORMAT = "%02x";
@@ -78,7 +79,7 @@ public class BinaryHexaEditor extends SwingComponent implements LoadWorkerModel<
     @Autowired
     protected LoadActionExecutor loadActionExecutor;
 
-    private final BinaryStreamerView view;
+    private BinaryStreamerView view;
 
     @Getter
     private final Map<Long, Byte> editedBytes;
@@ -134,8 +135,7 @@ public class BinaryHexaEditor extends SwingComponent implements LoadWorkerModel<
 
     private long lastUpdateTime = 0;
 
-    public BinaryHexaEditor(final BinaryStreamerView view) {
-        this.view = view;
+    public BinaryHexaEditor() {
         this.editedBytes = new HashMap<>();
     }
 
@@ -174,6 +174,15 @@ public class BinaryHexaEditor extends SwingComponent implements LoadWorkerModel<
         linesCountPerPage = getHeight() / lineHeight;
         pageSize = bytesPerLine * linesCountPerPage;
         scrollBar.setMaximum((int) maxLineIndex);
+    }
+
+    @Override
+    public void setView(StreamerView<byte[]> view) {
+        this.view = (BinaryStreamerView) view;
+    }
+
+    @Override
+    public void setActive(boolean active) {
     }
 
     @Override

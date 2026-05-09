@@ -18,6 +18,8 @@ package org.cosinus.streamer.ui.view.text;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
+import org.cosinus.streamer.ui.view.StreamerView;
+import org.cosinus.streamer.ui.view.Viewer;
 import org.cosinus.swing.form.TextEditor;
 
 import java.util.List;
@@ -26,20 +28,28 @@ import static java.lang.String.join;
 import static java.lang.System.lineSeparator;
 import static org.cosinus.swing.border.Borders.emptyBorder;
 
-public class TextStreamerEditor extends TextEditor implements LoadWorkerModel<String> {
+public class TextStreamerEditor extends TextEditor implements LoadWorkerModel<String>, Viewer<String> {
 
-    private final TextStreamerView view;
+    private TextStreamerView view;
 
     private final SaveTextWorkerModel saveWorkerModel;
 
-    public TextStreamerEditor(final TextStreamerView view) {
-        this.view = view;
+    public TextStreamerEditor() {
         saveWorkerModel = new SaveTextWorkerModel(this);
     }
 
     public void initComponent() {
         super.initComponent();
         setBorder(emptyBorder(0, 3, 0, 3));
+    }
+
+    @Override
+    public void setView(StreamerView<String> streamerView) {
+        this.view = (TextStreamerView) streamerView;
+    }
+
+    @Override
+    public void setActive(boolean active) {
     }
 
     @Override

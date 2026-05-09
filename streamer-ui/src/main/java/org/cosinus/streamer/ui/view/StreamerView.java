@@ -16,6 +16,8 @@
 
 package org.cosinus.streamer.ui.view;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
@@ -29,6 +31,7 @@ import org.cosinus.streamer.ui.view.table.ViewItem;
 import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.error.ErrorHandler;
+import org.cosinus.swing.form.FormComponent;
 import org.cosinus.swing.form.Panel;
 import org.cosinus.swing.form.control.Label;
 import org.cosinus.swing.image.icon.IconInitializer;
@@ -100,38 +103,70 @@ public abstract class StreamerView<T> extends Panel {
     @Autowired
     protected ApplicationUIHandler uiHandler;
 
+    @Getter
     protected final String id;
 
     protected final PanelLocation location;
 
-    protected final Panel streamerViewMainPanel;
+    protected Panel streamerViewMainPanel;
 
     protected FindPanel findPanel;
 
+    @Getter
     protected CustomProgressBar loadingIndicator;
 
+    @Setter
+    @Getter
     protected Streamer<T> parentStreamer;
 
+    @Getter
     protected PopupMenu alternativeViewsPopup;
 
     private Label statusBar;
 
     private boolean cancelActionPrevented;
 
+    protected Viewer<T> viewer;
+
     public StreamerView(PanelLocation location) {
         this.id = UUID.randomUUID().toString();
         this.location = location;
+    }
+
+    @Override
+    public void initComponents() {
+        super.initComponents();
 
         streamerViewMainPanel = new Panel(new BorderLayout());
         setLayout(new BorderLayout());
-    }
 
-    public Streamer<T> getParentStreamer() {
-        return parentStreamer;
-    }
+        viewer = createViewer();
+        if (viewer != null) {
+            viewer.setView(this);
+            if (viewer instanceof FormComponent formComponent) {
+                formComponent.initComponents();
+            }
+        }
 
-    public void setParentStreamer(Streamer<T> parentStreamer) {
-        this.parentStreamer = parentStreamer;
+        findPanel = createTextFinder();
+        if (findPanel != null) {
+            findPanel.initComponents();
+            streamerViewMainPanel.add(findPanel, NORTH);
+        }
+
+        this.loadingIndicator = createLoadingIndicator();
+        add(streamerViewMainPanel, CENTER);
+
+        statusBar = new Label(" ");
+        statusBar.setBorder(emptyBorder(0, 3, 0, 3));
+        if (preferences.booleanPreference(SHOW_STATUS)) {
+            Panel streamerVieBottomPanel = new Panel(new BorderLayout());
+            streamerVieBottomPanel.add(statusBar, NORTH);
+            streamerVieBottomPanel.add(loadingIndicator, SOUTH);
+            add(streamerVieBottomPanel, SOUTH);
+        } else {
+            add(loadingIndicator, SOUTH);
+        }
     }
 
     public void reset(final Streamer<T> parentStreamer) {
@@ -142,6 +177,9 @@ public abstract class StreamerView<T> extends Panel {
             .map(this::createViewMenuItem)
             .forEach(alternativeViewsPopup::add);
         alternativeViewsPopup.translate();
+        if (viewer != null) {
+            viewer.reset(parentStreamer);
+        }
     }
 
     private RadioButtonMenuItem createViewMenuItem(String viewName) {
@@ -166,44 +204,11 @@ public abstract class StreamerView<T> extends Panel {
         return event -> changeViewAction.run(new ChangeViewActionModel(viewName));
     }
 
-    public PopupMenu getAlternativeViewsPopup() {
-        return alternativeViewsPopup;
-    }
-
-    public String getId() {
-        return id;
-    }
-
     protected CustomProgressBar createLoadingIndicator() {
         CustomProgressBar loading = new CustomProgressBar();
         loading.setIndeterminate(true);
         loading.setPreferredSize(new Dimension(getWidth(), 7));
         return loading;
-    }
-
-    @Override
-    public void initComponents() {
-        super.initComponents();
-
-        findPanel = createFindTextPanel();
-        if (findPanel != null) {
-            findPanel.initComponents();
-            streamerViewMainPanel.add(findPanel, NORTH);
-        }
-
-        this.loadingIndicator = createLoadingIndicator();
-        add(streamerViewMainPanel, CENTER);
-
-        statusBar = new Label(" ");
-        statusBar.setBorder(emptyBorder(0, 3, 0, 3));
-        if (preferences.booleanPreference(SHOW_STATUS)) {
-            Panel streamerVieBottomPanel = new Panel(new BorderLayout());
-            streamerVieBottomPanel.add(statusBar, NORTH);
-            streamerVieBottomPanel.add(loadingIndicator, SOUTH);
-            add(streamerVieBottomPanel, SOUTH);
-        } else {
-            add(loadingIndicator, SOUTH);
-        }
     }
 
     protected void initKeyActionsHandler() {
@@ -285,10 +290,6 @@ public abstract class StreamerView<T> extends Panel {
         return location;
     }
 
-    public CustomProgressBar getLoadingIndicator() {
-        return loadingIndicator;
-    }
-
     public void updateStreamerViewIdentifiers() {
         getStreamerAddress().ifPresent(address -> {
             addressBar.setAddress(address);
@@ -333,6 +334,9 @@ public abstract class StreamerView<T> extends Panel {
     }
 
     public void setActive(boolean active) {
+        if (viewer != null) {
+            viewer.setActive(active);
+        }
         getPanel().ifPresent(panel -> {
             panel.setEnabled(active);
             if (active) {
@@ -386,7 +390,7 @@ public abstract class StreamerView<T> extends Panel {
     }
 
     public <V> WorkerListener<SaveWorkerModel<V>, V> getSaveListener() {
-        return new WorkerListener<SaveWorkerModel<V>, V>() {
+        return new WorkerListener<>() {
             @Override
             public void workerStarted(SaveWorkerModel<V> saveTextModel) {
                 loadingIndicator.startLoading(saveTextModel.totalItemsToSave());
@@ -408,7 +412,7 @@ public abstract class StreamerView<T> extends Panel {
     public void setDirty(boolean dirty) {
     }
 
-    protected FindPanel createFindTextPanel() {
+    protected FindPanel createTextFinder() {
         return null;
     }
 
@@ -439,6 +443,12 @@ public abstract class StreamerView<T> extends Panel {
             .orElse(null);
     }
 
+    protected Container getContainer() {
+        return viewer instanceof Container container ? container : null;
+    }
+
+    protected abstract Viewer<T> createViewer();
+
     public abstract String getStatus();
 
     public abstract String getName();
@@ -448,6 +458,4 @@ public abstract class StreamerView<T> extends Panel {
     public abstract List<T> getSelectedItems();
 
     public abstract <V> LoadWorkerModel<V> getLoadWorkerModel();
-
-    protected abstract Container getContainer();
 }

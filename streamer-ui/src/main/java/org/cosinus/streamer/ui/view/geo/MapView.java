@@ -19,6 +19,9 @@ package org.cosinus.streamer.ui.view.geo;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.gpx.GpxPoint;
+import org.cosinus.streamer.ui.view.Viewer;
 import org.cosinus.swing.form.SwingComponent;
 import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +31,12 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static java.awt.BasicStroke.CAP_ROUND;
 import static java.awt.BasicStroke.JOIN_MITER;
+import static java.awt.Color.gray;
 import static java.lang.Math.*;
 import static java.util.Optional.ofNullable;
-import static org.cosinus.swing.color.SystemColor.CONTROL_LT_HIGHLIGHT;
 import static org.cosinus.swing.image.ImageSettings.QUALITY;
 
-public class MapView extends SwingComponent {
+public class MapView extends SwingComponent implements Viewer<GpxPoint> {
 
     public static final Color BACKGROUND_COLOR = new Color(175, 229, 176);
 
@@ -54,6 +57,8 @@ public class MapView extends SwingComponent {
 
     @Override
     protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
         Graphics2D g2d = (Graphics2D) g;
         QUALITY.apply(g2d);
 
@@ -108,7 +113,11 @@ public class MapView extends SwingComponent {
     }
 
     public Color getFocusColor() {
-        return uiHandler.getInactiveForegroundColor()
-            .orElseGet(() -> uiHandler.getColor(CONTROL_LT_HIGHLIGHT));
+        return gray;
+    }
+
+    @Override
+    public void reset(Streamer<GpxPoint> parentStreamer) {
+        mapModel.reset();
     }
 }

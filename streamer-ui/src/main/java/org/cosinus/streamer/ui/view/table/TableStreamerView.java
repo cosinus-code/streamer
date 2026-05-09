@@ -21,10 +21,7 @@ import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.DoHereModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
-import org.cosinus.streamer.ui.view.DefaultStreamerView;
-import org.cosinus.streamer.ui.view.FindPanel;
-import org.cosinus.streamer.ui.view.PanelLocation;
-import org.cosinus.streamer.ui.view.StreamerView;
+import org.cosinus.streamer.ui.view.*;
 import org.cosinus.swing.form.ScrollPane;
 import org.cosinus.swing.menu.PopupMenu;
 import org.cosinus.swing.worker.WorkerListener;
@@ -69,7 +66,9 @@ public abstract class TableStreamerView<T extends Streamable>
 
     @Override
     public void initComponents() {
-        this.table = createDataTable();
+        super.initComponents();
+
+        table = (DataTable<T>) viewer;
         table.init(this);
         table.initComponents();
 
@@ -104,8 +103,6 @@ public abstract class TableStreamerView<T extends Streamable>
 
         actionController.addCutCopyPasteActions(this);
 
-        super.initComponents();
-
         initFocusHandling();
     }
 
@@ -130,8 +127,8 @@ public abstract class TableStreamerView<T extends Streamable>
     }
 
     @Override
-    protected Container getContainer() {
-        return table;
+    protected Viewer<T> createViewer() {
+        return createDataTable();
     }
 
     protected abstract DataTable<T> createDataTable();
@@ -139,18 +136,6 @@ public abstract class TableStreamerView<T extends Streamable>
     @Override
     public LoadWorkerModel<T> getLoadWorkerModel() {
         return getDataTableModel();
-    }
-
-    @Override
-    public void setActive(boolean active) {
-        if (table != null) {
-            if (active) {
-                table.setCurrentIndex(max(table.getCurrentIndex(), 0), true);
-            } else {
-                table.getSelectionModel().clearSelection();
-            }
-        }
-        super.setActive(active);
     }
 
     @Override
@@ -261,7 +246,7 @@ public abstract class TableStreamerView<T extends Streamable>
     }
 
     @Override
-    protected FindPanel createFindTextPanel() {
+    protected FindPanel createTextFinder() {
         return new FindStreamerPanel<>(this);
     }
 

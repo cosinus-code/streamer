@@ -16,11 +16,14 @@
 
 package org.cosinus.streamer.ui.view;
 
+import lombok.Getter;
+
 import java.util.Optional;
 
 import static java.util.Arrays.stream;
 import static org.cosinus.swing.image.icon.IconProvider.*;
 
+@Getter
 public enum View {
 
     ICON("view-icon", ICON_VIEW_ICON),
@@ -40,14 +43,6 @@ public enum View {
     View(String key, String iconName) {
         this.key = key;
         this.iconName = iconName;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public String getIconName() {
-        return iconName;
     }
 
     public static Optional<View> findByName(String name) {
