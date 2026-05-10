@@ -15,16 +15,14 @@
  *
  */
 
-package org.cosinus.streamer.ui.view.geo;
+package org.cosinus.streamer.ui.view.map;
 
-import io.jenetics.jpx.WayPoint;
 import org.cosinus.streamer.gpx.GpxPoint;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.Viewer;
 import org.cosinus.swing.form.ScrollPane;
-import org.cosinus.swing.worker.WorkerListener;
 
 import java.util.List;
 

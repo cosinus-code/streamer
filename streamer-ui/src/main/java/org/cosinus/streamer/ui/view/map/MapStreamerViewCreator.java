@@ -15,14 +15,14 @@
  *
  */
 
-package org.cosinus.streamer.ui.view.geo;
+package org.cosinus.streamer.ui.view.map;
 
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewCreator;
 import org.springframework.stereotype.Component;
 
-import static org.cosinus.streamer.ui.view.geo.MapStreamerView.MAP_VIEWER;
+import static org.cosinus.streamer.ui.view.map.MapStreamerView.MAP_VIEWER;
 
 @Component
 public class MapStreamerViewCreator implements StreamerViewCreator {

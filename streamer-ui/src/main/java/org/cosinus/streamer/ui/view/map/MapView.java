@@ -15,7 +15,7 @@
  *
  */
 
-package org.cosinus.streamer.ui.view.geo;
+package org.cosinus.streamer.ui.view.map;
 
 import lombok.Getter;
 import lombok.Setter;
