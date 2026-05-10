@@ -24,14 +24,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
-public class StreamerViewLoadWorkerListener<V> implements WorkerListener<LoadWorkerModel<V>, V> {
+public class StreamerViewLoadListener<V> implements WorkerListener<LoadWorkerModel<V>, V> {
 
     @Autowired
     private StreamerViewHandler streamerViewHandler;
 
     protected final StreamerView<?> streamerView;
 
-    public StreamerViewLoadWorkerListener(final StreamerView<?> streamerView) {
+    public StreamerViewLoadListener(final StreamerView<?> streamerView) {
         injectContext(this);
         this.streamerView = streamerView;
     }
@@ -39,6 +39,9 @@ public class StreamerViewLoadWorkerListener<V> implements WorkerListener<LoadWor
     @Override
     public void workerStarted(LoadWorkerModel<V> loadWorkerModel) {
         streamerView.requestFocus();
+        if (streamerView.getContainer() instanceof Viewer<?> viewer) {
+            viewer.startLoading(loadWorkerModel);
+        }
     }
 
     @Override

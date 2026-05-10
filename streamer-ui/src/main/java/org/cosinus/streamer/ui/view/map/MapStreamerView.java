@@ -38,7 +38,7 @@ public class MapStreamerView extends StreamerView<GpxPoint> {
 
     private MapModel mapModel;
 
-    private MapView mapViewer;
+    private MapViewer mapViewer;
 
     public MapStreamerView(PanelLocation location) {
         super(location);
@@ -48,7 +48,7 @@ public class MapStreamerView extends StreamerView<GpxPoint> {
     public void initComponents() {
         super.initComponents();
 
-        mapViewer = (MapView) viewer;
+        mapViewer = (MapViewer) viewer;
         mapViewer.initComponents();
 
         mapModel = mapViewer.getMapModel();
@@ -91,6 +91,6 @@ public class MapStreamerView extends StreamerView<GpxPoint> {
 
     @Override
     protected Viewer<GpxPoint> createViewer() {
-        return new MapView();
+        return new MapViewer();
     }
 }

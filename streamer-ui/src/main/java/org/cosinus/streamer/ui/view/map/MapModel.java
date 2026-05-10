@@ -33,6 +33,11 @@ import static java.util.stream.IntStream.range;
 
 public class MapModel extends ArrayList<GpxPoint> implements LoadWorkerModel<GpxPoint> {
 
+    public static final int DEFAULT_PADDING = 10;
+
+    @Getter
+    protected final int padding;
+
     @Getter
     private final Set<Integer> selectedIndexes;
 
@@ -50,8 +55,18 @@ public class MapModel extends ArrayList<GpxPoint> implements LoadWorkerModel<Gpx
     @Getter
     protected double maxY = MIN_VALUE;
 
+    @Getter
+    protected Double scale;
+
+    @Getter
+    protected double middleX;
+
+    @Getter
+    protected double middleY;
+
     public MapModel() {
         this.selectedIndexes = new HashSet<>();
+        this. padding = DEFAULT_PADDING;
     }
 
     public GpxPoint getCurrentItem() {
@@ -96,5 +111,19 @@ public class MapModel extends ArrayList<GpxPoint> implements LoadWorkerModel<Gpx
         clear();
         selectedIndexes.clear();
         currentIndex = 0;
+        scale = null;
+    }
+
+    public void initScale(int width, int height) {
+        if (width > 0 && height > 0) {
+            int size = min(width, height);
+            int pad = 10;
+            int drawable = size - pad * 2;
+
+            scale = drawable / max(maxX - minX, maxY - minY);
+
+            middleX = (drawable - (maxX - minX) * scale) / 2;
+            middleY = (drawable - (maxY - minY) * scale) / 2;
+        }
     }
 }

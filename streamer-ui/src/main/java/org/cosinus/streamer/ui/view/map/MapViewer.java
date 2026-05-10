@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.gpx.GpxPoint;
+import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.Viewer;
 import org.cosinus.swing.form.SwingComponent;
 import org.cosinus.swing.ui.ApplicationUIHandler;
@@ -36,7 +37,7 @@ import static java.lang.Math.*;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.swing.image.ImageSettings.QUALITY;
 
-public class MapView extends SwingComponent implements Viewer<GpxPoint> {
+public class MapViewer extends SwingComponent implements Viewer<GpxPoint> {
 
     public static final Color BACKGROUND_COLOR = new Color(175, 229, 176);
 
@@ -51,7 +52,7 @@ public class MapView extends SwingComponent implements Viewer<GpxPoint> {
     @Setter
     private boolean active = true;
 
-    public MapView() {
+    public MapViewer() {
         this.mapModel = new MapModel();
     }
 
@@ -70,24 +71,17 @@ public class MapView extends SwingComponent implements Viewer<GpxPoint> {
             g2d.drawRect(0, 0, getWidth(), getHeight());
         }
 
-        int size = min(getWidth(), getHeight());
-        int pad = 10;
-        int drawable = size - pad * 2;
-
         g2d.setColor(getForeground());
         g2d.setStroke(new BasicStroke(1, CAP_ROUND, JOIN_MITER));
-
-        double scale = drawable / max(mapModel.getMaxX() - mapModel.getMinX(), mapModel.getMaxY() - mapModel.getMinY());
-
-        double middleX = (drawable - (mapModel.getMaxX() - mapModel.getMinX()) * scale) / 2;
-        double middleY = (drawable - (mapModel.getMaxY() - mapModel.getMinY()) * scale) / 2;
 
         AtomicReference<Point> storedPoint = new AtomicReference<>();
         mapModel
             .stream()
             .map(point -> new Point(
-                (int) ((point.getPoint().getLatitude().doubleValue() - mapModel.getMinX()) * scale + middleX + pad),
-                (int) ((point.getPoint().getLongitude().doubleValue() - mapModel.getMinY()) * scale + middleY + pad)))
+                (int) ((point.getPoint().getLatitude().doubleValue() -
+                    mapModel.getMinX()) * mapModel.getScale() + mapModel.getMiddleX() + mapModel.getPadding()),
+                (int) ((point.getPoint().getLongitude().doubleValue() -
+                    mapModel.getMinY()) * mapModel.getScale() + mapModel.getMiddleY() + mapModel.getPadding())))
             .forEach(point -> {
                 ofNullable(storedPoint.get())
                     .filter(lastPoint -> abs(lastPoint.x - point.x) > 1 ||
@@ -119,5 +113,16 @@ public class MapView extends SwingComponent implements Viewer<GpxPoint> {
     @Override
     public void reset(Streamer<GpxPoint> parentStreamer) {
         mapModel.reset();
+    }
+
+    @Override
+    public void refresh() {
+        mapModel.initScale(getWidth(), getHeight());
+        super.refresh();
+    }
+
+    @Override
+    public void finishLoading(LoadWorkerModel<?> loadWorkerModel) {
+        refresh();
     }
 }

@@ -370,7 +370,7 @@ public abstract class StreamerView<T> extends Panel {
     }
 
     public <V> WorkerListener<LoadWorkerModel<V>, V> getLoadWorkerListener() {
-        return new StreamerViewLoadWorkerListener<>(this);
+        return new StreamerViewLoadListener<>(this);
     }
 
     public <V> SaveWorkerModel<V> getSaveWorkerModel() {
