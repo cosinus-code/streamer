@@ -84,9 +84,9 @@ public class ImagePanel extends Panel implements Viewer<byte[]>, LoadWorkerModel
 
     private ImageSettings imageSettings = QUALITY;
 
-    private boolean finished;
+    private boolean loaded;
 
-    private boolean active;
+    private boolean active = true;
 
     @Override
     public void initComponents() {
@@ -140,7 +140,7 @@ public class ImagePanel extends Panel implements Viewer<byte[]>, LoadWorkerModel
         if (binaryStreamer == null) {
             originalImage = null;
         }
-        finished = false;
+        loaded = false;
     }
 
     public Streamer<byte[]> getParentStreamer() {
@@ -158,7 +158,7 @@ public class ImagePanel extends Panel implements Viewer<byte[]>, LoadWorkerModel
     }
 
     private void drawBrokenImage(Graphics g) {
-        if (finished) {
+        if (loaded) {
             getBrokenPhotoIcon()
                 .ifPresent(image -> {
                     int x = (getWidth() - image.getWidth()) / 2;
@@ -197,9 +197,9 @@ public class ImagePanel extends Panel implements Viewer<byte[]>, LoadWorkerModel
             .map(imageHandler::getImage);
     }
 
-    public void zfinish() {
-        finished = true;
-        repaint();
+    @Override
+    public void finishLoading(LoadWorkerModel<?> loadWorkerModel) {
+        loaded = true;
     }
 
     public void setImageSettings(final ImageSettings imageSettings) {

@@ -18,6 +18,7 @@
 package org.cosinus.streamer.ui.view;
 
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 
 public interface Viewer<T> {
 
@@ -28,4 +29,10 @@ public interface Viewer<T> {
     }
 
     void setActive(boolean active);
+
+    default void startLoading(LoadWorkerModel<?> loadWorkerModel) {
+    }
+
+    default void finishLoading(LoadWorkerModel<?> loadWorkerModel) {
+    }
 }

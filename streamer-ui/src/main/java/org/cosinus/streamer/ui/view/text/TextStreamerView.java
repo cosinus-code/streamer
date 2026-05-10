@@ -106,11 +106,6 @@ public class TextStreamerView extends StreamerView<String> {
     }
 
     @Override
-    public TextStreamerViewLoadWorkerListener getLoadWorkerListener() {
-        return new TextStreamerViewLoadWorkerListener(this);
-    }
-
-    @Override
     public SaveWorkerModel<String> getSaveWorkerModel() {
         return textEditor.getSaveWorkerModel();
     }

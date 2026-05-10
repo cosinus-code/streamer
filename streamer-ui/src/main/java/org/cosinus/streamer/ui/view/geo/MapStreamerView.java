@@ -92,28 +92,6 @@ public class MapStreamerView extends StreamerView<GpxPoint> {
     }
 
     @Override
-    public WorkerListener<LoadWorkerModel<WayPoint>, WayPoint> getLoadWorkerListener() {
-        WorkerListener<LoadWorkerModel<WayPoint>, WayPoint> listener = super.getLoadWorkerListener();
-        return new WorkerListener<>() {
-            @Override
-            public void workerStarted(LoadWorkerModel<WayPoint> workerModel) {
-                listener.workerStarted(workerModel);
-            }
-
-            @Override
-            public void workerUpdated(LoadWorkerModel<WayPoint> workerModel) {
-                listener.workerUpdated(workerModel);
-                mapViewer.repaint();
-            }
-
-            @Override
-            public void workerFinished(LoadWorkerModel<WayPoint> workerModel) {
-                listener.workerFinished(workerModel);
-            }
-        };
-    }
-
-    @Override
     protected Viewer<GpxPoint> createViewer() {
         return new MapView();
     }

@@ -18,6 +18,7 @@
 package org.cosinus.streamer.ui.view;
 
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
+import org.cosinus.swing.form.FormComponent;
 import org.cosinus.swing.worker.WorkerListener;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -43,6 +44,9 @@ public class StreamerViewLoadWorkerListener<V> implements WorkerListener<LoadWor
     @Override
     public void workerUpdated(LoadWorkerModel<V> loadWorkerModel) {
         streamerView.updateStatus();
+        if (streamerView.getContainer() instanceof FormComponent container) {
+            container.refresh();
+        }
     }
 
     @Override
@@ -50,6 +54,12 @@ public class StreamerViewLoadWorkerListener<V> implements WorkerListener<LoadWor
         streamerView.updateStreamerViewIdentifiers();
         streamerView.saveStreamerViewSnapshot();
         streamerViewHandler.ensureFocusOnCurrentView();
+        if (streamerView.getContainer() instanceof FormComponent container) {
+            container.refresh();
+        }
+        if (streamerView.getContainer() instanceof Viewer<?> viewer) {
+            viewer.finishLoading(loadWorkerModel);
+        }
     }
 
 }

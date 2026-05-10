@@ -87,4 +87,18 @@ public class TextStreamerEditor extends TextEditor implements LoadWorkerModel<St
     public SaveWorkerModel<String> getSaveWorkerModel() {
         return saveWorkerModel;
     }
+
+    @Override
+    public void startLoading(LoadWorkerModel<?> loadWorkerModel) {
+        setDirty(false);
+        setLoading(true);
+    }
+
+    @Override
+    public void finishLoading(LoadWorkerModel<?> loadWorkerModel) {
+        setCaretPosition(0);
+        requestFocus();
+        setDirty(false);
+        setLoading(false);
+    }
 }

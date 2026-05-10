@@ -24,7 +24,6 @@ import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.*;
 import org.cosinus.swing.form.ScrollPane;
 import org.cosinus.swing.menu.PopupMenu;
-import org.cosinus.swing.worker.WorkerListener;
 import org.cosinus.swing.worker.WorkerModel;
 
 import javax.swing.*;
@@ -37,7 +36,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static java.awt.BorderLayout.CENTER;
-import static java.lang.Math.max;
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.action.CopyHereAction.COPY_HERE_ACTION_ID;
 import static org.cosinus.streamer.ui.action.CreateStreamerAction.CREATE_STREAMER_ACTION_ID;
@@ -197,11 +195,6 @@ public abstract class TableStreamerView<T extends Streamable>
     @Override
     public void addCurrentItemToSelectionAndGoNext() {
         table.addCurrentItemToSelectionAndGoNext();
-    }
-
-    @Override
-    public <V> WorkerListener<LoadWorkerModel<V>, V> getLoadWorkerListener() {
-        return new TableStreamerViewLoadWorkerListener<>(this);
     }
 
     @Override

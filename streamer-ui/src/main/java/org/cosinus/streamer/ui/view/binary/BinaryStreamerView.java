@@ -84,11 +84,6 @@ public class BinaryStreamerView extends StreamerView<byte[]> {
     }
 
     @Override
-    public BinaryLoadListener getLoadWorkerListener() {
-        return new BinaryLoadListener(this);
-    }
-
-    @Override
     public SaveWorkerModel<BinarySaveUnit> getSaveWorkerModel() {
         return new BinarySaveModel(binaryEditor);
     }

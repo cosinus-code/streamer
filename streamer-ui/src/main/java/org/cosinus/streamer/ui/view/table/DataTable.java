@@ -19,6 +19,7 @@ package org.cosinus.streamer.ui.view.table;
 import org.cosinus.stream.swing.ExtendedContainer;
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.menu.MenuHandler;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
@@ -431,6 +432,24 @@ public abstract class DataTable<T extends Streamable>
     @Override
     public void setView(StreamerView<T> view) {
         this.view = view;
+    }
+
+    @Override
+    public void refresh() {
+        getTableModel().fireContentChanged();
+    }
+
+    @Override
+    public void finishLoading(LoadWorkerModel<?> loadWorkerModel) {
+        if (view.isActive()) {
+            ofNullable(loadWorkerModel.getContentIdentifier())
+                .ifPresent(view::findContent);
+            if (getCurrentIndex() < 0) {
+                setCurrentIndex(0, true);
+            } else if (getCurrentIndex() >= getItemsCount()) {
+                setCurrentIndex(getItemsCount() - 1, true);
+            }
+        }
     }
 
     protected abstract DataTableModel<T> createDataTableModel();

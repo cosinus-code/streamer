@@ -115,11 +115,6 @@ public class ImageStreamerView extends StreamerView<byte[]> {
     }
 
     @Override
-    public ImageLoadWorkerListener getLoadWorkerListener() {
-        return new ImageLoadWorkerListener(this);
-    }
-
-    @Override
     public String getStatus() {
         return translator.translate(STATUS_CURRENT_IMAGE_POSITION,
             currentImagePosition,
