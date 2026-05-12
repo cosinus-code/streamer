@@ -52,7 +52,7 @@ import static org.cosinus.streamer.ui.action.MoveToTrashStreamerAction.MOVE_TO_T
 import static org.cosinus.streamer.ui.menu.MenuHandler.SEPARATOR;
 import static org.cosinus.swing.image.ImageSettings.*;
 
-public class ImagePanel extends Panel implements Viewer<byte[]>, LoadWorkerModel<UpdatableImage>, ActionListener {
+public class ImageViewer extends Panel implements Viewer<byte[]>, LoadWorkerModel<UpdatableImage>, ActionListener {
 
     public static final String IMAGE_SETTINGS_SPEED = "image-settings-speed";
     public static final String IMAGE_SETTINGS_QUALITY = "image-settings-quality";
@@ -235,7 +235,7 @@ public class ImagePanel extends Panel implements Viewer<byte[]>, LoadWorkerModel
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton() == BUTTON3) {
-                    popupContextMenu.show(ImagePanel.this,
+                    popupContextMenu.show(ImageViewer.this,
                         mouseEvent.getX(),
                         mouseEvent.getY());
                 }

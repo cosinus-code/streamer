@@ -29,7 +29,6 @@ import org.cosinus.swing.form.ScrollPane;
 import org.cosinus.swing.image.UpdatableImage;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.awt.*;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -51,7 +50,7 @@ public class ImageStreamerView extends StreamerView<byte[]> {
     private LoadActionExecutor loadImageExecutor;
 
     @Getter
-    private ImagePanel imagePanel;
+    private ImageViewer imageViewer;
 
     private List<BinaryStreamer> imageStreamers;
 
@@ -65,11 +64,11 @@ public class ImageStreamerView extends StreamerView<byte[]> {
     public void initComponents() {
         super.initComponents();
 
-        imagePanel = (ImagePanel) viewer;
-        imagePanel.initContextMenu();
+        imageViewer = (ImageViewer) viewer;
+        imageViewer.initContextMenu();
 
         ScrollPane scroll = new ScrollPane();
-        scroll.setViewportView(imagePanel);
+        scroll.setViewportView(imageViewer);
         streamerViewMainPanel.add(scroll, CENTER);
 
         initCancelHandler();
@@ -93,17 +92,17 @@ public class ImageStreamerView extends StreamerView<byte[]> {
 
     @Override
     public LoadWorkerModel<UpdatableImage> getLoadWorkerModel() {
-        return imagePanel;
+        return imageViewer;
     }
 
     @Override
     protected Viewer<byte[]> createViewer() {
-        return new ImagePanel();
+        return new ImageViewer();
     }
 
     @Override
     public void reset(Streamer<byte[]> binaryStreamer) {
-        imagePanel.reset(binaryStreamer);
+        imageViewer.reset(binaryStreamer);
         super.reset(binaryStreamer);
         imageStreamers = binaryStreamer.getParent()
             .stream()
@@ -146,19 +145,19 @@ public class ImageStreamerView extends StreamerView<byte[]> {
     }
 
     private Optional<BinaryStreamer> getNextSibling() {
-        return getSiblingImageInOrder(imagePanel.getParentStreamer(), true, true);
+        return getSiblingImageInOrder(imageViewer.getParentStreamer(), true, true);
     }
 
     private Optional<BinaryStreamer> getPreviousSibling() {
-        return getSiblingImageInOrder(imagePanel.getParentStreamer(), false, true);
+        return getSiblingImageInOrder(imageViewer.getParentStreamer(), false, true);
     }
 
     private Optional<BinaryStreamer> getFirstSibling() {
-        return getSiblingImageInOrder(imagePanel.getParentStreamer(), true, false);
+        return getSiblingImageInOrder(imageViewer.getParentStreamer(), true, false);
     }
 
     private Optional<BinaryStreamer> getLastSibling() {
-        return getSiblingImageInOrder(imagePanel.getParentStreamer(), false, false);
+        return getSiblingImageInOrder(imageViewer.getParentStreamer(), false, false);
     }
 
     private Optional<BinaryStreamer> getSiblingImageInOrder(Streamer<byte[]> binaryStreamer, boolean ascending, boolean relative) {
@@ -173,7 +172,7 @@ public class ImageStreamerView extends StreamerView<byte[]> {
     }
 
     public void deleteCurrentImage() {
-        ofNullable(imagePanel.getParentStreamer())
+        ofNullable(imageViewer.getParentStreamer())
             .ifPresent(binaryStreamer -> {
                 binaryStreamer.delete(true);
                 imageStreamers.remove(binaryStreamer);
@@ -181,14 +180,14 @@ public class ImageStreamerView extends StreamerView<byte[]> {
                     .or(this::getLastSibling)
                     .map(streamer -> new LoadImageActionModel(streamer, this))
                     .ifPresentOrElse(loadImageExecutor::execute, () -> {
-                        imagePanel.reset(null);
-                        imagePanel.repaint();
+                        imageViewer.reset(null);
+                        imageViewer.repaint();
                     });
             });
     }
 
     @Override
     public void translate() {
-        imagePanel.translate();
+        imageViewer.translate();
     }
 }
