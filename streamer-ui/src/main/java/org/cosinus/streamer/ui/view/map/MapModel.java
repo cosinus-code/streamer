@@ -18,13 +18,21 @@
 package org.cosinus.streamer.ui.view.map;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.cosinus.streamer.gpx.GpxPoint;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 
-import java.util.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static java.lang.Double.MAX_VALUE;
 import static java.lang.Double.MIN_VALUE;
+import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.util.Optional.empty;
@@ -56,6 +64,18 @@ public class MapModel extends ArrayList<GpxPoint> implements LoadWorkerModel<Gpx
     protected double maxY = MIN_VALUE;
 
     @Getter
+    @Setter
+    protected double translationX;
+
+    @Getter
+    @Setter
+    protected double translationY;
+
+    @Getter
+    @Setter
+    protected Integer size;
+
+    @Getter
     protected Double scale;
 
     @Getter
@@ -64,9 +84,12 @@ public class MapModel extends ArrayList<GpxPoint> implements LoadWorkerModel<Gpx
     @Getter
     protected double middleY;
 
+    @Getter
+    private final List<Point> points = new ArrayList<>();
+
     public MapModel() {
         this.selectedIndexes = new HashSet<>();
-        this. padding = DEFAULT_PADDING;
+        this.padding = DEFAULT_PADDING;
     }
 
     public GpxPoint getCurrentItem() {
@@ -80,12 +103,6 @@ public class MapModel extends ArrayList<GpxPoint> implements LoadWorkerModel<Gpx
             .toList();
     }
 
-    public String getCurrentItemIdentifier() {
-        return getItem(currentIndex)
-            .map(Object::toString)
-            .orElse(null);
-    }
-
     private Optional<GpxPoint> getItem(int itemInex) {
         return itemInex > 0 && itemInex < size() ? ofNullable(get(itemInex)) : empty();
     }
@@ -93,6 +110,30 @@ public class MapModel extends ArrayList<GpxPoint> implements LoadWorkerModel<Gpx
     @Override
     public void update(List<GpxPoint> points) {
         points.forEach(this::add);
+        updateMap();
+    }
+
+    protected void updateMap() {
+        if (isInitialized()) {
+            points.clear();
+            AtomicReference<Point> storedPoint = new AtomicReference<>();
+            stream()
+                .map(point -> new Point(
+                    (int) ((point.getPoint().getLatitude().doubleValue() - minX) * scale + middleX + padding),
+                    (int) ((point.getPoint().getLongitude().doubleValue() - minY) * scale + middleY + padding)))
+                .forEach(point -> {
+                    ofNullable(storedPoint.get())
+                        .filter(lastPoint -> abs(lastPoint.x - point.x) > 1 ||
+                            abs(lastPoint.y - point.y) > 1)
+                        .ifPresent(lastPoint -> {
+                            this.points.add(point);
+                            storedPoint.set(point);
+                        });
+                    if (storedPoint.get() == null) {
+                        storedPoint.set(point);
+                    }
+                });
+        }
     }
 
     @Override
@@ -109,14 +150,17 @@ public class MapModel extends ArrayList<GpxPoint> implements LoadWorkerModel<Gpx
 
     public void reset() {
         clear();
+        points.clear();
         selectedIndexes.clear();
         currentIndex = 0;
+        translationX = 0;
+        translationY = 0;
         scale = null;
+        size = null;
     }
 
-    public void initScale(int width, int height) {
-        if (width > 0 && height > 0) {
-            int size = min(width, height);
+    public void initScale() {
+        if (size > 0) {
             int pad = 10;
             int drawable = size - pad * 2;
 
@@ -124,6 +168,12 @@ public class MapModel extends ArrayList<GpxPoint> implements LoadWorkerModel<Gpx
 
             middleX = (drawable - (maxX - minX) * scale) / 2;
             middleY = (drawable - (maxY - minY) * scale) / 2;
+
+            updateMap();
         }
+    }
+
+    public boolean isInitialized() {
+        return size != null && scale != null;
     }
 }
