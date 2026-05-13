@@ -64,6 +64,10 @@ import static org.cosinus.swing.file.FileHandler.PROTOCOL_MARK;
 
 public abstract class StreamerView<T> extends Panel {
 
+    public static final String STATUS_ITEMS_COUNT_KEY = "status-items-count";
+
+    public static final String STATUS_SELECTED_ITEMS_COUNT_KEY = "status-selected-items-count";
+
     @Autowired
     private Preferences preferences;
 
@@ -447,9 +451,16 @@ public abstract class StreamerView<T> extends Panel {
         return viewer instanceof Container container ? container : null;
     }
 
+    public String getStatus() {
+        int selectedItemsCount = getSelectedItems().size();
+        return selectedItemsCount > 0 ?
+            translator.translate(STATUS_SELECTED_ITEMS_COUNT_KEY, selectedItemsCount, getItemsCount()) :
+            translator.translate(STATUS_ITEMS_COUNT_KEY, getItemsCount());
+    }
+
     protected abstract Viewer<T> createViewer();
 
-    public abstract String getStatus();
+    protected abstract long getItemsCount();
 
     public abstract String getName();
 

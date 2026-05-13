@@ -99,6 +99,11 @@ public class TextStreamerView extends StreamerView<String> {
     }
 
     @Override
+    protected long getItemsCount() {
+        return textEditor.getLoadedSize();
+    }
+
+    @Override
     public boolean isDirty() {
         return super.isDirty() || ofNullable(textEditor)
             .map(TextStreamerEditor::isDirty)
@@ -117,6 +122,9 @@ public class TextStreamerView extends StreamerView<String> {
 
     @Override
     protected FindPanel createTextFinder() {
+        if (textEditor == null) {
+            textEditor = (TextStreamerEditor) viewer;
+        }
         return new FindTextPanel(textEditor);
     }
 

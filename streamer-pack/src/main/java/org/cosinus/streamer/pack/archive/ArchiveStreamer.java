@@ -18,6 +18,7 @@ package org.cosinus.streamer.pack.archive;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.cosinus.streamer.api.ParentStreamer;
+import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.file.BaseFileStreamer;
 import org.cosinus.streamer.api.value.*;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
@@ -25,6 +26,8 @@ import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Objects;
+
+import static java.util.Optional.ofNullable;
 
 public abstract class ArchiveStreamer<T> extends BaseFileStreamer<T> {
 
@@ -80,7 +83,9 @@ public abstract class ArchiveStreamer<T> extends BaseFileStreamer<T> {
 
     @Override
     public String getProtocol() {
-        return null;
+        return ofNullable(getParent())
+            .map(Streamable::getProtocol)
+            .orElse(null);
     }
 
     @Override

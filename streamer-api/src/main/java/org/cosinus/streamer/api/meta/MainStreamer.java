@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.api.meta;
 
+import lombok.Getter;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 
@@ -30,9 +31,13 @@ public abstract class MainStreamer<S extends Streamer<?>> implements ParentStrea
 
     private MetaStreamer parent;
 
+    @Getter
+    private String name;
+
     private Path path;
 
     public void setName(String name) {
+        this.name = name;
         this.path = Paths.get(name);
     }
 
@@ -48,11 +53,6 @@ public abstract class MainStreamer<S extends Streamer<?>> implements ParentStrea
     @Override
     public Path getPath() {
         return path;
-    }
-
-    @Override
-    public String getProtocol() {
-        return MetaStreamer.META_PROTOCOL;
     }
 
     @Override
@@ -77,5 +77,10 @@ public abstract class MainStreamer<S extends Streamer<?>> implements ParentStrea
             .filter(path -> path.startsWith(getProtocol()))
             .map(path -> path.substring(getProtocol().length()))
             .map(Paths::get);
+    }
+
+    @Override
+    public boolean isAncestorFor(Streamer<?> streamer) {
+        return getProtocol().equals(streamer.getProtocol());
     }
 }

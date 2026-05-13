@@ -24,6 +24,7 @@ import org.cosinus.streamer.ui.action.execute.load.image.LoadImageActionModel;
 import org.cosinus.streamer.ui.action.execute.load.image.LoadImageWorker;
 import org.cosinus.streamer.ui.action.execute.save.SaveActionModel;
 import org.cosinus.streamer.ui.action.execute.save.SaveWorkerExecutor;
+import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.streamer.ui.view.image.ImageStreamerView;
@@ -120,7 +121,7 @@ public class LoadActionExecutor extends WorkerExecutor<LoadActionModel<?>, Worke
             });
 
         String viewName = ofNullable(actionModel.getStreamerViewNameToLoadIn())
-            .orElseGet(() -> getDefaultViewName(streamerToLoad));
+            .orElseGet(() -> getDefaultViewName(streamerToLoad, actionModel.getLocationToLoadTo()));
 
         StreamerView streamerViewToLoadTo = ofNullable(currentStreamerView)
             .filter(view -> view.getName().equals(viewName) && view.getName() != null)
@@ -138,15 +139,15 @@ public class LoadActionExecutor extends WorkerExecutor<LoadActionModel<?>, Worke
             .orElse(actionModel));
     }
 
-    private String getDefaultViewName(Streamer<?> streamerToLoad) {
-        if (!streamerToLoad.isParent()) {
-            //TODO: to remember the last view used for this streamer type
-            return streamerViewHandler.getAvailableViewNames(streamerToLoad)
+    private String getDefaultViewName(Streamer<?> streamerToLoad, PanelLocation location) {
+        //TODO: to remember the last view used for this streamer type
+        return streamerToLoad.isParent() ?
+            streamerViewHandler.getPreferredViewName(location)
+                .orElse(null) :
+            streamerViewHandler.getAvailableViewNames(streamerToLoad)
                 .stream()
                 .findFirst()
                 .orElse(null);
-        }
-        return null;
     }
 
     @Override

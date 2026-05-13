@@ -115,7 +115,7 @@ public class StreamerViewHandler implements DiskEventListener {
             .ifPresent(panel -> panel.setView(view));
     }
 
-    protected Optional<String> getPreferredViewName(PanelLocation location) {
+    public Optional<String> getPreferredViewName(PanelLocation location) {
         return ofNullable(preferredViewNames.get(location))
             .or(() -> preferences.findPreference(LEFT == location ? LEFT_VIEW : RIGHT_VIEW)
                 .map(Preference::getRealValue)

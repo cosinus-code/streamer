@@ -68,6 +68,7 @@ public class GridTable<T extends Streamable> extends DataTable<T> implements Act
     @Override
     public void initComponents() {
         super.initComponents();
+        getTableHeader().setReorderingAllowed(false);
         setSelectionType();
         setShowGrid(false);
 
@@ -77,8 +78,6 @@ public class GridTable<T extends Streamable> extends DataTable<T> implements Act
                 selectionModel.setSelectionInterval(index, index);
             }
         }));
-
-        //setAutoCreateRowSorter(true);
     }
 
     @Override

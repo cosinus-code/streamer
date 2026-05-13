@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.api.meta;
 
+import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.api.BinaryStreamer;
@@ -37,6 +38,7 @@ public class StreamerHandler {
 
     public static final String EXPANDER_SEPARATOR = "#";
 
+    @Getter
     private final MetaStreamer metaStreamer;
 
     private final BinaryExpanderHandler binaryExpanderHandler;

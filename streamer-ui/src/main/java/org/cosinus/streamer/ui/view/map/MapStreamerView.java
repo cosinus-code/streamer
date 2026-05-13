@@ -22,7 +22,6 @@ import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.Viewer;
-import org.cosinus.swing.form.ScrollPane;
 
 import java.util.List;
 
@@ -38,8 +37,6 @@ public class MapStreamerView extends StreamerView<GpxPoint> {
 
     private MapModel mapModel;
 
-    private MapViewer mapViewer;
-
     public MapStreamerView(PanelLocation location) {
         super(location);
     }
@@ -48,14 +45,12 @@ public class MapStreamerView extends StreamerView<GpxPoint> {
     public void initComponents() {
         super.initComponents();
 
-        mapViewer = (MapViewer) viewer;
+        MapViewer mapViewer = (MapViewer) viewer;
         mapViewer.initComponents();
 
         mapModel = mapViewer.getMapModel();
 
-        ScrollPane scroll = new ScrollPane();
-        scroll.setViewportView(mapViewer);
-        streamerViewMainPanel.add(scroll, CENTER);
+        streamerViewMainPanel.add(mapViewer, CENTER);
 
         initKeyActionsHandler();
         initCancelHandler();
@@ -72,6 +67,11 @@ public class MapStreamerView extends StreamerView<GpxPoint> {
     @Override
     public String getName() {
         return MAP_VIEWER;
+    }
+
+    @Override
+    protected long getItemsCount() {
+        return mapModel.size();
     }
 
     @Override

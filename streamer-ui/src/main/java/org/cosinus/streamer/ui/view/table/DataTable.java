@@ -107,7 +107,6 @@ public abstract class DataTable<T extends Streamable>
         setColumnSelectionAllowed(false);
         setRowMargin(0);
         getColumnModel().setColumnMargin(0);
-        getTableHeader().setReorderingAllowed(false);
 
         getTableModel().setCurrentIndex(0);
 

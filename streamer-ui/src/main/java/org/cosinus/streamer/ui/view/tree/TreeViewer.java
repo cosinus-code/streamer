@@ -1,0 +1,191 @@
+/*
+ * Copyright 2025 Cosinus Software
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
+package org.cosinus.streamer.ui.view.tree;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.error.StreamerException;
+import org.cosinus.streamer.api.meta.StreamerHandler;
+import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
+import org.cosinus.streamer.ui.view.StreamerView;
+import org.cosinus.streamer.ui.view.Viewer;
+import org.cosinus.swing.form.Tree;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Arrays;
+import java.util.List;
+
+import static java.util.Optional.ofNullable;
+import static java.util.stream.IntStream.range;
+import static javax.swing.tree.TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION;
+
+public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerModel<Streamer> {
+
+    @Autowired
+    private StreamerHandler streamerHandler;
+
+    @Getter
+    @Setter
+    private StreamerTreeNode currentNode;
+
+    private StreamerView<Streamer> streamerView;
+
+    private DefaultTreeModel treeModel;
+
+    private StreamerTreeNode treeRoot;
+
+    private StreamerTreeNode loadingNode;
+
+    public TreeViewer() {
+        super();
+    }
+
+    @Override
+    public void initComponents() {
+        setRootVisible(false);
+        setCellRenderer(new TreeNodeRenderer());
+        getSelectionModel().setSelectionMode(DISCONTIGUOUS_TREE_SELECTION);
+        setExpandsSelectedPaths(true);
+
+        this.treeRoot = new StreamerTreeNode(streamerHandler.getMetaStreamer(), true);
+        this.treeModel = new DefaultTreeModel(treeRoot);
+        setModel(treeModel);
+
+        addTreeSelectionListener(treeSelectionEvent -> {
+            ofNullable(getLastSelectedPathComponent())
+                .filter(node -> StreamerTreeNode.class.isAssignableFrom(node.getClass()))
+                .map(StreamerTreeNode.class::cast)
+                .ifPresent(this::setCurrentNode);
+        });
+
+        addTreeExpansionListener(new TreeExpansionListener() {
+            @Override
+            public void treeCollapsed(TreeExpansionEvent event) {
+            }
+
+            @Override
+            public void treeExpanded(TreeExpansionEvent event) {
+                StreamerTreeNode node = (StreamerTreeNode) event.getPath().getLastPathComponent();
+                if (!node.isLoaded() && !node.isLoading()) {
+                    streamerView.loadStreamer((Streamer) node.getStreamer());
+                }
+            }
+        });
+
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                int row = getClosestRowForLocation(mouseEvent.getX(), mouseEvent.getY());
+                if (row >= 0) {
+                    Rectangle bounds = getRowBounds(row);
+                    if (mouseEvent.getY() >= bounds.y && mouseEvent.getY() < bounds.y + bounds.height) {
+                        setSelectionRow(row);
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
+    public void setActive(boolean active) {
+        if (active) {
+            if (currentNode != null) {
+                TreePath currentPath = new TreePath(currentNode.getPath());
+                setSelectionPath(currentPath);
+                scrollPathToVisible(currentPath);
+            }
+            requestFocusInWindow();
+        } else {
+            getSelectionModel().clearSelection();
+        }
+    }
+
+    protected long getItemsCount() {
+        return getModel().getChildCount(getModel().getRoot());
+    }
+
+    public List<Streamer> getSelectedItems() {
+        return ofNullable(getSelectionPaths())
+            .stream()
+            .flatMap(Arrays::stream)
+            .map(TreePath::getLastPathComponent)
+            .filter(item -> Streamer.class.isAssignableFrom(item.getClass()))
+            .map(Streamer.class::cast)
+            .toList();
+    }
+
+    @Override
+    public void reset(Streamer<Streamer> parentStreamer) {
+        loadTreeNode(treeRoot, parentStreamer);
+        loadingNode.removeAllChildren();
+        loadingNode.setLoading(true);
+        setCurrentNode(loadingNode);
+    }
+
+    protected void loadTreeNode(StreamerTreeNode node, Streamer<?> streamer) {
+        if (node.getStreamer().getUrlPath().equals(streamer.getUrlPath())) {
+            loadingNode = node;
+        } else {
+            if (!node.isLoaded()) {
+                node.loadChildren();
+            }
+            StreamerTreeNode childNode = range(0, node.getChildCount())
+                .mapToObj(node::getChildAt)
+                .filter(StreamerTreeNode.class::isInstance)
+                .map(StreamerTreeNode.class::cast)
+                .filter(child -> child.getStreamer().isAncestorFor(streamer))
+                .findFirst()
+                .orElseThrow(() ->
+                    new StreamerException("Cannot find ancestor node for streamer '%s' from '%s'".formatted(
+                        streamer.getPath(),
+                        node.getStreamer().getPath())));
+            loadTreeNode(childNode, streamer);
+        }
+    }
+
+    @Override
+    public void update(List<Streamer> items) {
+        items.stream()
+            .map(loadingNode::createLoadingNode)
+            .forEach(loadingNode::add);
+        loadingNode.sort();
+        treeModel.reload(loadingNode);
+        expandPath(new TreePath(loadingNode.getPath()));
+    }
+
+    @Override
+    public void finishLoading(LoadWorkerModel<?> loadWorkerModel) {
+        if (loadingNode != null) {
+            loadingNode.setLoading(false);
+            loadingNode.setLoaded(true);
+        }
+    }
+
+    @Override
+    public void setView(StreamerView<Streamer> streamerView) {
+        this.streamerView = streamerView;
+    }
+}

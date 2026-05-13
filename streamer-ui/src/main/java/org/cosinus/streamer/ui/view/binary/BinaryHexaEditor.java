@@ -88,6 +88,8 @@ public class BinaryHexaEditor extends SwingComponent implements Viewer<byte[]>, 
     private final int offsetPadding = 4;
 
     private long offset;
+
+    @Getter
     private long totalSize;
 
     private long offsetLineIndex;

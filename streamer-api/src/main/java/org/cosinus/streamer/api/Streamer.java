@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.api;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.cosinus.stream.StreamSupplier;
 import org.cosinus.stream.consumer.StreamConsumer;
 import org.cosinus.streamer.api.parent.StreamParentsSpliterator;
@@ -27,7 +28,7 @@ import java.util.stream.StreamSupport;
 
 import static java.util.Optional.ofNullable;
 
-public interface Streamer<T> extends Streamable, StreamSupplier<T> {
+public interface Streamer<T> extends Streamable, StreamSupplier<T>, Comparable<Streamer<?>> {
 
     String DETAIL_KEY_NAME = "name";
     String DETAIL_KEY_VALUE = "value";
@@ -94,5 +95,28 @@ public interface Streamer<T> extends Streamable, StreamSupplier<T> {
         return ofNullable(binaryStreamer())
             .filter(BinaryStreamer::supportsChannel)
             .isPresent();
+    }
+
+    default boolean isAncestorFor(Streamer<?> streamer) {
+        if (getUrlPath() == null) {
+            return true;
+        }
+        return ofNullable(streamer)
+            .map(Streamer::getUrlPath)
+            .map(path -> path.startsWith(getUrlPath()))
+            .orElse(false);
+    }
+
+    @Override
+    default int compareTo(Streamer<?> other) {
+        if (isParent() && !other.isParent()) {
+            return -1;
+        }
+
+        if (!isParent() && other.isParent()) {
+            return 1;
+        }
+
+        return ObjectUtils.compare(getName(), other.getName());
     }
 }

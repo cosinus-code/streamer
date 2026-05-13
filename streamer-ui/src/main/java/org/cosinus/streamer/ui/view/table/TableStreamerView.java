@@ -48,10 +48,6 @@ import static org.cosinus.swing.action.ActionController.*;
 public abstract class TableStreamerView<T extends Streamable>
     extends DefaultStreamerView<T> implements ExtendedContainer {
 
-    public static final String STATUS_ITEMS_COUNT_KEY = "status-items-count";
-
-    public static final String STATUS_SELECTED_ITEMS_COUNT_KEY = "status-selected-items-count";
-
     protected DataTable<T> table;
 
     private ScrollPane scroll;
@@ -204,19 +200,13 @@ public abstract class TableStreamerView<T extends Streamable>
     }
 
     @Override
-    public String getStatus() {
-        int selectedItemsCount = table.getSelectedItems().size();
-        return selectedItemsCount > 0 ?
-            translator.translate(
-                STATUS_SELECTED_ITEMS_COUNT_KEY, selectedItemsCount, getDataTableModel().getLoadedSize()) :
-            translator.translate(
-                STATUS_ITEMS_COUNT_KEY, getDataTableModel().getLoadedSize());
+    protected long getItemsCount() {
+        return getDataTableModel().getLoadedSize();
     }
 
     public DataTableModel<T> getDataTableModel() {
         return (DataTableModel<T>) table.getModel();
     }
-
     @Override
     public void reset(final Streamer<T> parentStreamer) {
         super.reset(parentStreamer);

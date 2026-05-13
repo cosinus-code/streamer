@@ -101,6 +101,11 @@ public class ImageStreamerView extends StreamerView<byte[]> {
     }
 
     @Override
+    protected long getItemsCount() {
+        return imageStreamers.size();
+    }
+
+    @Override
     public void reset(Streamer<byte[]> binaryStreamer) {
         imageViewer.reset(binaryStreamer);
         super.reset(binaryStreamer);

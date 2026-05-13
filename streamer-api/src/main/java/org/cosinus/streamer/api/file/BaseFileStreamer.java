@@ -18,7 +18,11 @@
 package org.cosinus.streamer.api.file;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.value.*;
+import org.cosinus.streamer.api.value.DateValue;
+import org.cosinus.streamer.api.value.MemoryValue;
+import org.cosinus.streamer.api.value.TextValue;
+import org.cosinus.streamer.api.value.TranslatableName;
+import org.cosinus.streamer.api.value.Value;
 import org.cosinus.swing.file.FileHandler;
 import org.cosinus.swing.file.mimetype.MimeTypeResolver;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +35,7 @@ import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.joining;
+import static org.cosinus.streamer.api.ParentStreamer.FOLDER_VIEW_ID;
 import static org.cosinus.streamer.api.TextStreamer.TEXT_VIEW_ID;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
@@ -136,9 +141,11 @@ public abstract class BaseFileStreamer<T> implements Streamer<T> {
 
     @Override
     public String getViewId() {
-        return isImageCompatible() ? IMAGE_VIEW_ID :
-            isTextCompatible() ? TEXT_VIEW_ID :
-                BINARY_VIEW_ID;
+        return !isParent() ?
+            isImageCompatible() ? IMAGE_VIEW_ID :
+                isTextCompatible() ? TEXT_VIEW_ID :
+                    BINARY_VIEW_ID :
+            FOLDER_VIEW_ID;
     }
 
     public boolean isImageCompatible() {

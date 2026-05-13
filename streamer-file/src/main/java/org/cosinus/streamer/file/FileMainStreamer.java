@@ -33,9 +33,10 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Comparator.reverseOrder;
+import static java.util.stream.Collectors.toList;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_COMPUTER;
 
 @RootStreamer("Filesystem")
@@ -80,7 +81,8 @@ public class FileMainStreamer extends MainStreamer<FileStreamer<?>> implements D
         return fileHandler.getFileSystemRoots()
             .stream()
             .map(this::createFileRootStreamer)
-            .collect(Collectors.toList());
+            .sorted(reverseOrder())
+            .collect(toList());
     }
 
     protected FileRootStreamer createFileRootStreamer(FileSystemRoot fileSystemRoot) {

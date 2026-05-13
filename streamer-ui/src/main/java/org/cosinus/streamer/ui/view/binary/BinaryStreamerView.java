@@ -99,6 +99,11 @@ public class BinaryStreamerView extends StreamerView<byte[]> {
     }
 
     @Override
+    protected long getItemsCount() {
+        return binaryEditor.getTotalSize();
+    }
+
+    @Override
     public boolean isDirty() {
         return super.isDirty() || ofNullable(binaryEditor)
             .map(BinaryHexaEditor::isDirty)
