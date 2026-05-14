@@ -40,6 +40,7 @@ import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Comparator.reverseOrder;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 import static javax.swing.tree.TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION;
@@ -183,6 +184,7 @@ public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerMode
                 node.loadChildren();
             }
             StreamerTreeNode childNode = node.childStream()
+                .sorted(reverseOrder())
                 .filter(child -> child.getStreamer().isAncestorFor(streamer))
                 .findFirst()
                 .orElseThrow(() ->

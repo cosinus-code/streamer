@@ -81,7 +81,6 @@ public class FileMainStreamer extends MainStreamer<FileStreamer<?>> implements D
         return fileHandler.getFileSystemRoots()
             .stream()
             .map(this::createFileRootStreamer)
-            .sorted(reverseOrder())
             .collect(toList());
     }
 
