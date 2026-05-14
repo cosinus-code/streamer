@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 import static java.util.stream.IntStream.range;
@@ -95,9 +96,15 @@ public class StreamerTreeNode extends DefaultMutableTreeNode implements Comparab
         children.forEach(this::add);
     }
 
+    public Stream<StreamerTreeNode> childStream() {
+        return range(0, getChildCount())
+            .mapToObj(this::getChildAt)
+            .filter(StreamerTreeNode.class::isInstance)
+            .map(StreamerTreeNode.class::cast);
+    }
+
     @Override
     public int compareTo(@NotNull StreamerTreeNode other) {
         return compare(getStreamer(), other.getStreamer());
     }
-
 }

@@ -30,7 +30,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
+import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -39,8 +41,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Optional.ofNullable;
-import static java.util.stream.IntStream.range;
+import static java.util.function.Predicate.not;
 import static javax.swing.tree.TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION;
+import static org.cosinus.stream.Streams.stream;
 
 public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerModel<Streamer> {
 
@@ -81,6 +84,19 @@ public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerMode
                 .ifPresent(this::setCurrentNode);
         });
 
+        addTreeWillExpandListener(new TreeWillExpandListener() {
+            @Override
+            public void treeWillCollapse(TreeExpansionEvent event) {
+                ofNullable(event.getPath())
+                    .ifPresent(TreeViewer.this::collapseChildren);
+            }
+
+            @Override
+            public void treeWillExpand(TreeExpansionEvent event) {
+
+            }
+        });
+
         addTreeExpansionListener(new TreeExpansionListener() {
             @Override
             public void treeCollapsed(TreeExpansionEvent event) {
@@ -89,9 +105,12 @@ public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerMode
             @Override
             public void treeExpanded(TreeExpansionEvent event) {
                 StreamerTreeNode node = (StreamerTreeNode) event.getPath().getLastPathComponent();
-                if (!node.isLoaded() && !node.isLoading()) {
-                    streamerView.loadStreamer((Streamer) node.getStreamer());
-                }
+                ofNullable(node)
+                    .filter(not(StreamerTreeNode::isLoaded))
+                    .filter(not(StreamerTreeNode::isLoading))
+                    .map(StreamerTreeNode::getStreamer)
+                    .map(Streamer.class::cast)
+                    .ifPresent(streamerView::loadStreamer);
             }
         });
 
@@ -107,6 +126,17 @@ public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerMode
                 }
             }
         });
+    }
+
+    public void collapseChildren(TreePath parent) {
+        TreeNode node = (TreeNode) parent.getLastPathComponent();
+        stream(node.children())
+            .map(parent::pathByAddingChild)
+            .filter(this::isExpanded)
+            .forEach(path -> {
+                collapseChildren(path);
+                collapsePath(path);
+            });
     }
 
     @Override
@@ -152,10 +182,7 @@ public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerMode
             if (!node.isLoaded()) {
                 node.loadChildren();
             }
-            StreamerTreeNode childNode = range(0, node.getChildCount())
-                .mapToObj(node::getChildAt)
-                .filter(StreamerTreeNode.class::isInstance)
-                .map(StreamerTreeNode.class::cast)
+            StreamerTreeNode childNode = node.childStream()
                 .filter(child -> child.getStreamer().isAncestorFor(streamer))
                 .findFirst()
                 .orElseThrow(() ->
