@@ -141,4 +141,9 @@ public class StravaActivityGpxStreamer extends StravaStreamer<byte[]> implements
     public void reset() {
         stravaClientInvoker.reset(userName);
     }
+
+    @Override
+    public boolean canRead() {
+        return true;
+    }
 }

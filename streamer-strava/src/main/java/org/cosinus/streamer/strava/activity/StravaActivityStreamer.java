@@ -198,4 +198,9 @@ public class StravaActivityStreamer extends StravaParentStreamer<StravaStreamer<
     public boolean isIconRounded() {
         return true;
     }
+
+    @Override
+    public boolean canRead() {
+        return true;
+    }
 }

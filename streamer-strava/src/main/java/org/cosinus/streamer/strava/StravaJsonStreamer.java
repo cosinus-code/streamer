@@ -37,4 +37,9 @@ public abstract class StravaJsonStreamer extends StravaStreamer<byte[]> implemen
     public ObjectMapper getObjectMapper() {
         return objectMapper;
     }
+
+    @Override
+    public boolean canRead() {
+        return true;
+    }
 }
