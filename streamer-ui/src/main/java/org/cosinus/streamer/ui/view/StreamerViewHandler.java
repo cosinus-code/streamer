@@ -68,7 +68,7 @@ public class StreamerViewHandler implements DiskEventListener {
             .stream()
             .collect(toMap(StreamerViewCreator::getViewName, identity()));
         this.defaultStreamerViewCreator = defaultStreamerViewCreator;
-        this.currentLocation = preferences.booleanPreference(SHOW_LEFT_VIEW) ? LEFT : RIGHT;
+        //this.currentLocation = preferences.booleanPreference(SHOW_LEFT_VIEW) ? LEFT : RIGHT;
         this.viewsMap = viewsMapProvider
             .getViewsMap()
             .orElseGet(ViewsMap::new);
@@ -175,14 +175,15 @@ public class StreamerViewHandler implements DiskEventListener {
         reloadOppositeView();
     }
 
-    public void ensureFocusOnCurrentView() {
-        ofNullable(getCurrentView())
+    public void ensureFocusOnCurrentView(PanelLocation location) {
+        getPanel(location)
+            .map(StreamerPanel::getView)
             .filter(not(StreamerView::hasFocus))
             .ifPresent(StreamerView::requestFocus);
     }
 
     @Override
-    public void onEvent(DiskEvent diskEvent) {
+    public void onDiskEvent(DiskEvent diskEvent) {
         stream(PanelLocation.values())
             .map(this::getView)
             .filter(Optional::isPresent)

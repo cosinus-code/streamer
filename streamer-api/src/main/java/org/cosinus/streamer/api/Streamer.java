@@ -27,6 +27,9 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static java.util.Optional.ofNullable;
+import static org.cosinus.streamer.api.ParentStreamer.FOLDER_VIEW_ID;
+import static org.cosinus.streamer.api.TextStreamer.TEXT_VIEW_ID;
+import static org.cosinus.streamer.api.file.BaseFileStreamer.BINARY_VIEW_ID;
 
 public interface Streamer<T> extends Streamable, StreamSupplier<T>, Comparable<Streamer<?>> {
 
@@ -41,7 +44,7 @@ public interface Streamer<T> extends Streamable, StreamSupplier<T>, Comparable<S
     Stream<T> stream();
 
     default String getViewId() {
-        return null;
+        return isParent() ? FOLDER_VIEW_ID : BINARY_VIEW_ID;
     }
 
     default StreamConsumer<T> saver() {

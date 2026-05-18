@@ -13,7 +13,6 @@
       "value": "grid",
       "values": [
         "icon",
-        "list",
         "grid",
         "details",
         "tree"
@@ -24,7 +23,6 @@
       "value": "grid",
       "values": [
         "icon",
-        "list",
         "grid",
         "details",
         "tree"

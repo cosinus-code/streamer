@@ -143,11 +143,14 @@ public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerMode
     @Override
     public void setActive(boolean active) {
         if (active) {
-            if (currentNode != null) {
-                TreePath currentPath = new TreePath(currentNode.getPath());
-                setSelectionPath(currentPath);
-                scrollPathToVisible(currentPath);
-            }
+            ofNullable(currentNode)
+                .or(() -> ofNullable(loadingNode))
+                .map(StreamerTreeNode::getPath)
+                .map(TreePath::new)
+                .ifPresent(currentPath -> {
+                    setSelectionPath(currentPath);
+                    scrollPathToVisible(currentPath);
+                });
             requestFocusInWindow();
         } else {
             getSelectionModel().clearSelection();
@@ -171,7 +174,11 @@ public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerMode
     @Override
     public void reset(Streamer<Streamer> parentStreamer) {
         loadTreeNode(treeRoot, parentStreamer);
-        loadingNode.removeAllChildren();
+        try {
+            loadingNode.removeAllChildren();
+        } catch (Exception e) {
+            // Ignore, don't break if other thread already did it
+        }
         loadingNode.setLoading(true);
         setCurrentNode(loadingNode);
     }
@@ -183,15 +190,13 @@ public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerMode
             if (!node.isLoaded()) {
                 node.loadChildren();
             }
-            StreamerTreeNode childNode = node.childStream()
+            node.childStream()
                 .sorted(reverseOrder())
                 .filter(child -> child.getStreamer().isAncestorFor(streamer))
                 .findFirst()
-                .orElseThrow(() ->
-                    new StreamerException("Cannot find ancestor node for streamer '%s' from '%s'".formatted(
-                        streamer.getPath(),
-                        node.getStreamer().getPath())));
-            loadTreeNode(childNode, streamer);
+                .ifPresentOrElse(
+                    childNode -> loadTreeNode(childNode, streamer),
+                    () -> loadingNode = node);
         }
     }
 

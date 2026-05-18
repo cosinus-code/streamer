@@ -162,8 +162,8 @@ public abstract class StreamerView<T> extends Panel {
         add(streamerViewMainPanel, CENTER);
 
         statusBar = new Label(" ");
-        statusBar.setBorder(emptyBorder(0, 3, 0, 3));
-        if (preferences.booleanPreference(SHOW_STATUS)) {
+        if (haveStatus() && preferences.booleanPreference(SHOW_STATUS)) {
+            statusBar.setBorder(emptyBorder(0, 3, 0, 3));
             Panel streamerVieBottomPanel = new Panel(new BorderLayout());
             streamerVieBottomPanel.add(statusBar, NORTH);
             streamerVieBottomPanel.add(loadingIndicator, SOUTH);
@@ -171,6 +171,10 @@ public abstract class StreamerView<T> extends Panel {
         } else {
             add(loadingIndicator, SOUTH);
         }
+    }
+
+    protected boolean haveStatus() {
+        return true;
     }
 
     public void reset(final Streamer<T> parentStreamer) {

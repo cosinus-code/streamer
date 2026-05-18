@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
+import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.translate.Translator;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +33,16 @@ import java.util.stream.Stream;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.IntStream.range;
 import static org.apache.commons.lang3.ObjectUtils.compare;
+import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_HIDDEN;
+import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_STATUS;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 public class StreamerTreeNode extends DefaultMutableTreeNode implements Comparable<StreamerTreeNode> {
 
     public static final String TREE_NODE_LOADING = "tree-node-loading";
+
+    @Autowired
+    private Preferences preferences;
 
     @Autowired
     private Translator translator;
@@ -70,6 +76,7 @@ public class StreamerTreeNode extends DefaultMutableTreeNode implements Comparab
             .stream()
             .filter(item -> Streamer.class.isAssignableFrom(item.getClass()))
             .map(Streamer.class::cast)
+            .filter(item -> preferences.booleanPreference(SHOW_HIDDEN) || !item.isHidden())
             .sorted()
             .map(this::createLoadingNode)
             .forEach(this::add);

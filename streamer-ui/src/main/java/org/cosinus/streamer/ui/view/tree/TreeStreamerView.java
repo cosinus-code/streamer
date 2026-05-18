@@ -83,4 +83,9 @@ public class TreeStreamerView extends StreamerView<Streamer> {
     public LoadWorkerModel<Streamer> getLoadWorkerModel() {
         return treeViewer;
     }
+
+    @Override
+    protected boolean haveStatus() {
+        return false;
+    }
 }

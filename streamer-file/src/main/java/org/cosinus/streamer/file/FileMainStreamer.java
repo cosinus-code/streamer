@@ -154,7 +154,7 @@ public class FileMainStreamer extends MainStreamer<FileStreamer<?>> implements D
     }
 
     @Override
-    public void onEvent(DiskEvent diskEvent) {
+    public void onDiskEvent(DiskEvent diskEvent) {
         reset();
     }
 }

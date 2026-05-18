@@ -56,7 +56,7 @@ public class StreamerViewLoadListener<V> implements WorkerListener<LoadWorkerMod
     public void workerFinished(LoadWorkerModel<V> loadWorkerModel) {
         streamerView.updateStreamerViewIdentifiers();
         streamerView.saveStreamerViewSnapshot();
-        streamerViewHandler.ensureFocusOnCurrentView();
+        streamerViewHandler.ensureFocusOnCurrentView(streamerView.getCurrentLocation());
         if (streamerView.getContainer() instanceof FormComponent container) {
             container.refresh();
         }
