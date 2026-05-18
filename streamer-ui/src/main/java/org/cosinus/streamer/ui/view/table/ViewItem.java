@@ -78,7 +78,7 @@ public class ViewItem {
     }
 
     public Value getDetail(int detailIndex) {
-        return streamable.details().get(detailIndex);
+        return detailIndex < streamable.details().size() ? streamable.details().get(detailIndex) : null;
     }
 
     @Override

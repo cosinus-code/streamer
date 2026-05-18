@@ -35,7 +35,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static java.util.Comparator.reverseOrder;
 import static java.util.stream.Collectors.toList;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_COMPUTER;
 

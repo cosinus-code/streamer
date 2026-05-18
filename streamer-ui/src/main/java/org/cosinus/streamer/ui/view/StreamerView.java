@@ -258,7 +258,7 @@ public abstract class StreamerView<T> extends Panel {
         });
         getContainer().addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
                 getContainer().requestFocus();
             }
         });

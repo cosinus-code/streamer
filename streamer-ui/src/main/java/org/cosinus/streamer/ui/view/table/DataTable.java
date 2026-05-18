@@ -112,7 +112,6 @@ public abstract class DataTable<T extends Streamable>
 
         setFocusCycleRoot(true);
         setFocusTraversalKeysEnabled(false);
-//        addFocusListener(this);
         getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
             .put(getKeyStroke(KeyEvent.VK_ENTER, 0), NO_ACTION_ID);
 
@@ -137,12 +136,6 @@ public abstract class DataTable<T extends Streamable>
         popupContextMenu.setEnabled(GO_TO_LINKED_STREAMER_ACTION_NAME, false);
 
         menuHandler.addContextMenu(this, popupContextMenu);
-//        addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mousePressed(MouseEvent e) {
-//                requestFocus();
-//            }
-//        });
     }
 
     @Override
@@ -157,19 +150,6 @@ public abstract class DataTable<T extends Streamable>
         setShowHorizontalLines(false);
         setShowVerticalLines(false);
     }
-
-//    @Override
-//    public void focusGained(FocusEvent e) {
-//        try {
-//            streamerViewHandler.setCurrentLocation(view.getCurrentLocation());
-//        } catch (Exception ex) {
-//            errorHandler.handleError(this, ex);
-//        }
-//    }
-//
-//    @Override
-//    public void focusLost(FocusEvent e) {
-//    }
 
     public void init(StreamerView<T> view) {
         this.view = view;
