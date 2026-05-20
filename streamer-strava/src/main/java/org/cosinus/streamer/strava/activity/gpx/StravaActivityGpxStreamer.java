@@ -17,6 +17,7 @@
 
 package org.cosinus.streamer.strava.activity.gpx;
 
+import feign.form.FormData;
 import io.jenetics.jpx.GPX;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.ParentStreamer;
@@ -25,19 +26,29 @@ import org.cosinus.streamer.api.value.TextValue;
 import org.cosinus.streamer.strava.StravaStreamer;
 import org.cosinus.streamer.strava.activity.StravaActivityStreamer;
 import org.cosinus.streamer.strava.model.ActivityStreams;
+import org.cosinus.streamer.strava.model.Upload;
 import org.cosinus.swing.file.FileHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.IntStream.range;
-import static org.cosinus.streamer.strava.model.ActivityStreamType.*;
+import static org.cosinus.streamer.strava.model.ActivityStreamType.ALTITUDE;
+import static org.cosinus.streamer.strava.model.ActivityStreamType.LATITUDE_LONGITUDE;
+import static org.cosinus.streamer.strava.model.ActivityStreamType.TIME;
 
 public class StravaActivityGpxStreamer extends StravaStreamer<byte[]> implements BinaryStreamer {
 
     public static final String GPX_TYPE = "gpx";
+
+    private static final String GPX_MIME_TYPE = "application/gpx+xml";
 
     public static final String GPX_ICON_NAME = "binary";
 
@@ -120,7 +131,23 @@ public class StravaActivityGpxStreamer extends StravaStreamer<byte[]> implements
 
     @Override
     public OutputStream outputStream(boolean append) {
-        return null;
+        return new ByteArrayOutputStream();
+    }
+
+    protected void uploadActivity(byte[] gpxBytes) {
+        FormData formData = new FormData(GPX_MIME_TYPE, getName() + "." + GPX_TYPE, gpxBytes);
+
+        Upload upload = invokeStravaClient(stravaClient -> stravaClient.uploadActivity(
+            formData,
+            stravaActivityStreamer.getName(),
+            stravaActivityStreamer.getDescription(),
+            GPX_TYPE,
+            stravaActivityStreamer.getActivity().isTrainer(),
+            stravaActivityStreamer.getActivity().isCommute()));
+
+        if (upload.getError() != null) {
+            throw new RuntimeException("Failed to upload the activity: " + upload.getError());
+        }
     }
 
     @Override
@@ -145,5 +172,20 @@ public class StravaActivityGpxStreamer extends StravaStreamer<byte[]> implements
     @Override
     public boolean canRead() {
         return true;
+    }
+
+    private static class ActivityGpxOutputStream extends ByteArrayOutputStream {
+
+        private final StravaActivityGpxStreamer gpxStreamer;
+
+        public ActivityGpxOutputStream(StravaActivityGpxStreamer gpxStreamer) {
+            this.gpxStreamer = gpxStreamer;
+        }
+
+        @Override
+        public void close() throws IOException {
+            super.close();
+            gpxStreamer.uploadActivity(toByteArray());
+        }
     }
 }

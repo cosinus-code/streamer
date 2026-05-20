@@ -19,17 +19,19 @@ import io.jenetics.jpx.Length;
 import io.jenetics.jpx.WayPoint;
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.value.DateValue;
-import org.cosinus.streamer.api.value.DoubleValue;
 import org.cosinus.streamer.api.value.TextValue;
 import org.cosinus.streamer.api.value.Value;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.gpx.GpxExpander.GPX_PROTOCOL;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_FILE;
 
@@ -109,12 +111,22 @@ public class GpxPoint implements Streamable {
     }
 
     @Override
+    public boolean canUpdate() {
+        return true;
+    }
+
+    @Override
     public boolean canUpdateDetail(int detailIndex) {
         return detailIndex > 0;
     }
 
     @Override
     public void save() {
+    }
+
+    @Override
+    public boolean delete(boolean moveToTrash) {
+        return gpxStreamer.deletePoint(this);
     }
 
     public WayPoint getPoint() {
@@ -124,5 +136,25 @@ public class GpxPoint implements Streamable {
     @Override
     public String getIconName() {
         return ICON_FILE;
+    }
+
+    public Optional<Date> getDateDetail(int detailIndex) {
+        return ofNullable(details.get(detailIndex))
+            .map(DateValue.class::cast)
+            .map(DateValue::value);
+    }
+
+    public Optional<Double> getDoubleDetail(int detailIndex) {
+        return ofNullable(details.get(detailIndex))
+            .map(TextValue.class::cast)
+            .map(TextValue::value)
+            .map(Object::toString)
+            .map(value -> {
+                try {
+                    return Double.parseDouble(value);
+                } catch (NumberFormatException e) {
+                    return null;
+                }
+            });
     }
 }

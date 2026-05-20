@@ -17,14 +17,22 @@
 
 package org.cosinus.streamer.strava.client;
 
+import feign.form.FormData;
 import org.cosinus.streamer.strava.model.*;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 
 import java.util.Date;
 import java.util.List;
 
 import static org.cosinus.streamer.strava.client.StravaClient.STRAVA_CLIENT_ID;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @FeignClient(
     name = STRAVA_CLIENT_ID,
@@ -76,4 +84,12 @@ public interface StravaClient {
     @PutMapping("/activities/{id}")
     String updateActivity(@PathVariable long id,
                           @RequestBody UpdatableActivity activity);
+
+    @PostMapping(value = "/uploads", consumes = MULTIPART_FORM_DATA_VALUE)
+    Upload uploadActivity(@RequestPart("file") FormData file,
+                          @RequestParam("name") String name,
+                          @RequestParam("description") String description,
+                          @RequestParam("data_type") String dataType,
+                          @RequestParam("trainer") boolean trainer,
+                          @RequestParam("commute") boolean commute);
 }

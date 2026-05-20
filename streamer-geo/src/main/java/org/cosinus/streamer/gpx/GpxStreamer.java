@@ -27,7 +27,9 @@ import org.cosinus.streamer.api.value.TranslatableName;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
@@ -44,6 +46,8 @@ public class GpxStreamer extends ExpandedStreamer<GpxPoint> implements Streamer<
 
     protected final List<TranslatableName> detailNames;
 
+    protected final Set<String> deletedPoints;
+
     protected GPX gpx;
 
     public GpxStreamer(final BinaryStreamer binaryStreamer) {
@@ -54,7 +58,7 @@ public class GpxStreamer extends ExpandedStreamer<GpxPoint> implements Streamer<
             DETAIL_KEY_LONGITUDE,
             DETAIL_KEY_ELEVATION
         );
-
+        deletedPoints = new HashSet<>();
     }
 
     @Override
@@ -64,13 +68,16 @@ public class GpxStreamer extends ExpandedStreamer<GpxPoint> implements Streamer<
             .tracks()
             .flatMap(Track::segments)
             .flatMap(TrackSegment::points)
-            .map(point -> new GpxPoint(this, Long.toString(index.incrementAndGet()), point));
+            .map(point -> new GpxPoint(this, Long.toString(index.incrementAndGet()), point))
+            .filter(point -> !deletedPoints.contains(point.getId()));
     }
 
     protected GPX gpx() {
         if (gpx == null) {
             try (InputStream input = binaryStreamer.inputStream()) {
-                gpx = GPX.Reader.DEFAULT.read(input);
+                gpx = input.available() > 0 ?
+                    GPX.Reader.DEFAULT.read(input) :
+                    GPX.builder().build();
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
@@ -96,5 +103,19 @@ public class GpxStreamer extends ExpandedStreamer<GpxPoint> implements Streamer<
     @Override
     public String getViewId() {
         return GPX_TYPE;
+    }
+
+    @Override
+    public boolean canUpdate() {
+        return true;
+    }
+
+    @Override
+    public boolean canDelete() {
+        return true;
+    }
+
+    public boolean deletePoint(GpxPoint gpxPoint) {
+        return deletedPoints.remove(gpxPoint.getId());
     }
 }

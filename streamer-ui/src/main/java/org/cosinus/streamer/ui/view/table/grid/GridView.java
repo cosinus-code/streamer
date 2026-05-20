@@ -18,11 +18,11 @@ package org.cosinus.streamer.ui.view.table.grid;
 
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
-import org.cosinus.swing.worker.WorkerListener;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerEditor;
 import org.cosinus.streamer.ui.view.table.DataTable;
 import org.cosinus.streamer.ui.view.table.TableStreamerView;
+import org.cosinus.swing.worker.WorkerListener;
 
 import java.awt.*;
 
@@ -88,6 +88,11 @@ public class GridView<T extends Streamable> extends TableStreamerView<T> {
     @Override
     public SaveWorkerModel<T> getSaveWorkerModel() {
         return (GridStreamerEditor<T>) streamerEditor;
+    }
+
+    @Override
+    public void setDirty(boolean dirty) {
+        streamerEditor.setDirty(dirty);
     }
 
     @Override

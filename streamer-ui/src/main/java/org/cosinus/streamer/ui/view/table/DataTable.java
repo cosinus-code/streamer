@@ -32,14 +32,18 @@ import org.cosinus.swing.store.ApplicationStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.awt.event.KeyEvent.KEY_PRESSED;
-import static java.awt.event.MouseEvent.*;
+import static java.awt.event.KeyEvent.VK_BACK_SPACE;
+import static java.awt.event.KeyEvent.VK_DELETE;
+import static java.awt.event.MouseEvent.MOUSE_CLICKED;
+import static java.awt.event.MouseEvent.MOUSE_PRESSED;
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.util.Arrays.stream;
@@ -59,7 +63,10 @@ import static org.cosinus.streamer.ui.action.RenameStreamerAction.RENAME_STREAME
 import static org.cosinus.streamer.ui.action.ShowPermissionsAction.SHOW_STREAMER_PERMISSIONS_ACTION_ID;
 import static org.cosinus.streamer.ui.action.ShowStreamerPropertiesAction.SHOW_STREAMER_PROPERTIES_ACTION_ID;
 import static org.cosinus.streamer.ui.menu.MenuHandler.SEPARATOR;
-import static org.cosinus.swing.action.ActionController.*;
+import static org.cosinus.swing.action.ActionController.COPY_ACTION_ID;
+import static org.cosinus.swing.action.ActionController.CUT_ACTION_ID;
+import static org.cosinus.swing.action.ActionController.NO_ACTION_ID;
+import static org.cosinus.swing.action.ActionController.PASTE_ACTION_ID;
 
 public abstract class DataTable<T extends Streamable>
     extends Table
@@ -189,6 +196,19 @@ public abstract class DataTable<T extends Streamable>
             shiftDown = keyEvent.isShiftDown();
             ctrlDown = keyEvent.isControlDown();
             altDown = keyEvent.isAltDown();
+
+            if ((keyEvent.getKeyCode() == VK_DELETE || keyEvent.getKeyCode() == VK_BACK_SPACE) &&
+                !model.parentStreamer.isParent()) {
+
+                getSelectedItems().forEach(item -> {
+                    item.delete(false);
+                    model.removeItem(new ViewItem(item));
+                    view.setDirty(true);
+                });
+                view.updateStreamerViewIdentifiers();
+                model.fireContentChanged();
+                return;
+            }
 
             actionController.runActionByKeyStroke(keyEvent);
             if (actionController.isLetterKey(keyEvent)) {

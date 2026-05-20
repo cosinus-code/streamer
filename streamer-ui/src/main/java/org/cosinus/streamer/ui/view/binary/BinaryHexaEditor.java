@@ -260,13 +260,13 @@ public class BinaryHexaEditor extends SwingComponent implements Viewer<byte[]>, 
     }
 
     @Override
-    protected void processKeyEvent(KeyEvent keyEvent) {
+    protected void processComponentKeyEvent(KeyEvent keyEvent) {
         if (keyEvent.getID() == KEY_PRESSED) {
             actionController.runActionByKeyStroke(keyEvent);
         }
 
         if (isKeyAllowed(keyEvent)) {
-            super.processKeyEvent(keyEvent);
+            super.processComponentKeyEvent(keyEvent);
         }
     }
 

@@ -17,6 +17,7 @@
 
 package org.cosinus.streamer.strava.client;
 
+import feign.form.FormData;
 import org.cosinus.streamer.strava.StravaComponent;
 import org.cosinus.streamer.strava.model.*;
 import org.springframework.cache.Cache;
@@ -101,6 +102,11 @@ public class StravaCacheClient {
 
     public String updateActivity(long id, UpdatableActivity activity) {
         return stravaClient.updateActivity(id, activity);
+    }
+
+    public Upload uploadActivity(FormData file, String name, String description, String dataType,
+                                 boolean trainer, boolean commute) {
+        return stravaClient.uploadActivity(file, name, description, dataType, trainer, commute);
     }
 
     public void evict(String userName) {

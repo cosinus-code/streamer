@@ -15,17 +15,21 @@
  */
 package org.cosinus.streamer.gpx;
 
-import io.jenetics.jpx.*;
+import io.jenetics.jpx.GPX;
+import io.jenetics.jpx.Latitude;
+import io.jenetics.jpx.Length;
+import io.jenetics.jpx.Longitude;
+import io.jenetics.jpx.WayPoint;
 import org.cosinus.stream.consumer.StreamConsumer;
-import org.cosinus.streamer.api.value.DateValue;
-import org.cosinus.streamer.api.value.DoubleValue;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static io.jenetics.jpx.Length.Unit.METER;
 import static java.lang.String.join;
@@ -56,15 +60,29 @@ public class GpxSaver implements StreamConsumer<GpxPoint> {
             .trackFilter()
             .map(track -> track.toBuilder()
                 .map(segment -> segment.toBuilder()
-                    .map(this::updatePoint)
+                    .listMap(this::updatePointsIfNeeded)
+                    .filter(Objects::nonNull)
                     .build())
+                .filter(segment -> !segment.getPoints().isEmpty())
                 .build())
+            .filter(track -> !track.getSegments().isEmpty())
             .build()
             .build(), output);
+        output.close();
     }
 
-    private WayPoint updatePoint(WayPoint point) {
-        return updatePoint(point, pointsMap.get(getKey(point)));
+    private List<WayPoint> updatePointsIfNeeded(List<WayPoint> points) {
+        return points
+            .stream()
+            .map(this::updatePointIfNeeded)
+            .filter(Objects::nonNull)
+            .toList();
+    }
+
+    private WayPoint updatePointIfNeeded(WayPoint point) {
+        return ofNullable(pointsMap.get(getKey(point)))
+            .map(gpxPoint -> updatePoint(point, gpxPoint))
+            .orElse(null);
     }
 
 
@@ -72,27 +90,19 @@ public class GpxSaver implements StreamConsumer<GpxPoint> {
         WayPoint.Builder builder = point.toBuilder();
 
         gpxPoint.init();
-        ofNullable(gpxPoint.details.get(0))
-            .map(DateValue.class::cast)
-            .map(DateValue::value)
+        gpxPoint.getDateDetail(0)
             .map(Date::toInstant)
             .ifPresent(builder::time);
 
-        ofNullable(gpxPoint.details.get(1))
-            .map(DoubleValue.class::cast)
-            .map(DoubleValue::value)
+        gpxPoint.getDoubleDetail(1)
             .map(Latitude::ofDegrees)
             .ifPresent(builder::lat);
 
-        ofNullable(gpxPoint.details.get(2))
-            .map(DoubleValue.class::cast)
-            .map(DoubleValue::value)
+        gpxPoint.getDoubleDetail(2)
             .map(Longitude::ofDegrees)
             .ifPresent(builder::lon);
 
-        ofNullable(gpxPoint.details.get(2))
-            .map(DoubleValue.class::cast)
-            .map(DoubleValue::value)
+        gpxPoint.getDoubleDetail(3)
             .map(elevation -> Length.of(elevation, METER))
             .ifPresent(builder::ele);
 

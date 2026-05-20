@@ -15,22 +15,30 @@
  *
  */
 
-package org.cosinus.streamer.strava.client;
+package org.cosinus.streamer.strava.model;
 
-import feign.codec.Encoder;
-import feign.form.spring.SpringFormEncoder;
-import org.cosinus.streamer.strava.StravaComponent;
-import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Getter;
+import lombok.Setter;
 
-@Configuration
-@EnableFeignClients(basePackageClasses = StravaClient.class)
-@StravaComponent
-public class StravaConfiguration {
+import java.io.Serializable;
 
-    @Bean
-    public Encoder feignFormEncoder() {
-        return new SpringFormEncoder();
-    }
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+
+@Getter
+@Setter
+@JsonInclude(NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class Upload implements Serializable {
+
+    private long id;
+
+    private String external_id;
+
+    private String error;
+
+    private String status;
+
+    private long activityId;
 }

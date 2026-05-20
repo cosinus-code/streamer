@@ -16,6 +16,8 @@
 
 package org.cosinus.streamer.ui.view.table;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cosinus.streamer.api.Streamable;
@@ -28,7 +30,11 @@ import org.cosinus.swing.worker.WorkerModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
@@ -58,6 +64,10 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
     private int currentIndex;
 
     private boolean contentChanged;
+
+    @Getter
+    @Setter
+    private boolean dirty;
 
     public DataTableModel() {
         this.comparator = new ViewItemComparator();
