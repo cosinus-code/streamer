@@ -26,9 +26,9 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
-        <spring-swing.version>2.0.0-SNAPSHOT</spring-swing.version>
+        <spring-swing.version>3.0.0-SNAPSHOT</spring-swing.version>
         <spring-cloud.version>4.3.0</spring-cloud.version>
-        <stream-pipeline.version>1.0-SNAPSHOT</stream-pipeline.version>
+        <stream-pipeline.version>1.0.0</stream-pipeline.version>
         <commons-net.version>3.12.0</commons-net.version>
         <commons-pool.version>2.12.1</commons-pool.version>
         <commons-exec.version>1.5.0</commons-exec.version>
