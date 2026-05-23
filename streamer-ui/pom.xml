@@ -187,7 +187,7 @@
                                         <additionalResource>src/main/resources/image/${application.splash.file.name}</additionalResource>
                                         <additionalResource>src/main/resources/image/${application.icon.name}</additionalResource>
                                     </additionalResources>
-                                    <vmArgs>
+                                     <vmArgs>
                                         <vmArg>-Dapp.name=${application.name}</vmArg>
                                         <vmArg>-Dvisualvm.display.name=${application.name}</vmArg>
                                         <vmArg>-Dswing.aatext=true</vmArg>
@@ -212,19 +212,7 @@
                                         <volumeName>${application.display.name}</volumeName>
 
                                         <macStartup>${java.packager.mac.startup}</macStartup>
-
-                                        <infoPlist>
-                                            <additionalEntries>
-                                                <![CDATA[
-                                            <key>Arguments</key>
-                                            <array>
-                                                <string>-splash-progress</string>
-                                                <string>-splash-progress-color=50,167,237</string>
-                                                <string>-splash-progress-y=250</string>
-                                            </array>
-                                        ]]>
-                                            </additionalEntries>
-                                        </infoPlist>
+                                        <macArguments>-splash-progress -splash-progress-color=50,167,237 -splash-progress-y=250</macArguments>
                                     </macConfig>
 
                                     <winConfig>
