@@ -102,7 +102,8 @@ public class LoadActionExecutor extends WorkerExecutor<LoadActionModel<?>, Worke
             (Streamer) actionModel.getInitialStreamerToLoad());
 
         Streamer streamerToLoad = actionModel.getStreamerToLoad();
-        StreamerView currentStreamerView = streamerViewHandler.getCurrentView();
+        StreamerView currentStreamerView = streamerViewHandler.getView(actionModel.getLocationToLoadTo())
+            .orElseGet(streamerViewHandler::getCurrentView);
         ofNullable(currentStreamerView)
             .map(StreamerView::getParentStreamer)
             .ifPresent(currentStreamer -> {

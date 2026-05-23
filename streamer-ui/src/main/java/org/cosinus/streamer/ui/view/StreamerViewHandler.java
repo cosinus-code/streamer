@@ -88,8 +88,7 @@ public class StreamerViewHandler implements DiskEventListener {
     }
 
     public StreamerView<?> getCurrentView() {
-        return getPanel(currentLocation)
-            .map(StreamerPanel::getView)
+        return getView(currentLocation)
             .orElse(null);
     }
 
