@@ -16,14 +16,12 @@
 
 package org.cosinus.streamer.ui.view.table.icon;
 
-import org.cosinus.streamer.api.Streamable;
-import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewCreator;
 import org.springframework.stereotype.Component;
 
-import static org.cosinus.streamer.ui.view.table.icon.IconView.ICON_VIEW_NAME;
+import static org.cosinus.streamer.ui.view.table.icon.IconView.TREE_VIEW_NAME;
 
 @Component
 public class IconViewCreator implements StreamerViewCreator {
@@ -35,6 +33,6 @@ public class IconViewCreator implements StreamerViewCreator {
 
     @Override
     public String getViewName() {
-        return ICON_VIEW_NAME;
+        return TREE_VIEW_NAME;
     }
 }

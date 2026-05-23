@@ -26,6 +26,7 @@ import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_F;
 import static java.util.Optional.ofNullable;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_FIND;
 
 /**
  * Load streamer action
@@ -54,7 +55,7 @@ public class FindStreamerAction implements SwingAction {
 
     @Override
     public String getIconName() {
-        return "edit-find";
+        return ICON_FIND;
     }
 
     @Override

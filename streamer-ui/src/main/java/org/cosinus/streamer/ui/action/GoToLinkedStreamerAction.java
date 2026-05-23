@@ -33,7 +33,7 @@ import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_L;
 import static java.util.Optional.ofNullable;
-import static org.cosinus.swing.image.icon.IconProvider.ICON_FORWARD;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_LINK;
 
 @Component
 public class GoToLinkedStreamerAction implements SwingAction {
@@ -78,7 +78,7 @@ public class GoToLinkedStreamerAction implements SwingAction {
 
     @Override
     public String getIconName() {
-        return ICON_FORWARD;
+        return ICON_LINK;
     }
 
     @Override

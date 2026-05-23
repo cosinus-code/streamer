@@ -25,7 +25,7 @@ import javax.swing.*;
 
 public class IconView<T extends Streamable> extends TableStreamerView<T> {
 
-    public static final String ICON_VIEW_NAME = "icon";
+    public static final String TREE_VIEW_NAME = "icon";
 
     private IconCellEditor<T> iconCellEditor;
 
@@ -40,7 +40,7 @@ public class IconView<T extends Streamable> extends TableStreamerView<T> {
 
     @Override
     public String getName() {
-        return ICON_VIEW_NAME;
+        return TREE_VIEW_NAME;
     }
 
     @Override

@@ -24,6 +24,7 @@ import javax.swing.*;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_F2;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_EDIT;
 
 /**
  * Rename streamer action
@@ -47,6 +48,12 @@ public class RenameStreamerAction implements SwingAction {
     @Override
     public String getId() {
         return RENAME_STREAMER_ACTION_ID;
+    }
+
+    @Override
+    public String getIconName()
+    {
+        return ICON_EDIT;
     }
 
     @Override

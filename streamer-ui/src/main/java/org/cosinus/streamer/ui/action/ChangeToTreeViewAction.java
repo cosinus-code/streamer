@@ -23,13 +23,13 @@ import org.springframework.stereotype.Component;
 import static org.cosinus.streamer.ui.view.table.icon.IconView.TREE_VIEW_NAME;
 
 @Component
-public class ChangeToIconViewAction extends ChangeViewAction {
+public class ChangeToTreeViewAction extends ChangeViewAction {
 
-    public static final String CHANGE_TO_ICON_VIEW_ACTION_ID = "menu-view-icon";
+    public static final String CHANGE_TO_TREE_VIEW_ACTION_ID = "menu-view-tree";
 
-    public static final String VIEW_ICON_ICON_NAME = "view-icon";
+    public static final String VIEW_TREE_ICON_NAME = "view-tree";
 
-    protected ChangeToIconViewAction(final StreamerViewHandler streamerViewHandler,
+    protected ChangeToTreeViewAction(final StreamerViewHandler streamerViewHandler,
                                      final LoadActionExecutor loadActionExecutor) {
         super(streamerViewHandler, loadActionExecutor);
     }
@@ -41,11 +41,11 @@ public class ChangeToIconViewAction extends ChangeViewAction {
 
     @Override
     public String getIconName() {
-        return VIEW_ICON_ICON_NAME;
+        return VIEW_TREE_ICON_NAME;
     }
 
     @Override
     public String getId() {
-        return CHANGE_TO_ICON_VIEW_ACTION_ID;
+        return CHANGE_TO_TREE_VIEW_ACTION_ID;
     }
 }

@@ -30,6 +30,7 @@ import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_UP;
 import static java.util.Optional.ofNullable;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_UP;
 
 /**
  * Go to parent streamer action
@@ -67,7 +68,7 @@ public class GoToParentStreamerAction implements SwingAction {
 
     @Override
     public String getIconName() {
-        return "go-up";
+        return ICON_UP;
     }
 
     @Override

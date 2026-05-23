@@ -28,6 +28,7 @@ import javax.swing.*;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_R;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_REFRESH;
 
 /**
  * Load streamer action
@@ -67,7 +68,7 @@ public class ReloadStreamerAction implements SwingAction {
 
     @Override
     public String getIconName() {
-        return "view-refresh";
+        return ICON_REFRESH;
     }
 
     @Override

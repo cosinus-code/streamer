@@ -35,6 +35,7 @@ import java.nio.file.Path;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_EXECUTE_WITH;
 
 @Component
 public class ExecuteStreamerWithAction implements SwingAction {
@@ -104,6 +105,12 @@ public class ExecuteStreamerWithAction implements SwingAction {
                 processExecutor.execute(application.isRunInTerminal(), false,
                     application.getCommandToExecuteFile(file));
             });
+    }
+
+    @Override
+    public String getIconName()
+    {
+        return ICON_EXECUTE_WITH;
     }
 
     @Override

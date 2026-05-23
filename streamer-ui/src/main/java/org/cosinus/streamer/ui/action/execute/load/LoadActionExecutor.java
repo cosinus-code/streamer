@@ -51,7 +51,7 @@ import static org.cosinus.streamer.ui.action.LoadStreamerAction.LOAD_STREAMER_AC
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.PREVIEW;
 import static org.cosinus.streamer.ui.view.binary.BinaryStreamerView.BINARY_VIEWER;
 import static org.cosinus.streamer.ui.view.table.icon.IconTable.PREVIEW_CELL_SIZE;
-import static org.cosinus.streamer.ui.view.table.icon.IconView.ICON_VIEW_NAME;
+import static org.cosinus.streamer.ui.view.table.icon.IconView.TREE_VIEW_NAME;
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 
 /**
@@ -183,7 +183,7 @@ public class LoadActionExecutor extends WorkerExecutor<LoadActionModel<?>, Worke
                     .map(Streamable::getRealPath)
                     .filter(Objects::nonNull)
                     .map(Path::toFile);
-                if (showPreview && ICON_VIEW_NAME.equals(actionModel.getStreamerViewToLoadTo().getName())) {
+                if (showPreview && TREE_VIEW_NAME.equals(actionModel.getStreamerViewToLoadTo().getName())) {
                     new LoadThumbnailsWorker(PREVIEW_CELL_SIZE,
                         files -> actionModel.getStreamerViewToLoadTo().refresh(),
                         streamSupplier,
