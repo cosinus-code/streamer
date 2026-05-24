@@ -30,6 +30,7 @@ import java.util.List;
 
 import static org.cosinus.streamer.ui.action.execute.link.LinkStreamersModel.link;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_LINK;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_LINK_ACTION;
 
 @Component
 public class LinkHereAction extends DoHereAction {
@@ -44,7 +45,7 @@ public class LinkHereAction extends DoHereAction {
 
     @Override
     public String getIconName() {
-        return ICON_LINK;
+        return ICON_LINK_ACTION;
     }
 
     @Override
