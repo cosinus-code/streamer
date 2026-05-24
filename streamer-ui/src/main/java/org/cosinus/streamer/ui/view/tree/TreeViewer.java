@@ -177,7 +177,7 @@ public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerMode
 
     @Override
     public void reset(Streamer<Streamer> parentStreamer) {
-        loadTreeNode(treeRoot, parentStreamer);
+        loadingNode = loadTreeNode(treeRoot, parentStreamer);
         try {
             loadingNode.removeAllChildren();
         } catch (Exception e) {
@@ -187,21 +187,21 @@ public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerMode
         setCurrentNode(loadingNode);
     }
 
-    protected void loadTreeNode(StreamerTreeNode node, Streamer<?> streamer) {
+    protected StreamerTreeNode loadTreeNode(StreamerTreeNode node, Streamer<?> streamer) {
         if (node.getStreamer().getUrlPath().equals(streamer.getUrlPath())) {
-            loadingNode = node;
-        } else {
-            if (!node.isLoaded()) {
-                node.loadChildren();
-            }
-            node.childStream()
-                .sorted(reverseOrder())
-                .filter(child -> child.getStreamer().isAncestorFor(streamer))
-                .findFirst()
-                .ifPresentOrElse(
-                    childNode -> loadTreeNode(childNode, streamer),
-                    () -> loadingNode = node);
+            return node;
         }
+
+        if (!node.isLoaded()) {
+            node.loadChildren();
+            treeModel.reload(node);
+        }
+        return node.childStream()
+            .sorted(reverseOrder())
+            .filter(child -> child.getStreamer().isAncestorFor(streamer))
+            .findFirst()
+            .map(childNode -> loadTreeNode(childNode, streamer))
+            .orElse(node);
     }
 
     @Override
