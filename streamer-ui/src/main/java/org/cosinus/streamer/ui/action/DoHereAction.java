@@ -60,9 +60,13 @@ public abstract class DoHereAction implements SwingActionWithModel<DoHereModel> 
                         streamers,
                         doHereModel.getSourceView(), commonParent,
                         doHereModel.getDestinationView(), destination);
-                    actionExecutors.execute(actionModel);
+                    executeAction(actionModel);
                 }
             });
+    }
+
+    protected void executeAction(ActionModel actionModel) {
+        actionExecutors.execute(actionModel);
     }
 
     protected Streamer<?> findDestination(StreamerView<?> viewDestination, boolean useSelectedItemAsDestination) {

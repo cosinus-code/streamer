@@ -93,7 +93,7 @@ public class PackStreamerAction extends AbstractCopyAction<PackActionModel> {
     }
 
     @Override
-    protected void executeStreamerCopy(PackActionModel packAction) {
+    public void executeStreamerCopy(PackActionModel packAction) {
         ofNullable(packAction.getPackType())
             .map(binaryExpanderHandler.getBinaryExpandersMap()::get)
             .ifPresent(expander -> {

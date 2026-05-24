@@ -74,7 +74,7 @@ public abstract class AbstractCopyAction<M extends CopyActionModel> implements S
             .ifPresent(this::executeStreamerCopy);
     }
 
-    protected void executeStreamerCopy(final M copyAction) {
+    public void executeStreamerCopy(final M copyAction) {
         actionExecutors.execute(copyAction);
     }
 

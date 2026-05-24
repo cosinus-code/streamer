@@ -57,7 +57,7 @@ public class MoveStreamerAction extends AbstractCopyAction<MoveActionModel> {
     }
 
     @Override
-    protected void executeStreamerCopy(MoveActionModel moveAction) {
+    public void executeStreamerCopy(MoveActionModel moveAction) {
         ParentStreamer<?> destination = prepareDestination(moveAction);
         moveAction.to(destination);
         super.executeStreamerCopy(moveAction);

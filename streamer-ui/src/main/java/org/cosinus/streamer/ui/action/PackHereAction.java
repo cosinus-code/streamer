@@ -21,6 +21,7 @@ import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
 import org.cosinus.streamer.api.meta.StreamerHandler;
+import org.cosinus.streamer.ui.action.execute.pack.PackActionModel;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.action.execute.ActionModel;
@@ -38,11 +39,15 @@ public class PackHereAction extends DoHereAction {
 
     private final BinaryExpanderHandler expanderHandler;
 
+    private final PackStreamerAction packStreamerAction;
+
     protected PackHereAction(final StreamerHandler streamerHandler,
                              final ActionExecutors actionExecutors,
-                             final BinaryExpanderHandler expanderHandler) {
+                             final BinaryExpanderHandler expanderHandler,
+                             final PackStreamerAction packStreamerAction) {
         super(streamerHandler, actionExecutors);
         this.expanderHandler = expanderHandler;
+        this.packStreamerAction = packStreamerAction;
     }
 
     @Override
@@ -65,5 +70,10 @@ public class PackHereAction extends DoHereAction {
             .as(expanderHandler.getDefaultPacker())
             .from(source)
             .to(destination, destinationView);
+    }
+
+    @Override
+    protected void executeAction(ActionModel actionModel) {
+        packStreamerAction.executeStreamerCopy((PackActionModel) actionModel);
     }
 }
