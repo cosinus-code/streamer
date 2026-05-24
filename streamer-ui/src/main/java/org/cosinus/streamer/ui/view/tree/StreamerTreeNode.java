@@ -34,7 +34,6 @@ import static java.util.Optional.ofNullable;
 import static java.util.stream.IntStream.range;
 import static org.apache.commons.lang3.ObjectUtils.compare;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_HIDDEN;
-import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_STATUS;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 
 public class StreamerTreeNode extends DefaultMutableTreeNode implements Comparable<StreamerTreeNode> {

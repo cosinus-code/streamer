@@ -20,12 +20,12 @@ package org.cosinus.streamer.ui.view.tree;
 import lombok.Getter;
 import lombok.Setter;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.api.error.StreamerException;
 import org.cosinus.streamer.api.meta.StreamerHandler;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.Viewer;
 import org.cosinus.swing.form.Tree;
+import org.cosinus.swing.preference.Preferences;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.event.TreeExpansionEvent;
@@ -45,8 +45,12 @@ import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 import static javax.swing.tree.TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION;
 import static org.cosinus.stream.Streams.stream;
+import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_HIDDEN;
 
 public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerModel<Streamer> {
+
+    @Autowired
+    private Preferences preferences;
 
     @Autowired
     private StreamerHandler streamerHandler;
@@ -203,6 +207,7 @@ public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerMode
     @Override
     public void update(List<Streamer> items) {
         items.stream()
+            .filter(item -> preferences.booleanPreference(SHOW_HIDDEN) || !item.isHidden())
             .map(loadingNode::createLoadingNode)
             .forEach(loadingNode::add);
         loadingNode.sort();
