@@ -21,7 +21,6 @@ import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.meta.StreamerHandler;
 import org.cosinus.streamer.ui.view.StreamerView;
-import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.execute.ActionExecutors;
 import org.cosinus.swing.action.execute.ActionModel;
 import org.springframework.stereotype.Component;
@@ -29,21 +28,22 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 import static org.cosinus.streamer.ui.action.execute.move.MoveActionModel.move;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_MOVE_ACTION;
 
 @Component
 public class MoveHereAction extends DoHereAction {
 
     public static final String MOVE_HERE_ACTION_ID = "move-here";
 
-    private final StreamerViewHandler streamerViewHandler;
-
     protected MoveHereAction(final StreamerHandler streamerHandler,
-                             final ActionExecutors actionExecutors,
-                             final StreamerViewHandler streamerViewHandler) {
+                             final ActionExecutors actionExecutors) {
         super(streamerHandler, actionExecutors);
-        this.streamerViewHandler = streamerViewHandler;
     }
 
+    @Override
+    public String getIconName() {
+        return ICON_MOVE_ACTION;
+    }
 
     @Override
     public String getId() {

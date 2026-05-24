@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 import static org.cosinus.streamer.ui.action.execute.pack.PackActionModel.pack;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_PACKAGE;
 
 @Component
 public class PackHereAction extends DoHereAction {
@@ -42,6 +43,11 @@ public class PackHereAction extends DoHereAction {
                              final BinaryExpanderHandler expanderHandler) {
         super(streamerHandler, actionExecutors);
         this.expanderHandler = expanderHandler;
+    }
+
+    @Override
+    public String getIconName() {
+        return ICON_PACKAGE;
     }
 
     @Override

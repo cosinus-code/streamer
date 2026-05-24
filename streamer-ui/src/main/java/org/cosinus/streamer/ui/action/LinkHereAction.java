@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 import static org.cosinus.streamer.ui.action.execute.link.LinkStreamersModel.link;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_LINK;
 
 @Component
 public class LinkHereAction extends DoHereAction {
@@ -39,6 +40,11 @@ public class LinkHereAction extends DoHereAction {
                              final ActionExecutors actionExecutors,
                              final LinkStreamerExecutor linkStreamerExecutor) {
         super(streamerHandler, actionExecutors);
+    }
+
+    @Override
+    public String getIconName() {
+        return ICON_LINK;
     }
 
     @Override

@@ -28,6 +28,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 import static org.cosinus.streamer.ui.action.execute.copy.CopyActionModel.copy;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_COPY_ACTION;
 
 @Component
 public class CopyHereAction extends DoHereAction {
@@ -48,6 +49,11 @@ public class CopyHereAction extends DoHereAction {
         return copy(streamerToCopy)
             .from(source)
             .to(destination, destinationView);
+    }
+
+    @Override
+    public String getIconName() {
+        return ICON_COPY_ACTION;
     }
 
     @Override

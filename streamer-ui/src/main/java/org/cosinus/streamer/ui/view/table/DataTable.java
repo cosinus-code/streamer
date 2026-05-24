@@ -22,7 +22,6 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.menu.MenuHandler;
 import org.cosinus.streamer.ui.view.StreamerView;
-import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.streamer.ui.view.Viewer;
 import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.error.ErrorHandler;
@@ -73,9 +72,6 @@ public abstract class DataTable<T extends Streamable>
     implements Viewer<T>, ExtendedContainer {
 
     public static final int FIND_STREAMER_SPEED = 500;
-
-    @Autowired
-    private StreamerViewHandler streamerViewHandler;
 
     @Autowired
     protected ErrorHandler errorHandler;
@@ -169,20 +165,20 @@ public abstract class DataTable<T extends Streamable>
                 if (isLeftMouseButton(event)) {
                     if (event.getClickCount() == 2) {
                         actionController.runAction(EXECUTE_STREAMER_ACTION_ID);
+                    } else {
+                        int clickedIndex = getIndexForItemAtPoint(event.getPoint());
+                        if (event.isControlDown()) {
+                            addIndexToSelection(clickedIndex);
+                            event.consume();
+                        } else if (event.isShiftDown()) {
+                            extendsSelectionToIndex(clickedIndex);
+                            event.consume();
+                        } else {
+                            setCurrentIndex(clickedIndex);
+                        }
+                        resetContentIdentifier();
                     }
                 }
-            } else if (event.getID() == MOUSE_PRESSED) {
-                int clickedIndex = getIndexForItemAtPoint(event.getPoint());
-                if (event.isControlDown()) {
-                    addIndexToSelection(clickedIndex);
-                    event.consume();
-                } else if (event.isShiftDown()) {
-                    extendsSelectionToIndex(clickedIndex);
-                    event.consume();
-                } else {
-                    setCurrentIndex(clickedIndex);
-                }
-                resetContentIdentifier();
             }
             super.processMouseEvent(event);
         } catch (Exception ex) {

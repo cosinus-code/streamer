@@ -32,6 +32,7 @@ import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_F6;
 import static org.cosinus.streamer.ui.action.execute.move.MoveActionModel.move;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_MOVE_ACTION;
 
 /**
  * Copy streamers action
@@ -71,6 +72,11 @@ public class MoveStreamerAction extends AbstractCopyAction<MoveActionModel> {
             .streamers(sourceStreamerView.getSelectedItems())
             .from(sourceStreamerView)
             .to(destinationStreamerView);
+    }
+
+    @Override
+    public String getIconName() {
+        return ICON_MOVE_ACTION;
     }
 
     @Override
