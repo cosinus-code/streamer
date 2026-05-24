@@ -78,7 +78,6 @@ public class MenuHandler {
             .<ActionListener>map(model -> e -> actionController.runAction(actionId, model))
             .orElse(e -> actionController.runAction(component, actionId));
         MenuItem menuItem = new MenuItem(actionListener, actionId);
-        menuItem.translate();
 
         ofNullable(component.getActionMap())
             .map(actionMap -> actionMap.get(actionId))
@@ -87,6 +86,8 @@ public class MenuHandler {
 
         //TODO: this shouldn't be necessary, but sometimes the icon is not loaded by the IconInitializer
         iconInitializer.updateIcon(menuItem);
+
+        menuItem.translate();
         return menuItem;
     }
 
