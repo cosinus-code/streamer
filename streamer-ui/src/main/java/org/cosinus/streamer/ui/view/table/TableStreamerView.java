@@ -19,14 +19,15 @@ package org.cosinus.streamer.ui.view.table;
 import org.cosinus.stream.swing.ExtendedContainer;
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.action.DoHereModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
-import org.cosinus.streamer.ui.view.*;
+import org.cosinus.streamer.ui.view.DefaultStreamerView;
+import org.cosinus.streamer.ui.view.FindPanel;
+import org.cosinus.streamer.ui.view.PanelLocation;
+import org.cosinus.streamer.ui.view.Viewer;
 import org.cosinus.swing.form.ScrollPane;
 import org.cosinus.swing.menu.PopupMenu;
 import org.cosinus.swing.worker.WorkerModel;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -37,13 +38,11 @@ import java.util.stream.Stream;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.util.Optional.ofNullable;
-import static org.cosinus.streamer.ui.action.CopyHereAction.COPY_HERE_ACTION_ID;
 import static org.cosinus.streamer.ui.action.CreateStreamerAction.CREATE_STREAMER_ACTION_ID;
-import static org.cosinus.streamer.ui.action.LinkHereAction.LINK_HERE_ACTION_ID;
-import static org.cosinus.streamer.ui.action.MoveHereAction.MOVE_HERE_ACTION_ID;
-import static org.cosinus.streamer.ui.action.PackHereAction.PACK_HERE_ACTION_ID;
 import static org.cosinus.streamer.ui.menu.MenuHandler.SEPARATOR;
-import static org.cosinus.swing.action.ActionController.*;
+import static org.cosinus.swing.action.ActionController.COPY_ACTION_ID;
+import static org.cosinus.swing.action.ActionController.CUT_ACTION_ID;
+import static org.cosinus.swing.action.ActionController.PASTE_ACTION_ID;
 
 public abstract class TableStreamerView<T extends Streamable>
     extends DefaultStreamerView<T> implements ExtendedContainer {
@@ -89,35 +88,9 @@ public abstract class TableStreamerView<T extends Streamable>
             CREATE_STREAMER_ACTION_ID);
         menuHandler.addContextMenu(scroll, popupContextMenu);
 
-        table.setDragEnabled(true);
-
-        TransferHandler transferHandler = new TableTransferHandler<>(this);
-        table.setTransferHandler(transferHandler);
-        this.setTransferHandler(transferHandler);
-
-        actionController.addCutCopyPasteActions(this);
-
+        initDragAndDropActions();
+        initCutCopyPasteActions();
         initFocusHandling();
-    }
-
-    public void showDragAndDropPopup(final JComponent component,
-                                     final StreamerView<?> sourceView,
-                                     final Point dropPoint,
-                                     final List<String> paths) {
-        DoHereModel model = DoHereModel
-            .builder()
-            .paths(paths)
-            .sourceView(sourceView)
-            .destinationView(this)
-            .useSelectedItemAsDestination(true)
-            .build();
-
-        PopupMenu popupDragAndDrop = new PopupMenu();
-        popupDragAndDrop.add(menuHandler.createMenuItem(this, COPY_HERE_ACTION_ID, model));
-        popupDragAndDrop.add(menuHandler.createMenuItem(this, MOVE_HERE_ACTION_ID, model));
-        popupDragAndDrop.add(menuHandler.createMenuItem(this, PACK_HERE_ACTION_ID, model));
-        popupDragAndDrop.add(menuHandler.createMenuItem(this, LINK_HERE_ACTION_ID, model));
-        popupDragAndDrop.show(component, dropPoint.x, dropPoint.y);
     }
 
     @Override
@@ -207,6 +180,7 @@ public abstract class TableStreamerView<T extends Streamable>
     public DataTableModel<T> getDataTableModel() {
         return (DataTableModel<T>) table.getModel();
     }
+
     @Override
     public void reset(final Streamer<T> parentStreamer) {
         super.reset(parentStreamer);

@@ -23,6 +23,7 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.streamer.ui.action.ChangeViewAction;
 import org.cosinus.streamer.ui.action.ChangeViewActionModel;
+import org.cosinus.streamer.ui.action.DoHereModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
@@ -45,6 +46,7 @@ import org.cosinus.swing.worker.WorkerListener;
 import org.cosinus.swing.worker.WorkerModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
@@ -55,7 +57,11 @@ import static java.awt.BorderLayout.*;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
+import static org.cosinus.streamer.ui.action.CopyHereAction.COPY_HERE_ACTION_ID;
 import static org.cosinus.streamer.ui.action.GoToParentStreamerAction.GO_TO_PARENT_ACTION;
+import static org.cosinus.streamer.ui.action.LinkHereAction.LINK_HERE_ACTION_ID;
+import static org.cosinus.streamer.ui.action.MoveHereAction.MOVE_HERE_ACTION_ID;
+import static org.cosinus.streamer.ui.action.PackHereAction.PACK_HERE_ACTION_ID;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_STATUS;
 import static org.cosinus.streamer.ui.view.View.findByName;
 import static org.cosinus.streamer.ui.view.text.TextStreamerView.DIRTY_TEXT_MARKER;
@@ -240,6 +246,40 @@ public abstract class StreamerView<T> extends Panel {
                 }
             }
         });
+    }
+
+    public void initDragAndDropActions() {
+        if (viewer != null) {
+            viewer.setDragEnabled(true);
+
+            TransferHandler transferHandler = new StreamerTransferHandler(this);
+            viewer.setTransferHandler(transferHandler);
+            this.setTransferHandler(transferHandler);
+        }
+    }
+
+    public void showDragAndDropPopup(final JComponent component,
+                                     final StreamerView<?> sourceView,
+                                     final Point dropPoint,
+                                     final List<String> paths) {
+        DoHereModel model = DoHereModel
+            .builder()
+            .paths(paths)
+            .sourceView(sourceView)
+            .destinationView(this)
+            .useSelectedItemAsDestination(true)
+            .build();
+
+        PopupMenu popupDragAndDrop = new PopupMenu();
+        popupDragAndDrop.add(menuHandler.createMenuItem(this, COPY_HERE_ACTION_ID, model));
+        popupDragAndDrop.add(menuHandler.createMenuItem(this, MOVE_HERE_ACTION_ID, model));
+        popupDragAndDrop.add(menuHandler.createMenuItem(this, PACK_HERE_ACTION_ID, model));
+        popupDragAndDrop.add(menuHandler.createMenuItem(this, LINK_HERE_ACTION_ID, model));
+        popupDragAndDrop.show(component, dropPoint.x, dropPoint.y);
+    }
+
+    public void initCutCopyPasteActions() {
+        actionController.addCutCopyPasteActions(this);
     }
 
     protected void initFocusHandling() {

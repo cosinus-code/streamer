@@ -24,25 +24,33 @@ import org.cosinus.streamer.api.meta.StreamerHandler;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.Viewer;
+import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.form.Tree;
 import org.cosinus.swing.preference.Preferences;
+import org.cosinus.swing.worker.WorkerModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeWillExpandListener;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
+import static java.awt.event.MouseEvent.MOUSE_CLICKED;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static java.util.Comparator.reverseOrder;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
+import static java.util.stream.IntStream.rangeClosed;
+import static javax.swing.SwingUtilities.isLeftMouseButton;
 import static javax.swing.tree.TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION;
 import static org.cosinus.stream.Streams.stream;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_HIDDEN;
@@ -51,6 +59,9 @@ public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerMode
 
     @Autowired
     private Preferences preferences;
+
+    @Autowired
+    protected ErrorHandler errorHandler;
 
     @Autowired
     private StreamerHandler streamerHandler;
@@ -119,18 +130,53 @@ public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerMode
             }
         });
 
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent mouseEvent) {
-                int row = getClosestRowForLocation(mouseEvent.getX(), mouseEvent.getY());
-                if (row >= 0) {
-                    Rectangle bounds = getRowBounds(row);
-                    if (mouseEvent.getY() >= bounds.y && mouseEvent.getY() < bounds.y + bounds.height) {
-                        setSelectionRow(row);
+//        addMouseListener(new MouseAdapter() {
+//            @Override
+//            public void mousePressed(MouseEvent mouseEvent) {
+//                int row = getClosestRowForLocation(mouseEvent.getX(), mouseEvent.getY());
+//                if (row >= 0) {
+//                    Rectangle bounds = getRowBounds(row);
+//                    if (mouseEvent.getY() >= bounds.y && mouseEvent.getY() < bounds.y + bounds.height) {
+//                        setSelectionRow(row);
+//                    }
+//                }
+//            }
+//        });
+    }
+
+    @Override
+    public void processMouseEvent(MouseEvent mouseEvent) {
+        try {
+            if (mouseEvent.getID() == MOUSE_CLICKED) {
+                if (isLeftMouseButton(mouseEvent)) {
+                    int currentRow = getSelectionModel().getLeadSelectionRow();
+                    int row = getClosestRowForLocation(mouseEvent.getX(), mouseEvent.getY());
+                    if (row >= 0 && currentRow != row) {
+                        Rectangle bounds = getRowBounds(row);
+                        if (mouseEvent.getY() >= bounds.y && mouseEvent.getY() < bounds.y + bounds.height) {
+                            if (mouseEvent.isControlDown()) {
+                                getSelectionModel().addSelectionPath(new TreePath(getPathForRow(row)));
+                                mouseEvent.consume();
+                            } else if (mouseEvent.isShiftDown()) {
+                                int min = min(currentRow, row);
+                                int max = max(currentRow, row);
+                                TreePath[] paths = rangeClosed(min, max)
+                                    .mapToObj(this::getPathForRow)
+                                    .toArray(TreePath[]::new);
+                                getSelectionModel().setSelectionPaths(paths);
+                                mouseEvent.consume();
+                            } else {
+                                setSelectionRow(row);
+                                mouseEvent.consume();
+                            }
+                        }
                     }
                 }
             }
-        });
+            super.processMouseEvent(mouseEvent);
+        } catch (Exception ex) {
+            errorHandler.handleError(this, ex);
+        }
     }
 
     public void collapseChildren(TreePath parent) {
@@ -170,8 +216,9 @@ public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerMode
             .stream()
             .flatMap(Arrays::stream)
             .map(TreePath::getLastPathComponent)
-            .filter(item -> Streamer.class.isAssignableFrom(item.getClass()))
-            .map(Streamer.class::cast)
+            .filter(treePath -> StreamerTreeNode.class.isAssignableFrom(treePath.getClass()))
+            .map(StreamerTreeNode.class::cast)
+            .<Streamer>map(StreamerTreeNode::getStreamer)
             .toList();
     }
 
@@ -226,5 +273,47 @@ public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerMode
     @Override
     public void setView(StreamerView<Streamer> streamerView) {
         this.streamerView = streamerView;
+    }
+
+    public WorkerModel<Streamer<Streamer>> getDeleteWorkerModel() {
+        return streamers -> streamers
+            .forEach(streamer ->
+                findNode(streamer).ifPresent(DefaultMutableTreeNode::removeFromParent));
+    }
+
+    public WorkerModel<Streamer> getCopyWorkerModel() {
+        return streamers -> streamers
+            .forEach(streamer ->
+                findParentNode(streamer)
+                    .ifPresent(parent -> parent.add(parent.createLoadingNode(streamer))));
+    }
+
+    protected Optional<StreamerTreeNode> findNode(Streamer streamer) {
+        return findNode(treeRoot, streamer);
+    }
+
+    protected Optional<StreamerTreeNode> findNode(StreamerTreeNode node, Streamer streamer) {
+        if (node.getStreamer().getUrlPath().equals(streamer.getUrlPath())) {
+            return Optional.of(node);
+        }
+
+        return node.childStream()
+            .sorted(reverseOrder())
+            .filter(child -> child.getStreamer().isAncestorFor(streamer))
+            .findFirst()
+            .flatMap(childNode -> findNode(childNode, streamer));
+    }
+
+    protected Optional<StreamerTreeNode> findParentNode(Streamer streamer) {
+        return findNode(treeRoot, streamer);
+    }
+
+    protected Optional<StreamerTreeNode> findParentNode(StreamerTreeNode node, Streamer streamer) {
+        return node.childStream()
+            .sorted(reverseOrder())
+            .filter(DefaultMutableTreeNode::getAllowsChildren)
+            .filter(child -> child.getStreamer().isAncestorFor(streamer))
+            .findFirst()
+            .flatMap(childNode -> findNode(childNode, streamer));
     }
 }

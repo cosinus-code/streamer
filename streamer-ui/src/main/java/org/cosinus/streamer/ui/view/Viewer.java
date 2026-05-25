@@ -20,12 +20,20 @@ package org.cosinus.streamer.ui.view;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 
+import javax.swing.*;
+
 public interface Viewer<T> {
 
     default void reset(Streamer<T> parentStreamer) {
     }
 
     default void setView(StreamerView<T> streamerView) {
+    }
+
+    default void setDragEnabled(boolean enabled) {
+    }
+
+    default void setTransferHandler(TransferHandler transferHandler) {
     }
 
     void setActive(boolean active);

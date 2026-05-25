@@ -23,6 +23,7 @@ import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.Viewer;
 import org.cosinus.swing.form.ScrollPane;
+import org.cosinus.swing.worker.WorkerModel;
 
 import java.util.List;
 
@@ -52,6 +53,8 @@ public class TreeStreamerView extends StreamerView<Streamer> {
         initKeyActionsHandler();
         initCancelHandler();
         initFocusHandling();
+        initCutCopyPasteActions();
+        initDragAndDropActions();
     }
 
     @Override
@@ -82,6 +85,16 @@ public class TreeStreamerView extends StreamerView<Streamer> {
     @Override
     public LoadWorkerModel<Streamer> getLoadWorkerModel() {
         return treeViewer;
+    }
+
+    @Override
+    public WorkerModel<Streamer<Streamer>> getDeleteWorkerModel() {
+        return treeViewer.getDeleteWorkerModel();
+    }
+
+    @Override
+    public WorkerModel<Streamer> getCopyWorkerModel() {
+        return treeViewer.getCopyWorkerModel();
     }
 
     @Override

@@ -15,16 +15,13 @@
  *
  */
 
-package org.cosinus.streamer.ui.view.table;
+package org.cosinus.streamer.ui.view;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.ui.action.DoHereModel;
 import org.cosinus.streamer.ui.action.execute.delete.DeleteStreamerExecutor;
-import org.cosinus.streamer.ui.view.PanelLocation;
-import org.cosinus.streamer.ui.view.StreamerView;
-import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.file.PathListTransferable;
 import org.cosinus.swing.file.PathListTransferable.PathListTransferData;
@@ -54,7 +51,7 @@ import static org.cosinus.swing.file.PathListTransferable.PATH_FLAVOR;
 import static org.cosinus.swing.file.PathListTransferable.PATH_FLAVORS;
 
 @Slf4j
-public class TableTransferHandler<T extends Streamable> extends TransferHandler {
+public class StreamerTransferHandler extends TransferHandler {
 
     @Autowired
     private StreamerViewHandler streamerViewHandler;
@@ -65,9 +62,9 @@ public class TableTransferHandler<T extends Streamable> extends TransferHandler 
     @Autowired
     private DeleteStreamerExecutor deleteExecutor;
 
-    private final TableStreamerView<T> view;
+    private final StreamerView<?> view;
 
-    public TableTransferHandler(final TableStreamerView<T> view) {
+    public StreamerTransferHandler(final StreamerView<?> view) {
         injectContext(this);
         this.view = view;
     }
@@ -76,6 +73,8 @@ public class TableTransferHandler<T extends Streamable> extends TransferHandler 
     protected Transferable createTransferable(JComponent c) {
         PathListTransferable pathListTransferable = new PathListTransferable(view.getSelectedItems()
             .stream()
+            .filter(item -> Streamable.class.isAssignableFrom(item.getClass()))
+            .map(Streamable.class::cast)
             .map(Streamable::getUrlPath)
             .filter(Objects::nonNull)
             .toList());
