@@ -26,6 +26,9 @@
         <application.class>org.cosinus.streamer.ui.app.StreamerApplication</application.class>
         <application.home.env.name>STREAMER_HOME</application.home.env.name>
         <application.splash.file.name>splash.png</application.splash.file.name>
+        <application.splash.progress.arguments>
+            -splash-progress -splash-progress-color=50,167,237 -splash-progress-y=250
+        </application.splash.progress.arguments>
         <java.packager.version>1.7.6</java.packager.version>
         <java.packager.mac.startup>X86_64</java.packager.mac.startup>
         <java.packager.windows.application.version>2.0.0.0</java.packager.windows.application.version>
@@ -39,6 +42,10 @@
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -83,11 +90,31 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>application.*</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
 
     <profiles>
         <profile>
@@ -188,7 +215,7 @@
                                         <additionalResource>src/main/resources/image/${application.icon.name}</additionalResource>
                                     </additionalResources>
                                     <extra>
-                                        <macArguments>-splash-progress -splash-progress-color=50,167,237 -splash-progress-y=250</macArguments>
+                                        <macArguments>${application.splash.progress.arguments}</macArguments>
                                     </extra>
                                     <vmArgs>
                                         <vmArg>-Dapp.name=${application.name}</vmArg>
@@ -200,7 +227,7 @@
                                     </vmArgs>
                                     <linuxConfig>
                                         <pngFile>src/main/resources/image/${application.icon.name}</pngFile>
-                                        <generateAppImage>true</generateAppImage>
+                                        <generateAppImage>false</generateAppImage>
                                         <generateDeb>true</generateDeb>
                                         <generateRpm>true</generateRpm>
                                         <wrapJar>false</wrapJar>

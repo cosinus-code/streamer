@@ -1,7 +1,7 @@
 swing:
   application:
-    name: Streamer
-    icon: streamer.png
+    name: @application.display.name@
+    icon: @application.icon.name@
   ui:
     initializer: true
     listener:

@@ -2,25 +2,25 @@ Configuration:
   status: info
   properties:
     property:
-      - name: log-patttern
+      - name: log-pattern
         value: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
       - name: log-file
-        value: "${sys:user.home}/.streamer/logs/app.log"
+        value: "${sys:user.home}/.${sys:app.name}/logs/application.log"
       - name: log-file-name-pattern
-        value: "logs/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz"
+        value: "${sys:user.home}/.${sys:app.name}/logs/$${date:yyyy-MM}/application-%d{MM-dd-yyyy}-%i.log.gz"
 
   appenders:
     Console:
       name: LogToConsole
       PatternLayout:
-        Pattern: ${log-patttern}
+        Pattern: ${log-pattern}
 
     RollingFile:
       - name: LogToRollingFile
         fileName: ${log-file}
         filePattern: ${log-file-name-pattern}
         PatternLayout:
-          pattern: ${log-patttern}
+          pattern: ${log-pattern}
         Policies:
           SizeBasedTriggeringPolicy:
             size: 10MB
@@ -30,6 +30,12 @@ Configuration:
   Loggers:
     logger:
       - name: org.cosinus
+        level: info
+        additivity: false
+        AppenderRef:
+          - ref: LogToConsole
+          - ref: LogToRollingFile
+      - name: org.springframework
         level: info
         additivity: false
         AppenderRef:
