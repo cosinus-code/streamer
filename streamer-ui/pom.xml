@@ -221,7 +221,7 @@
                                         <vmArg>-Dapp.name=${application.name}</vmArg>
                                         <vmArg>-Dvisualvm.display.name=${application.name}</vmArg>
                                         <vmArg>-Dswing.aatext=true</vmArg>
-                                        <vmArg>-splash:splash.png</vmArg>
+                                        <vmArg>-splash:${application.splash.file.name}</vmArg>
                                         <vmArg>-Dapple.laf.useScreenMenuBar=true</vmArg>
                                         <vmArg>-Dcom.apple.mrj.application.apple.menu.about.name=${application.display.name}</vmArg>
                                     </vmArgs>
