@@ -22,6 +22,7 @@
         <application.name>streamer</application.name>
         <application.category>Administration</application.category>
         <application.icon.name>streamer.png</application.icon.name>
+        <application.ico.name>streamer.ico</application.ico.name>
         <application.icns.name>streamer.icns</application.icns.name>
         <application.class>org.cosinus.streamer.ui.app.StreamerApplication</application.class>
         <application.home.env.name>STREAMER_HOME</application.home.env.name>
@@ -195,7 +196,9 @@
                                     <name>${application.name}</name>
                                     <organizationName>${organization.name}</organizationName>
                                     <displayName>${application.display.name}</displayName>
-                                    <bundleJre>false</bundleJre>
+                                    <bundleJre>true</bundleJre>
+                                    <customizedJre>false</customizedJre>
+                                    <jdkPath>${java.home}</jdkPath>
                                     <runnableJar>${project.basedir}/target/${application.name}.jar</runnableJar>
                                     <generateInstaller>true</generateInstaller>
                                     <administratorRequired>false</administratorRequired>
@@ -235,7 +238,7 @@
                                     </macConfig>
 
                                     <winConfig>
-                                        <icoFile>src/main/resources/image/${application.icon.name}</icoFile>
+                                        <icoFile>src/main/resources/image/${application.ico.name}</icoFile>
                                         <generateSetup>true</generateSetup>
                                         <generateMsi>true</generateMsi>
                                         <generateMsm>false</generateMsm>

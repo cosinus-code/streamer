@@ -53,6 +53,10 @@ if [ "$(uname -s)" = "Linux" ]; then
 
   run_or_continue_if_fail sudo cp src/main/resources/org.${application_name}.root.policy /usr/share/polkit-1/actions
 #  run_or_continue_if_fail sudo cp src/main/resources/image/${application_icon_name} /usr/share/icons
+
+elif [ "$OS" = "Windows_NT" ]; then
+  application_msi_file="target/${application_name}_${application_version}.msi"
+  run_or_die start "" "${application_msi_file}"
 fi
 
 show-info "${application_display_name} was installed"
