@@ -26,8 +26,8 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
-        <spring-swing.version>3.0.0-SNAPSHOT</spring-swing.version>
-        <spring-cloud.version>4.3.0</spring-cloud.version>
+        <spring-swing.version>3.0.1</spring-swing.version>
+        <spring-cloud.version>4.3.3</spring-cloud.version>
         <stream-pipeline.version>1.0.0</stream-pipeline.version>
         <commons-net.version>3.12.0</commons-net.version>
         <commons-pool.version>2.12.1</commons-pool.version>
@@ -39,6 +39,10 @@
         <jenetics-jpx.version>3.2.1</jenetics-jpx.version>
         <junit.version>4.13.1</junit.version>
         <google-maps.version>2.2.0</google-maps.version>
+        <jackson.version>2.21.3</jackson.version>
+        <lombok.version>1.18.46</lombok.version>
+        <assertj.version>3.27.7</assertj.version>
+        <commons-io.version>2.22.0</commons-io.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -50,8 +54,6 @@
                 <groupId>org.cosinuscode.swing</groupId>
                 <artifactId>spring-swing-boot-starter</artifactId>
                 <version>${spring-swing.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
@@ -72,15 +74,11 @@
                 <groupId>commons-net</groupId>
                 <artifactId>commons-net</artifactId>
                 <version>${commons-net.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-pool2</artifactId>
                 <version>${commons-pool.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>com.google.apis</groupId>
@@ -109,6 +107,21 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${assertj.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                <version>6.0.0</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-exec</artifactId>
                 <version>${commons-exec.version}</version>
@@ -122,6 +135,17 @@
                 <groupId>com.google.maps</groupId>
                 <artifactId>google-maps-services</artifactId>
                 <version>${google-maps.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-yaml</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+                <scope>provided</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

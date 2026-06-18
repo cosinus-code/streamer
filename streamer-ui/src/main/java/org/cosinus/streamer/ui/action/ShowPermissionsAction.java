@@ -35,8 +35,6 @@ public class ShowPermissionsAction implements SwingAction {
 
     public static final String SHOW_STREAMER_PERMISSIONS_ACTION_ID = "show-streamer-permissions";
 
-    private static final String STREAMER_PERMISSIONS_DIALOG = "streamerPermissionsDialog.json";
-
     private final StreamerViewHandler streamerViewHandler;
 
     private final DialogHandler dialogHandler;
