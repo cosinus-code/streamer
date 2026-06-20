@@ -19,6 +19,7 @@
     <properties>
         <application.display.name>Streamer</application.display.name>
         <application.name>streamer</application.name>
+        <application.version>1.0.0</application.version>
         <application.category>Utility</application.category>
         <application.class>org.cosinus.streamer.ui.app.StreamerApplication</application.class>
         <application.home.env.name>STREAMER_HOME</application.home.env.name>
