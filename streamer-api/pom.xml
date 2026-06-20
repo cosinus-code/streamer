@@ -14,10 +14,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.cosinuscode.swing</groupId>
-            <artifactId>spring-swing-boot-starter</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.cosinuscode.stream</groupId>
             <artifactId>stream-pipeline</artifactId>
         </dependency>

@@ -4,6 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>org.cosinuscode.swing</groupId>
+        <artifactId>spring-swing-boot-starter-parent</artifactId>
+        <version>3.0.2-SNAPSHOT</version>
+    </parent>
+
     <groupId>org.cosinuscode.streamer</groupId>
     <artifactId>streamer-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
@@ -22,39 +28,23 @@
     <name>Streamer Parent</name>
 
     <properties>
-        <java.version>21</java.version>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
-        <maven.compiler.target>${java.version}</maven.compiler.target>
-
-        <spring-swing.version>3.0.1</spring-swing.version>
         <spring-cloud.version>4.3.3</spring-cloud.version>
-        <stream-pipeline.version>1.0.0</stream-pipeline.version>
-        <commons-net.version>3.12.0</commons-net.version>
-        <commons-pool.version>2.12.1</commons-pool.version>
-        <commons-exec.version>1.5.0</commons-exec.version>
+        <commons-net.version>3.13.0</commons-net.version>
+        <commons-compress.version>1.28.0</commons-compress.version>
+        <jenetics-jpx.version>3.2.1</jenetics-jpx.version>
         <google-api.version>v3-rev197-1.25.0</google-api.version>
         <google-api-client.version>1.25.0</google-api-client.version>
         <google-auth-oath2.version>1.34.0</google-auth-oath2.version>
         <google-oath-jetty.version>1.39.0</google-oath-jetty.version>
-        <jenetics-jpx.version>3.2.1</jenetics-jpx.version>
-        <junit.version>4.13.1</junit.version>
         <google-maps.version>2.2.0</google-maps.version>
-        <jackson.version>2.21.3</jackson.version>
-        <lombok.version>1.18.46</lombok.version>
-        <assertj.version>3.27.7</assertj.version>
-        <commons-io.version>2.22.0</commons-io.version>
-
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <ojdbc11.version>23.26.2.0.0</ojdbc11.version>
+        <jooq.version>3.21.6</jooq.version>
+        <junrar.version>7.6.0</junrar.version>
+        <xz.version>1.12</xz.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.cosinuscode.swing</groupId>
-                <artifactId>spring-swing-boot-starter</artifactId>
-                <version>${spring-swing.version}</version>
-            </dependency>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-openfeign-core</artifactId>
@@ -66,9 +56,49 @@
                 <version>${spring-cloud.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.cosinuscode.stream</groupId>
-                <artifactId>stream-pipeline</artifactId>
-                <version>${stream-pipeline.version}</version>
+                <groupId>org.cosinuscode.streamer</groupId>
+                <artifactId>streamer-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.cosinuscode.streamer</groupId>
+                <artifactId>streamer-file</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.cosinuscode.streamer</groupId>
+                <artifactId>streamer-ftp</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.cosinuscode.streamer</groupId>
+                <artifactId>streamer-drive</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.cosinuscode.streamer</groupId>
+                <artifactId>streamer-pack</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.cosinuscode.streamer</groupId>
+                <artifactId>streamer-geo</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.cosinuscode.streamer</groupId>
+                <artifactId>streamer-database</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.cosinuscode.streamer</groupId>
+                <artifactId>streamer-strava</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jenetics</groupId>
+                <artifactId>jpx</artifactId>
+                <version>${jenetics-jpx.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-net</groupId>
@@ -77,8 +107,18 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
-                <artifactId>commons-pool2</artifactId>
-                <version>${commons-pool.version}</version>
+                <artifactId>commons-compress</artifactId>
+                <version>${commons-compress.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.junrar</groupId>
+                <artifactId>junrar</artifactId>
+                <version>${junrar.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.tukaani</groupId>
+                <artifactId>xz</artifactId>
+                <version>${xz.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.google.apis</groupId>
@@ -101,66 +141,20 @@
                 <version>${google-oath-jetty.version}</version>
             </dependency>
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.assertj</groupId>
-                <artifactId>assertj-core</artifactId>
-                <version>${assertj.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-io</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>${commons-io.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.servlet</groupId>
-                <artifactId>jakarta.servlet-api</artifactId>
-                <version>6.0.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-exec</artifactId>
-                <version>${commons-exec.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.jenetics</groupId>
-                <artifactId>jpx</artifactId>
-                <version>${jenetics-jpx.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.google.maps</groupId>
                 <artifactId>google-maps-services</artifactId>
                 <version>${google-maps.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.fasterxml.jackson.dataformat</groupId>
-                <artifactId>jackson-dataformat-yaml</artifactId>
-                <version>${jackson.version}</version>
+                <groupId>com.oracle.database.jdbc</groupId>
+                <artifactId>ojdbc11</artifactId>
+                <version>${ojdbc11.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>${lombok.version}</version>
-                <scope>provided</scope>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq</artifactId>
+                <version>${jooq.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
-                    <compilerArgument>-parameters</compilerArgument>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

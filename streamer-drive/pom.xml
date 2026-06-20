@@ -14,7 +14,6 @@
         <dependency>
             <groupId>org.cosinuscode.streamer</groupId>
             <artifactId>streamer-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.apis</groupId>
