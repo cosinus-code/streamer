@@ -24,9 +24,7 @@
         <application.class>org.cosinus.streamer.ui.app.StreamerApplication</application.class>
         <application.home.env.name>STREAMER_HOME</application.home.env.name>
         <application.splash.file.name>splash.png</application.splash.file.name>
-        <application.splash.progress.arguments>
-            -splash-progress -splash-progress-color=50,167,237 -splash-progress-y=250
-        </application.splash.progress.arguments>
+        <application.splash.progress>-Dsplash-progress=color=50,167,237:y=250</application.splash.progress>
     </properties>
 
     <dependencies>
