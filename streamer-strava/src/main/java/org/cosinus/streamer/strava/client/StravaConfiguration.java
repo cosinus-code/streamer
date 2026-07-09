@@ -18,8 +18,10 @@
 package org.cosinus.streamer.strava.client;
 
 import feign.codec.Encoder;
+import feign.codec.ErrorDecoder;
 import feign.form.spring.SpringFormEncoder;
 import org.cosinus.streamer.strava.StravaComponent;
+import org.cosinus.swing.error.FeignErrorDecoder;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,5 +34,10 @@ public class StravaConfiguration {
     @Bean
     public Encoder feignFormEncoder() {
         return new SpringFormEncoder();
+    }
+
+    @Bean
+    public ErrorDecoder errorDecoder() {
+        return new FeignErrorDecoder();
     }
 }

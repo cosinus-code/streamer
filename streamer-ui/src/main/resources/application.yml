@@ -34,7 +34,7 @@ spring:
             clientSecret: 4bf6532a57615d486db24f8a024090a80c390cc6
             authorization-grant-type: authorization_code
 #            scope: profile:read_all,activity:read_all,activity:write
-            scope: "activity:read_all,activity:write"
+            scope: "activity:read_all"
             client-authentication-method: client_secret_post
         provider:
           strava:

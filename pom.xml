@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.cosinuscode.swing</groupId>
         <artifactId>spring-swing-boot-starter-parent</artifactId>
-        <version>3.0.3</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.cosinuscode.streamer</groupId>
@@ -28,7 +28,7 @@
     <name>Streamer Parent</name>
 
     <properties>
-        <spring-cloud.version>4.3.3</spring-cloud.version>
+        <spring-cloud.version>5.0.2</spring-cloud.version>
         <commons-net.version>3.13.0</commons-net.version>
         <commons-compress.version>1.28.0</commons-compress.version>
         <jenetics-jpx.version>3.2.1</jenetics-jpx.version>

@@ -33,7 +33,7 @@ public abstract class AbstractConnectionFactory<K, C extends Connection<R>, R>
     @Override
     public boolean validateObject(K key, PooledObject<C> pooledConnection) {
         return ofNullable(pooledConnection)
-            .map(PooledObject::getObject)
+            .map(connection -> PooledObject.getObject(connection))
             .map(this::validateConnection)
             .orElse(false);
     }
@@ -41,7 +41,7 @@ public abstract class AbstractConnectionFactory<K, C extends Connection<R>, R>
     @Override
     public void destroyObject(K key, PooledObject<C> pooledConnection) {
         ofNullable(pooledConnection)
-            .map(PooledObject::getObject)
+            .map(connection -> PooledObject.getObject(connection))
             .ifPresent(this::destroyConnection);
     }
 
