@@ -16,6 +16,7 @@
 
 package org.cosinus.streamer.ui.action.execute.load;
 
+import lombok.extern.slf4j.Slf4j;
 import org.cosinus.stream.StreamSupplier;
 import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
@@ -58,6 +59,7 @@ import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
  * Implementation of {@link ActionExecutor} based on {@link LoadPipelineWorker}
  */
 @Component
+@Slf4j
 public class LoadActionExecutor extends WorkerExecutor<LoadActionModel<?>, Worker<?, ?, ?>> {
 
     private final StreamerViewHandler streamerViewHandler;
@@ -103,7 +105,8 @@ public class LoadActionExecutor extends WorkerExecutor<LoadActionModel<?>, Worke
 
         Streamer streamerToLoad = actionModel.getStreamerToLoad();
         StreamerView currentStreamerView = streamerViewHandler.getView(actionModel.getLocationToLoadTo())
-            .orElseGet(streamerViewHandler::getCurrentView);
+            .orElse(null);
+
         ofNullable(currentStreamerView)
             .map(StreamerView::getParentStreamer)
             .ifPresent(currentStreamer -> {
