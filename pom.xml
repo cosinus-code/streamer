@@ -39,7 +39,7 @@
         <google-maps.version>2.2.0</google-maps.version>
         <ojdbc11.version>23.26.2.0.0</ojdbc11.version>
         <jooq.version>3.21.6</jooq.version>
-        <junrar.version>7.6.0</junrar.version>
+        <junrar.version>7.6.1</junrar.version>
         <xz.version>1.12</xz.version>
     </properties>
 
