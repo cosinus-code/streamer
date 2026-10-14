@@ -16,18 +16,20 @@
 
 package org.cosinus.streamer.ui.action.execute.load.image;
 
+import org.cosinus.stream.error.AbortPipelineConsumeException;
 import org.cosinus.stream.pipeline.PipelineListener;
 import org.cosinus.stream.pipeline.binary.BinaryPipeline;
 import org.cosinus.stream.pipeline.binary.BinaryPipelineStrategy;
 import org.cosinus.stream.pipeline.binary.BinaryStreamConsumer;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.swing.error.ActionException;
-import org.cosinus.swing.progress.ProgressModel;
-import org.cosinus.swing.worker.Worker;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.image.ImageStreamerView;
+import org.cosinus.swing.error.AbortActionException;
+import org.cosinus.swing.error.ActionException;
 import org.cosinus.swing.image.UpdatableImage;
+import org.cosinus.swing.progress.ProgressModel;
+import org.cosinus.swing.worker.Worker;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,8 +59,11 @@ public class LoadImageWorker extends Worker<LoadWorkerModel<UpdatableImage>, Upd
     protected void doWork() {
         try {
             openPipeline();
+        } catch (AbortPipelineConsumeException ex) {
+            throw new AbortActionException("Pipeline worker aborted", ex);
         } catch (IOException | UncheckedIOException ex) {
-            throw new ActionException(ex, "act-load-error");
+            throw new ActionException(ex,
+                "action-error", translator.translate(actionModel.getActionId()), ex.getMessage());
         }
     }
 

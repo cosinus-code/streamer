@@ -19,7 +19,6 @@ package org.cosinus.streamer.ui.action.execute.load.image;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.view.image.ImageStreamerView;
-import org.cosinus.swing.image.UpdatableImage;
 
 public class LoadImageActionModel extends LoadActionModel<byte[]> {
 
