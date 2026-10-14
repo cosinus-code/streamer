@@ -102,9 +102,8 @@ public class KmzStreamer extends GpxStreamer {
 
     @Override
     public BinaryStreamer binaryStreamer(String format) {
-        return ofNullable(format)
-            .filter(type -> type.equals(GPX_TYPE))
-            .<BinaryStreamer>map(f -> new GpxBinaryStreamer(this))
-            .orElseGet(() -> super.binaryStreamer(format));
+        return GPX_TYPE.equals(format) ?
+            new GpxBinaryStreamer(this) :
+            super.binaryStreamer(format);
     }
 }

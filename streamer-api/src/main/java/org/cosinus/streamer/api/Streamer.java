@@ -19,6 +19,7 @@ package org.cosinus.streamer.api;
 import org.apache.commons.lang3.ObjectUtils;
 import org.cosinus.stream.StreamSupplier;
 import org.cosinus.stream.consumer.StreamConsumer;
+import org.cosinus.streamer.api.image.ImageBinaryStreamer;
 import org.cosinus.streamer.api.parent.StreamParentsSpliterator;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.swing.security.Permissions;
@@ -27,6 +28,8 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static java.util.Optional.ofNullable;
+import static javax.imageio.ImageIO.getWriterFormatNames;
+import static org.apache.commons.lang3.ArrayUtils.contains;
 import static org.cosinus.streamer.api.ParentStreamer.FOLDER_VIEW_ID;
 import static org.cosinus.streamer.api.file.BaseFileStreamer.BINARY_VIEW_ID;
 
@@ -55,6 +58,9 @@ public interface Streamer<T> extends Streamable, StreamSupplier<T>, Comparable<S
     }
 
     default BinaryStreamer binaryStreamer(String format) {
+        if (isImage() && contains(getWriterFormatNames(), format)) {
+            return new ImageBinaryStreamer(binaryStreamer(), format);
+        }
         return binaryStreamer();
     }
 
