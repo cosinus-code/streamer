@@ -256,4 +256,9 @@ public class ArchivePackStreamer<A extends ArchiveStreamer<?>> extends ExpandedS
             }
         };
     }
+
+    @Override
+    public boolean canRead() {
+        return true;
+    }
 }

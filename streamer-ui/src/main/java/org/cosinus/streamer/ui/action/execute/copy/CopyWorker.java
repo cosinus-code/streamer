@@ -23,6 +23,7 @@ import org.cosinus.stream.error.AbortPipelineConsumeException;
 import org.cosinus.stream.pipeline.PipelineListener;
 import org.cosinus.stream.pipeline.PipelineStrategy;
 import org.cosinus.streamer.api.*;
+import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
 import org.cosinus.swing.error.ActionException;
 import org.cosinus.swing.format.FormatHandler;
 import org.cosinus.swing.worker.PipelineWorker;
@@ -37,6 +38,7 @@ import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
+import static org.apache.commons.io.file.PathUtils.getBaseName;
 import static org.cosinus.stream.FlatStreamingStrategy.IN_DEPTH;
 
 /**
@@ -48,12 +50,17 @@ public class CopyWorker<S extends Streamer<?>, T extends Streamer<?>>
     @Autowired
     protected FormatHandler formatHandler;
 
+    @Autowired
+    private BinaryExpanderHandler expanderHandler;
+
     protected final ParentStreamer<S> source;
 
     protected final ParentStreamer<T> destination;
 
     @Getter
     protected final StreamerFilter streamerFilter;
+
+    protected final String targetType;
 
     protected final CopyStrategy copyStrategy;
 
@@ -64,6 +71,7 @@ public class CopyWorker<S extends Streamer<?>, T extends Streamer<?>>
         this.source = (ParentStreamer<S>) copyActionModel.getSource();
         this.destination = (ParentStreamer<T>) copyActionModel.getDestination();
         this.streamerFilter = copyActionModel.getSourceFilter();
+        this.targetType = copyActionModel.getTargetType();
         this.copyStrategy = new CopyStrategy();
         this.streamingStrategy = new DefaultPipelineStrategy();
     }
@@ -107,8 +115,8 @@ public class CopyWorker<S extends Streamer<?>, T extends Streamer<?>>
     protected void copyStreamer(final CopyUnit<S, T> copyUnit) {
         S streamerToCopy = copyUnit.source();
         T streamerToCopyTo = copyUnit.target();
-        BinaryStreamer binarySource = streamerToCopy.binaryStreamer();
-        BinaryStreamer binaryTarget = streamerToCopyTo.binaryStreamer();
+        BinaryStreamer binarySource = expanderHandler.expandStreamer(streamerToCopy).binaryStreamer(targetType);
+        BinaryStreamer binaryTarget = expanderHandler.expandStreamer(streamerToCopyTo).binaryStreamer(targetType);
         if (binarySource != null && binaryTarget != null) {
             try {
                 new CopyBinaryPipeline(binarySource, binaryTarget, copyStrategy,
@@ -128,16 +136,10 @@ public class CopyWorker<S extends Streamer<?>, T extends Streamer<?>>
     }
 
     protected Path getTargetPath(final S streamerToCopy) {
-        return destination.resolveStreamerPath(source, streamerToCopy);
-    }
-
-    protected Path getRelativePath(final Streamer<?> streamer) {
-        Path streamerPath = streamer.getPath();
-        return streamerPath.subpath(ofNullable(source.getPath())
-                .filter(streamerPath::startsWith)
-                .map(Path::getNameCount)
-                .orElse(0),
-            streamerPath.getNameCount());
+        Path targetPath = destination.resolveStreamerPath(source, streamerToCopy);
+        return ofNullable(targetType)
+            .map(type -> targetPath.resolveSibling(getBaseName(targetPath) + "." + type))
+            .orElse(targetPath);
     }
 
     @Override

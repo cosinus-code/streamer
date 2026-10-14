@@ -18,6 +18,7 @@ package org.cosinus.streamer.kmz;
 import io.jenetics.jpx.GPX;
 import io.jenetics.jpx.WayPoint;
 import org.cosinus.streamer.api.BinaryStreamer;
+import org.cosinus.streamer.gpx.GpxBinaryStreamer;
 import org.cosinus.streamer.gpx.GpxStreamer;
 import org.cosinus.swing.xml.Xml;
 
@@ -97,5 +98,13 @@ public class KmzStreamer extends GpxStreamer {
     @Override
     public String getProtocol() {
         return KMZ_PROTOCOL;
+    }
+
+    @Override
+    public BinaryStreamer binaryStreamer(String format) {
+        return ofNullable(format)
+            .filter(type -> type.equals(GPX_TYPE))
+            .<BinaryStreamer>map(f -> new GpxBinaryStreamer(this))
+            .orElseGet(() -> super.binaryStreamer(format));
     }
 }

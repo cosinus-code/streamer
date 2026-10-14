@@ -27,6 +27,8 @@ import java.nio.file.Path;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import static org.apache.commons.io.FilenameUtils.getBaseName;
+
 public class DatabaseSchemaQueriesStreamer extends DatabaseSchemaObjectStreamer<DatabaseQueryStreamer> {
 
     public static final String QUERY_FILE_EXTENSION = ".query";
@@ -51,7 +53,7 @@ public class DatabaseSchemaQueriesStreamer extends DatabaseSchemaObjectStreamer<
         return resourceResolver.resolveAsBytes(DATABASE_QUERIES, queryFileName)
             .map(String::new)
             .map(query -> new DatabaseQueryStreamer(
-                FilenameUtils.getBaseName(queryFileName), query, schemaName, connectionName))
+                getBaseName(queryFileName), query, schemaName, connectionName))
             .orElse(null);
     }
 

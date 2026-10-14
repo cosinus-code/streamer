@@ -69,8 +69,7 @@ public class StreamerTreeNode extends DefaultMutableTreeNode implements Comparab
     public void loadChildren() {
         removeAllChildren();
 
-        Streamer<?> streamer = ofNullable(expanderHandler.expandStreamer(getStreamer()))
-            .orElse(getStreamer());
+        Streamer<?> streamer = expanderHandler.expandStreamer(getStreamer());
         streamer
             .stream()
             .filter(item -> Streamer.class.isAssignableFrom(item.getClass()))

@@ -47,7 +47,12 @@ public class PackWorker<S extends Streamer<S>, T extends ExpandedStreamer<T>> ex
 
     @Override
     protected Path getTargetPath(S streamerToCopy) {
-        return super.getRelativePath(streamerToCopy);
+        Path streamerPath = streamerToCopy.getPath();
+        return streamerPath.subpath(ofNullable(source.getPath())
+                .filter(streamerPath::startsWith)
+                .map(Path::getNameCount)
+                .orElse(0),
+            streamerPath.getNameCount());
     }
 
     private class PackStreamConsumer implements StreamConsumer<CopyUnit<S, T>> {

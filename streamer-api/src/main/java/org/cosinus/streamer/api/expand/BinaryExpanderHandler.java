@@ -62,7 +62,7 @@ public class BinaryExpanderHandler {
         return ofNullable(streamerToExpand)
             .map(this::checkIfStreamerIsExpandable)
             .map(this::checkIfStreamerIsText)
-            .orElse(null);
+            .orElse(streamerToExpand);
     }
 
     private Streamer<?> checkIfStreamerIsExpandable(Streamer<?> streamerToCheck) {
@@ -75,6 +75,7 @@ public class BinaryExpanderHandler {
     }
 
     private Streamer<?> checkIfStreamerIsText(Streamer<?> streamerToCheck) {
+        //TODO: to check if it's needed
         return ofNullable(streamerToCheck)
             .filter(Streamer::isTextCompatible)
             .map(Streamer::binaryStreamer)

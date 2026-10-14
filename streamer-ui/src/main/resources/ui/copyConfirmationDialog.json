@@ -9,6 +9,11 @@
       "id": "copyFilter",
       "label": "copy-filter",
       "type": "text"
+    },
+    {
+      "id": "targetType",
+      "label": "target-type",
+      "type": "text"
     }
   ],
   "buttons": [

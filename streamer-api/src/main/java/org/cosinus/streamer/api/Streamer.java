@@ -28,7 +28,6 @@ import java.util.stream.StreamSupport;
 
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.api.ParentStreamer.FOLDER_VIEW_ID;
-import static org.cosinus.streamer.api.TextStreamer.TEXT_VIEW_ID;
 import static org.cosinus.streamer.api.file.BaseFileStreamer.BINARY_VIEW_ID;
 
 public interface Streamer<T> extends Streamable, StreamSupplier<T>, Comparable<Streamer<?>> {
@@ -53,6 +52,10 @@ public interface Streamer<T> extends Streamable, StreamSupplier<T>, Comparable<S
 
     default BinaryStreamer binaryStreamer() {
         return null;
+    }
+
+    default BinaryStreamer binaryStreamer(String format) {
+        return binaryStreamer();
     }
 
     default Stream<ParentStreamer<?>> parentsStream() {

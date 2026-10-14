@@ -17,6 +17,7 @@
 package org.cosinus.streamer.ui.action.execute.copy;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.ui.view.StreamerView;
@@ -42,7 +43,9 @@ public class CopyActionModel implements ActionModel, UIModel {
 
     public static final String COPY_FILTER = "copyFilter";
 
-    public static final Set<String> COPY_KEYS = Set.of(COPY_TO, COPY_FILTER);
+    public static final String TARGET_TYPE = "targetType";
+
+    public static final Set<String> COPY_KEYS = Set.of(COPY_TO, COPY_FILTER, TARGET_TYPE);
 
     private final String executionId;
 
@@ -66,6 +69,10 @@ public class CopyActionModel implements ActionModel, UIModel {
 
     @Getter
     private Path targetPath;
+
+    @Setter
+    @Getter
+    private String targetType;
 
     public CopyActionModel() {
         this.executionId = randomUUID().toString();
@@ -149,6 +156,8 @@ public class CopyActionModel implements ActionModel, UIModel {
                     setTargetPath(text);
                 } else if (key.equals(COPY_FILTER)) {
                     setCopyFilter(text);
+                } else if (key.equals(TARGET_TYPE)) {
+                    setTargetType(text);
                 }
             });
     }
