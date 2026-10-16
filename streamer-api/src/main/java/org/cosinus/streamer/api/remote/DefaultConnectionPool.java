@@ -20,6 +20,8 @@ import org.apache.commons.pool2.impl.AbandonedConfig;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
 import org.cosinus.streamer.api.error.StreamerException;
+import org.cosinus.swing.error.AbortActionException;
+import org.cosinus.swing.error.TranslatableRuntimeException;
 
 /**
  * Default implementation of {@link ConnectionPool} using apache common objects pool.
@@ -46,10 +48,15 @@ public abstract class DefaultConnectionPool<C extends Connection<R>, R>
         super(factory, config, abandonedConfig);
     }
 
+    /**
+     * Borrow a connection from the pool.
+     */
     @Override
     public C borrowConnection(String key) {
         try {
             return borrowObject(key);
+        } catch (TranslatableRuntimeException e) {
+            throw e;
         } catch (Exception e) {
             throw new StreamerException(e, "failed.to.borrow.connection.from.pool", key);
         }

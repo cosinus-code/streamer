@@ -89,7 +89,7 @@ public abstract class FtpStreamer<T> implements RemoteStreamer<T, FTPFile, FtpCo
 
     @Override
     public String getStreamQuery() {
-        return path.startsWith(getName()) ?
+        return path.startsWith(connectionName) ?
             path.getNameCount() == 1 ?
                 ROOT_PATH :
                 path.subpath(1, path.getNameCount()).toString() :

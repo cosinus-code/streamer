@@ -30,7 +30,6 @@ import org.cosinus.swing.window.Dialog;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
-import java.nio.file.Path;
 import java.util.Optional;
 
 import static java.awt.event.KeyEvent.VK_P;
@@ -92,8 +91,7 @@ public class ShowStreamerPropertiesAction implements SwingAction {
                 ofNullable(streamerProperties.getNewName())
                     .filter(not(streamer.getName()::equals))
                     .flatMap(name -> ofNullable(streamer.getPath())
-                        .map(Path::getParent)
-                        .map(parent -> parent.resolve(name)))
+                        .map(path -> path.resolveSibling(name)))
                     .ifPresent(newName -> {
                         streamer.rename(newName);
                         streamerViewHandler.reloadViews();

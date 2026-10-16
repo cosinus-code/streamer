@@ -18,8 +18,17 @@
             <artifactId>streamer-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.cosinuscode.streamer</groupId>
+            <artifactId>streamer-network</artifactId>
+        </dependency>
+        <dependency>
             <groupId>commons-net</groupId>
             <artifactId>commons-net</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

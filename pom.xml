@@ -17,7 +17,9 @@
         <module>streamer-ui</module>
         <module>streamer-api</module>
         <module>streamer-file</module>
+        <module>streamer-network</module>
         <module>streamer-ftp</module>
+        <module>streamer-samba</module>
         <module>streamer-pack</module>
         <module>streamer-database</module>
         <module>streamer-geo</module>
@@ -30,6 +32,8 @@
     <properties>
         <spring-cloud.version>5.0.2</spring-cloud.version>
         <commons-net.version>3.13.0</commons-net.version>
+        <smbj.version>0.15.0</smbj.version>
+        <dcerpc.version>0.12.13</dcerpc.version>
         <commons-compress.version>1.28.0</commons-compress.version>
         <jenetics-jpx.version>3.2.1</jenetics-jpx.version>
         <google-api.version>v3-rev197-1.25.0</google-api.version>
@@ -72,6 +76,16 @@
             </dependency>
             <dependency>
                 <groupId>org.cosinuscode.streamer</groupId>
+                <artifactId>streamer-network</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.cosinuscode.streamer</groupId>
+                <artifactId>streamer-samba</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.cosinuscode.streamer</groupId>
                 <artifactId>streamer-drive</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -104,6 +118,16 @@
                 <groupId>commons-net</groupId>
                 <artifactId>commons-net</artifactId>
                 <version>${commons-net.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hierynomus</groupId>
+                <artifactId>smbj</artifactId>
+                <version>${smbj.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.rapid7.client</groupId>
+                <artifactId>dcerpc</artifactId>
+                <version>${dcerpc.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
