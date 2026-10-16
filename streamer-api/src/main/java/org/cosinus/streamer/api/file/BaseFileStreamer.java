@@ -41,8 +41,8 @@ import static org.cosinus.swing.context.ApplicationContextInjector.injectContext
 
 public abstract class BaseFileStreamer<T> implements Streamer<T> {
 
-    protected static final int DETAIL_INDEX_NAME = 0;
-    protected static final int DETAIL_INDEX_SIZE = 2;
+    public static final int DETAIL_INDEX_NAME = 0;
+    public static final int DETAIL_INDEX_SIZE = 2;
 
     public static final String BINARY_VIEW_ID = "binary";
 

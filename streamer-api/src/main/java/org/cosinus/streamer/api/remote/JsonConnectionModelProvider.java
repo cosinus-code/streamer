@@ -32,11 +32,26 @@ import static org.cosinus.swing.resource.ResourceType.CONF;
 public abstract class JsonConnectionModelProvider<M>
     extends JsonFileConverter<M> implements ConnectionModelProvider<M> {
 
+    protected final ObjectMapper objectMapper;
+
     protected JsonConnectionModelProvider(final ObjectMapper objectMapper,
                                           final Class<M> connectionModelType,
                                           final Set<ResourceResolver> resourceResolvers) {
 
         super(objectMapper, connectionModelType, resourceResolvers);
+        this.objectMapper = objectMapper;
+    }
+
+    /**
+     * Register a subtype of the connection model, to read it from the json file.
+     * <p>
+     * It has to be called before reading the json file, as the models types are resolved on the first read.
+     *
+     * @param hostClass the subtype of the connection model, named by {@link com.fasterxml.jackson.annotation.JsonTypeName}
+     *                  as its type id
+     */
+    public void registerHostType(Class<? extends M> hostClass) {
+        objectMapper.registerSubtypes(hostClass);
     }
 
     public Map<String, M> getConnectionModelsMap() {

@@ -42,6 +42,7 @@ public interface Streamer<T> extends Streamable, StreamSupplier<T>, Comparable<S
     String DETAIL_KEY_TIME = "time";
     String DETAIL_KEY_FREE_MEMORY = "detail_free_memory";
     String DETAIL_KEY_TOTAL_MEMORY = "detail_total_memory";
+    String DETAIL_KEY_HOST = "host";
 
     Stream<T> stream();
 
