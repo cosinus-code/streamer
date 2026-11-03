@@ -34,7 +34,7 @@ public class ExcelToCsvBinaryStreamerTransformer implements BinaryStreamerTransf
 
     public static final String XLS_FORMAT = "xls";
 
-    private static final Set<String> EXCEL_FORMATS = Set.of(XLSX_FORMAT, XLS_FORMAT);
+    public static final Set<String> EXCEL_FORMATS = Set.of(XLSX_FORMAT, XLS_FORMAT);
 
     @Override
     public ExcelToCsvBinaryStreamer transformStreamer(final Streamer<?> sourceStreamer,
