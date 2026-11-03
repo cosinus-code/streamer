@@ -36,7 +36,7 @@ import java.time.LocalDate;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.cosinus.streamer.api.transform.TestBinaryStreamer.image;
 import static org.cosinus.streamer.api.transform.TestBinaryStreamer.readAll;
-import static org.cosinus.streamer.api.transform.pdf.ExcelToPdfBinaryStreamer.PAGE_SIZE;
+import static org.cosinus.streamer.api.transform.pdf.PdfTableWriter.PAGE_SIZE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;

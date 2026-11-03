@@ -20,6 +20,7 @@ import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.transform.csv.CsvToExcelBinaryStreamer;
 import org.cosinus.streamer.api.transform.csv.ExcelToCsvBinaryStreamer;
 import org.cosinus.streamer.api.transform.image.ImageToImageBinaryStreamer;
+import org.cosinus.streamer.api.transform.pdf.CsvToPdfBinaryStreamer;
 import org.cosinus.streamer.api.transform.pdf.ExcelToPdfBinaryStreamer;
 import org.cosinus.streamer.api.transform.pdf.ImageToPdfBinaryStreamer;
 import org.cosinus.streamer.api.transform.test.TransformTestApplication;
@@ -53,7 +54,7 @@ public class TransformBinaryStreamerHandlerSpringTest {
 
     @Test
     public void testAllTransformersAreLoaded() {
-        assertEquals(5, transformers.size());
+        assertEquals(6, transformers.size());
     }
 
     @Test
@@ -86,13 +87,17 @@ public class TransformBinaryStreamerHandlerSpringTest {
     }
 
     @Test
+    public void testCsvToPdf() {
+        assertTrue(handler.transformToBinaryStreamer(file("data.csv"), "pdf") instanceof CsvToPdfBinaryStreamer);
+    }
+
+    @Test
     public void testWithoutTransformationReturnsTheSourceBinaryStreamer() {
         BinaryStreamer csv = file("data.csv");
         BinaryStreamer png = image("photo.png", new byte[0]);
         BinaryStreamer notImage = file("photo.png");
 
         assertSame(csv, handler.transformToBinaryStreamer(csv, "csv"));
-        assertSame(csv, handler.transformToBinaryStreamer(csv, "pdf"));
         assertSame(png, handler.transformToBinaryStreamer(png, "png"));
         assertSame(png, handler.transformToBinaryStreamer(png, "xlsx"));
         assertSame(notImage, handler.transformToBinaryStreamer(notImage, "jpg"));
