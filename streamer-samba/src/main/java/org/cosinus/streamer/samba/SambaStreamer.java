@@ -146,7 +146,7 @@ public abstract class SambaStreamer<T> extends BaseFileStreamer<T>
 
     @Override
     public ParentStreamer<?> getParent() {
-        return (ParentStreamer<?>) sambaMainStreamer.create(path.getParent(), true);
+        return (ParentStreamer<?>) sambaMainStreamer.createRoot(path.getParent(), true);
     }
 
     @Override

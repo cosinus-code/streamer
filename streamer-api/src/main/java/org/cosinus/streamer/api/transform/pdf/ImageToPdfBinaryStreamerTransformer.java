@@ -35,6 +35,6 @@ public class ImageToPdfBinaryStreamerTransformer implements BinaryStreamerTransf
     @Override
     public boolean canTransform(final Streamer<?> sourceStreamer, final String targetFormat) {
         return sourceStreamer.isImage() &&
-            PDF_FORMAT.equals(targetFormat);
+            PDF_FORMAT.equalsIgnoreCase(targetFormat);
     }
 }

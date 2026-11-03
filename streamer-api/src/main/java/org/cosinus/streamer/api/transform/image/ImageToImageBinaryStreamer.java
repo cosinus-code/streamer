@@ -19,6 +19,8 @@ package org.cosinus.streamer.api.transform.image;
 
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.transform.TransformBinaryStreamer;
+import org.cosinus.swing.image.ImageHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -26,12 +28,27 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import static javax.imageio.ImageIO.getImageWriters;
+import static javax.imageio.ImageTypeSpecifier.createFromRenderedImage;
+import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
+
+/**
+ * {@link TransformBinaryStreamer} that converts an image into another image format.
+ * <p>
+ * If the target format cannot encode the image as it is
+ * (e.g. an image with transparency converted to jpg or bmp, which have no alpha channel),
+ * the image is first flattened on a white background.
+ */
 public class ImageToImageBinaryStreamer extends TransformBinaryStreamer<BufferedImage> {
 
     private final String targetFormat;
 
+    @Autowired
+    private ImageHandler imageHandler;
+
     public ImageToImageBinaryStreamer(final BinaryStreamer binaryStreamer, final String targetFormat) {
         super(binaryStreamer);
+        injectContext(this);
         this.targetFormat = targetFormat;
     }
 
@@ -42,6 +59,13 @@ public class ImageToImageBinaryStreamer extends TransformBinaryStreamer<Buffered
 
     @Override
     protected void write(BufferedImage image, OutputStream output) throws IOException {
-        ImageIO.write(image, targetFormat, output);
+        BufferedImage imageToWrite = canWrite(image) ? image : imageHandler.flatten(image);
+        if (!ImageIO.write(imageToWrite, targetFormat, output)) {
+            throw new IOException("No image writer available for format: " + targetFormat);
+        }
+    }
+
+    private boolean canWrite(BufferedImage image) {
+        return getImageWriters(createFromRenderedImage(image), targetFormat).hasNext();
     }
 }
