@@ -15,7 +15,7 @@
  *
  */
 
-package org.cosinus.streamer.api.transform.image;
+package org.cosinus.streamer.api.transform.pdf;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.transform.BinaryStreamerTransformer;

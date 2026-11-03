@@ -15,7 +15,7 @@
  *
  */
 
-package org.cosinus.streamer.api.transform.image;
+package org.cosinus.streamer.api.transform.pdf;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;

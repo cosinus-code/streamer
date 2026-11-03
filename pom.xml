@@ -46,6 +46,8 @@
         <junrar.version>7.6.1</junrar.version>
         <xz.version>1.12</xz.version>
         <pdfbox.version>3.0.8</pdfbox.version>
+        <commons-csv.version>1.14.1</commons-csv.version>
+        <poi.version>6.0.0</poi.version>
     </properties>
 
     <dependencyManagement>
@@ -139,6 +141,16 @@
                 <groupId>org.apache.pdfbox</groupId>
                 <artifactId>pdfbox</artifactId>
                 <version>${pdfbox.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-csv</artifactId>
+                <version>${commons-csv.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>${poi.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.junrar</groupId>
