@@ -22,8 +22,13 @@ import org.cosinus.stream.consumer.StreamConsumer;
 import org.cosinus.stream.error.AbortPipelineConsumeException;
 import org.cosinus.stream.pipeline.PipelineListener;
 import org.cosinus.stream.pipeline.PipelineStrategy;
-import org.cosinus.streamer.api.*;
+import org.cosinus.streamer.api.BinaryStreamer;
+import org.cosinus.streamer.api.DefaultPipelineStrategy;
+import org.cosinus.streamer.api.ParentStreamer;
+import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.StreamerFilter;
 import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
+import org.cosinus.streamer.api.transform.TransformBinaryStreamerHandler;
 import org.cosinus.swing.error.ActionException;
 import org.cosinus.swing.format.FormatHandler;
 import org.cosinus.swing.worker.PipelineWorker;
@@ -52,6 +57,9 @@ public class CopyWorker<S extends Streamer<?>, T extends Streamer<?>>
 
     @Autowired
     private BinaryExpanderHandler expanderHandler;
+
+    @Autowired
+    private TransformBinaryStreamerHandler transformBinaryStreamerHandler;
 
     protected final ParentStreamer<S> source;
 
@@ -115,8 +123,10 @@ public class CopyWorker<S extends Streamer<?>, T extends Streamer<?>>
     protected void copyStreamer(final CopyUnit<S, T> copyUnit) {
         S streamerToCopy = copyUnit.source();
         T streamerToCopyTo = copyUnit.target();
-        BinaryStreamer binarySource = expanderHandler.expandStreamer(streamerToCopy).binaryStreamer(targetType);
-        BinaryStreamer binaryTarget = expanderHandler.expandStreamer(streamerToCopyTo).binaryStreamer(targetType);
+        BinaryStreamer binarySource = transformBinaryStreamerHandler
+            .transformToBinaryStreamer(expanderHandler.expandStreamer(streamerToCopy), targetType);
+        BinaryStreamer binaryTarget = transformBinaryStreamerHandler
+            .transformToBinaryStreamer(expanderHandler.expandStreamer(streamerToCopyTo), targetType);
         if (binarySource != null && binaryTarget != null) {
             try {
                 new CopyBinaryPipeline(binarySource, binaryTarget, copyStrategy,

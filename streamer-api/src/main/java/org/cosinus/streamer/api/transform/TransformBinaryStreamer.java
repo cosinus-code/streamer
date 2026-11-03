@@ -15,7 +15,7 @@
  *
  */
 
-package org.cosinus.streamer.api.image;
+package org.cosinus.streamer.api.transform;
 
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.BinaryStreamerDelegate;
@@ -24,18 +24,13 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UncheckedIOException;
 
-import static javax.imageio.ImageIO.read;
-import static javax.imageio.ImageIO.write;
+public abstract class TransformBinaryStreamer<T> extends BinaryStreamerDelegate {
 
-public class ImageBinaryStreamer extends BinaryStreamerDelegate {
-
-    private final String imageFormat;
-
-    public ImageBinaryStreamer(final BinaryStreamer binaryStreamer, final String imageFormat) {
+    public TransformBinaryStreamer(final BinaryStreamer binaryStreamer) {
         super(binaryStreamer);
-        this.imageFormat = imageFormat;
     }
 
     @Override
@@ -43,10 +38,19 @@ public class ImageBinaryStreamer extends BinaryStreamerDelegate {
         try (InputStream input = super.inputStream();
              ByteArrayOutputStream output = new ByteArrayOutputStream()) {
 
-            write(read(input), imageFormat, output);
+            T source = read(input);
+            if (source == null) {
+                throw new IOException("Unsupported or unreadable source");
+            }
+
+            write(source, output);
             return new ByteArrayInputStream(output.toByteArray());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
+
+    protected abstract T read(InputStream input) throws IOException;
+
+    protected abstract void write(T source, OutputStream output) throws IOException;
 }

@@ -99,11 +99,4 @@ public class KmzStreamer extends GpxStreamer {
     public String getProtocol() {
         return KMZ_PROTOCOL;
     }
-
-    @Override
-    public BinaryStreamer binaryStreamer(String format) {
-        return GPX_TYPE.equals(format) ?
-            new GpxBinaryStreamer(this) :
-            super.binaryStreamer(format);
-    }
 }
