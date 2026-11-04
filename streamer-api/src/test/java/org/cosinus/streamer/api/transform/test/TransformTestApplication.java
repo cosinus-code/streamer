@@ -26,6 +26,7 @@ import org.cosinus.streamer.api.transform.doc.DocToTxtBinaryStreamerTransformer;
 import org.cosinus.streamer.api.transform.excel.ExcelToCsvBinaryStreamerTransformer;
 import org.cosinus.streamer.api.transform.excel.ExcelToPdfBinaryStreamerTransformer;
 import org.cosinus.streamer.api.transform.html.HtmlToPdfBinaryStreamerTransformer;
+import org.cosinus.streamer.api.transform.pdf.PdfToSvgBinaryStreamerTransformer;
 import org.cosinus.streamer.api.transform.svg.SvgToPdfBinaryStreamerTransformer;
 import org.cosinus.streamer.api.transform.svg.SvgToImageBinaryStreamerTransformer;
 import org.cosinus.streamer.api.transform.json.JsonToXmlBinaryStreamerTransformer;
@@ -83,7 +84,8 @@ import org.springframework.context.annotation.Import;
     XmlToJsonBinaryStreamerTransformer.class,
     JsonToXmlBinaryStreamerTransformer.class,
     SvgToImageBinaryStreamerTransformer.class,
-    SvgToPdfBinaryStreamerTransformer.class
+    SvgToPdfBinaryStreamerTransformer.class,
+    PdfToSvgBinaryStreamerTransformer.class
 })
 public class TransformTestApplication extends SwingApplicationFrame {
 

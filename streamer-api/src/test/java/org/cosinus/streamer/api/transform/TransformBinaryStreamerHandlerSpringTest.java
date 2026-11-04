@@ -37,6 +37,7 @@ import org.cosinus.streamer.api.transform.image.ImageToImageBinaryStreamer;
 import org.cosinus.streamer.api.transform.image.ImageToPdfBinaryStreamer;
 import org.cosinus.streamer.api.transform.pdf.PdfToDocBinaryStreamer;
 import org.cosinus.streamer.api.transform.pdf.PdfToImageBinaryStreamer;
+import org.cosinus.streamer.api.transform.pdf.PdfToSvgBinaryStreamer;
 import org.cosinus.streamer.api.transform.pdf.PdfToTxtBinaryStreamer;
 import org.cosinus.streamer.api.transform.svg.SvgToImageBinaryStreamer;
 import org.cosinus.streamer.api.transform.svg.SvgToPdfBinaryStreamer;
@@ -78,7 +79,7 @@ public class TransformBinaryStreamerHandlerSpringTest {
 
     @Test
     public void testAllTransformersAreLoaded() {
-        assertEquals(27, transformers.size());
+        assertEquals(28, transformers.size());
     }
 
     @Test
@@ -197,6 +198,11 @@ public class TransformBinaryStreamerHandlerSpringTest {
     }
 
     @Test
+    public void testPdfToSvg() {
+        assertTrue(handler.transformToBinaryStreamer(file("report.pdf"), "svg") instanceof PdfToSvgBinaryStreamer);
+    }
+
+    @Test
     public void testPdfToTxt() {
         assertTrue(handler.transformToBinaryStreamer(file("report.pdf"), "txt") instanceof PdfToTxtBinaryStreamer);
     }
@@ -286,7 +292,7 @@ public class TransformBinaryStreamerHandlerSpringTest {
     public void testTargetFormats() {
         List<String> targetFormats = handler.targetFormats();
         assertTrue(targetFormats.containsAll(
-            List.of("bmp", "csv", "doc", "docx", "htm", "html", "jpg", "json", "pdf", "png", "txt", "xlsx", "xml")));
+            List.of("bmp", "csv", "doc", "docx", "htm", "html", "jpg", "json", "pdf", "png", "svg", "txt", "xlsx", "xml")));
         assertEquals(targetFormats.stream().distinct().sorted().toList(), targetFormats);
     }
 
