@@ -21,26 +21,27 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.transform.BinaryStreamerTransformer;
 import org.springframework.stereotype.Component;
 
-import static org.cosinus.streamer.api.transform.csv.ExcelToCsvBinaryStreamerTransformer.EXCEL_FORMATS;
-import static org.cosinus.streamer.api.transform.pdf.ImageToPdfBinaryStreamerTransformer.PDF_FORMAT;
+import static org.cosinus.streamer.api.transform.pdf.PdfFormat.PDF_FORMAT;
+import static org.cosinus.streamer.api.transform.doc.DocToPdfBinaryStreamerTransformer.DOCX_FORMAT;
 
 /**
- * {@link BinaryStreamerTransformer} from excel (xlsx or xls) to pdf.
+ * {@link BinaryStreamerTransformer} from pdf to word (docx).
+ * <p>
+ * The doc format is not a target, as it cannot be written.
  */
 @Component
-public class ExcelToPdfBinaryStreamerTransformer implements BinaryStreamerTransformer {
+public class PdfToDocBinaryStreamerTransformer implements BinaryStreamerTransformer {
 
     @Override
-    public ExcelToPdfBinaryStreamer transformStreamer(final Streamer<?> sourceStreamer,
-                                                      final String targetFormat) {
-        return new ExcelToPdfBinaryStreamer(sourceStreamer.binaryStreamer());
+    public PdfToDocBinaryStreamer transformStreamer(final Streamer<?> sourceStreamer,
+                                                    final String targetFormat) {
+        return new PdfToDocBinaryStreamer(sourceStreamer.binaryStreamer());
     }
 
     @Override
     public boolean canTransform(final Streamer<?> sourceStreamer, final String targetFormat) {
         return !sourceStreamer.isImage() &&
-            sourceStreamer.getType() != null &&
-            EXCEL_FORMATS.contains(sourceStreamer.getType().toLowerCase()) &&
-            PDF_FORMAT.equalsIgnoreCase(targetFormat);
+            PDF_FORMAT.equalsIgnoreCase(sourceStreamer.getType()) &&
+            DOCX_FORMAT.equalsIgnoreCase(targetFormat);
     }
 }

@@ -21,31 +21,25 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.transform.BinaryStreamerTransformer;
 import org.springframework.stereotype.Component;
 
-import java.util.Set;
-
-import static org.cosinus.streamer.api.transform.csv.CsvToExcelBinaryStreamerTransformer.CSV_FORMAT;
-import static org.cosinus.streamer.api.transform.csv.CsvToExcelBinaryStreamerTransformer.XLSX_FORMAT;
+import static org.cosinus.streamer.api.transform.csv.CsvFormat.CSV_FORMAT;
+import static org.cosinus.streamer.api.transform.pdf.PdfFormat.PDF_FORMAT;
 
 /**
- * {@link BinaryStreamerTransformer} from excel (xlsx or xls) to csv.
+ * {@link BinaryStreamerTransformer} from csv to pdf.
  */
 @Component
-public class ExcelToCsvBinaryStreamerTransformer implements BinaryStreamerTransformer {
-
-    public static final String XLS_FORMAT = "xls";
-
-    public static final Set<String> EXCEL_FORMATS = Set.of(XLSX_FORMAT, XLS_FORMAT);
+public class CsvToPdfBinaryStreamerTransformer implements BinaryStreamerTransformer {
 
     @Override
-    public ExcelToCsvBinaryStreamer transformStreamer(final Streamer<?> sourceStreamer,
-                                                      final String targetFormat) {
-        return new ExcelToCsvBinaryStreamer(sourceStreamer.binaryStreamer());
+    public CsvToPdfBinaryStreamer transformStreamer(final Streamer<?> sourceStreamer,
+                                                    final String targetFormat) {
+        return new CsvToPdfBinaryStreamer(sourceStreamer.binaryStreamer());
     }
 
     @Override
     public boolean canTransform(final Streamer<?> sourceStreamer, final String targetFormat) {
-        return sourceStreamer.getType() != null &&
-            EXCEL_FORMATS.contains(sourceStreamer.getType().toLowerCase()) &&
-            CSV_FORMAT.equalsIgnoreCase(targetFormat);
+        return !sourceStreamer.isImage() &&
+            CSV_FORMAT.equalsIgnoreCase(sourceStreamer.getType()) &&
+            PDF_FORMAT.equalsIgnoreCase(targetFormat);
     }
 }

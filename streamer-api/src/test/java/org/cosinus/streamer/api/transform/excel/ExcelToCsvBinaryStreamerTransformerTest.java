@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.api.transform.csv;
+package org.cosinus.streamer.api.transform.excel;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -23,6 +23,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.cosinus.streamer.api.transform.TestBinaryStreamer;
+import org.cosinus.streamer.api.transform.csv.CsvToExcelBinaryStreamerTransformer;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;

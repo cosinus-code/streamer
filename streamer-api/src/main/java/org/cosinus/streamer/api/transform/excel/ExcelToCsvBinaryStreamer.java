@@ -15,7 +15,7 @@
  *
  */
 
-package org.cosinus.streamer.api.transform.csv;
+package org.cosinus.streamer.api.transform.excel;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;

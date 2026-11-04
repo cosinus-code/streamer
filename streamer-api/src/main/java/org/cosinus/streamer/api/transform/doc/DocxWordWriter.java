@@ -15,7 +15,7 @@
  *
  */
 
-package org.cosinus.streamer.api.transform.word;
+package org.cosinus.streamer.api.transform.doc;
 
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -23,8 +23,8 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
-import org.cosinus.streamer.api.transform.word.WordElement.WordParagraph;
-import org.cosinus.streamer.api.transform.word.WordElement.WordTable;
+import org.cosinus.streamer.api.transform.doc.DocxElement.DocxParagraph;
+import org.cosinus.streamer.api.transform.doc.DocxElement.DocxTable;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -48,9 +48,9 @@ public class DocxWordWriter {
 
     private static final Pattern HEADING_STYLE = Pattern.compile("title|heading[1-9]");
 
-    private final List<WordElement> elements;
+    private final List<DocxElement> elements;
 
-    public DocxWordWriter(final List<WordElement> elements) {
+    public DocxWordWriter(final List<DocxElement> elements) {
 
         this.elements = elements;
     }
@@ -61,17 +61,17 @@ public class DocxWordWriter {
      */
     public void write(final OutputStream output) throws IOException {
         try (XWPFDocument document = new XWPFDocument()) {
-            for (WordElement element : elements) {
+            for (DocxElement element : elements) {
                 switch (element) {
-                    case WordParagraph paragraph -> writeParagraph(document.createParagraph(), paragraph);
-                    case WordTable table -> writeTable(document, table);
+                    case DocxParagraph paragraph -> writeParagraph(document.createParagraph(), paragraph);
+                    case DocxTable table -> writeTable(document, table);
                 }
             }
             document.write(output);
         }
     }
 
-    private void writeParagraph(final XWPFParagraph paragraph, final WordParagraph source) {
+    private void writeParagraph(final XWPFParagraph paragraph, final DocxParagraph source) {
         paragraph.setPageBreak(source.pageBreakBefore());
         paragraph.setAlignment(switch (source.alignment()) {
             case LEFT -> ParagraphAlignment.LEFT;
@@ -88,7 +88,7 @@ public class DocxWordWriter {
         writeLines(run, source.text());
     }
 
-    private void writeTable(final XWPFDocument document, final WordTable source) {
+    private void writeTable(final XWPFDocument document, final DocxTable source) {
         List<List<String>> rows = source.rows();
         int columnCount = rows.stream().mapToInt(List::size).max().orElse(0);
         if (columnCount == 0) {

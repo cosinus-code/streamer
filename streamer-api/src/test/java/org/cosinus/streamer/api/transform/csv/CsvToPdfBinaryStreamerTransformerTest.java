@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.api.transform.pdf;
+package org.cosinus.streamer.api.transform.csv;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -29,7 +29,7 @@ import java.util.stream.IntStream;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.cosinus.streamer.api.transform.TestBinaryStreamer.image;
 import static org.cosinus.streamer.api.transform.TestBinaryStreamer.readAll;
-import static org.cosinus.streamer.api.transform.pdf.CsvToPdfBinaryStreamer.isNumber;
+import static org.cosinus.streamer.api.transform.csv.CsvToPdfBinaryStreamer.isNumber;
 import static org.cosinus.streamer.api.transform.pdf.PdfTableWriter.PAGE_SIZE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

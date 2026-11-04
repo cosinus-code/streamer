@@ -15,7 +15,7 @@
  *
  */
 
-package org.cosinus.streamer.api.transform.word;
+package org.cosinus.streamer.api.transform.doc;
 
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.model.StyleDescription;
@@ -25,9 +25,9 @@ import org.apache.poi.hwpf.usermodel.Paragraph;
 import org.apache.poi.hwpf.usermodel.Range;
 import org.apache.poi.hwpf.usermodel.Table;
 import org.apache.poi.hwpf.usermodel.TableRow;
-import org.cosinus.streamer.api.transform.word.WordElement.Alignment;
-import org.cosinus.streamer.api.transform.word.WordElement.WordParagraph;
-import org.cosinus.streamer.api.transform.word.WordElement.WordTable;
+import org.cosinus.streamer.api.transform.doc.DocxElement.Alignment;
+import org.cosinus.streamer.api.transform.doc.DocxElement.DocxParagraph;
+import org.cosinus.streamer.api.transform.doc.DocxElement.DocxTable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,10 +37,10 @@ import java.util.regex.Pattern;
 
 import static java.util.Optional.ofNullable;
 import static java.util.stream.IntStream.range;
-import static org.cosinus.streamer.api.transform.pdf.WordToPdfBinaryStreamerTransformer.DOC_FORMAT;
-import static org.cosinus.streamer.api.transform.word.WordElement.Alignment.CENTER;
-import static org.cosinus.streamer.api.transform.word.WordElement.Alignment.LEFT;
-import static org.cosinus.streamer.api.transform.word.WordElement.Alignment.RIGHT;
+import static org.cosinus.streamer.api.transform.doc.DocToPdfBinaryStreamerTransformer.DOC_FORMAT;
+import static org.cosinus.streamer.api.transform.doc.DocxElement.Alignment.CENTER;
+import static org.cosinus.streamer.api.transform.doc.DocxElement.Alignment.LEFT;
+import static org.cosinus.streamer.api.transform.doc.DocxElement.Alignment.RIGHT;
 
 /**
  * Reads the body of a word document in the binary format of word 97-2003 (doc).
@@ -64,10 +64,10 @@ public final class DocWordReader {
      * @return the elements of the document body
      * @throws IOException if the content cannot be read
      */
-    public static List<WordElement> read(final InputStream input) throws IOException {
+    public static List<DocxElement> read(final InputStream input) throws IOException {
         try (HWPFDocument document = new HWPFDocument(input)) {
             Range body = document.getRange();
-            List<WordElement> elements = new ArrayList<>();
+            List<DocxElement> elements = new ArrayList<>();
             boolean pageBreak = false;
             int count = body.numParagraphs();
             for (int index = 0; index < count; index++) {
@@ -96,13 +96,13 @@ public final class DocWordReader {
         }
     }
 
-    private static WordParagraph readParagraph(final HWPFDocument document,
+    private static DocxParagraph readParagraph(final HWPFDocument document,
                                                final Paragraph paragraph,
                                                final String text,
                                                final boolean pageBreakBefore) {
         boolean inList = paragraph.isInList();
         int level = inList ? paragraph.getIlvl() : 0;
-        return new WordParagraph(
+        return new DocxParagraph(
             text,
             styleName(document, paragraph),
             fontSize(paragraph),
@@ -181,7 +181,7 @@ public final class DocWordReader {
         };
     }
 
-    private static WordTable readTable(final Table table) {
+    private static DocxTable readTable(final Table table) {
         List<List<String>> rows = new ArrayList<>(table.numRows());
         for (int rowIndex = 0; rowIndex < table.numRows(); rowIndex++) {
             TableRow row = table.getRow(rowIndex);
@@ -191,6 +191,6 @@ public final class DocWordReader {
             }
             rows.add(cells);
         }
-        return new WordTable(rows);
+        return new DocxTable(rows);
     }
 }

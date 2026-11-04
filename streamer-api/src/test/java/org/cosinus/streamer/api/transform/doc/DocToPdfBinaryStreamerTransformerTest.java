@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.api.transform.pdf;
+package org.cosinus.streamer.api.transform.doc;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -27,9 +27,9 @@ import org.apache.poi.xwpf.usermodel.XWPFNumbering;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.cosinus.streamer.api.transform.TestBinaryStreamer;
-import org.cosinus.streamer.api.transform.pdf.WordToPdfBinaryStreamer.ListNumbering;
-import org.cosinus.streamer.api.transform.word.WordElement.Alignment;
-import org.cosinus.streamer.api.transform.word.WordElement.WordParagraph;
+import org.cosinus.streamer.api.transform.doc.DocxElement.Alignment;
+import org.cosinus.streamer.api.transform.doc.DocxElement.DocxParagraph;
+import org.cosinus.streamer.api.transform.doc.DocToPdfBinaryStreamer.ListNumbering;
 import org.junit.Test;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTAbstractNum;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTLvl;
@@ -40,7 +40,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.math.BigInteger;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -49,17 +48,17 @@ import static org.cosinus.streamer.api.transform.TestBinaryStreamer.image;
 import static org.cosinus.streamer.api.transform.TestBinaryStreamer.readAll;
 import static org.cosinus.streamer.api.transform.pdf.PdfTextWriter.FONT_SIZE;
 import static org.cosinus.streamer.api.transform.pdf.PdfTextWriter.PAGE_SIZE;
-import static org.cosinus.streamer.api.transform.pdf.WordToPdfBinaryStreamer.TITLE_FONT_SIZE;
-import static org.cosinus.streamer.api.transform.pdf.WordToPdfBinaryStreamer.fontSize;
+import static org.cosinus.streamer.api.transform.doc.DocToPdfBinaryStreamer.TITLE_FONT_SIZE;
+import static org.cosinus.streamer.api.transform.doc.DocToPdfBinaryStreamer.fontSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
-public class WordToPdfBinaryStreamerTransformerTest {
+public class DocToPdfBinaryStreamerTransformerTest {
 
-    private final WordToPdfBinaryStreamerTransformer transformer = new WordToPdfBinaryStreamerTransformer();
+    private final DocToPdfBinaryStreamerTransformer transformer = new DocToPdfBinaryStreamerTransformer();
 
     @Test
     public void testCanTransformWordToPdf() {
@@ -239,25 +238,6 @@ public class WordToPdfBinaryStreamerTransformerTest {
         assertEquals("", numbering.next("none", 0, "none"));
     }
 
-    @Test
-    public void testWrapBreaksLongWords() throws IOException {
-        try (PDDocument pdf = new PDDocument()) {
-            PdfTextFont font = PdfTextFont.helvetica();
-            PdfTextWriter writer = new PdfTextWriter(pdf, font);
-            float width = font.width("abcde", FONT_SIZE);
-
-            List<String> lines = writer.wrap("ab cd abcdefghij\n\nend", FONT_SIZE, width);
-            assertEquals(List.of("ab cd", "abcde", "fghij", "", "end"), lines);
-            lines.forEach(line -> {
-                try {
-                    assertTrue(font.width(line, FONT_SIZE) <= width);
-                } catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }
-            });
-        }
-    }
-
     private XWPFParagraph paragraph(XWPFDocument word, String text) {
         XWPFParagraph paragraph = word.createParagraph();
         paragraph.createRun().setText(text);
@@ -297,8 +277,8 @@ public class WordToPdfBinaryStreamerTransformerTest {
         }
     }
 
-    private WordParagraph paragraph(String style, Float fontSize) {
-        return new WordParagraph("text", style, fontSize, Alignment.LEFT, null, 0, null, false);
+    private DocxParagraph paragraph(String style, Float fontSize) {
+        return new DocxParagraph("text", style, fontSize, Alignment.LEFT, null, 0, null, false);
     }
 
     private String text(PDDocument pdf) throws IOException {

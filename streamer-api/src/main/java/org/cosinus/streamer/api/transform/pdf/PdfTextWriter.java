@@ -38,20 +38,20 @@ import static org.apache.pdfbox.pdmodel.common.PDRectangle.A4;
  * The tables have equal column widths, with the cell texts wrapped to the width of their columns.
  * When closed, the writer ensures the document has at least a page.
  */
-class PdfTextWriter implements Closeable {
+public class PdfTextWriter implements Closeable {
 
-    static final PDRectangle PAGE_SIZE = A4;
+    public static final PDRectangle PAGE_SIZE = A4;
 
     static final float MARGIN = 56;
 
-    static final float FONT_SIZE = 11;
+    public static final float FONT_SIZE = 11;
 
     static final float TABLE_FONT_SIZE = 10;
 
     /**
      * Indentation of a list level, in points.
      */
-    static final float INDENT = 18;
+    public static final float INDENT = 18;
 
     private static final float LINE_HEIGHT = 1.3f;
 
@@ -62,7 +62,7 @@ class PdfTextWriter implements Closeable {
 
     private static final float CELL_PADDING = 3;
 
-    enum Alignment {
+    public enum Alignment {
         LEFT, CENTER, RIGHT
     }
 
@@ -76,7 +76,7 @@ class PdfTextWriter implements Closeable {
 
     private boolean pageBreak;
 
-    PdfTextWriter(final PDDocument document, final PdfTextFont font) {
+    public PdfTextWriter(final PDDocument document, final PdfTextFont font) {
         this.document = document;
         this.font = font;
     }
@@ -92,7 +92,7 @@ class PdfTextWriter implements Closeable {
      *                  the lines of the paragraph are then indented after the prefix
      * @throws IOException if the paragraph cannot be written
      */
-    void writeParagraph(final String text,
+    public void writeParagraph(final String text,
                         final float fontSize,
                         final float indent,
                         final Alignment alignment,
@@ -135,7 +135,7 @@ class PdfTextWriter implements Closeable {
      * @param rows the rows of the table, as cell texts with line breaks as '\n'
      * @throws IOException if the table cannot be written
      */
-    void writeTable(final List<List<String>> rows) throws IOException {
+    public void writeTable(final List<List<String>> rows) throws IOException {
         int columnCount = rows.stream().mapToInt(List::size).max().orElse(0);
         if (columnCount == 0) {
             return;
@@ -178,7 +178,7 @@ class PdfTextWriter implements Closeable {
      * Continue the next text on a new page.
      * Nothing happens before the first text, so that the document doesn't start with an empty page.
      */
-    void pageBreak() {
+    public void pageBreak() {
         pageBreak = content != null;
     }
 

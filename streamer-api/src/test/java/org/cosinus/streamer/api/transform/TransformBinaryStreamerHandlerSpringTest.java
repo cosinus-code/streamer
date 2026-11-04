@@ -18,14 +18,14 @@ package org.cosinus.streamer.api.transform;
 
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.transform.csv.CsvToExcelBinaryStreamer;
-import org.cosinus.streamer.api.transform.csv.ExcelToCsvBinaryStreamer;
+import org.cosinus.streamer.api.transform.csv.CsvToPdfBinaryStreamer;
+import org.cosinus.streamer.api.transform.excel.ExcelToCsvBinaryStreamer;
+import org.cosinus.streamer.api.transform.excel.ExcelToPdfBinaryStreamer;
 import org.cosinus.streamer.api.transform.image.ImageToImageBinaryStreamer;
-import org.cosinus.streamer.api.transform.pdf.CsvToPdfBinaryStreamer;
-import org.cosinus.streamer.api.transform.pdf.ExcelToPdfBinaryStreamer;
-import org.cosinus.streamer.api.transform.pdf.ImageToPdfBinaryStreamer;
-import org.cosinus.streamer.api.transform.pdf.WordToPdfBinaryStreamer;
+import org.cosinus.streamer.api.transform.image.ImageToPdfBinaryStreamer;
+import org.cosinus.streamer.api.transform.pdf.PdfToDocBinaryStreamer;
 import org.cosinus.streamer.api.transform.test.TransformTestApplication;
-import org.cosinus.streamer.api.transform.word.PdfToWordBinaryStreamer;
+import org.cosinus.streamer.api.transform.doc.DocToPdfBinaryStreamer;
 import org.cosinus.swing.test.boot.SpringSwingBootTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -95,13 +95,13 @@ public class TransformBinaryStreamerHandlerSpringTest {
 
     @Test
     public void testWordToPdf() {
-        assertTrue(handler.transformToBinaryStreamer(file("letter.docx"), "pdf") instanceof WordToPdfBinaryStreamer);
-        assertTrue(handler.transformToBinaryStreamer(file("letter.doc"), "pdf") instanceof WordToPdfBinaryStreamer);
+        assertTrue(handler.transformToBinaryStreamer(file("letter.docx"), "pdf") instanceof DocToPdfBinaryStreamer);
+        assertTrue(handler.transformToBinaryStreamer(file("letter.doc"), "pdf") instanceof DocToPdfBinaryStreamer);
     }
 
     @Test
     public void testPdfToWord() {
-        assertTrue(handler.transformToBinaryStreamer(file("report.pdf"), "docx") instanceof PdfToWordBinaryStreamer);
+        assertTrue(handler.transformToBinaryStreamer(file("report.pdf"), "docx") instanceof PdfToDocBinaryStreamer);
     }
 
     @Test

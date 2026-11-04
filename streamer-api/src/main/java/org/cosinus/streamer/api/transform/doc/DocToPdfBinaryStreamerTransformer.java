@@ -15,26 +15,39 @@
  *
  */
 
-package org.cosinus.streamer.api.transform.pdf;
+package org.cosinus.streamer.api.transform.doc;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.transform.BinaryStreamerTransformer;
 import org.springframework.stereotype.Component;
 
-@Component
-public class ImageToPdfBinaryStreamerTransformer implements BinaryStreamerTransformer {
+import java.util.Set;
 
-    public static final String PDF_FORMAT = "pdf";
+import static org.cosinus.streamer.api.transform.pdf.PdfFormat.PDF_FORMAT;
+
+/**
+ * {@link BinaryStreamerTransformer} from word (docx or doc) to pdf.
+ */
+@Component
+public class DocToPdfBinaryStreamerTransformer implements BinaryStreamerTransformer {
+
+    public static final String DOCX_FORMAT = "docx";
+
+    public static final String DOC_FORMAT = "doc";
+
+    public static final Set<String> WORD_FORMATS = Set.of(DOCX_FORMAT, DOC_FORMAT);
 
     @Override
-    public ImageToPdfBinaryStreamer transformStreamer(final Streamer<?> sourceStreamer,
-                                                      final String targetFormat) {
-        return new ImageToPdfBinaryStreamer(sourceStreamer.binaryStreamer());
+    public DocToPdfBinaryStreamer transformStreamer(final Streamer<?> sourceStreamer,
+                                                    final String targetFormat) {
+        return new DocToPdfBinaryStreamer(sourceStreamer.binaryStreamer());
     }
 
     @Override
     public boolean canTransform(final Streamer<?> sourceStreamer, final String targetFormat) {
-        return sourceStreamer.isImage() &&
+        return !sourceStreamer.isImage() &&
+            sourceStreamer.getType() != null &&
+            WORD_FORMATS.contains(sourceStreamer.getType().toLowerCase()) &&
             PDF_FORMAT.equalsIgnoreCase(targetFormat);
     }
 }

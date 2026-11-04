@@ -15,7 +15,7 @@
  *
  */
 
-package org.cosinus.streamer.api.transform.pdf;
+package org.cosinus.streamer.api.transform.excel;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.poi.ss.usermodel.Cell;
@@ -28,6 +28,9 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.transform.TransformBinaryStreamer;
+import org.cosinus.streamer.api.transform.pdf.PdfCell;
+import org.cosinus.streamer.api.transform.pdf.PdfTableWriter;
+import org.cosinus.streamer.api.transform.pdf.PdfTextFont;
 
 import java.io.IOException;
 import java.io.InputStream;

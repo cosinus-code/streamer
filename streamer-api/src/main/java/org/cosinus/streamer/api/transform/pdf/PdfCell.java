@@ -23,5 +23,5 @@ package org.cosinus.streamer.api.transform.pdf;
  * @param text    the text of the cell, sanitized for the font
  * @param numeric true to align the text to the right
  */
-record PdfCell(String text, boolean numeric) {
+public record PdfCell(String text, boolean numeric) {
 }

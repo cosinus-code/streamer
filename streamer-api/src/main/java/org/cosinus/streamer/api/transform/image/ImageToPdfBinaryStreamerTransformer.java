@@ -15,31 +15,26 @@
  *
  */
 
-package org.cosinus.streamer.api.transform.pdf;
+package org.cosinus.streamer.api.transform.image;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.transform.BinaryStreamerTransformer;
 import org.springframework.stereotype.Component;
 
-import static org.cosinus.streamer.api.transform.csv.CsvToExcelBinaryStreamerTransformer.CSV_FORMAT;
-import static org.cosinus.streamer.api.transform.pdf.ImageToPdfBinaryStreamerTransformer.PDF_FORMAT;
+import static org.cosinus.streamer.api.transform.pdf.PdfFormat.PDF_FORMAT;
 
-/**
- * {@link BinaryStreamerTransformer} from csv to pdf.
- */
 @Component
-public class CsvToPdfBinaryStreamerTransformer implements BinaryStreamerTransformer {
+public class ImageToPdfBinaryStreamerTransformer implements BinaryStreamerTransformer {
 
     @Override
-    public CsvToPdfBinaryStreamer transformStreamer(final Streamer<?> sourceStreamer,
-                                                    final String targetFormat) {
-        return new CsvToPdfBinaryStreamer(sourceStreamer.binaryStreamer());
+    public ImageToPdfBinaryStreamer transformStreamer(final Streamer<?> sourceStreamer,
+                                                      final String targetFormat) {
+        return new ImageToPdfBinaryStreamer(sourceStreamer.binaryStreamer());
     }
 
     @Override
     public boolean canTransform(final Streamer<?> sourceStreamer, final String targetFormat) {
-        return !sourceStreamer.isImage() &&
-            CSV_FORMAT.equalsIgnoreCase(sourceStreamer.getType()) &&
+        return sourceStreamer.isImage() &&
             PDF_FORMAT.equalsIgnoreCase(targetFormat);
     }
 }

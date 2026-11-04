@@ -15,33 +15,31 @@
  *
  */
 
-package org.cosinus.streamer.api.transform.word;
+package org.cosinus.streamer.api.transform.excel;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.transform.BinaryStreamerTransformer;
 import org.springframework.stereotype.Component;
 
-import static org.cosinus.streamer.api.transform.pdf.ImageToPdfBinaryStreamerTransformer.PDF_FORMAT;
-import static org.cosinus.streamer.api.transform.pdf.WordToPdfBinaryStreamerTransformer.DOCX_FORMAT;
+import static org.cosinus.streamer.api.transform.csv.CsvFormat.CSV_FORMAT;
+import static org.cosinus.streamer.api.transform.excel.ExcelFormat.EXCEL_FORMATS;
 
 /**
- * {@link BinaryStreamerTransformer} from pdf to word (docx).
- * <p>
- * The doc format is not a target, as it cannot be written.
+ * {@link BinaryStreamerTransformer} from excel (xlsx or xls) to csv.
  */
 @Component
-public class PdfToWordBinaryStreamerTransformer implements BinaryStreamerTransformer {
+public class ExcelToCsvBinaryStreamerTransformer implements BinaryStreamerTransformer {
 
     @Override
-    public PdfToWordBinaryStreamer transformStreamer(final Streamer<?> sourceStreamer,
-                                                     final String targetFormat) {
-        return new PdfToWordBinaryStreamer(sourceStreamer.binaryStreamer());
+    public ExcelToCsvBinaryStreamer transformStreamer(final Streamer<?> sourceStreamer,
+                                                      final String targetFormat) {
+        return new ExcelToCsvBinaryStreamer(sourceStreamer.binaryStreamer());
     }
 
     @Override
     public boolean canTransform(final Streamer<?> sourceStreamer, final String targetFormat) {
-        return !sourceStreamer.isImage() &&
-            PDF_FORMAT.equalsIgnoreCase(sourceStreamer.getType()) &&
-            DOCX_FORMAT.equalsIgnoreCase(targetFormat);
+        return sourceStreamer.getType() != null &&
+            EXCEL_FORMATS.contains(sourceStreamer.getType().toLowerCase()) &&
+            CSV_FORMAT.equalsIgnoreCase(targetFormat);
     }
 }

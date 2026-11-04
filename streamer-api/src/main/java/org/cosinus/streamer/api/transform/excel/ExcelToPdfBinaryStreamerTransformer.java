@@ -15,39 +15,32 @@
  *
  */
 
-package org.cosinus.streamer.api.transform.pdf;
+package org.cosinus.streamer.api.transform.excel;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.transform.BinaryStreamerTransformer;
 import org.springframework.stereotype.Component;
 
-import java.util.Set;
-
-import static org.cosinus.streamer.api.transform.pdf.ImageToPdfBinaryStreamerTransformer.PDF_FORMAT;
+import static org.cosinus.streamer.api.transform.excel.ExcelFormat.EXCEL_FORMATS;
+import static org.cosinus.streamer.api.transform.pdf.PdfFormat.PDF_FORMAT;
 
 /**
- * {@link BinaryStreamerTransformer} from word (docx or doc) to pdf.
+ * {@link BinaryStreamerTransformer} from excel (xlsx or xls) to pdf.
  */
 @Component
-public class WordToPdfBinaryStreamerTransformer implements BinaryStreamerTransformer {
-
-    public static final String DOCX_FORMAT = "docx";
-
-    public static final String DOC_FORMAT = "doc";
-
-    public static final Set<String> WORD_FORMATS = Set.of(DOCX_FORMAT, DOC_FORMAT);
+public class ExcelToPdfBinaryStreamerTransformer implements BinaryStreamerTransformer {
 
     @Override
-    public WordToPdfBinaryStreamer transformStreamer(final Streamer<?> sourceStreamer,
-                                                     final String targetFormat) {
-        return new WordToPdfBinaryStreamer(sourceStreamer.binaryStreamer());
+    public ExcelToPdfBinaryStreamer transformStreamer(final Streamer<?> sourceStreamer,
+                                                      final String targetFormat) {
+        return new ExcelToPdfBinaryStreamer(sourceStreamer.binaryStreamer());
     }
 
     @Override
     public boolean canTransform(final Streamer<?> sourceStreamer, final String targetFormat) {
         return !sourceStreamer.isImage() &&
             sourceStreamer.getType() != null &&
-            WORD_FORMATS.contains(sourceStreamer.getType().toLowerCase()) &&
+            EXCEL_FORMATS.contains(sourceStreamer.getType().toLowerCase()) &&
             PDF_FORMAT.equalsIgnoreCase(targetFormat);
     }
 }

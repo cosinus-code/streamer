@@ -37,9 +37,9 @@ import static org.apache.pdfbox.pdmodel.common.PDRectangle.A4;
  * The font is reduced to fit the width of the page, down to a minimum size,
  * below which the columns are narrowed and their texts truncated.
  */
-class PdfTableWriter {
+public class PdfTableWriter {
 
-    static final PDRectangle PAGE_SIZE = new PDRectangle(A4.getHeight(), A4.getWidth());
+    public static final PDRectangle PAGE_SIZE = new PDRectangle(A4.getHeight(), A4.getWidth());
 
     static final float MARGIN = 36;
 
@@ -82,7 +82,7 @@ class PdfTableWriter {
 
     private float y;
 
-    PdfTableWriter(final PDDocument document, final PdfTextFont font) {
+    public PdfTableWriter(final PDDocument document, final PdfTextFont font) {
         this.document = document;
         this.font = font;
     }
@@ -92,7 +92,7 @@ class PdfTableWriter {
      *
      * @param document the document
      */
-    static void ensurePage(final PDDocument document) {
+    public static void ensurePage(final PDDocument document) {
         if (document.getNumberOfPages() == 0) {
             document.addPage(new PDPage(PAGE_SIZE));
         }
@@ -105,7 +105,7 @@ class PdfTableWriter {
      * @param rows  the rows of the table, with the cell texts already sanitized for the font
      * @throws IOException if the table cannot be written
      */
-    void writeTable(final String title, final List<List<PdfCell>> rows) throws IOException {
+    public void writeTable(final String title, final List<List<PdfCell>> rows) throws IOException {
         this.title = font.sanitize(title);
         this.rows = rows;
         computeLayout();

@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.api.transform.word;
+package org.cosinus.streamer.api.transform.pdf;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
-import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.cosinus.streamer.api.transform.TestBinaryStreamer;
-import org.cosinus.streamer.api.transform.pdf.WordToPdfBinaryStreamerTransformer;
-import org.cosinus.streamer.api.transform.word.WordElement.Alignment;
-import org.cosinus.streamer.api.transform.word.WordElement.WordParagraph;
-import org.cosinus.streamer.api.transform.word.WordElement.WordTable;
+import org.cosinus.streamer.api.transform.doc.DocToPdfBinaryStreamerTransformer;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -50,9 +45,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
-public class PdfToWordBinaryStreamerTransformerTest {
+public class PdfToDocBinaryStreamerTransformerTest {
 
-    private final PdfToWordBinaryStreamerTransformer transformer = new PdfToWordBinaryStreamerTransformer();
+    private final PdfToDocBinaryStreamerTransformer transformer = new PdfToDocBinaryStreamerTransformer();
 
     @Test
     public void testCanTransformPdfToWord() {
@@ -106,8 +101,8 @@ public class PdfToWordBinaryStreamerTransformerTest {
 
     @Test
     public void testRoundTripFromWord() throws IOException {
-        byte[] doc = resource("/org/cosinus/streamer/api/transform/pdf/sample.doc");
-        byte[] pdf = readAll(new WordToPdfBinaryStreamerTransformer()
+        byte[] doc = resource("/org/cosinus/streamer/api/transform/doc/sample.doc");
+        byte[] pdf = readAll(new DocToPdfBinaryStreamerTransformer()
             .transformStreamer(new TestBinaryStreamer("sample.doc", doc), "pdf"));
 
         try (XWPFDocument word = transform(pdf)) {
@@ -135,40 +130,6 @@ public class PdfToWordBinaryStreamerTransformerTest {
     public void testInvalidContentFails() {
         TestBinaryStreamer source = new TestBinaryStreamer("report.pdf", "not a pdf".getBytes(UTF_8));
         assertThrows(UncheckedIOException.class, () -> readAll(transformer.transformStreamer(source, "docx")));
-    }
-
-    @Test
-    public void testDocxWriter() throws IOException {
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        DocxWordWriter.write(List.of(
-            new WordParagraph("Title", "title", 20f, Alignment.CENTER, null, 0, null, false),
-            new WordParagraph("first line\nsecond\u0001 line", "", null, Alignment.RIGHT, null, 0, null, true),
-            new WordTable(List.of(List.of("name", "qty"), List.of("apples"))),
-            WordParagraph.plain("end")), output);
-
-        try (XWPFDocument word = new XWPFDocument(new ByteArrayInputStream(output.toByteArray()))) {
-            List<XWPFParagraph> paragraphs = word.getParagraphs();
-            assertEquals(3, paragraphs.size());
-
-            assertEquals("Title", paragraphs.get(0).getText());
-            assertEquals(ParagraphAlignment.CENTER, paragraphs.get(0).getAlignment());
-            assertTrue(paragraphs.get(0).getRuns().getFirst().isBold());
-            assertEquals(20, paragraphs.get(0).getRuns().getFirst().getFontSizeAsDouble(), 0.01);
-
-            assertEquals("first line\nsecond line", paragraphs.get(1).getText());
-            assertEquals(ParagraphAlignment.RIGHT, paragraphs.get(1).getAlignment());
-            assertTrue(paragraphs.get(1).isPageBreak());
-            assertFalse(paragraphs.get(1).getRuns().getFirst().isBold());
-
-            XWPFTable table = word.getTables().getFirst();
-            assertEquals(2, table.getNumberOfRows());
-            assertEquals("name", table.getRow(0).getCell(0).getText());
-            assertEquals("qty", table.getRow(0).getCell(1).getText());
-            assertEquals("apples", table.getRow(1).getCell(0).getText());
-            assertEquals("", table.getRow(1).getCell(1).getText());
-
-            assertEquals("end", paragraphs.get(2).getText());
-        }
     }
 
     private record Line(String text, float fontSize, float y) {

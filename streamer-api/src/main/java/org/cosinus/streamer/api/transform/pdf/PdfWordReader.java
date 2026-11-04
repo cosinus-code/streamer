@@ -15,15 +15,16 @@
  *
  */
 
-package org.cosinus.streamer.api.transform.word;
+package org.cosinus.streamer.api.transform.pdf;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
-import org.cosinus.streamer.api.transform.word.WordElement.Alignment;
-import org.cosinus.streamer.api.transform.word.WordElement.WordParagraph;
+import org.cosinus.streamer.api.transform.doc.DocxElement;
+import org.cosinus.streamer.api.transform.doc.DocxElement.Alignment;
+import org.cosinus.streamer.api.transform.doc.DocxElement.DocxParagraph;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -89,12 +90,12 @@ public class PdfWordReader implements Closeable {
      * @return the paragraphs of the document
      * @throws IOException if the text cannot be read
      */
-    public List<WordElement> read() throws IOException {
+    public List<DocxElement> read() throws IOException {
         ParagraphStripper stripper = new ParagraphStripper();
         stripper.writeText(document, Writer.nullWriter());
         float bodyFontSize = stripper.bodyFontSize();
         return stripper.blocks.stream()
-            .<WordElement>map(block -> new WordParagraph(
+            .<DocxElement>map(block -> new DocxParagraph(
                 block.text(),
                 style(block, bodyFontSize),
                 block.fontSize() > 0 ? block.fontSize() : null,

@@ -15,12 +15,12 @@
  *
  */
 
-package org.cosinus.streamer.api.transform.word;
+package org.cosinus.streamer.api.transform.pdf;
 
-import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.transform.TransformBinaryStreamer;
+import org.cosinus.streamer.api.transform.doc.DocxWordWriter;
+import org.cosinus.streamer.api.transform.doc.DocxElement;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,21 +34,21 @@ import java.util.List;
  * and written as an editable word document (see {@link DocxWordWriter}).
  * A pdf without text (e.g. a scanned document) gives an empty word document.
  */
-public class PdfToWordBinaryStreamer extends TransformBinaryStreamer<List<WordElement>> {
+public class PdfToDocBinaryStreamer extends TransformBinaryStreamer<List<DocxElement>> {
 
-    public PdfToWordBinaryStreamer(final BinaryStreamer binaryStreamer) {
+    public PdfToDocBinaryStreamer(final BinaryStreamer binaryStreamer) {
         super(binaryStreamer);
     }
 
     @Override
-    protected List<WordElement> read(final InputStream input) throws IOException {
+    protected List<DocxElement> read(final InputStream input) throws IOException {
         try (PdfWordReader reader = new PdfWordReader(input.readAllBytes())) {
             return reader.read();
         }
     }
 
     @Override
-    protected void write(final List<WordElement> elements, final OutputStream output) throws IOException {
+    protected void write(final List<DocxElement> elements, final OutputStream output) throws IOException {
         new DocxWordWriter(elements).write(output);
     }
 }

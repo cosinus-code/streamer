@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.api.transform.word;
+package org.cosinus.streamer.api.transform.doc;
 
-import org.cosinus.streamer.api.transform.word.WordElement.WordParagraph;
+import org.cosinus.streamer.api.transform.doc.DocxElement.DocxParagraph;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -38,14 +38,14 @@ public class DocWordReaderTest {
 
     @Test
     public void testFontSizesAreInPoints() throws IOException {
-        try (InputStream input = getClass().getResourceAsStream("/org/cosinus/streamer/api/transform/pdf/sample.doc")) {
+        try (InputStream input = getClass().getResourceAsStream("sample.doc")) {
             assertNotNull(input);
-            List<WordElement> elements = DocWordReader.read(input);
-            WordParagraph heading = (WordParagraph) elements.getFirst();
+            List<DocxElement> elements = DocWordReader.read(input);
+            DocxParagraph heading = (DocxParagraph) elements.getFirst();
             assertEquals("Introducere", heading.text());
             assertEquals("heading1", heading.style());
             assertEquals(24, heading.fontSize(), 0.01);
-            WordParagraph body = (WordParagraph) elements.get(1);
+            DocxParagraph body = (DocxParagraph) elements.get(1);
             assertEquals(12, body.fontSize(), 0.01);
         }
     }

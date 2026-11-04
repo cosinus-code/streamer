@@ -15,14 +15,14 @@
  *
  */
 
-package org.cosinus.streamer.api.transform.word;
+package org.cosinus.streamer.api.transform.doc;
 
 import java.util.List;
 
 /**
  * An element of the body of a word document (docx or doc), with its basic layout.
  */
-public sealed interface WordElement {
+public sealed interface DocxElement {
 
     /**
      * The alignment of a paragraph.
@@ -44,21 +44,21 @@ public sealed interface WordElement {
      * @param numberFormat    the number format of the list level (e.g. bullet, decimal, lowerLetter), or null
      * @param pageBreakBefore true to start the paragraph on a new page
      */
-    record WordParagraph(String text,
+    record DocxParagraph(String text,
                          String style,
                          Float fontSize,
                          Alignment alignment,
                          String listId,
                          int listLevel,
                          String numberFormat,
-                         boolean pageBreakBefore) implements WordElement {
+                         boolean pageBreakBefore) implements DocxElement {
 
         /**
          * @param text the text
          * @return a paragraph of plain text
          */
-        static WordParagraph plain(final String text) {
-            return new WordParagraph(text, "", null, Alignment.LEFT, null, 0, null, false);
+        static DocxParagraph plain(final String text) {
+            return new DocxParagraph(text, "", null, Alignment.LEFT, null, 0, null, false);
         }
     }
 
@@ -67,6 +67,6 @@ public sealed interface WordElement {
      *
      * @param rows the rows, as cell texts with line breaks as '\n'
      */
-    record WordTable(List<List<String>> rows) implements WordElement {
+    record DocxTable(List<List<String>> rows) implements DocxElement {
     }
 }

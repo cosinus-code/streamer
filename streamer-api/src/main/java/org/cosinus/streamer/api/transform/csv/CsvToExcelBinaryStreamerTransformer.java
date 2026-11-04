@@ -21,15 +21,14 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.transform.BinaryStreamerTransformer;
 import org.springframework.stereotype.Component;
 
+import static org.cosinus.streamer.api.transform.csv.CsvFormat.CSV_FORMAT;
+import static org.cosinus.streamer.api.transform.excel.ExcelFormat.XLSX_FORMAT;
+
 /**
  * {@link BinaryStreamerTransformer} from csv to xlsx.
  */
 @Component
 public class CsvToExcelBinaryStreamerTransformer implements BinaryStreamerTransformer {
-
-    public static final String CSV_FORMAT = "csv";
-
-    public static final String XLSX_FORMAT = "xlsx";
 
     @Override
     public CsvToExcelBinaryStreamer transformStreamer(final Streamer<?> sourceStreamer,

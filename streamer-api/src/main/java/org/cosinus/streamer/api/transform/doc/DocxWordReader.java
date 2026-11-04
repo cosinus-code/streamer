@@ -15,9 +15,8 @@
  *
  */
 
-package org.cosinus.streamer.api.transform.word;
+package org.cosinus.streamer.api.transform.doc;
 
-import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFAbstractNum;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -28,9 +27,9 @@ import org.apache.poi.xwpf.usermodel.XWPFSDT;
 import org.apache.poi.xwpf.usermodel.XWPFStyle;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
-import org.cosinus.streamer.api.transform.word.WordElement.Alignment;
-import org.cosinus.streamer.api.transform.word.WordElement.WordParagraph;
-import org.cosinus.streamer.api.transform.word.WordElement.WordTable;
+import org.cosinus.streamer.api.transform.doc.DocxElement.Alignment;
+import org.cosinus.streamer.api.transform.doc.DocxElement.DocxParagraph;
+import org.cosinus.streamer.api.transform.doc.DocxElement.DocxTable;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDecimalNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTLvl;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTNum;
@@ -39,15 +38,14 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTNumFmt;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import static java.util.Optional.ofNullable;
-import static org.cosinus.streamer.api.transform.pdf.WordToPdfBinaryStreamerTransformer.DOCX_FORMAT;
-import static org.cosinus.streamer.api.transform.word.WordElement.Alignment.CENTER;
-import static org.cosinus.streamer.api.transform.word.WordElement.Alignment.LEFT;
-import static org.cosinus.streamer.api.transform.word.WordElement.Alignment.RIGHT;
+import static org.cosinus.streamer.api.transform.doc.DocToPdfBinaryStreamerTransformer.DOCX_FORMAT;
+import static org.cosinus.streamer.api.transform.doc.DocxElement.Alignment.CENTER;
+import static org.cosinus.streamer.api.transform.doc.DocxElement.Alignment.LEFT;
+import static org.cosinus.streamer.api.transform.doc.DocxElement.Alignment.RIGHT;
 
 /**
  * Reads the body of a word document in the office open xml format (docx).
@@ -59,14 +57,14 @@ public final class DocxWordReader {
      * @return the elements of the document body
      * @throws IOException if the content cannot be read
      */
-    public static List<WordElement> read(final InputStream input) throws IOException {
+    public static List<DocxElement> read(final InputStream input) throws IOException {
         try (XWPFDocument document = new XWPFDocument(input)) {
             return document.getBodyElements()
                 .stream()
-                .<WordElement>map(element -> switch (element) {
+                .<DocxElement>map(element -> switch (element) {
                     case XWPFParagraph paragraph -> readParagraph(document, paragraph);
                     case XWPFTable table -> readTable(table);
-                    case XWPFSDT contentControl -> WordParagraph.plain(contentControl.getContent().getText());
+                    case XWPFSDT contentControl -> DocxParagraph.plain(contentControl.getContent().getText());
                     default -> null;
                 })
                 .filter(Objects::nonNull)
@@ -74,10 +72,10 @@ public final class DocxWordReader {
         }
     }
 
-    private static WordParagraph readParagraph(final XWPFDocument document, final XWPFParagraph paragraph) {
+    private static DocxParagraph readParagraph(final XWPFDocument document, final XWPFParagraph paragraph) {
         BigInteger numId = paragraph.getNumID();
         int level = ofNullable(paragraph.getNumIlvl()).map(BigInteger::intValue).orElse(0);
-        return new WordParagraph(
+        return new DocxParagraph(
             paragraph.getText(),
             styleName(document, paragraph),
             fontSize(paragraph),
@@ -148,8 +146,8 @@ public final class DocxWordReader {
             .orElse(null);
     }
 
-    private static WordTable readTable(final XWPFTable table) {
-        return new WordTable(table.getRows().stream()
+    private static DocxTable readTable(final XWPFTable table) {
+        return new DocxTable(table.getRows().stream()
             .map(row -> row.getTableCells().stream()
                 .map(XWPFTableCell::getText)
                 .toList())

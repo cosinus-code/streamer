@@ -15,18 +15,17 @@
  *
  */
 
-package org.cosinus.streamer.api.transform.pdf;
+package org.cosinus.streamer.api.transform.doc;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.poi.poifs.filesystem.FileMagic;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.transform.TransformBinaryStreamer;
+import org.cosinus.streamer.api.transform.pdf.PdfTextFont;
+import org.cosinus.streamer.api.transform.pdf.PdfTextWriter;
 import org.cosinus.streamer.api.transform.pdf.PdfTextWriter.Alignment;
-import org.cosinus.streamer.api.transform.word.DocWordReader;
-import org.cosinus.streamer.api.transform.word.DocxWordReader;
-import org.cosinus.streamer.api.transform.word.WordElement;
-import org.cosinus.streamer.api.transform.word.WordElement.WordParagraph;
-import org.cosinus.streamer.api.transform.word.WordElement.WordTable;
+import org.cosinus.streamer.api.transform.doc.DocxElement.DocxParagraph;
+import org.cosinus.streamer.api.transform.doc.DocxElement.DocxTable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,7 +48,7 @@ import static org.cosinus.streamer.api.transform.pdf.PdfTextWriter.INDENT;
  * the page breaks, and the tables (as simple grids).
  * The rest of the formatting (fonts, styles, colors), the images, the headers and the footers are not kept.
  */
-public class WordToPdfBinaryStreamer extends TransformBinaryStreamer<List<WordElement>> {
+public class DocToPdfBinaryStreamer extends TransformBinaryStreamer<List<DocxElement>> {
 
     static final float TITLE_FONT_SIZE = 20;
 
@@ -61,12 +60,12 @@ public class WordToPdfBinaryStreamer extends TransformBinaryStreamer<List<WordEl
 
     private static final String BULLET = "•";
 
-    public WordToPdfBinaryStreamer(final BinaryStreamer binaryStreamer) {
+    public DocToPdfBinaryStreamer(final BinaryStreamer binaryStreamer) {
         super(binaryStreamer);
     }
 
     @Override
-    protected List<WordElement> read(final InputStream input) throws IOException {
+    protected List<DocxElement> read(final InputStream input) throws IOException {
         InputStream content = prepareToCheckMagic(input);
         FileMagic format = FileMagic.valueOf(content);
         try {
@@ -81,14 +80,14 @@ public class WordToPdfBinaryStreamer extends TransformBinaryStreamer<List<WordEl
     }
 
     @Override
-    protected void write(final List<WordElement> elements, final OutputStream output) throws IOException {
+    protected void write(final List<DocxElement> elements, final OutputStream output) throws IOException {
         try (PDDocument document = new PDDocument()) {
             try (PdfTextWriter writer = new PdfTextWriter(document, PdfTextFont.load(document))) {
                 ListNumbering numbering = new ListNumbering();
-                for (WordElement element : elements) {
+                for (DocxElement element : elements) {
                     switch (element) {
-                        case WordParagraph paragraph -> writeParagraph(paragraph, writer, numbering);
-                        case WordTable table -> writer.writeTable(table.rows());
+                        case DocxParagraph paragraph -> writeParagraph(paragraph, writer, numbering);
+                        case DocxTable table -> writer.writeTable(table.rows());
                     }
                 }
             }
@@ -96,7 +95,7 @@ public class WordToPdfBinaryStreamer extends TransformBinaryStreamer<List<WordEl
         }
     }
 
-    private void writeParagraph(final WordParagraph paragraph,
+    private void writeParagraph(final DocxParagraph paragraph,
                                 final PdfTextWriter writer,
                                 final ListNumbering numbering) throws IOException {
         if (paragraph.pageBreakBefore()) {
@@ -109,7 +108,7 @@ public class WordToPdfBinaryStreamer extends TransformBinaryStreamer<List<WordEl
         writer.writeParagraph(paragraph.text(), fontSize(paragraph), indent, alignment(paragraph), prefix);
     }
 
-    private Alignment alignment(final WordParagraph paragraph) {
+    private Alignment alignment(final DocxParagraph paragraph) {
         return switch (paragraph.alignment()) {
             case CENTER -> Alignment.CENTER;
             case RIGHT -> Alignment.RIGHT;
@@ -120,7 +119,7 @@ public class WordToPdfBinaryStreamer extends TransformBinaryStreamer<List<WordEl
     /**
      * The font size is given by the heading style of the paragraph, or by the largest size set in its text.
      */
-    static float fontSize(final WordParagraph paragraph) {
+    static float fontSize(final DocxParagraph paragraph) {
         String style = paragraph.style();
         if ("title".equals(style)) {
             return TITLE_FONT_SIZE;
