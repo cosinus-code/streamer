@@ -29,6 +29,9 @@ import org.cosinus.streamer.api.transform.image.ImageToImageBinaryStreamerTransf
 import org.cosinus.streamer.api.transform.image.ImageToPdfBinaryStreamerTransformer;
 import org.cosinus.streamer.api.transform.pdf.PdfToDocBinaryStreamerTransformer;
 import org.cosinus.streamer.api.transform.pdf.PdfToImageBinaryStreamerTransformer;
+import org.cosinus.streamer.api.transform.txt.TxtToDocBinaryStreamerTransformer;
+import org.cosinus.streamer.api.transform.txt.TxtToImageBinaryStreamerTransformer;
+import org.cosinus.streamer.api.transform.txt.TxtToPdfBinaryStreamerTransformer;
 import org.cosinus.swing.boot.SpringSwingBootApplication;
 import org.cosinus.swing.boot.SwingApplicationFrame;
 import org.springframework.context.annotation.Import;
@@ -53,7 +56,10 @@ import org.springframework.context.annotation.Import;
     PdfToDocBinaryStreamerTransformer.class,
     PdfToImageBinaryStreamerTransformer.class,
     HtmlToPdfBinaryStreamerTransformer.class,
-    CsvToDocBinaryStreamerTransformer.class
+    CsvToDocBinaryStreamerTransformer.class,
+    TxtToDocBinaryStreamerTransformer.class,
+    TxtToPdfBinaryStreamerTransformer.class,
+    TxtToImageBinaryStreamerTransformer.class
 })
 public class TransformTestApplication extends SwingApplicationFrame {
 

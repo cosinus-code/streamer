@@ -30,13 +30,14 @@ import java.util.List;
 import java.util.Map;
 
 import static java.text.Normalizer.Form.NFD;
+import static org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName.COURIER;
 import static org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName.HELVETICA;
 
 /**
  * Font used to write text in a pdf document.
  * <p>
  * A unicode TrueType font of the system is embedded when available, so that diacritics (e.g. ș, ț) are rendered.
- * Otherwise, the standard Helvetica font is used,
+ * Otherwise, the standard Helvetica (or Courier, for a monospaced font) is used,
  * and the characters it cannot encode are replaced by their base letter (e.g. ș becomes s), or by '?'.
  */
 public class PdfTextFont {
@@ -51,6 +52,17 @@ public class PdfTextFont {
         "C:/Windows/Fonts/arial.ttf",
         "/System/Library/Fonts/Supplemental/Arial.ttf",
         "/Library/Fonts/Arial Unicode.ttf");
+
+    private static final List<String> MONOSPACE_FONT_FILES = List.of(
+        "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf",
+        "/usr/share/fonts/dejavu/DejaVuSansMono.ttf",
+        "/usr/share/fonts/TTF/DejaVuSansMono.ttf",
+        "/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf",
+        "/usr/share/fonts/liberation/LiberationMono-Regular.ttf",
+        "/usr/share/fonts/truetype/noto/NotoSansMono-Regular.ttf",
+        "C:/Windows/Fonts/cour.ttf",
+        "/System/Library/Fonts/Supplemental/Courier New.ttf",
+        "/System/Library/Fonts/Menlo.ttc");
 
     private static final char REPLACEMENT = '?';
 
@@ -69,7 +81,23 @@ public class PdfTextFont {
      * @return the font
      */
     public static PdfTextFont load(final PDDocument document) {
-        for (String fontFile : UNICODE_FONT_FILES) {
+        return load(document, UNICODE_FONT_FILES, helvetica());
+    }
+
+    /**
+     * Load the monospaced font to use in a document, in which all the characters have the same width.
+     *
+     * @param document the document to embed the font into
+     * @return the font
+     */
+    public static PdfTextFont loadMonospace(final PDDocument document) {
+        return load(document, MONOSPACE_FONT_FILES, courier());
+    }
+
+    private static PdfTextFont load(final PDDocument document,
+                                    final List<String> fontFiles,
+                                    final PdfTextFont fallback) {
+        for (String fontFile : fontFiles) {
             File file = new File(fontFile);
             if (file.isFile()) {
                 try {
@@ -79,7 +107,7 @@ public class PdfTextFont {
                 }
             }
         }
-        return helvetica();
+        return fallback;
     }
 
     /**
@@ -87,6 +115,13 @@ public class PdfTextFont {
      */
     static PdfTextFont helvetica() {
         return new PdfTextFont(new PDType1Font(HELVETICA));
+    }
+
+    /**
+     * @return the fallback monospaced font, without diacritics support
+     */
+    static PdfTextFont courier() {
+        return new PdfTextFont(new PDType1Font(COURIER));
     }
 
     public PDFont getFont() {
