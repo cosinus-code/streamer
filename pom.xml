@@ -63,6 +63,11 @@
                 <version>${spring-cloud.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.cosinuscode.swing</groupId>
+                <artifactId>spring-swing-image</artifactId>
+                <version>${spring-swing.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.cosinuscode.streamer</groupId>
                 <artifactId>streamer-api</artifactId>
                 <version>${project.version}</version>
