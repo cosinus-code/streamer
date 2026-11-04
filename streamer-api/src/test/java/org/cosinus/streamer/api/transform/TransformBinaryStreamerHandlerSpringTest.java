@@ -23,6 +23,7 @@ import org.cosinus.streamer.api.transform.image.ImageToImageBinaryStreamer;
 import org.cosinus.streamer.api.transform.pdf.CsvToPdfBinaryStreamer;
 import org.cosinus.streamer.api.transform.pdf.ExcelToPdfBinaryStreamer;
 import org.cosinus.streamer.api.transform.pdf.ImageToPdfBinaryStreamer;
+import org.cosinus.streamer.api.transform.pdf.WordToPdfBinaryStreamer;
 import org.cosinus.streamer.api.transform.test.TransformTestApplication;
 import org.cosinus.swing.test.boot.SpringSwingBootTest;
 import org.junit.Test;
@@ -54,7 +55,7 @@ public class TransformBinaryStreamerHandlerSpringTest {
 
     @Test
     public void testAllTransformersAreLoaded() {
-        assertEquals(6, transformers.size());
+        assertEquals(7, transformers.size());
     }
 
     @Test
@@ -89,6 +90,12 @@ public class TransformBinaryStreamerHandlerSpringTest {
     @Test
     public void testCsvToPdf() {
         assertTrue(handler.transformToBinaryStreamer(file("data.csv"), "pdf") instanceof CsvToPdfBinaryStreamer);
+    }
+
+    @Test
+    public void testWordToPdf() {
+        assertTrue(handler.transformToBinaryStreamer(file("letter.docx"), "pdf") instanceof WordToPdfBinaryStreamer);
+        assertTrue(handler.transformToBinaryStreamer(file("letter.doc"), "pdf") instanceof WordToPdfBinaryStreamer);
     }
 
     @Test
