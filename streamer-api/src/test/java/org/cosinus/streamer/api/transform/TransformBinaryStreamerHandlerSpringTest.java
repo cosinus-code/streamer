@@ -19,6 +19,7 @@ package org.cosinus.streamer.api.transform;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.transform.csv.CsvToDocBinaryStreamer;
 import org.cosinus.streamer.api.transform.csv.CsvToExcelBinaryStreamer;
+import org.cosinus.streamer.api.transform.doc.DocToHtmlBinaryStreamer;
 import org.cosinus.streamer.api.transform.txt.TxtToHtmlBinaryStreamer;
 import org.cosinus.streamer.api.transform.csv.CsvToHtmlBinaryStreamer;
 import org.cosinus.streamer.api.transform.csv.CsvToPdfBinaryStreamer;
@@ -71,7 +72,7 @@ public class TransformBinaryStreamerHandlerSpringTest {
 
     @Test
     public void testAllTransformersAreLoaded() {
-        assertEquals(22, transformers.size());
+        assertEquals(23, transformers.size());
     }
 
     @Test
@@ -180,6 +181,13 @@ public class TransformBinaryStreamerHandlerSpringTest {
         assertTrue(handler.transformToBinaryStreamer(file("letter.docx"), "txt") instanceof DocToTxtBinaryStreamer);
         assertTrue(handler.transformToBinaryStreamer(file("letter.doc"), "txt") instanceof DocToTxtBinaryStreamer);
         assertTrue(handler.transformToBinaryStreamer(file("letter.rtf"), "txt") instanceof DocToTxtBinaryStreamer);
+    }
+
+    @Test
+    public void testWordToHtml() {
+        assertTrue(handler.transformToBinaryStreamer(file("letter.docx"), "html") instanceof DocToHtmlBinaryStreamer);
+        assertTrue(handler.transformToBinaryStreamer(file("letter.doc"), "htm") instanceof DocToHtmlBinaryStreamer);
+        assertTrue(handler.transformToBinaryStreamer(file("letter.rtf"), "html") instanceof DocToHtmlBinaryStreamer);
     }
 
     @Test
