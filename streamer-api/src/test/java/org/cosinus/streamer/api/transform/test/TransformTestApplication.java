@@ -19,14 +19,15 @@ package org.cosinus.streamer.api.transform.test;
 import org.cosinus.streamer.api.transform.TransformBinaryStreamerHandler;
 import org.cosinus.streamer.api.transform.csv.CsvToExcelBinaryStreamerTransformer;
 import org.cosinus.streamer.api.transform.csv.CsvToPdfBinaryStreamerTransformer;
+import org.cosinus.streamer.api.transform.doc.DocToImageBinaryStreamerTransformer;
+import org.cosinus.streamer.api.transform.doc.DocToPdfBinaryStreamerTransformer;
 import org.cosinus.streamer.api.transform.excel.ExcelToCsvBinaryStreamerTransformer;
 import org.cosinus.streamer.api.transform.excel.ExcelToPdfBinaryStreamerTransformer;
+import org.cosinus.streamer.api.transform.html.HtmlToPdfBinaryStreamerTransformer;
 import org.cosinus.streamer.api.transform.image.ImageToImageBinaryStreamerTransformer;
 import org.cosinus.streamer.api.transform.image.ImageToPdfBinaryStreamerTransformer;
 import org.cosinus.streamer.api.transform.pdf.PdfToDocBinaryStreamerTransformer;
 import org.cosinus.streamer.api.transform.pdf.PdfToImageBinaryStreamerTransformer;
-import org.cosinus.streamer.api.transform.doc.DocToImageBinaryStreamerTransformer;
-import org.cosinus.streamer.api.transform.doc.DocToPdfBinaryStreamerTransformer;
 import org.cosinus.swing.boot.SpringSwingBootApplication;
 import org.cosinus.swing.boot.SwingApplicationFrame;
 import org.springframework.context.annotation.Import;
@@ -49,7 +50,8 @@ import org.springframework.context.annotation.Import;
     DocToPdfBinaryStreamerTransformer.class,
     DocToImageBinaryStreamerTransformer.class,
     PdfToDocBinaryStreamerTransformer.class,
-    PdfToImageBinaryStreamerTransformer.class
+    PdfToImageBinaryStreamerTransformer.class,
+    HtmlToPdfBinaryStreamerTransformer.class
 })
 public class TransformTestApplication extends SwingApplicationFrame {
 

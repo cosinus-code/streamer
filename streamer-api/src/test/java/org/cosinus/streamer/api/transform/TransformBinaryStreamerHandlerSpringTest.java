@@ -19,15 +19,16 @@ package org.cosinus.streamer.api.transform;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.transform.csv.CsvToExcelBinaryStreamer;
 import org.cosinus.streamer.api.transform.csv.CsvToPdfBinaryStreamer;
+import org.cosinus.streamer.api.transform.doc.DocToImageBinaryStreamer;
+import org.cosinus.streamer.api.transform.doc.DocToPdfBinaryStreamer;
 import org.cosinus.streamer.api.transform.excel.ExcelToCsvBinaryStreamer;
 import org.cosinus.streamer.api.transform.excel.ExcelToPdfBinaryStreamer;
+import org.cosinus.streamer.api.transform.html.HtmlToPdfBinaryStreamer;
 import org.cosinus.streamer.api.transform.image.ImageToImageBinaryStreamer;
 import org.cosinus.streamer.api.transform.image.ImageToPdfBinaryStreamer;
 import org.cosinus.streamer.api.transform.pdf.PdfToDocBinaryStreamer;
 import org.cosinus.streamer.api.transform.pdf.PdfToImageBinaryStreamer;
 import org.cosinus.streamer.api.transform.test.TransformTestApplication;
-import org.cosinus.streamer.api.transform.doc.DocToImageBinaryStreamer;
-import org.cosinus.streamer.api.transform.doc.DocToPdfBinaryStreamer;
 import org.cosinus.swing.test.boot.SpringSwingBootTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,7 +50,7 @@ import static org.junit.Assert.assertTrue;
 public class TransformBinaryStreamerHandlerSpringTest {
 
     private static final List<String> FORMATS =
-        List.of("csv", "xlsx", "xls", "doc", "docx", "rtf", "pdf", "png", "jpg", "bmp", "txt");
+        List.of("csv", "xlsx", "xls", "doc", "docx", "rtf", "html", "htm", "pdf", "png", "jpg", "bmp", "txt");
 
     @Autowired
     private TransformBinaryStreamerHandler handler;
@@ -59,7 +60,7 @@ public class TransformBinaryStreamerHandlerSpringTest {
 
     @Test
     public void testAllTransformersAreLoaded() {
-        assertEquals(10, transformers.size());
+        assertEquals(11, transformers.size());
     }
 
     @Test
@@ -119,6 +120,12 @@ public class TransformBinaryStreamerHandlerSpringTest {
         assertTrue(handler.transformToBinaryStreamer(file("letter.docx"), "png") instanceof DocToImageBinaryStreamer);
         assertTrue(handler.transformToBinaryStreamer(file("letter.doc"), "jpg") instanceof DocToImageBinaryStreamer);
         assertTrue(handler.transformToBinaryStreamer(file("letter.rtf"), "png") instanceof DocToImageBinaryStreamer);
+    }
+
+    @Test
+    public void testHtmlToPdf() {
+        assertTrue(handler.transformToBinaryStreamer(file("page.html"), "pdf") instanceof HtmlToPdfBinaryStreamer);
+        assertTrue(handler.transformToBinaryStreamer(file("page.htm"), "pdf") instanceof HtmlToPdfBinaryStreamer);
     }
 
     @Test

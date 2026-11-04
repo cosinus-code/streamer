@@ -227,6 +227,7 @@ public class DocToPdfBinaryStreamerTransformerTest {
         assertTransformFails("letter.docx", "not a word document".getBytes(UTF_8));
         assertTransformFails("letter.doc", "not a word document".getBytes(UTF_8));
         assertTransformFails("letter.rtf", "not a word document".getBytes(UTF_8));
+        assertTransformFails("letter.doc", new byte[0]);
 
         ByteArrayOutputStream excel = new ByteArrayOutputStream();
         try (HSSFWorkbook workbook = new HSSFWorkbook()) {

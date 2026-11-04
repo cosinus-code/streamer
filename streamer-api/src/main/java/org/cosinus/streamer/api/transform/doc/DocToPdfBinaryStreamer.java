@@ -18,6 +18,7 @@
 package org.cosinus.streamer.api.transform.doc;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.poi.EmptyFileException;
 import org.apache.poi.poifs.filesystem.FileMagic;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.transform.TransformBinaryStreamer;
@@ -72,17 +73,28 @@ public class DocToPdfBinaryStreamer extends TransformBinaryStreamer<List<DocxEle
     @Override
     protected InputStream transform(final InputStream input) throws IOException {
         InputStream content = prepareToCheckMagic(input);
-        if (FileMagic.valueOf(content) == FileMagic.PDF) {
+        if (isPdf(content)) {
             return new ByteArrayInputStream(content.readAllBytes());
         }
         return super.transform(content);
     }
 
+    /**
+     * @return true if the content is pdf, false otherwise (including an empty content)
+     */
+    private boolean isPdf(final InputStream content) throws IOException {
+        try {
+            return FileMagic.valueOf(content) == FileMagic.PDF;
+        } catch (EmptyFileException e) {
+            return false;
+        }
+    }
+
     @Override
     protected List<DocxElement> read(final InputStream input) throws IOException {
         InputStream content = prepareToCheckMagic(input);
-        FileMagic format = FileMagic.valueOf(content);
         try {
+            FileMagic format = FileMagic.valueOf(content);
             return switch (format) {
                 case OOXML -> DocxWordReader.read(content);
                 case OLE2 -> DocWordReader.read(content);
