@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
 
 import static java.util.Optional.ofNullable;
 import static java.util.stream.IntStream.range;
+import static org.cosinus.streamer.api.transform.pdf.WordToPdfBinaryStreamerTransformer.DOC_FORMAT;
 import static org.cosinus.streamer.api.transform.word.WordElement.Alignment.CENTER;
 import static org.cosinus.streamer.api.transform.word.WordElement.Alignment.LEFT;
 import static org.cosinus.streamer.api.transform.word.WordElement.Alignment.RIGHT;
@@ -106,7 +107,7 @@ public final class DocWordReader {
             styleName(document, paragraph),
             fontSize(paragraph),
             alignment(paragraph),
-            inList ? "doc:" + paragraph.getIlfo() : null,
+            inList ? DOC_FORMAT + ":" + paragraph.getIlfo() : null,
             level,
             inList ? numberFormat(paragraph, level) : null,
             pageBreakBefore);
@@ -133,13 +134,16 @@ public final class DocWordReader {
             .orElse("");
     }
 
+    /**
+     * The font sizes of word 97-2003 are in half points.
+     */
     private static Float fontSize(final Paragraph paragraph) {
         return range(0, paragraph.numCharacterRuns())
             .mapToObj(paragraph::getCharacterRun)
             .map(CharacterRun::getFontSizeAsDouble)
-            .filter(size -> size != null && size > 0)
+            .filter(halfPoints -> halfPoints != null && halfPoints > 0)
             .max(Double::compare)
-            .map(Double::floatValue)
+            .map(halfPoints -> (float) (halfPoints / 2))
             .orElse(null);
     }
 

@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static java.util.Optional.ofNullable;
+import static org.cosinus.streamer.api.transform.pdf.WordToPdfBinaryStreamerTransformer.DOCX_FORMAT;
 import static org.cosinus.streamer.api.transform.word.WordElement.Alignment.CENTER;
 import static org.cosinus.streamer.api.transform.word.WordElement.Alignment.LEFT;
 import static org.cosinus.streamer.api.transform.word.WordElement.Alignment.RIGHT;
@@ -60,18 +61,16 @@ public final class DocxWordReader {
      */
     public static List<WordElement> read(final InputStream input) throws IOException {
         try (XWPFDocument document = new XWPFDocument(input)) {
-            List<WordElement> elements = new ArrayList<>();
-            for (IBodyElement element : document.getBodyElements()) {
-                switch (element) {
-                    case XWPFParagraph paragraph -> elements.add(readParagraph(document, paragraph));
-                    case XWPFTable table -> elements.add(readTable(table));
-                    case XWPFSDT contentControl -> elements.add(WordParagraph.plain(contentControl.getContent().getText()));
-                    default -> {
-                        // nothing to write
-                    }
-                }
-            }
-            return elements;
+            return document.getBodyElements()
+                .stream()
+                .<WordElement>map(element -> switch (element) {
+                    case XWPFParagraph paragraph -> readParagraph(document, paragraph);
+                    case XWPFTable table -> readTable(table);
+                    case XWPFSDT contentControl -> WordParagraph.plain(contentControl.getContent().getText());
+                    default -> null;
+                })
+                .filter(Objects::nonNull)
+                .toList();
         }
     }
 
@@ -83,7 +82,7 @@ public final class DocxWordReader {
             styleName(document, paragraph),
             fontSize(paragraph),
             alignment(paragraph),
-            numId != null ? "docx:" + numId : null,
+            numId != null ? DOCX_FORMAT + ":" + numId : null,
             level,
             numId != null ? numberFormat(document, numId, level) : null,
             paragraph.isPageBreak());

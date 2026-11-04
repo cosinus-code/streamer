@@ -16,9 +16,15 @@
 
 package org.cosinus.streamer.api.transform.word;
 
+import org.cosinus.streamer.api.transform.word.WordElement.WordParagraph;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class DocWordReaderTest {
 
@@ -28,5 +34,19 @@ public class DocWordReaderTest {
         assertEquals("cell", DocWordReader.clean("cell\u0007"));
         assertEquals("Page 3 of the text", DocWordReader.clean("Page \u0013 PAGE \u00143\u0015 of the text\u0001\r"));
         assertEquals("before\fafter", DocWordReader.clean("before\fafter\r"));
+    }
+
+    @Test
+    public void testFontSizesAreInPoints() throws IOException {
+        try (InputStream input = getClass().getResourceAsStream("/org/cosinus/streamer/api/transform/pdf/sample.doc")) {
+            assertNotNull(input);
+            List<WordElement> elements = DocWordReader.read(input);
+            WordParagraph heading = (WordParagraph) elements.getFirst();
+            assertEquals("Introducere", heading.text());
+            assertEquals("heading1", heading.style());
+            assertEquals(24, heading.fontSize(), 0.01);
+            WordParagraph body = (WordParagraph) elements.get(1);
+            assertEquals(12, body.fontSize(), 0.01);
+        }
     }
 }

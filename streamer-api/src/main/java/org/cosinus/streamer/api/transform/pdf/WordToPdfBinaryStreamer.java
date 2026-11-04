@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.Math.clamp;
+import static org.apache.poi.poifs.filesystem.FileMagic.prepareToCheckMagic;
 import static org.cosinus.streamer.api.transform.pdf.PdfTextWriter.FONT_SIZE;
 import static org.cosinus.streamer.api.transform.pdf.PdfTextWriter.INDENT;
 
@@ -66,7 +67,7 @@ public class WordToPdfBinaryStreamer extends TransformBinaryStreamer<List<WordEl
 
     @Override
     protected List<WordElement> read(final InputStream input) throws IOException {
-        InputStream content = FileMagic.prepareToCheckMagic(input);
+        InputStream content = prepareToCheckMagic(input);
         FileMagic format = FileMagic.valueOf(content);
         try {
             return switch (format) {
