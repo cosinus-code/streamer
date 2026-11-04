@@ -101,14 +101,6 @@ public class CsvToHtmlBinaryStreamerTransformerTest {
         assertFalse(html.contains("<table>"));
     }
 
-    @Test
-    public void testTitle() {
-        assertEquals("data", CsvToHtmlBinaryStreamer.title("data.csv"));
-        assertEquals("data.2026", CsvToHtmlBinaryStreamer.title("data.2026.csv"));
-        assertEquals(".csv", CsvToHtmlBinaryStreamer.title(".csv"));
-        assertEquals("", CsvToHtmlBinaryStreamer.title(null));
-    }
-
     private String transform(String name, String csv) {
         byte[] html = readAll(transformer.transformStreamer(new TestBinaryStreamer(name, csv.getBytes(UTF_8)), "html"));
         return new String(html, UTF_8);

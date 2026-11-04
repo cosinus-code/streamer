@@ -18,6 +18,7 @@ package org.cosinus.streamer.api.transform.csv;
 
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.transform.TransformBinaryStreamer;
+import org.cosinus.streamer.api.transform.html.HtmlPage;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +28,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.cosinus.streamer.api.transform.html.HtmlPage.page;
+import static org.cosinus.streamer.api.transform.html.HtmlPage.title;
 
 /**
  * {@link TransformBinaryStreamer} that converts csv content into a html page, as a table.
@@ -35,8 +38,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * and each csv row is written as a table row, with as many cells as the longest row,
  * so that the table stays a regular grid.
  * The line breaks of a value are written as line breaks of its cell.
- * The page is a standalone html5 document in utf-8, titled with the name of the csv file (without extension),
- * with a simple style for the table borders.
+ * The page is a standalone html5 document in utf-8 (see {@link HtmlPage}),
+ * titled with the name of the csv file (without extension), with a simple style for the table borders.
  */
 public class CsvToHtmlBinaryStreamer extends TransformBinaryStreamer<Cvs> {
 
@@ -60,55 +63,25 @@ public class CsvToHtmlBinaryStreamer extends TransformBinaryStreamer<Cvs> {
     }
 
     static String html(final List<List<String>> rows, final String title) {
-        StringBuilder html = new StringBuilder()
-            .append("<!DOCTYPE html>\n")
-            .append("<html>\n<head>\n<meta charset=\"utf-8\">\n")
-            .append("<title>").append(escape(title)).append("</title>\n")
-            .append("<style>").append(STYLE).append("</style>\n")
-            .append("</head>\n<body>\n");
+        StringBuilder body = new StringBuilder();
         if (!rows.isEmpty()) {
             int columns = rows.stream().mapToInt(List::size).max().orElse(0);
-            html.append("<table>\n");
+            body.append("<table>\n");
             for (List<String> row : rows) {
-                html.append("<tr>");
+                body.append("<tr>");
                 for (int column = 0; column < columns; column++) {
-                    html.append("<td>")
+                    body.append("<td>")
                         .append(column < row.size() ? cell(row.get(column)) : "")
                         .append("</td>");
                 }
-                html.append("</tr>\n");
+                body.append("</tr>\n");
             }
-            html.append("</table>\n");
+            body.append("</table>\n");
         }
-        return html.append("</body>\n</html>\n").toString();
-    }
-
-    /**
-     * @return the name of the file without its extension, or an empty title if there is no name
-     */
-    static String title(final String name) {
-        if (name == null) {
-            return "";
-        }
-        int extension = name.lastIndexOf('.');
-        return extension > 0 ? name.substring(0, extension) : name;
+        return page(title, STYLE, body.toString());
     }
 
     private static String cell(final String value) {
-        return String.join("<br>", Arrays.stream(LINE_BREAK.split(value, -1)).map(CsvToHtmlBinaryStreamer::escape).toList());
-    }
-
-    static String escape(final String text) {
-        StringBuilder escaped = new StringBuilder(text.length());
-        for (char character : text.toCharArray()) {
-            switch (character) {
-                case '&' -> escaped.append("&amp;");
-                case '<' -> escaped.append("&lt;");
-                case '>' -> escaped.append("&gt;");
-                case '"' -> escaped.append("&quot;");
-                default -> escaped.append(character);
-            }
-        }
-        return escaped.toString();
+        return String.join("<br>", Arrays.stream(LINE_BREAK.split(value, -1)).map(HtmlPage::escape).toList());
     }
 }
