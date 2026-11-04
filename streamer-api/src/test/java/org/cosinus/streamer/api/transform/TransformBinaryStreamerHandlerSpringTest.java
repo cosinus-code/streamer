@@ -35,6 +35,7 @@ import org.cosinus.streamer.api.transform.html.HtmlToImageBinaryStreamer;
 import org.cosinus.streamer.api.transform.html.HtmlToTxtBinaryStreamer;
 import org.cosinus.streamer.api.transform.image.ImageToImageBinaryStreamer;
 import org.cosinus.streamer.api.transform.image.ImageToPdfBinaryStreamer;
+import org.cosinus.streamer.api.transform.image.ImageToSvgBinaryStreamer;
 import org.cosinus.streamer.api.transform.pdf.PdfToDocBinaryStreamer;
 import org.cosinus.streamer.api.transform.pdf.PdfToImageBinaryStreamer;
 import org.cosinus.streamer.api.transform.pdf.PdfToSvgBinaryStreamer;
@@ -79,7 +80,7 @@ public class TransformBinaryStreamerHandlerSpringTest {
 
     @Test
     public void testAllTransformersAreLoaded() {
-        assertEquals(28, transformers.size());
+        assertEquals(29, transformers.size());
     }
 
     @Test
@@ -195,6 +196,12 @@ public class TransformBinaryStreamerHandlerSpringTest {
         assertTrue(handler.transformToBinaryStreamer(file("letter.docx"), "html") instanceof DocToHtmlBinaryStreamer);
         assertTrue(handler.transformToBinaryStreamer(file("letter.doc"), "htm") instanceof DocToHtmlBinaryStreamer);
         assertTrue(handler.transformToBinaryStreamer(file("letter.rtf"), "html") instanceof DocToHtmlBinaryStreamer);
+    }
+
+    @Test
+    public void testImageToSvg() {
+        assertTrue(handler.transformToBinaryStreamer(image("photo.png", new byte[0]), "svg") instanceof ImageToSvgBinaryStreamer);
+        assertTrue(handler.transformToBinaryStreamer(image("photo.jpg", new byte[0]), "svg") instanceof ImageToSvgBinaryStreamer);
     }
 
     @Test
