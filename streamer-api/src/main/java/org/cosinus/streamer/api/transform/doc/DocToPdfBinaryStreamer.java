@@ -18,8 +18,6 @@
 package org.cosinus.streamer.api.transform.doc;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.poi.EmptyFileException;
-import org.apache.poi.poifs.filesystem.FileMagic;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.transform.TransformBinaryStreamer;
 import org.cosinus.streamer.api.transform.pdf.PdfTextFont;
@@ -44,7 +42,7 @@ import static org.cosinus.streamer.api.transform.pdf.PdfTextWriter.INDENT;
 /**
  * {@link TransformBinaryStreamer} that converts word content (docx, doc or rtf) into pdf content.
  * <p>
- * The format is detected from the content: office open xml (docx), word 97-2003 (doc) or rich text (rtf).
+ * The format is detected from the content (see {@link WordReader}): office open xml (docx), word 97-2003 (doc) or rich text (rtf).
  * A content which is already pdf, whatever the file extension, is kept as it is.
  * The text of the document is written in order (see {@link PdfTextWriter}), keeping its basic layout:
  * the headings and the font sizes, the paragraph alignment, the bullets and numbers of the lists,
@@ -73,37 +71,15 @@ public class DocToPdfBinaryStreamer extends TransformBinaryStreamer<List<DocxEle
     @Override
     protected InputStream transform(final InputStream input) throws IOException {
         InputStream content = prepareToCheckMagic(input);
-        if (isPdf(content)) {
+        if (WordReader.isPdf(content)) {
             return new ByteArrayInputStream(content.readAllBytes());
         }
         return super.transform(content);
     }
 
-    /**
-     * @return true if the content is pdf, false otherwise (including an empty content)
-     */
-    private boolean isPdf(final InputStream content) throws IOException {
-        try {
-            return FileMagic.valueOf(content) == FileMagic.PDF;
-        } catch (EmptyFileException e) {
-            return false;
-        }
-    }
-
     @Override
     protected List<DocxElement> read(final InputStream input) throws IOException {
-        InputStream content = prepareToCheckMagic(input);
-        try {
-            FileMagic format = FileMagic.valueOf(content);
-            return switch (format) {
-                case OOXML -> DocxWordReader.read(content);
-                case OLE2 -> DocWordReader.read(content);
-                case RTF -> RtfWordReader.read(content);
-                default -> throw new IOException("Unsupported word document format: " + format);
-            };
-        } catch (RuntimeException e) {
-            throw new IOException("Unreadable word document", e);
-        }
+        return WordReader.read(input);
     }
 
     @Override

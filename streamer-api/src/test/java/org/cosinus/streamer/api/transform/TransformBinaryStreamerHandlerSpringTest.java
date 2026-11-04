@@ -22,6 +22,7 @@ import org.cosinus.streamer.api.transform.csv.CsvToExcelBinaryStreamer;
 import org.cosinus.streamer.api.transform.csv.CsvToPdfBinaryStreamer;
 import org.cosinus.streamer.api.transform.doc.DocToImageBinaryStreamer;
 import org.cosinus.streamer.api.transform.doc.DocToPdfBinaryStreamer;
+import org.cosinus.streamer.api.transform.doc.DocToTxtBinaryStreamer;
 import org.cosinus.streamer.api.transform.excel.ExcelToCsvBinaryStreamer;
 import org.cosinus.streamer.api.transform.excel.ExcelToPdfBinaryStreamer;
 import org.cosinus.streamer.api.transform.html.HtmlToPdfBinaryStreamer;
@@ -29,6 +30,7 @@ import org.cosinus.streamer.api.transform.image.ImageToImageBinaryStreamer;
 import org.cosinus.streamer.api.transform.image.ImageToPdfBinaryStreamer;
 import org.cosinus.streamer.api.transform.pdf.PdfToDocBinaryStreamer;
 import org.cosinus.streamer.api.transform.pdf.PdfToImageBinaryStreamer;
+import org.cosinus.streamer.api.transform.pdf.PdfToTxtBinaryStreamer;
 import org.cosinus.streamer.api.transform.test.TransformTestApplication;
 import org.cosinus.streamer.api.transform.txt.TxtToDocBinaryStreamer;
 import org.cosinus.streamer.api.transform.txt.TxtToImageBinaryStreamer;
@@ -64,7 +66,7 @@ public class TransformBinaryStreamerHandlerSpringTest {
 
     @Test
     public void testAllTransformersAreLoaded() {
-        assertEquals(15, transformers.size());
+        assertEquals(17, transformers.size());
     }
 
     @Test
@@ -154,6 +156,18 @@ public class TransformBinaryStreamerHandlerSpringTest {
     public void testTxtToImage() {
         assertTrue(handler.transformToBinaryStreamer(file("notes.txt"), "png") instanceof TxtToImageBinaryStreamer);
         assertTrue(handler.transformToBinaryStreamer(file("notes.txt"), "jpg") instanceof TxtToImageBinaryStreamer);
+    }
+
+    @Test
+    public void testWordToTxt() {
+        assertTrue(handler.transformToBinaryStreamer(file("letter.docx"), "txt") instanceof DocToTxtBinaryStreamer);
+        assertTrue(handler.transformToBinaryStreamer(file("letter.doc"), "txt") instanceof DocToTxtBinaryStreamer);
+        assertTrue(handler.transformToBinaryStreamer(file("letter.rtf"), "txt") instanceof DocToTxtBinaryStreamer);
+    }
+
+    @Test
+    public void testPdfToTxt() {
+        assertTrue(handler.transformToBinaryStreamer(file("report.pdf"), "txt") instanceof PdfToTxtBinaryStreamer);
     }
 
     @Test
