@@ -13,7 +13,8 @@
     {
       "id": "targetType",
       "label": "target-type",
-      "type": "text"
+      "type": "combobox",
+      "editable": true
     }
   ],
   "buttons": [

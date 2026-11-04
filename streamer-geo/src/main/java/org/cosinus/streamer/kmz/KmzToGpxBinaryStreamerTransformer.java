@@ -23,15 +23,29 @@ import org.cosinus.streamer.api.transform.BinaryStreamerTransformer;
 import org.cosinus.streamer.gpx.GpxBinaryStreamer;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 import static org.cosinus.streamer.gpx.GpxStreamer.GPX_TYPE;
 
 @Component
 public class KmzToGpxBinaryStreamerTransformer implements BinaryStreamerTransformer {
 
+    private static final String KMZ_TYPE = "kmz";
+
     @Override
     public BinaryStreamer transformStreamer(final Streamer<?> sourceStreamer,
                                             final String targetFormat) {
         return new GpxBinaryStreamer((KmzStreamer) sourceStreamer);
+    }
+
+    @Override
+    public List<String> sourceFormats() {
+        return List.of(KMZ_TYPE);
+    }
+
+    @Override
+    public List<String> targetFormats() {
+        return List.of(GPX_TYPE);
     }
 
     @Override

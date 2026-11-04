@@ -20,9 +20,14 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.transform.BinaryStreamerTransformer;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 import static javax.imageio.ImageIO.getWriterFormatNames;
 import static org.apache.commons.lang3.ArrayUtils.contains;
+import static org.cosinus.streamer.api.transform.html.HtmlFormat.HTML_FORMAT;
 import static org.cosinus.streamer.api.transform.html.HtmlFormat.HTML_FORMATS;
+import static org.cosinus.streamer.api.transform.html.HtmlFormat.HTM_FORMAT;
+import static org.cosinus.swing.image.ImageFormat.writerFormats;
 
 /**
  * {@link BinaryStreamerTransformer} from html (html or htm) to an image,
@@ -35,6 +40,16 @@ public class HtmlToImageBinaryStreamerTransformer implements BinaryStreamerTrans
     public HtmlToImageBinaryStreamer transformStreamer(final Streamer<?> sourceStreamer,
                                                        final String targetFormat) {
         return new HtmlToImageBinaryStreamer(sourceStreamer.binaryStreamer(), targetFormat);
+    }
+
+    @Override
+    public List<String> sourceFormats() {
+        return List.of(HTML_FORMAT, HTM_FORMAT);
+    }
+
+    @Override
+    public List<String> targetFormats() {
+        return writerFormats();
     }
 
     @Override

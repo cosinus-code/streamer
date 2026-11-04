@@ -74,6 +74,8 @@ public class CopyActionModel implements ActionModel, UIModel {
     @Getter
     private String targetType;
 
+    private String[] targetTypes = new String[0];
+
     public CopyActionModel() {
         this.executionId = randomUUID().toString();
     }
@@ -135,6 +137,15 @@ public class CopyActionModel implements ActionModel, UIModel {
         return this;
     }
 
+    /**
+     * @param targetTypes the formats the streamers can be transformed to, proposed in the copy dialog
+     * @return this model
+     */
+    public CopyActionModel targetTypes(List<String> targetTypes) {
+        this.targetTypes = targetTypes.toArray(String[]::new);
+        return this;
+    }
+
     public CopyActionModel to(ParentStreamer<?> destination) {
         this.destination = destination;
         this.targetPath = destination.getPath();
@@ -165,6 +176,20 @@ public class CopyActionModel implements ActionModel, UIModel {
     @Override
     public Object getValue(String key) {
         return key.equals(COPY_TO) ? getTargetPath().toFile() : null;
+    }
+
+    /**
+     * The target types start with an empty one, selected by default, to copy without transformation.
+     */
+    @Override
+    public Object[] getValues(String key) {
+        if (!key.equals(TARGET_TYPE)) {
+            return null;
+        }
+        String[] values = new String[targetTypes.length + 1];
+        values[0] = "";
+        System.arraycopy(targetTypes, 0, values, 1, targetTypes.length);
+        return values;
     }
 
     @Override

@@ -21,6 +21,7 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.transform.BinaryStreamerTransformer;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.cosinus.streamer.api.transform.csv.CsvFormat.CSV_FORMAT;
@@ -39,6 +40,16 @@ public class CsvToDocBinaryStreamerTransformer implements BinaryStreamerTransfor
     public CsvToDocBinaryStreamer transformStreamer(final Streamer<?> sourceStreamer,
                                                     final String targetFormat) {
         return new CsvToDocBinaryStreamer(sourceStreamer.binaryStreamer(), targetFormat);
+    }
+
+    @Override
+    public List<String> sourceFormats() {
+        return List.of(CSV_FORMAT);
+    }
+
+    @Override
+    public List<String> targetFormats() {
+        return List.of(DOCX_FORMAT, DOC_FORMAT);
     }
 
     @Override

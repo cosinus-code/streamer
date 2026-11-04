@@ -92,6 +92,29 @@ public class TransformBinaryStreamerHandlerTest {
         assertSame(source, handler.transformToBinaryStreamer(source, null));
     }
 
+    @Test
+    public void testTargetFormatsAreHarvestedFromAllTransformers() {
+        TransformBinaryStreamerHandler handler = handler(
+            new FakeTransformer("xlsx"), new FakeTransformer("PDF"), new FakeTransformer("csv"), new FakeTransformer("pdf"));
+
+        assertEquals(List.of("csv", "pdf", "xlsx"), handler.targetFormats());
+        assertTrue(handler().targetFormats().isEmpty());
+    }
+
+    @Test
+    public void testTargetFormatsOfTheSourceStreamers() {
+        TestBinaryStreamer txt = new TestBinaryStreamer("notes.txt", new byte[0]);
+        TransformBinaryStreamerHandler handler = handler(
+            new FakeTransformer("xlsx", "csv"), new FakeTransformer("pdf", "csv"), new FakeTransformer("pdf", "txt"));
+
+        assertEquals(List.of("pdf", "xlsx"), handler.targetFormats(List.of(source)));
+        assertEquals(List.of("pdf"), handler.targetFormats(List.of(txt)));
+        // only the formats all the streamers can be transformed to
+        assertEquals(List.of("pdf"), handler.targetFormats(List.of(source, txt)));
+        assertTrue(handler.targetFormats(List.of(new TestBinaryStreamer("photo.png", new byte[0]))).isEmpty());
+        assertTrue(handler.targetFormats(List.of()).isEmpty());
+    }
+
     private TransformBinaryStreamerHandler handler(BinaryStreamerTransformer... transformers) {
         return new TransformBinaryStreamerHandler(new LinkedHashSet<>(asList(transformers)));
     }
@@ -103,6 +126,8 @@ public class TransformBinaryStreamerHandlerTest {
 
         private final String targetFormat;
 
+        private final String sourceFormat;
+
         private final BinaryStreamer result = new TestBinaryStreamer("result", new byte[0]);
 
         private final List<String> checkedFormats = new ArrayList<>();
@@ -112,7 +137,15 @@ public class TransformBinaryStreamerHandlerTest {
         private final List<String> transformedFormats = new ArrayList<>();
 
         private FakeTransformer(String targetFormat) {
+            this(targetFormat, null);
+        }
+
+        /**
+         * @param sourceFormat the only source format accepted, or null to accept any source
+         */
+        private FakeTransformer(String targetFormat, String sourceFormat) {
             this.targetFormat = targetFormat;
+            this.sourceFormat = sourceFormat;
         }
 
         @Override
@@ -123,9 +156,20 @@ public class TransformBinaryStreamerHandlerTest {
         }
 
         @Override
+        public List<String> sourceFormats() {
+            return List.of(sourceFormat != null ? sourceFormat : "csv");
+        }
+
+        @Override
+        public List<String> targetFormats() {
+            return List.of(targetFormat);
+        }
+
+        @Override
         public boolean canTransform(Streamer<?> sourceStreamer, String targetFormat) {
             checkedFormats.add(targetFormat);
-            return this.targetFormat.equals(targetFormat);
+            return this.targetFormat.equals(targetFormat) &&
+                (sourceFormat == null || sourceFormat.equals(sourceStreamer.getType()));
         }
     }
 }

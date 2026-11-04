@@ -21,7 +21,11 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.transform.BinaryStreamerTransformer;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 import static org.cosinus.streamer.api.transform.excel.ExcelFormat.EXCEL_FORMATS;
+import static org.cosinus.streamer.api.transform.excel.ExcelFormat.XLSX_FORMAT;
+import static org.cosinus.streamer.api.transform.excel.ExcelFormat.XLS_FORMAT;
 import static org.cosinus.streamer.api.transform.pdf.PdfFormat.PDF_FORMAT;
 
 /**
@@ -34,6 +38,16 @@ public class ExcelToPdfBinaryStreamerTransformer implements BinaryStreamerTransf
     public ExcelToPdfBinaryStreamer transformStreamer(final Streamer<?> sourceStreamer,
                                                       final String targetFormat) {
         return new ExcelToPdfBinaryStreamer(sourceStreamer.binaryStreamer());
+    }
+
+    @Override
+    public List<String> sourceFormats() {
+        return List.of(XLSX_FORMAT, XLS_FORMAT);
+    }
+
+    @Override
+    public List<String> targetFormats() {
+        return List.of(PDF_FORMAT);
     }
 
     @Override

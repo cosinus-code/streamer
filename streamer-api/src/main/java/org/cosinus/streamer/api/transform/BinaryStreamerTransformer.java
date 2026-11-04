@@ -20,7 +20,19 @@ package org.cosinus.streamer.api.transform;
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.Streamer;
 
+import java.util.List;
+
 public interface BinaryStreamerTransformer {
+
+    /**
+     * @return the formats (file types, in lower case) of the sources this transformer can transform
+     */
+    List<String> sourceFormats();
+
+    /**
+     * @return the formats (file types, in lower case) this transformer can transform to
+     */
+    List<String> targetFormats();
 
     BinaryStreamer transformStreamer(final Streamer<?> sourceStreamer, String targetFormat);
 

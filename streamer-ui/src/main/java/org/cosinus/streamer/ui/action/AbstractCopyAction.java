@@ -17,6 +17,9 @@
 package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.api.ParentStreamer;
+import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
+import org.cosinus.streamer.api.transform.TransformBinaryStreamerHandler;
 import org.cosinus.streamer.ui.action.execute.copy.CopyActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
@@ -27,6 +30,9 @@ import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.translate.Translator;
 import org.cosinus.swing.window.Dialog;
 
+import java.util.List;
+
+import static java.util.function.Predicate.not;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.BOUND;
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 
@@ -49,18 +55,26 @@ public abstract class AbstractCopyAction<M extends CopyActionModel> implements S
 
     protected final StreamerViewHandler streamerViewHandler;
 
+    protected final TransformBinaryStreamerHandler transformBinaryStreamerHandler;
+
+    protected final BinaryExpanderHandler binaryExpanderHandler;
+
     protected AbstractCopyAction(final Preferences preferences,
                                  final Translator translator,
                                  final DialogHandler dialogHandler,
                                  final ActionExecutors actionExecutors,
                                  final LoadActionExecutor loadActionExecutor,
-                                 final StreamerViewHandler streamerViewHandler) {
+                                 final StreamerViewHandler streamerViewHandler,
+                                 final TransformBinaryStreamerHandler transformBinaryStreamerHandler,
+                                 final BinaryExpanderHandler binaryExpanderHandler) {
         this.preferences = preferences;
         this.translator = translator;
         this.dialogHandler = dialogHandler;
         this.actionExecutors = actionExecutors;
         this.loadActionExecutor = loadActionExecutor;
         this.streamerViewHandler = streamerViewHandler;
+        this.transformBinaryStreamerHandler = transformBinaryStreamerHandler;
+        this.binaryExpanderHandler = binaryExpanderHandler;
     }
 
     @Override
@@ -69,6 +83,7 @@ public abstract class AbstractCopyAction<M extends CopyActionModel> implements S
             return;
         }
 
+        copyActionModel.targetTypes(targetTypes(copyActionModel.getStreamersToCopy()));
         dialogHandler.showDialog(() -> copyConfirmationDialog(copyActionModel))
             .response()
             .ifPresent(this::executeStreamerCopy);
@@ -76,6 +91,22 @@ public abstract class AbstractCopyAction<M extends CopyActionModel> implements S
 
     public void executeStreamerCopy(final M copyAction) {
         actionExecutors.execute(copyAction);
+    }
+
+    /**
+     * @param streamersToCopy the selected items to copy
+     * @return the formats all the selected streamers can be transformed to, as they are transformed when copied;
+     * the folders are not taken into account
+     */
+    protected List<String> targetTypes(final List<?> streamersToCopy) {
+        List<Streamer<?>> streamer = streamersToCopy
+            .stream()
+            .filter(Streamer.class::isInstance)
+            .filter(not(ParentStreamer.class::isInstance))
+            .map(Streamer.class::cast)
+            .<Streamer<?>>map(binaryExpanderHandler::expandStreamer)
+            .toList();
+        return transformBinaryStreamerHandler.targetFormats(streamer);
     }
 
     protected Dialog<M> copyConfirmationDialog(final M copyAction) {

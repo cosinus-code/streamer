@@ -20,11 +20,14 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.transform.BinaryStreamerTransformer;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.cosinus.streamer.api.transform.doc.DocToPdfBinaryStreamerTransformer.DOCX_FORMAT;
 import static org.cosinus.streamer.api.transform.doc.DocToPdfBinaryStreamerTransformer.DOC_FORMAT;
+import static org.cosinus.streamer.api.transform.html.HtmlFormat.HTML_FORMAT;
 import static org.cosinus.streamer.api.transform.html.HtmlFormat.HTML_FORMATS;
+import static org.cosinus.streamer.api.transform.html.HtmlFormat.HTM_FORMAT;
 
 /**
  * {@link BinaryStreamerTransformer} from html (html or htm) to word (docx or doc).
@@ -38,6 +41,16 @@ public class HtmlToDocBinaryStreamerTransformer implements BinaryStreamerTransfo
     public HtmlToDocBinaryStreamer transformStreamer(final Streamer<?> sourceStreamer,
                                                      final String targetFormat) {
         return new HtmlToDocBinaryStreamer(sourceStreamer.binaryStreamer(), targetFormat);
+    }
+
+    @Override
+    public List<String> sourceFormats() {
+        return List.of(HTML_FORMAT, HTM_FORMAT);
+    }
+
+    @Override
+    public List<String> targetFormats() {
+        return List.of(DOCX_FORMAT, DOC_FORMAT);
     }
 
     @Override

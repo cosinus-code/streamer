@@ -21,6 +21,11 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.transform.BinaryStreamerTransformer;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
+import static org.cosinus.streamer.api.transform.doc.DocToPdfBinaryStreamerTransformer.DOCX_FORMAT;
+import static org.cosinus.streamer.api.transform.doc.DocToPdfBinaryStreamerTransformer.DOC_FORMAT;
+import static org.cosinus.streamer.api.transform.doc.DocToPdfBinaryStreamerTransformer.RTF_FORMAT;
 import static org.cosinus.streamer.api.transform.doc.DocToPdfBinaryStreamerTransformer.WORD_FORMATS;
 import static org.cosinus.streamer.api.transform.txt.TxtFormat.TXT_FORMAT;
 
@@ -34,6 +39,16 @@ public class DocToTxtBinaryStreamerTransformer implements BinaryStreamerTransfor
     public DocToTxtBinaryStreamer transformStreamer(final Streamer<?> sourceStreamer,
                                                     final String targetFormat) {
         return new DocToTxtBinaryStreamer(sourceStreamer.binaryStreamer());
+    }
+
+    @Override
+    public List<String> sourceFormats() {
+        return List.of(DOCX_FORMAT, DOC_FORMAT, RTF_FORMAT);
+    }
+
+    @Override
+    public List<String> targetFormats() {
+        return List.of(TXT_FORMAT);
     }
 
     @Override

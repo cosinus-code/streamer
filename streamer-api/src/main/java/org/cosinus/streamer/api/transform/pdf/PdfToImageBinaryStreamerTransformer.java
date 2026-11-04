@@ -21,8 +21,11 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.transform.BinaryStreamerTransformer;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 import static javax.imageio.ImageIO.getWriterFormatNames;
 import static org.apache.commons.lang3.ArrayUtils.contains;
+import static org.cosinus.swing.image.ImageFormat.writerFormats;
 import static org.cosinus.streamer.api.transform.pdf.PdfFormat.PDF_FORMAT;
 
 /**
@@ -35,6 +38,16 @@ public class PdfToImageBinaryStreamerTransformer implements BinaryStreamerTransf
     public PdfToImageBinaryStreamer transformStreamer(final Streamer<?> sourceStreamer,
                                                       final String targetFormat) {
         return new PdfToImageBinaryStreamer(sourceStreamer.binaryStreamer(), targetFormat);
+    }
+
+    @Override
+    public List<String> sourceFormats() {
+        return List.of(PDF_FORMAT);
+    }
+
+    @Override
+    public List<String> targetFormats() {
+        return writerFormats();
     }
 
     @Override

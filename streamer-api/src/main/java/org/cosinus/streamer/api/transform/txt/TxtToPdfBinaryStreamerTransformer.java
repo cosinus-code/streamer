@@ -21,6 +21,8 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.transform.BinaryStreamerTransformer;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 import static org.cosinus.streamer.api.transform.pdf.PdfFormat.PDF_FORMAT;
 import static org.cosinus.streamer.api.transform.txt.TxtFormat.TXT_FORMAT;
 
@@ -34,6 +36,16 @@ public class TxtToPdfBinaryStreamerTransformer implements BinaryStreamerTransfor
     public TxtToPdfBinaryStreamer transformStreamer(final Streamer<?> sourceStreamer,
                                                     final String targetFormat) {
         return new TxtToPdfBinaryStreamer(sourceStreamer.binaryStreamer());
+    }
+
+    @Override
+    public List<String> sourceFormats() {
+        return List.of(TXT_FORMAT);
+    }
+
+    @Override
+    public List<String> targetFormats() {
+        return List.of(PDF_FORMAT);
     }
 
     @Override

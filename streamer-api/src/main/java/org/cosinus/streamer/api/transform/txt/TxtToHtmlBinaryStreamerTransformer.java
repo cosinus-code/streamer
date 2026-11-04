@@ -20,7 +20,11 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.transform.BinaryStreamerTransformer;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
+import static org.cosinus.streamer.api.transform.html.HtmlFormat.HTML_FORMAT;
 import static org.cosinus.streamer.api.transform.html.HtmlFormat.HTML_FORMATS;
+import static org.cosinus.streamer.api.transform.html.HtmlFormat.HTM_FORMAT;
 import static org.cosinus.streamer.api.transform.txt.TxtFormat.TXT_FORMAT;
 
 /**
@@ -33,6 +37,16 @@ public class TxtToHtmlBinaryStreamerTransformer implements BinaryStreamerTransfo
     public TxtToHtmlBinaryStreamer transformStreamer(final Streamer<?> sourceStreamer,
                                                      final String targetFormat) {
         return new TxtToHtmlBinaryStreamer(sourceStreamer.binaryStreamer());
+    }
+
+    @Override
+    public List<String> sourceFormats() {
+        return List.of(TXT_FORMAT);
+    }
+
+    @Override
+    public List<String> targetFormats() {
+        return List.of(HTML_FORMAT, HTM_FORMAT);
     }
 
     @Override

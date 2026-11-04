@@ -21,8 +21,11 @@ import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.transform.BinaryStreamerTransformer;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 import static javax.imageio.ImageIO.getWriterFormatNames;
 import static org.apache.commons.lang3.ArrayUtils.contains;
+import static org.cosinus.swing.image.ImageFormat.writerFormats;
 import static org.cosinus.streamer.api.transform.txt.TxtFormat.TXT_FORMAT;
 
 /**
@@ -36,6 +39,16 @@ public class TxtToImageBinaryStreamerTransformer implements BinaryStreamerTransf
     public TxtToImageBinaryStreamer transformStreamer(final Streamer<?> sourceStreamer,
                                                       final String targetFormat) {
         return new TxtToImageBinaryStreamer(sourceStreamer.binaryStreamer(), targetFormat);
+    }
+
+    @Override
+    public List<String> sourceFormats() {
+        return List.of(TXT_FORMAT);
+    }
+
+    @Override
+    public List<String> targetFormats() {
+        return writerFormats();
     }
 
     @Override

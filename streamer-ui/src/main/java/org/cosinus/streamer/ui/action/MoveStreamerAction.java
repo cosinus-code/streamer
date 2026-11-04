@@ -17,6 +17,8 @@
 package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.api.ParentStreamer;
+import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
+import org.cosinus.streamer.api.transform.TransformBinaryStreamerHandler;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.move.MoveActionModel;
 import org.cosinus.streamer.ui.view.StreamerView;
@@ -47,13 +49,17 @@ public class MoveStreamerAction extends AbstractCopyAction<MoveActionModel> {
                               final DialogHandler dialogHandler,
                               final ActionExecutors actionExecutors,
                               final LoadActionExecutor loadActionExecutor,
-                              final StreamerViewHandler streamerViewHandler) {
+                              final StreamerViewHandler streamerViewHandler,
+                              final TransformBinaryStreamerHandler transformBinaryStreamerHandler,
+                              final BinaryExpanderHandler binaryExpanderHandler) {
         super(preferences,
             translator,
             dialogHandler,
             actionExecutors,
             loadActionExecutor,
-            streamerViewHandler);
+            streamerViewHandler,
+            transformBinaryStreamerHandler,
+            binaryExpanderHandler);
     }
 
     @Override

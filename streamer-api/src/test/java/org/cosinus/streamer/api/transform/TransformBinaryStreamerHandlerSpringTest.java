@@ -50,7 +50,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.List;
 
 import static org.cosinus.streamer.api.transform.TestBinaryStreamer.image;
+import static org.cosinus.swing.image.ImageFormat.readerFormats;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -246,6 +248,57 @@ public class TransformBinaryStreamerHandlerSpringTest {
                 }
             }
         }
+    }
+
+    @Test
+    public void testTargetFormats() {
+        List<String> targetFormats = handler.targetFormats();
+        assertTrue(targetFormats.containsAll(
+            List.of("bmp", "csv", "doc", "docx", "htm", "html", "jpg", "pdf", "png", "txt", "xlsx")));
+        assertEquals(targetFormats.stream().distinct().sorted().toList(), targetFormats);
+    }
+
+    /**
+     * Each transformer can transform from each declared source format to each declared target format,
+     * and only from and to the declared formats.
+     */
+    @Test
+    public void testDeclaredFormatsMatchTheTransformations() {
+        for (BinaryStreamerTransformer transformer : transformers) {
+            String name = transformer.getClass().getSimpleName();
+            List<String> sourceFormats = transformer.sourceFormats();
+            List<String> targetFormats = transformer.targetFormats();
+            assertFalse(name, sourceFormats.isEmpty());
+            assertFalse(name, targetFormats.isEmpty());
+
+            for (String sourceFormat : sourceFormats) {
+                for (String targetFormat : targetFormats) {
+                    if (!sourceFormat.equals(targetFormat)) {
+                        assertTrue("%s: %s -> %s".formatted(name, sourceFormat, targetFormat),
+                            canTransform(transformer, sourceFormat, targetFormat));
+                    }
+                }
+            }
+            for (String sourceFormat : FORMATS) {
+                for (String targetFormat : FORMATS) {
+                    if (canTransform(transformer, sourceFormat, targetFormat)) {
+                        assertTrue("%s: undeclared source %s".formatted(name, sourceFormat),
+                            sourceFormats.contains(sourceFormat));
+                        assertTrue("%s: undeclared target %s".formatted(name, targetFormat),
+                            targetFormats.contains(targetFormat));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * The source is tried as a file, and also as an image when its format is an image format.
+     */
+    private boolean canTransform(BinaryStreamerTransformer transformer, String sourceFormat, String targetFormat) {
+        return transformer.canTransform(file("source." + sourceFormat), targetFormat) ||
+            readerFormats().contains(sourceFormat) &&
+                transformer.canTransform(image("source." + sourceFormat, new byte[0]), targetFormat);
     }
 
     private TestBinaryStreamer file(String name) {
