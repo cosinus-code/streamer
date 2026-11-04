@@ -25,6 +25,9 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.cosinus.streamer.api.transform.TestBinaryStreamer;
 import org.cosinus.streamer.api.transform.doc.DocToPdfBinaryStreamerTransformer;
+import org.cosinus.streamer.api.transform.doc.DocxElement;
+import org.cosinus.streamer.api.transform.doc.DocxElement.DocxParagraph;
+import org.cosinus.streamer.api.transform.doc.RtfWordReader;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -34,6 +37,7 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.pdfbox.pdmodel.common.PDRectangle.A4;
 import static org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName.HELVETICA;
@@ -53,16 +57,53 @@ public class PdfToDocBinaryStreamerTransformerTest {
     public void testCanTransformPdfToWord() {
         assertTrue(transformer.canTransform(file("report.pdf"), "docx"));
         assertTrue(transformer.canTransform(file("REPORT.PDF"), "DOCX"));
+        assertTrue(transformer.canTransform(file("report.pdf"), "doc"));
+        assertTrue(transformer.canTransform(file("REPORT.PDF"), "DOC"));
     }
 
     @Test
     public void testCannotTransformOtherSourceOrTarget() {
-        assertFalse(transformer.canTransform(file("report.pdf"), "doc"));
+        assertFalse(transformer.canTransform(file("report.pdf"), "rtf"));
+        assertFalse(transformer.canTransform(file("report.pdf"), null));
         assertFalse(transformer.canTransform(file("report.pdf"), "pdf"));
         assertFalse(transformer.canTransform(file("report.docx"), "docx"));
         assertFalse(transformer.canTransform(file("data.csv"), "docx"));
         assertFalse(transformer.canTransform(file("report"), "docx"));
         assertFalse(transformer.canTransform(image("report.pdf", new byte[0]), "docx"));
+    }
+
+    /**
+     * The doc format is written as rtf, which word opens as a word document.
+     */
+    @Test
+    public void testTransformPdfToDoc() throws IOException {
+        byte[] pdf = pdf(
+            List.of(
+                new Line("Annual report", 20, 780),
+                new Line("This is the first line of a", 11, 740),
+                new Line("paragraph which continues here.", 11, 727),
+                new Line("Second paragraph with a hyphen-", 11, 690),
+                new Line("ated word.", 11, 677)),
+            List.of(
+                new Line("Text of the next page.", 11, 780)));
+
+        byte[] doc = readAll(transformer.transformStreamer(new TestBinaryStreamer("report.pdf", pdf), "doc"));
+        assertTrue(new String(doc, US_ASCII).startsWith("{\\rtf1"));
+
+        List<DocxElement> elements = RtfWordReader.read(new ByteArrayInputStream(doc));
+        List<DocxParagraph> paragraphs = elements.stream()
+            .map(DocxParagraph.class::cast)
+            .toList();
+        assertEquals(List.of(
+                "Annual report",
+                "This is the first line of a paragraph which continues here.",
+                "Second paragraph with a hyphen-ated word.",
+                "Text of the next page."),
+            paragraphs.stream().map(DocxParagraph::text).toList());
+        assertEquals(20, paragraphs.getFirst().fontSize(), 0.01);
+        assertEquals(11, paragraphs.get(1).fontSize(), 0.01);
+        assertFalse(paragraphs.get(2).pageBreakBefore());
+        assertTrue(paragraphs.get(3).pageBreakBefore());
     }
 
     @Test

@@ -19,25 +19,33 @@ package org.cosinus.streamer.api.transform.pdf;
 
 import org.cosinus.streamer.api.BinaryStreamer;
 import org.cosinus.streamer.api.transform.TransformBinaryStreamer;
-import org.cosinus.streamer.api.transform.doc.DocxWordWriter;
 import org.cosinus.streamer.api.transform.doc.DocxElement;
+import org.cosinus.streamer.api.transform.doc.DocxWordWriter;
+import org.cosinus.streamer.api.transform.doc.RtfWordWriter;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
+import static org.cosinus.streamer.api.transform.doc.DocToPdfBinaryStreamerTransformer.DOC_FORMAT;
+
 /**
- * {@link TransformBinaryStreamer} that converts pdf content into word content (docx).
+ * {@link TransformBinaryStreamer} that converts pdf content into word content (docx or doc).
  * <p>
  * The text of the pdf is read as paragraphs (see {@link PdfWordReader})
- * and written as an editable word document (see {@link DocxWordWriter}).
+ * and written as an editable word document: by {@link DocxWordWriter} for docx,
+ * or as rtf for doc (see {@link RtfWordWriter}), which word opens as a word document,
+ * as the binary format of word 97-2003 cannot be written.
  * A pdf without text (e.g. a scanned document) gives an empty word document.
  */
 public class PdfToDocBinaryStreamer extends TransformBinaryStreamer<List<DocxElement>> {
 
-    public PdfToDocBinaryStreamer(final BinaryStreamer binaryStreamer) {
+    private final String targetFormat;
+
+    public PdfToDocBinaryStreamer(final BinaryStreamer binaryStreamer, final String targetFormat) {
         super(binaryStreamer);
+        this.targetFormat = targetFormat;
     }
 
     @Override
@@ -49,6 +57,10 @@ public class PdfToDocBinaryStreamer extends TransformBinaryStreamer<List<DocxEle
 
     @Override
     protected void write(final List<DocxElement> elements, final OutputStream output) throws IOException {
-        new DocxWordWriter(elements).write(output);
+        if (DOC_FORMAT.equalsIgnoreCase(targetFormat)) {
+            new RtfWordWriter(elements).write(output);
+        } else {
+            new DocxWordWriter(elements).write(output);
+        }
     }
 }

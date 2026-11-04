@@ -108,6 +108,7 @@ public class TransformBinaryStreamerHandlerSpringTest {
     @Test
     public void testPdfToWord() {
         assertTrue(handler.transformToBinaryStreamer(file("report.pdf"), "docx") instanceof PdfToDocBinaryStreamer);
+        assertTrue(handler.transformToBinaryStreamer(file("report.pdf"), "doc") instanceof PdfToDocBinaryStreamer);
     }
 
     @Test
