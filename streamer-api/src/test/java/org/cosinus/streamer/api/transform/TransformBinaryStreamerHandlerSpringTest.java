@@ -38,6 +38,8 @@ import org.cosinus.streamer.api.transform.image.ImageToPdfBinaryStreamer;
 import org.cosinus.streamer.api.transform.pdf.PdfToDocBinaryStreamer;
 import org.cosinus.streamer.api.transform.pdf.PdfToImageBinaryStreamer;
 import org.cosinus.streamer.api.transform.pdf.PdfToTxtBinaryStreamer;
+import org.cosinus.streamer.api.transform.svg.SvgToImageBinaryStreamer;
+import org.cosinus.streamer.api.transform.svg.SvgToPdfBinaryStreamer;
 import org.cosinus.streamer.api.transform.test.TransformTestApplication;
 import org.cosinus.streamer.api.transform.txt.TxtToDocBinaryStreamer;
 import org.cosinus.streamer.api.transform.txt.TxtToImageBinaryStreamer;
@@ -66,7 +68,7 @@ import static org.junit.Assert.assertTrue;
 public class TransformBinaryStreamerHandlerSpringTest {
 
     private static final List<String> FORMATS =
-        List.of("csv", "xlsx", "xls", "doc", "docx", "rtf", "html", "htm", "pdf", "png", "jpg", "bmp", "txt", "xml", "json");
+        List.of("csv", "xlsx", "xls", "doc", "docx", "rtf", "html", "htm", "pdf", "png", "jpg", "bmp", "txt", "xml", "json", "svg");
 
     @Autowired
     private TransformBinaryStreamerHandler handler;
@@ -76,7 +78,7 @@ public class TransformBinaryStreamerHandlerSpringTest {
 
     @Test
     public void testAllTransformersAreLoaded() {
-        assertEquals(25, transformers.size());
+        assertEquals(27, transformers.size());
     }
 
     @Test
@@ -225,6 +227,24 @@ public class TransformBinaryStreamerHandlerSpringTest {
     @Test
     public void testJsonToXml() {
         assertTrue(handler.transformToBinaryStreamer(file("data.json"), "xml") instanceof JsonToXmlBinaryStreamer);
+    }
+
+    /**
+     * An svg is rendered by the svg transformer, also when it is an image (image/svg+xml).
+     */
+    @Test
+    public void testSvgToImage() {
+        assertTrue(handler.transformToBinaryStreamer(file("logo.svg"), "png") instanceof SvgToImageBinaryStreamer);
+        assertTrue(handler.transformToBinaryStreamer(image("logo.svg", new byte[0]), "jpg") instanceof SvgToImageBinaryStreamer);
+    }
+
+    /**
+     * An svg is converted by the svg transformer, also when it is an image (image/svg+xml).
+     */
+    @Test
+    public void testSvgToPdf() {
+        assertTrue(handler.transformToBinaryStreamer(file("logo.svg"), "pdf") instanceof SvgToPdfBinaryStreamer);
+        assertTrue(handler.transformToBinaryStreamer(image("logo.svg", new byte[0]), "pdf") instanceof SvgToPdfBinaryStreamer);
     }
 
     @Test

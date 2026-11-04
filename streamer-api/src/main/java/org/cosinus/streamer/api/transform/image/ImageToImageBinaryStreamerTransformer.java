@@ -23,8 +23,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+import static java.util.function.Predicate.not;
 import static javax.imageio.ImageIO.getWriterFormatNames;
 import static org.apache.commons.lang3.ArrayUtils.contains;
+import static org.cosinus.streamer.api.transform.svg.SvgFormat.SVG_FORMAT;
 import static org.cosinus.swing.image.ImageFormat.readerFormats;
 import static org.cosinus.swing.image.ImageFormat.writerFormats;
 
@@ -39,7 +41,10 @@ public class ImageToImageBinaryStreamerTransformer implements BinaryStreamerTran
 
     @Override
     public List<String> sourceFormats() {
-        return readerFormats();
+        return readerFormats()
+            .stream()
+            .filter(not(SVG_FORMAT::equals))
+            .toList();
     }
 
     @Override
@@ -49,7 +54,9 @@ public class ImageToImageBinaryStreamerTransformer implements BinaryStreamerTran
 
     @Override
     public boolean canTransform(final Streamer<?> sourceStreamer, final String targetFormat) {
+        // the svg images are rendered by the svg transformer
         return sourceStreamer.isImage() &&
+            !SVG_FORMAT.equalsIgnoreCase(sourceStreamer.getType()) &&
             !sourceStreamer.getType().equalsIgnoreCase(targetFormat) &&
             contains(getWriterFormatNames(), targetFormat);
     }

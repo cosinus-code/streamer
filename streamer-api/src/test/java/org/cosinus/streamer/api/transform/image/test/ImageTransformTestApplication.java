@@ -17,19 +17,20 @@
 package org.cosinus.streamer.api.transform.image.test;
 
 import org.cosinus.streamer.api.transform.image.ImageToImageBinaryStreamerTransformer;
+import org.cosinus.streamer.api.transform.svg.SvgToImageBinaryStreamerTransformer;
 import org.cosinus.swing.boot.SpringSwingBootApplication;
 import org.cosinus.swing.boot.SwingApplicationFrame;
 import org.springframework.context.annotation.Import;
 
 /**
- * Test application loading the image to image transformer,
+ * Test application loading the image to image and the svg to image transformers,
  * with the spring swing beans it needs (e.g. the image handler, auto-configured).
  * <p>
  * It is in its own package, so it doesn't scan the other test classes,
  * and the beans are imported explicitly.
  */
 @SpringSwingBootApplication
-@Import(ImageToImageBinaryStreamerTransformer.class)
+@Import({ImageToImageBinaryStreamerTransformer.class, SvgToImageBinaryStreamerTransformer.class})
 public class ImageTransformTestApplication extends SwingApplicationFrame {
 
     @Override

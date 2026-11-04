@@ -23,8 +23,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static org.cosinus.swing.image.ImageFormat.readerFormats;
+import static java.util.function.Predicate.not;
 import static org.cosinus.streamer.api.transform.pdf.PdfFormat.PDF_FORMAT;
+import static org.cosinus.streamer.api.transform.svg.SvgFormat.SVG_FORMAT;
+import static org.cosinus.swing.image.ImageFormat.readerFormats;
 
 @Component
 public class ImageToPdfBinaryStreamerTransformer implements BinaryStreamerTransformer {
@@ -37,7 +39,10 @@ public class ImageToPdfBinaryStreamerTransformer implements BinaryStreamerTransf
 
     @Override
     public List<String> sourceFormats() {
-        return readerFormats();
+        return readerFormats()
+            .stream()
+            .filter(not(SVG_FORMAT::equals))
+            .toList();
     }
 
     @Override
@@ -47,7 +52,9 @@ public class ImageToPdfBinaryStreamerTransformer implements BinaryStreamerTransf
 
     @Override
     public boolean canTransform(final Streamer<?> sourceStreamer, final String targetFormat) {
+        // the svg images are rendered by the svg transformer
         return sourceStreamer.isImage() &&
+            !SVG_FORMAT.equalsIgnoreCase(sourceStreamer.getType()) &&
             PDF_FORMAT.equalsIgnoreCase(targetFormat);
     }
 }
