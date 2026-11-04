@@ -41,6 +41,7 @@ import org.cosinus.streamer.api.transform.test.TransformTestApplication;
 import org.cosinus.streamer.api.transform.txt.TxtToDocBinaryStreamer;
 import org.cosinus.streamer.api.transform.txt.TxtToImageBinaryStreamer;
 import org.cosinus.streamer.api.transform.txt.TxtToPdfBinaryStreamer;
+import org.cosinus.streamer.api.transform.xml.XmlToJsonBinaryStreamer;
 import org.cosinus.swing.test.boot.SpringSwingBootTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,7 +65,7 @@ import static org.junit.Assert.assertTrue;
 public class TransformBinaryStreamerHandlerSpringTest {
 
     private static final List<String> FORMATS =
-        List.of("csv", "xlsx", "xls", "doc", "docx", "rtf", "html", "htm", "pdf", "png", "jpg", "bmp", "txt");
+        List.of("csv", "xlsx", "xls", "doc", "docx", "rtf", "html", "htm", "pdf", "png", "jpg", "bmp", "txt", "xml", "json");
 
     @Autowired
     private TransformBinaryStreamerHandler handler;
@@ -74,7 +75,7 @@ public class TransformBinaryStreamerHandlerSpringTest {
 
     @Test
     public void testAllTransformersAreLoaded() {
-        assertEquals(23, transformers.size());
+        assertEquals(24, transformers.size());
     }
 
     @Test
@@ -216,6 +217,11 @@ public class TransformBinaryStreamerHandlerSpringTest {
     }
 
     @Test
+    public void testXmlToJson() {
+        assertTrue(handler.transformToBinaryStreamer(file("data.xml"), "json") instanceof XmlToJsonBinaryStreamer);
+    }
+
+    @Test
     public void testWithoutTransformationReturnsTheSourceBinaryStreamer() {
         BinaryStreamer csv = file("data.csv");
         BinaryStreamer png = image("photo.png", new byte[0]);
@@ -254,7 +260,7 @@ public class TransformBinaryStreamerHandlerSpringTest {
     public void testTargetFormats() {
         List<String> targetFormats = handler.targetFormats();
         assertTrue(targetFormats.containsAll(
-            List.of("bmp", "csv", "doc", "docx", "htm", "html", "jpg", "pdf", "png", "txt", "xlsx")));
+            List.of("bmp", "csv", "doc", "docx", "htm", "html", "jpg", "json", "pdf", "png", "txt", "xlsx")));
         assertEquals(targetFormats.stream().distinct().sorted().toList(), targetFormats);
     }
 
