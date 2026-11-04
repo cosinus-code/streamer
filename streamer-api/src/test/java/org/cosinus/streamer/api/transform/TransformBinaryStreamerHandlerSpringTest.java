@@ -26,6 +26,9 @@ import org.cosinus.streamer.api.transform.doc.DocToTxtBinaryStreamer;
 import org.cosinus.streamer.api.transform.excel.ExcelToCsvBinaryStreamer;
 import org.cosinus.streamer.api.transform.excel.ExcelToPdfBinaryStreamer;
 import org.cosinus.streamer.api.transform.html.HtmlToPdfBinaryStreamer;
+import org.cosinus.streamer.api.transform.html.HtmlToDocBinaryStreamer;
+import org.cosinus.streamer.api.transform.html.HtmlToImageBinaryStreamer;
+import org.cosinus.streamer.api.transform.html.HtmlToTxtBinaryStreamer;
 import org.cosinus.streamer.api.transform.image.ImageToImageBinaryStreamer;
 import org.cosinus.streamer.api.transform.image.ImageToPdfBinaryStreamer;
 import org.cosinus.streamer.api.transform.pdf.PdfToDocBinaryStreamer;
@@ -66,7 +69,7 @@ public class TransformBinaryStreamerHandlerSpringTest {
 
     @Test
     public void testAllTransformersAreLoaded() {
-        assertEquals(17, transformers.size());
+        assertEquals(20, transformers.size());
     }
 
     @Test
@@ -168,6 +171,24 @@ public class TransformBinaryStreamerHandlerSpringTest {
     @Test
     public void testPdfToTxt() {
         assertTrue(handler.transformToBinaryStreamer(file("report.pdf"), "txt") instanceof PdfToTxtBinaryStreamer);
+    }
+
+    @Test
+    public void testHtmlToTxt() {
+        assertTrue(handler.transformToBinaryStreamer(file("page.html"), "txt") instanceof HtmlToTxtBinaryStreamer);
+        assertTrue(handler.transformToBinaryStreamer(file("page.htm"), "txt") instanceof HtmlToTxtBinaryStreamer);
+    }
+
+    @Test
+    public void testHtmlToImage() {
+        assertTrue(handler.transformToBinaryStreamer(file("page.html"), "png") instanceof HtmlToImageBinaryStreamer);
+        assertTrue(handler.transformToBinaryStreamer(file("page.htm"), "jpg") instanceof HtmlToImageBinaryStreamer);
+    }
+
+    @Test
+    public void testHtmlToWord() {
+        assertTrue(handler.transformToBinaryStreamer(file("page.html"), "docx") instanceof HtmlToDocBinaryStreamer);
+        assertTrue(handler.transformToBinaryStreamer(file("page.htm"), "doc") instanceof HtmlToDocBinaryStreamer);
     }
 
     @Test

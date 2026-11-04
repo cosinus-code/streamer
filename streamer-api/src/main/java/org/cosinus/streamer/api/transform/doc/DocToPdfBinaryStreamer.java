@@ -140,7 +140,7 @@ public class DocToPdfBinaryStreamer extends TransformBinaryStreamer<List<DocxEle
      * Numbers the items of the lists, per list and level.
      * The numbering of a level restarts after an item of a lower level.
      */
-    static class ListNumbering {
+    public static class ListNumbering {
 
         private static final int[] ROMAN_VALUES = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
 
@@ -155,7 +155,7 @@ public class DocToPdfBinaryStreamer extends TransformBinaryStreamer<List<DocxEle
          * @param format the number format of the level (e.g. bullet, decimal, lowerLetter), or null
          * @return the prefix of the next item
          */
-        String next(final String listId, final int level, final String format) {
+        public String next(final String listId, final int level, final String format) {
             Map<Integer, Integer> levelCounters = counters.computeIfAbsent(listId, id -> new HashMap<>());
             levelCounters.keySet().removeIf(counterLevel -> counterLevel > level);
             int number = levelCounters.merge(level, 1, Integer::sum);
