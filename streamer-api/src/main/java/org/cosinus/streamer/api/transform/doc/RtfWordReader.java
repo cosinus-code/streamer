@@ -51,7 +51,8 @@ import static org.cosinus.streamer.api.transform.doc.DocxElement.Alignment.RIGHT
  * the alignment and the font sizes, but ignores the tables and the page breaks.
  * So these are first marked in the rtf with characters which are kept in the text:
  * the end of a cell with the cell mark of word ({@value #CELL_MARK} as unicode),
- * the end of a row with a paragraph end, and the page breaks with a form feed.
+ * the end of a row with a paragraph end, the page breaks with a form feed
+ * and the line breaks (which the editor kit takes as paragraph ends) with a vertical tab.
  * A paragraph with cell marks is a table row, and consecutive rows are a table.
  * The numbers and bullets of the lists are kept in the text of their paragraphs.
  * <p>
@@ -66,6 +67,11 @@ public final class RtfWordReader {
     private static final char PAGE_BREAK = '\f';
 
     /**
+     * The editor kit writes a line break as a paragraph end, so it is marked as a vertical tab (as in doc).
+     */
+    private static final char LINE_BREAK = '\u000B';
+
+    /**
      * The control words are matched only when not followed by a letter (e.g. not {@code \cellx} or {@code \pagebb}),
      * with the space ending them, which is not part of the text.
      */
@@ -74,6 +80,8 @@ public final class RtfWordReader {
     private static final Pattern ROW = Pattern.compile("\\\\row(?![a-zA-Z]) ?");
 
     private static final Pattern PAGE = Pattern.compile("\\\\page(?![a-zA-Z]) ?");
+
+    private static final Pattern LINE = Pattern.compile("\\\\line(?![a-zA-Z]) ?");
 
     private static final Pattern PAGE_BREAK_BEFORE = Pattern.compile("\\\\pagebb(?![a-zA-Z]) ?");
 
@@ -93,6 +101,8 @@ public final class RtfWordReader {
     private static final String CELL_MARK_RTF = "{\\\\uc1\\\\u7?}";
 
     private static final String PAGE_BREAK_RTF = "{\\\\uc1\\\\u12?}";
+
+    private static final String LINE_BREAK_RTF = "{\\\\uc1\\\\u11?}";
 
     private RtfWordReader() {
     }
@@ -123,6 +133,7 @@ public final class RtfWordReader {
         body = CELL.matcher(body).replaceAll(CELL_MARK_RTF);
         body = ROW.matcher(body).replaceAll("\\\\par ");
         body = PAGE.matcher(body).replaceAll(PAGE_BREAK_RTF);
+        body = LINE.matcher(body).replaceAll(LINE_BREAK_RTF);
         body = PAGE_BREAK_BEFORE.matcher(body).replaceAll("\\\\pagebb" + PAGE_BREAK_RTF);
         body = escapeCodePageCharacters(body, codePage(rtf));
         return rtf.substring(0, bodyStart) + body;
@@ -179,13 +190,14 @@ public final class RtfWordReader {
         List<DocxElement> elements = new ArrayList<>();
         List<List<String>> tableRows = new ArrayList<>();
         boolean pageBreak = false;
+        boolean afterTable = false;
 
         Element root = document.getDefaultRootElement();
         for (int index = 0; index < root.getElementCount(); index++) {
             Element paragraph = root.getElement(index);
             String text = document.getText(paragraph.getStartOffset(),
                 paragraph.getEndOffset() - paragraph.getStartOffset());
-            text = text.endsWith("\n") ? text.substring(0, text.length() - 1) : text;
+            text = (text.endsWith("\n") ? text.substring(0, text.length() - 1) : text).replace(LINE_BREAK, '\n');
 
             if (text.indexOf(CELL_MARK) >= 0) {
                 List<String> cells = new ArrayList<>(Arrays.asList(text.split(String.valueOf(CELL_MARK), -1)));
@@ -198,11 +210,14 @@ public final class RtfWordReader {
             if (!tableRows.isEmpty()) {
                 elements.add(new DocxTable(List.copyOf(tableRows)));
                 tableRows.clear();
+                afterTable = true;
             }
-            if (text.isEmpty() && index == root.getElementCount() - 1) {
-                // the last paragraph of the editor kit, always empty
+            if (text.isEmpty() && afterTable) {
+                // the paragraph which ends a table
+                afterTable = false;
                 continue;
             }
+            afterTable = false;
 
             // a page break is a character of the paragraph, splitting it in parts
             String[] parts = text.split(String.valueOf(PAGE_BREAK), -1);
@@ -216,6 +231,10 @@ public final class RtfWordReader {
         }
         if (!tableRows.isEmpty()) {
             elements.add(new DocxTable(List.copyOf(tableRows)));
+        }
+        // the empty paragraphs at the end (e.g. the last one of the editor kit) are not visible
+        while (!elements.isEmpty() && elements.getLast() instanceof DocxParagraph paragraph && paragraph.text().isEmpty()) {
+            elements.removeLast();
         }
         return elements;
     }

@@ -76,6 +76,17 @@ public class RtfWordReaderTest {
         assertTrue(((DocxParagraph) elements.get(1)).pageBreakBefore());
     }
 
+    /**
+     * The editor kit takes a line break as a paragraph end: it is kept as a line break of the paragraph.
+     */
+    @Test
+    public void testLineBreakStaysInTheParagraph() throws IOException {
+        List<DocxElement> elements = read("{\\rtf1\\ansi first\\line second\\par next\\par\\par}");
+        assertEquals(2, elements.size());
+        assertEquals("first\nsecond", ((DocxParagraph) elements.get(0)).text());
+        assertEquals("next", ((DocxParagraph) elements.get(1)).text());
+    }
+
     @Test
     public void testUnicodeEscapes() throws IOException {
         // the default code page is windows-1252, where \'e3 is ã
