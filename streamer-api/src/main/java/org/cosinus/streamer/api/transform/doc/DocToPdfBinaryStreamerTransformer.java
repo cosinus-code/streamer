@@ -26,7 +26,7 @@ import java.util.Set;
 import static org.cosinus.streamer.api.transform.pdf.PdfFormat.PDF_FORMAT;
 
 /**
- * {@link BinaryStreamerTransformer} from word (docx or doc) to pdf.
+ * {@link BinaryStreamerTransformer} from word (docx, doc or rtf) to pdf.
  */
 @Component
 public class DocToPdfBinaryStreamerTransformer implements BinaryStreamerTransformer {
@@ -35,7 +35,9 @@ public class DocToPdfBinaryStreamerTransformer implements BinaryStreamerTransfor
 
     public static final String DOC_FORMAT = "doc";
 
-    public static final Set<String> WORD_FORMATS = Set.of(DOCX_FORMAT, DOC_FORMAT);
+    public static final String RTF_FORMAT = "rtf";
+
+    public static final Set<String> WORD_FORMATS = Set.of(DOCX_FORMAT, DOC_FORMAT, RTF_FORMAT);
 
     @Override
     public DocToPdfBinaryStreamer transformStreamer(final Streamer<?> sourceStreamer,

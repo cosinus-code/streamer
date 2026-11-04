@@ -18,6 +18,7 @@ package org.cosinus.streamer.api.transform.doc;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
@@ -44,12 +45,14 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.pdfbox.pdmodel.common.PDRectangle.A4;
 import static org.cosinus.streamer.api.transform.TestBinaryStreamer.image;
 import static org.cosinus.streamer.api.transform.TestBinaryStreamer.readAll;
 import static org.cosinus.streamer.api.transform.pdf.PdfTextWriter.FONT_SIZE;
 import static org.cosinus.streamer.api.transform.pdf.PdfTextWriter.PAGE_SIZE;
 import static org.cosinus.streamer.api.transform.doc.DocToPdfBinaryStreamer.TITLE_FONT_SIZE;
 import static org.cosinus.streamer.api.transform.doc.DocToPdfBinaryStreamer.fontSize;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -66,6 +69,8 @@ public class DocToPdfBinaryStreamerTransformerTest {
         assertTrue(transformer.canTransform(file("LETTER.DOCX"), "PDF"));
         assertTrue(transformer.canTransform(file("letter.doc"), "pdf"));
         assertTrue(transformer.canTransform(file("LETTER.DOC"), "PDF"));
+        assertTrue(transformer.canTransform(file("letter.rtf"), "pdf"));
+        assertTrue(transformer.canTransform(file("LETTER.RTF"), "PDF"));
     }
 
     @Test
@@ -132,6 +137,36 @@ public class DocToPdfBinaryStreamerTransformerTest {
     }
 
     @Test
+    public void testTransformRtf() throws IOException {
+        try (PDDocument pdf = transform("sample.rtf", resource("sample.rtf"))) {
+            assertEquals(2, pdf.getNumberOfPages());
+            String firstPage = pageText(pdf, 1);
+            assertTrue(firstPage.contains("Introducere"));
+            // with the fallback font, the diacritics are replaced by their base letter
+            assertTrue(firstPage.contains("Ștefan locuiește în Iași.") || firstPage.contains("Stefan locuieste in Iasi."));
+            assertTrue(firstPage.contains("Centered text"));
+            assertTrue(firstPage.matches("(?s).*1\\.\\s*first item.*"));
+            assertTrue(firstPage.matches("(?s).*\u2022\\s*bullet item.*"));
+            // the table cells are kept apart, before the next paragraph
+            assertTrue(firstPage.matches("(?s).*name\\s+qty.*"));
+            assertTrue(firstPage.matches("(?s).*apples\\s+12.*"));
+            assertTrue(firstPage.indexOf("apples") < firstPage.indexOf("After the table"));
+            assertFalse(firstPage.contains("Second page"));
+            assertTrue(pageText(pdf, 2).contains("Second page"));
+        }
+    }
+
+    /**
+     * Word can save a rtf file with a doc extension.
+     */
+    @Test
+    public void testRtfNamedDocIsDetectedFromContent() throws IOException {
+        try (PDDocument pdf = transform("letter.doc", resource("sample.rtf"))) {
+            assertTrue(text(pdf).contains("Introducere"));
+        }
+    }
+
+    @Test
     public void testFormatIsDetectedFromContent() throws IOException {
         try (PDDocument pdf = transform("misnamed.docx", resource("sample.doc"))) {
             assertTrue(text(pdf).contains("Introducere"));
@@ -191,6 +226,7 @@ public class DocToPdfBinaryStreamerTransformerTest {
     public void testInvalidContentFails() throws IOException {
         assertTransformFails("letter.docx", "not a word document".getBytes(UTF_8));
         assertTransformFails("letter.doc", "not a word document".getBytes(UTF_8));
+        assertTransformFails("letter.rtf", "not a word document".getBytes(UTF_8));
 
         ByteArrayOutputStream excel = new ByteArrayOutputStream();
         try (HSSFWorkbook workbook = new HSSFWorkbook()) {
@@ -255,6 +291,23 @@ public class DocToPdfBinaryStreamerTransformerTest {
         XWPFNumbering numbering = word.createNumbering();
         BigInteger abstractNumId = numbering.addAbstractNum(new XWPFAbstractNum(abstractNum));
         return numbering.addNum(abstractNumId);
+    }
+
+    /**
+     * A pdf file saved with a doc extension is already pdf: it is kept as it is.
+     */
+    @Test
+    public void testPdfNamedDocIsKeptAsItIs() throws IOException {
+        byte[] pdf;
+        try (PDDocument document = new PDDocument()) {
+            document.addPage(new PDPage(A4));
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            document.save(output);
+            pdf = output.toByteArray();
+        }
+
+        byte[] result = readAll(transformer.transformStreamer(new TestBinaryStreamer("craciunul la romani.doc", pdf), "pdf"));
+        assertArrayEquals(pdf, result);
     }
 
     private PDDocument transform(XWPFDocument word) throws IOException {

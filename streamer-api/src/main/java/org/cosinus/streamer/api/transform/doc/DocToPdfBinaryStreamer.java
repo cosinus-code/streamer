@@ -27,6 +27,7 @@ import org.cosinus.streamer.api.transform.pdf.PdfTextWriter.Alignment;
 import org.cosinus.streamer.api.transform.doc.DocxElement.DocxParagraph;
 import org.cosinus.streamer.api.transform.doc.DocxElement.DocxTable;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -40,9 +41,10 @@ import static org.cosinus.streamer.api.transform.pdf.PdfTextWriter.FONT_SIZE;
 import static org.cosinus.streamer.api.transform.pdf.PdfTextWriter.INDENT;
 
 /**
- * {@link TransformBinaryStreamer} that converts word content (docx or doc) into pdf content.
+ * {@link TransformBinaryStreamer} that converts word content (docx, doc or rtf) into pdf content.
  * <p>
- * The format is detected from the content: office open xml (docx) or word 97-2003 (doc).
+ * The format is detected from the content: office open xml (docx), word 97-2003 (doc) or rich text (rtf).
+ * A content which is already pdf, whatever the file extension, is kept as it is.
  * The text of the document is written in order (see {@link PdfTextWriter}), keeping its basic layout:
  * the headings and the font sizes, the paragraph alignment, the bullets and numbers of the lists,
  * the page breaks, and the tables (as simple grids).
@@ -64,6 +66,18 @@ public class DocToPdfBinaryStreamer extends TransformBinaryStreamer<List<DocxEle
         super(binaryStreamer);
     }
 
+    /**
+     * A content which is already pdf (e.g. a pdf file saved with a doc extension) is returned as it is.
+     */
+    @Override
+    protected InputStream transform(final InputStream input) throws IOException {
+        InputStream content = prepareToCheckMagic(input);
+        if (FileMagic.valueOf(content) == FileMagic.PDF) {
+            return new ByteArrayInputStream(content.readAllBytes());
+        }
+        return super.transform(content);
+    }
+
     @Override
     protected List<DocxElement> read(final InputStream input) throws IOException {
         InputStream content = prepareToCheckMagic(input);
@@ -72,6 +86,7 @@ public class DocToPdfBinaryStreamer extends TransformBinaryStreamer<List<DocxEle
             return switch (format) {
                 case OOXML -> DocxWordReader.read(content);
                 case OLE2 -> DocWordReader.read(content);
+                case RTF -> RtfWordReader.read(content);
                 default -> throw new IOException("Unsupported word document format: " + format);
             };
         } catch (RuntimeException e) {

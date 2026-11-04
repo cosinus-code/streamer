@@ -35,19 +35,31 @@ public abstract class TransformBinaryStreamer<T> extends BinaryStreamerDelegate 
 
     @Override
     public InputStream inputStream() {
-        try (InputStream input = super.inputStream();
-             ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-
-            T source = read(input);
-            if (source == null) {
-                throw new IOException("Unsupported or unreadable source");
-            }
-
-            write(source, output);
-            return new ByteArrayInputStream(output.toByteArray());
+        try (InputStream input = super.inputStream()) {
+            return transform(input);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    /**
+     * Transform the source content: read it, then write it in the target format.
+     * <p>
+     * Override it to handle a source which needs no transformation (e.g. already in the target format).
+     *
+     * @param input the source content, closed by the caller
+     * @return the transformed content
+     * @throws IOException if the source cannot be read or transformed
+     */
+    protected InputStream transform(final InputStream input) throws IOException {
+        T source = read(input);
+        if (source == null) {
+            throw new IOException("Unsupported or unreadable source");
+        }
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        write(source, output);
+        return new ByteArrayInputStream(output.toByteArray());
     }
 
     protected abstract T read(InputStream input) throws IOException;

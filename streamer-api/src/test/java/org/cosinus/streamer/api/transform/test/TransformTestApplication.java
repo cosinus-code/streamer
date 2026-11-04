@@ -25,6 +25,7 @@ import org.cosinus.streamer.api.transform.image.ImageToImageBinaryStreamerTransf
 import org.cosinus.streamer.api.transform.image.ImageToPdfBinaryStreamerTransformer;
 import org.cosinus.streamer.api.transform.pdf.PdfToDocBinaryStreamerTransformer;
 import org.cosinus.streamer.api.transform.pdf.PdfToImageBinaryStreamerTransformer;
+import org.cosinus.streamer.api.transform.doc.DocToImageBinaryStreamerTransformer;
 import org.cosinus.streamer.api.transform.doc.DocToPdfBinaryStreamerTransformer;
 import org.cosinus.swing.boot.SpringSwingBootApplication;
 import org.cosinus.swing.boot.SwingApplicationFrame;
@@ -46,6 +47,7 @@ import org.springframework.context.annotation.Import;
     ExcelToPdfBinaryStreamerTransformer.class,
     CsvToPdfBinaryStreamerTransformer.class,
     DocToPdfBinaryStreamerTransformer.class,
+    DocToImageBinaryStreamerTransformer.class,
     PdfToDocBinaryStreamerTransformer.class,
     PdfToImageBinaryStreamerTransformer.class
 })

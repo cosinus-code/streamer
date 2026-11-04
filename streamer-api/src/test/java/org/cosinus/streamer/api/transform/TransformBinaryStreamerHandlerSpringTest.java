@@ -26,6 +26,7 @@ import org.cosinus.streamer.api.transform.image.ImageToPdfBinaryStreamer;
 import org.cosinus.streamer.api.transform.pdf.PdfToDocBinaryStreamer;
 import org.cosinus.streamer.api.transform.pdf.PdfToImageBinaryStreamer;
 import org.cosinus.streamer.api.transform.test.TransformTestApplication;
+import org.cosinus.streamer.api.transform.doc.DocToImageBinaryStreamer;
 import org.cosinus.streamer.api.transform.doc.DocToPdfBinaryStreamer;
 import org.cosinus.swing.test.boot.SpringSwingBootTest;
 import org.junit.Test;
@@ -47,7 +48,8 @@ import static org.junit.Assert.assertTrue;
 @SpringSwingBootTest(classes = TransformTestApplication.class)
 public class TransformBinaryStreamerHandlerSpringTest {
 
-    private static final List<String> FORMATS = List.of("csv", "xlsx", "xls", "pdf", "png", "jpg", "bmp", "txt");
+    private static final List<String> FORMATS =
+        List.of("csv", "xlsx", "xls", "doc", "docx", "rtf", "pdf", "png", "jpg", "bmp", "txt");
 
     @Autowired
     private TransformBinaryStreamerHandler handler;
@@ -57,7 +59,7 @@ public class TransformBinaryStreamerHandlerSpringTest {
 
     @Test
     public void testAllTransformersAreLoaded() {
-        assertEquals(9, transformers.size());
+        assertEquals(10, transformers.size());
     }
 
     @Test
@@ -98,6 +100,7 @@ public class TransformBinaryStreamerHandlerSpringTest {
     public void testWordToPdf() {
         assertTrue(handler.transformToBinaryStreamer(file("letter.docx"), "pdf") instanceof DocToPdfBinaryStreamer);
         assertTrue(handler.transformToBinaryStreamer(file("letter.doc"), "pdf") instanceof DocToPdfBinaryStreamer);
+        assertTrue(handler.transformToBinaryStreamer(file("letter.rtf"), "pdf") instanceof DocToPdfBinaryStreamer);
     }
 
     @Test
@@ -109,6 +112,13 @@ public class TransformBinaryStreamerHandlerSpringTest {
     public void testPdfToImage() {
         assertTrue(handler.transformToBinaryStreamer(file("report.pdf"), "png") instanceof PdfToImageBinaryStreamer);
         assertTrue(handler.transformToBinaryStreamer(file("report.pdf"), "jpg") instanceof PdfToImageBinaryStreamer);
+    }
+
+    @Test
+    public void testWordToImage() {
+        assertTrue(handler.transformToBinaryStreamer(file("letter.docx"), "png") instanceof DocToImageBinaryStreamer);
+        assertTrue(handler.transformToBinaryStreamer(file("letter.doc"), "jpg") instanceof DocToImageBinaryStreamer);
+        assertTrue(handler.transformToBinaryStreamer(file("letter.rtf"), "png") instanceof DocToImageBinaryStreamer);
     }
 
     @Test
