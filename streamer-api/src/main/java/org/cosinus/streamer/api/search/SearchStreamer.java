@@ -186,4 +186,9 @@ public class SearchStreamer<S extends Streamer<S>> implements ParentStreamer<Fou
     public long getSearchDoneCount() {
         return searchDoneCount.get();
     }
+
+    @Override
+    public boolean canRead() {
+        return true;
+    }
 }
