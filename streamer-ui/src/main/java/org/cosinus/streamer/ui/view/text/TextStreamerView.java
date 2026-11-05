@@ -24,10 +24,15 @@ import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.Viewer;
 import org.cosinus.swing.form.ScrollPane;
 
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.util.List;
 
 import static java.awt.BorderLayout.CENTER;
+import static java.awt.event.InputEvent.SHIFT_DOWN_MASK;
+import static java.awt.event.KeyEvent.CHAR_UNDEFINED;
+import static java.awt.event.KeyEvent.VK_TAB;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.ofNullable;
 
@@ -91,6 +96,23 @@ public class TextStreamerView extends StreamerView<String> {
     @Override
     public LoadWorkerModel<String> getLoadWorkerModel() {
         return textEditor;
+    }
+
+    /**
+     * While the text is editable, the keys without modifier (but shift) typing a character (e.g. Enter, Space)
+     * or bound in the text editor (e.g. Backspace) are handled by the text editor,
+     * and the keys with modifiers (e.g. Ctrl S) run the streamer actions.
+     * <p>
+     * Tab is not handled by the text editor: it switches between the left and right panels, as in the other views.
+     */
+    @Override
+    protected boolean isViewKey(KeyEvent keyEvent) {
+        return textEditor != null &&
+            textEditor.isEditable() &&
+            keyEvent.getKeyCode() != VK_TAB &&
+            (keyEvent.getModifiersEx() & ~SHIFT_DOWN_MASK) == 0 &&
+            (keyEvent.getKeyChar() != CHAR_UNDEFINED ||
+                textEditor.getInputMap(WHEN_FOCUSED).get(KeyStroke.getKeyStrokeForEvent(keyEvent)) != null);
     }
 
     @Override

@@ -229,9 +229,22 @@ public abstract class StreamerView<T> extends Panel {
         getContainer().addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                actionController.runActionByKeyStroke(e);
+                if (!isViewKey(e)) {
+                    actionController.runActionByKeyStroke(e);
+                }
             }
         });
+    }
+
+    /**
+     * Check if a key is handled by the view itself, instead of running the streamer action bound to it
+     * (e.g. Enter adds a new line in a text editor, instead of executing the streamer).
+     *
+     * @param keyEvent the key event
+     * @return true if the key is handled by the view
+     */
+    protected boolean isViewKey(KeyEvent keyEvent) {
+        return false;
     }
 
     protected void initCancelHandler() {
