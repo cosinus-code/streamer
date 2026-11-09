@@ -174,7 +174,7 @@ public abstract class TableStreamerView<T extends Streamable>
 
     @Override
     protected long getItemsCount() {
-        return getDataTableModel().getLoadedSize();
+        return getDataTableModel().getProgressDone();
     }
 
     public DataTableModel<T> getDataTableModel() {

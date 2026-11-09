@@ -26,12 +26,4 @@ public interface LoadWorkerModel<V> extends WorkerModel<V> {
 
     default void setContentIdentifier(String contentIdentifier) {
     }
-
-    default long getTotalSizeToLoad() {
-        return -1;
-    }
-
-    default long getLoadedSize() {
-        return -1;
-    }
 }

@@ -16,30 +16,24 @@
 
 package org.cosinus.streamer.ui.action.execute.load.image;
 
-import org.cosinus.stream.error.AbortPipelineConsumeException;
 import org.cosinus.stream.pipeline.PipelineListener;
-import org.cosinus.stream.pipeline.binary.BinaryPipeline;
-import org.cosinus.stream.pipeline.binary.BinaryPipelineStrategy;
-import org.cosinus.stream.pipeline.binary.BinaryStreamConsumer;
+import org.cosinus.stream.pipeline.PipelineStrategy;
 import org.cosinus.streamer.api.BinaryStreamer;
-import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.image.ImageStreamerView;
-import org.cosinus.swing.error.AbortActionException;
-import org.cosinus.swing.error.ActionException;
 import org.cosinus.swing.image.UpdatableImage;
 import org.cosinus.swing.progress.ProgressModel;
-import org.cosinus.swing.worker.Worker;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UncheckedIOException;
+import org.cosinus.swing.worker.StreamWorker;
 
 import static org.cosinus.swing.format.FormatHandler.MEGA_INT;
 
-public class LoadImageWorker extends Worker<LoadWorkerModel<UpdatableImage>, UpdatableImage, ProgressModel>
-    implements BinaryPipeline, PipelineListener<byte[]>, BinaryPipelineStrategy {
+/**
+ * Worker which loads an image from the input stream of a streamer.
+ * <p>
+ * The pipeline input is the stream of the image updated after each chunk of {@link #IMAGE_LOAD_RATE} bytes read,
+ * and each updated image is published, so the image is shown as it is loaded.
+ */
+public class LoadImageWorker extends StreamWorker<LoadWorkerModel<UpdatableImage>, UpdatableImage, ProgressModel> {
 
     public static final int IMAGE_LOAD_RATE = 3 * MEGA_INT;
 
@@ -50,21 +44,16 @@ public class LoadImageWorker extends Worker<LoadWorkerModel<UpdatableImage>, Upd
     public LoadImageWorker(final LoadImageActionModel actionModel) {
         super(actionModel,
             actionModel.getImageStreamerView().getLoadWorkerModel(),
+            () -> new ImageLoader(actionModel.getStreamerToLoad()).stream(),
             actionModel.getImageStreamerView().getLoadingIndicator().getProgressModel());
         this.streamerToLoad = actionModel.getStreamerToLoad();
         this.imageStreamerView = actionModel.getImageStreamerView();
     }
 
     @Override
-    protected void doWork() {
-        try {
-            openPipeline();
-        } catch (AbortPipelineConsumeException ex) {
-            throw new AbortActionException("Pipeline worker aborted", ex);
-        } catch (IOException | UncheckedIOException ex) {
-            throw new ActionException(ex,
-                "action-error", translator.translate(actionModel.getActionId()), ex.getMessage());
-        }
+    public void preparePipelineOpen(final PipelineStrategy pipelineStrategy,
+                                    final PipelineListener<UpdatableImage> pipelineListener) {
+        streamerToLoad.init();
     }
 
     @Override
@@ -73,52 +62,8 @@ public class LoadImageWorker extends Worker<LoadWorkerModel<UpdatableImage>, Upd
     }
 
     @Override
-    public void preparePipelineOpen(final BinaryPipelineStrategy pipelineStrategy,
-                                    final PipelineListener<byte[]> pipelineListener) {
-        streamerToLoad.init();
-    }
-
-    @Override
-    public PipelineListener<byte[]> getPipelineListener() {
-        return this;
-    }
-
-    @Override
-    public BinaryPipelineStrategy getPipelineStrategy() {
-        return this;
-    }
-
-    @Override
-    public BinaryStreamConsumer openPipelineOutputStream(BinaryPipelineStrategy pipelineStrategy) {
-        return new ImageLoader(this);
-    }
-
-    @Override
     public void afterPipelineClose(boolean pipelineFailed) {
         streamerToLoad.finalizeStreaming();
-    }
-
-    @Override
-    public InputStream inputStream() {
-        return streamerToLoad.binaryStreamer().inputStream();
-    }
-
-    @Override
-    public OutputStream outputStream(boolean append) {
-        return null;
-    }
-
-    @Override
-    public long outputSize() {
-        return streamerToLoad.getSize();
-    }
-
-    public Streamer<byte[]> getStreamerToLoad() {
-        return streamerToLoad;
-    }
-
-    @Override
-    public int getPipelineRate() {
-        return IMAGE_LOAD_RATE;
+        progressModel.finishProgress();
     }
 }

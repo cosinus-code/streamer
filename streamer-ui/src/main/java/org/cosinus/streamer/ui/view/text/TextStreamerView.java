@@ -122,7 +122,7 @@ public class TextStreamerView extends StreamerView<String> {
 
     @Override
     protected long getItemsCount() {
-        return textEditor.getLoadedSize();
+        return textEditor.getProgressDone();
     }
 
     @Override

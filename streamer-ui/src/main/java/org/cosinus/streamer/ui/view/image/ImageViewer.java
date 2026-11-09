@@ -134,13 +134,16 @@ public class ImageViewer extends Panel implements Viewer<byte[]>, LoadWorkerMode
         }
     }
 
+    /**
+     * Reset the viewer to show a new image: the current image is cleared before the new one is loaded,
+     * so the background is shown while loading, and the broken photo icon if no image is loaded.
+     */
     @Override
     public void reset(final Streamer<byte[]> binaryStreamer) {
         this.binaryStreamer = binaryStreamer;
-        if (binaryStreamer == null) {
-            originalImage = null;
-        }
+        originalImage = null;
         loaded = false;
+        repaint();
     }
 
     public Streamer<byte[]> getParentStreamer() {
@@ -149,10 +152,10 @@ public class ImageViewer extends Panel implements Viewer<byte[]>, LoadWorkerMode
 
     private void drawImage(Graphics g, BufferedImage image) {
         drawImageBackground(g);
-        if (imageSettings.isHighQualityOnScaling() &&
-            !imageHandler.isImageFitInCanvas(image, this)) {
-            image = imageHandler.fitImageToCanvas(image, this, imageSettings);
-        }
+//        if (imageSettings.isHighQualityOnScaling() &&
+//            !imageHandler.isImageFitInCanvas(image, this)) {
+//            image = imageHandler.fitImageToCanvas(image, this, imageSettings);
+//        }
         imageHandler.drawFitImage((Graphics2D) g, image,
             getWidth(), getHeight(), true, imageSettings, this);
     }
@@ -176,8 +179,17 @@ public class ImageViewer extends Panel implements Viewer<byte[]>, LoadWorkerMode
     }
 
     @Override
-    public long getLoadedSize() {
-        return originalImage.getSize();
+    public long getProgressDone() {
+        return ofNullable(originalImage)
+            .map(UpdatableImage::getSize)
+            .orElse(-1L);
+    }
+
+    @Override
+    public long getTotalProgressSize() {
+        return ofNullable(binaryStreamer)
+            .map(Streamer::getSize)
+            .orElse(-1L);
     }
 
     public void setImage(UpdatableImage updatableImage) {
@@ -200,6 +212,7 @@ public class ImageViewer extends Panel implements Viewer<byte[]>, LoadWorkerMode
     @Override
     public void finishLoading(LoadWorkerModel<?> loadWorkerModel) {
         loaded = true;
+        repaint();
     }
 
     public void setImageSettings(final ImageSettings imageSettings) {

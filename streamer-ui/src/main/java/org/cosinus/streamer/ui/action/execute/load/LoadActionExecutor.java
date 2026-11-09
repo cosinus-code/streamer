@@ -162,7 +162,7 @@ public class LoadActionExecutor extends WorkerExecutor<LoadActionModel<?>, Worke
             .setContentIdentifier(loadActionModel.getItemToSelectAfterLoad());
 
         Worker worker = loadActionModel instanceof LoadImageActionModel loadImageActionModel ?
-            new LoadImageWorker(loadImageActionModel) :
+            createLoadImageWorker(loadImageActionModel) :
             loadActionModel.getStreamerViewToLoadTo().getName().equals(BINARY_VIEWER) &&
                 loadActionModel.getStreamerToLoad().supportsChannel() ?
                 new LoadChannelWorker(loadActionModel) :
@@ -172,6 +172,17 @@ public class LoadActionExecutor extends WorkerExecutor<LoadActionModel<?>, Worke
             .registerListener(loadActionModel.getStreamerViewToLoadTo().getLoadWorkerListener())
             .registerListener(createWorkerFinishListener(loadActionModel))
             .registerListener(loadActionModel.getStreamerViewToLoadTo().getLoadingIndicator());
+    }
+
+    /**
+     * The image is read through the file channel of the streamer when it supports it, otherwise from its input stream.
+     */
+    private Worker<?, ?, ?> createLoadImageWorker(final LoadImageActionModel loadImageActionModel) {
+        return new LoadImageWorker(loadImageActionModel);
+        //TODO: to improve LoadImageChannelWorker
+//        return loadImageActionModel.getStreamerToLoad().supportsChannel() ?
+//            new LoadImageChannelWorker(loadImageActionModel) :
+//            new LoadImageWorker(loadImageActionModel);
     }
 
     protected WorkerListener createWorkerFinishListener(final LoadActionModel<?> actionModel) {

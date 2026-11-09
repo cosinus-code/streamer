@@ -45,10 +45,16 @@ public class FileBinaryStreamer extends FileStreamer<byte[]> implements BinarySt
         }
     }
 
+    /**
+     * The channel is opened again if it was closed (e.g. when another streamer was loaded),
+     * and only for reading if the file is not writable.
+     */
     @Override
     public FileChannel fileChannel() throws IOException {
-        if (fileChannel == null) {
-            fileChannel = new LazyFileChannel(FileChannel.open(file.toPath(), READ, WRITE));
+        if (fileChannel == null || !fileChannel.isOpen()) {
+            fileChannel = new LazyFileChannel(file.canWrite() ?
+                FileChannel.open(file.toPath(), READ, WRITE) :
+                FileChannel.open(file.toPath(), READ));
         }
         return fileChannel;
     }

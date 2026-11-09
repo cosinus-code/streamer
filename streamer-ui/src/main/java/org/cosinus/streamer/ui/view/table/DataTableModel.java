@@ -224,7 +224,7 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
     }
 
     @Override
-    public long getTotalSizeToLoad() {
+    public long getTotalProgressSize() {
         //TODO: to avoid cast
         if (getParentStreamer() instanceof SearchStreamer<?> searchStreamer) {
             return searchStreamer.getSearchTotalCount();
@@ -235,7 +235,7 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
     }
 
     @Override
-    public long getLoadedSize() {
+    public long getProgressDone() {
         //TODO: to avoid cast
         if (getParentStreamer() instanceof SearchStreamer<?> searchStreamer) {
             return searchStreamer.getSearchDoneCount();

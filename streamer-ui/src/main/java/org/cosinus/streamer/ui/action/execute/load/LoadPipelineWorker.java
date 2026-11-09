@@ -49,21 +49,6 @@ public class LoadPipelineWorker<T> extends StreamWorker<LoadWorkerModel<T>, T, P
     }
 
     @Override
-    public void afterPipelineOpen() {
-        progressModel.startProgress(workerModel.getTotalSizeToLoad());
-    }
-
-    @Override
-    public void afterPipelineDataConsume(T data) {
-        progressModel.updateProgress(workerModel.getLoadedSize(), workerModel.getTotalSizeToLoad());
-    }
-
-    @Override
-    public void afterPipelineClose(boolean pipelineFailed) {
-        progressModel.finishProgress();
-    }
-
-    @Override
     public LoadPipelineWorker<T> registerListener(WorkerListener<LoadWorkerModel<T>, T> workerListener) {
         super.registerListener(workerListener);
         return this;

@@ -76,7 +76,7 @@ public class TextStreamerEditor extends TextEditor implements LoadWorkerModel<St
     }
 
     @Override
-    public long getLoadedSize() {
+    public long getProgressDone() {
         return getText().getBytes().length;
     }
 

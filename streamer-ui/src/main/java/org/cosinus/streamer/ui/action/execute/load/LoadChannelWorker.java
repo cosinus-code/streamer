@@ -19,8 +19,9 @@ package org.cosinus.streamer.ui.action.execute.load;
 
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.ChannelWorker;
+import org.cosinus.swing.worker.WorkerModel;
 
-public class LoadChannelWorker extends ChannelWorker {
+public class LoadChannelWorker extends ChannelWorker<WorkerModel<byte[]>, byte[]> {
 
     private final LoadActionModel<?> loadActionModel;
 
@@ -38,6 +39,11 @@ public class LoadChannelWorker extends ChannelWorker {
         loadActionModel.getStreamerToLoad().init();
         loadActionModel.getStreamerViewToLoadTo().reset((Streamer) loadActionModel.getStreamerToLoad());
         super.doWork();
+    }
+
+    @Override
+    protected void consume(byte[] bytes) {
+        checkStatusAndPublish(bytes);
     }
 
     @Override

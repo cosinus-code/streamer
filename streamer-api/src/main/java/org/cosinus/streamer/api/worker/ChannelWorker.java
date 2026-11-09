@@ -30,20 +30,29 @@ import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
+import static java.lang.Math.clamp;
+import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static org.cosinus.swing.format.FormatHandler.KILO_INT;
 
-public abstract class ChannelWorker extends Worker<WorkerModel<byte[]>, byte[], ProgressModel> {
+/**
+ * Worker which reads the bytes of a {@link BinaryStreamer} through its {@link FileChannel},
+ * from an offset and up to a limit, in chunks passed to {@link #consume(byte[])}.
+ *
+ * @param <M> the type of the worker model
+ * @param <T> the type of the items published by the worker
+ */
+public abstract class ChannelWorker<M extends WorkerModel<T>, T> extends Worker<M, T, ProgressModel> {
 
     protected static final long DEFAULT_BUFFER_SIZE = KILO_INT;
 
     @Autowired
     private ApplicationShutDown applicationShutDown;
 
-    private final BinaryStreamer binaryStreamer;
+    protected final BinaryStreamer binaryStreamer;
 
     protected ChannelWorker(final ActionModel actionModel,
-                            final WorkerModel<byte[]> workerModel,
+                            final M workerModel,
                             final ProgressModel progressModel,
                             final BinaryStreamer binaryStreamer) {
         super(actionModel, workerModel, progressModel);
@@ -56,26 +65,58 @@ public abstract class ChannelWorker extends Worker<WorkerModel<byte[]>, byte[], 
             FileChannel fileChannel = binaryStreamer.fileChannel();
             if (!isCancelled() && fileChannel.isOpen()) {
                 applicationShutDown.register(binaryStreamer.getId(), fileChannel);
-                long offset = offset();
-                long limit = limit();
-                int length = (int) min(limit, fileChannel.size() - offset);
-                ByteBuffer buffer = ByteBuffer.allocateDirect(length);
-                int count = fileChannel.read(buffer, offset());
-                buffer.flip();
-                if (count >= 0) {
-                    byte[] result = new byte[buffer.remaining()];
-                    buffer.get(result);
-                    checkStatusAndPublish(result);
-                }
+                readChannel(fileChannel);
             }
         } catch (IOException ex) {
             throw new UncheckedIOException(ex);
         }
     }
 
+    /**
+     * Read the bytes from the offset up to the limit (or the end of the channel),
+     * in chunks of at most {@link #chunkSize()} bytes.
+     * A chunk is filled with as many reads as needed, as a read can return fewer bytes than asked.
+     */
+    private void readChannel(FileChannel fileChannel) throws IOException {
+        long position = offset();
+        long end = position + clamp(fileChannel.size() - position, 0, limit());
+        ByteBuffer buffer = ByteBuffer.allocate((int) min(max(1, chunkSize()), max(0, end - position)));
+        while (position < end && !isCancelled()) {
+            buffer.clear();
+            buffer.limit((int) min(buffer.capacity(), end - position));
+            while (buffer.hasRemaining()) {
+                if (fileChannel.read(buffer, position + buffer.position()) <= 0) {
+                    break;
+                }
+            }
+            buffer.flip();
+            if (!buffer.hasRemaining()) {
+                break;
+            }
+            byte[] bytes = new byte[buffer.remaining()];
+            buffer.get(bytes);
+            position += bytes.length;
+            consume(bytes);
+        }
+    }
+
+    /**
+     * Consume a chunk of bytes read from the channel.
+     *
+     * @param bytes the bytes read
+     */
+    protected abstract void consume(byte[] bytes);
+
     protected abstract long offset();
 
     protected long limit() {
         return DEFAULT_BUFFER_SIZE;
+    }
+
+    /**
+     * @return the maximum size of a chunk passed to {@link #consume(byte[])}; by default, all bytes up to the limit
+     */
+    protected int chunkSize() {
+        return (int) min(Integer.MAX_VALUE, limit());
     }
 }
