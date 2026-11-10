@@ -29,15 +29,6 @@
       "shortcut": "control R"
     },
     "separator1": {},
-    "menu-view-icon": {},
-    "menu-view-grid": {},
-    "menu-view-details": {
-      "icon": "view-details"
-    },
-    "menu-view-tree": {
-      "icon": "view-tree"
-    },
-    "separator2": {},
     "menu-view-zoom-in": {
       "shortcut": "control EQUALS"
     },
