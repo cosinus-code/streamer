@@ -430,6 +430,24 @@ public abstract class StreamerView<T> extends Panel {
     public void goEnd() {
     }
 
+    /**
+     * Zoom in the content of the view. Nothing by default.
+     */
+    public void zoomIn() {
+    }
+
+    /**
+     * Zoom out the content of the view. Nothing by default.
+     */
+    public void zoomOut() {
+    }
+
+    /**
+     * Reset the zoom of the content of the view. Nothing by default.
+     */
+    public void zoomReset() {
+    }
+
     public void findContent(String name) {
 
     }

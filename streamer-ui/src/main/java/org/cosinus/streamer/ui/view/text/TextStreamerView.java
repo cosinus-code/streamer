@@ -150,6 +150,30 @@ public class TextStreamerView extends StreamerView<String> {
         return new FindTextPanel(textEditor);
     }
 
+    /**
+     * Zoom in by increasing the font size of the text.
+     */
+    @Override
+    public void zoomIn() {
+        textEditor.increaseFontSize();
+    }
+
+    /**
+     * Zoom out by decreasing the font size of the text.
+     */
+    @Override
+    public void zoomOut() {
+        textEditor.decreaseFontSize();
+    }
+
+    /**
+     * Reset the zoom by restoring the initial font size of the text.
+     */
+    @Override
+    public void zoomReset() {
+        textEditor.resetFontSize();
+    }
+
     @Override
     public String getStatus() {
         return translator.translate(

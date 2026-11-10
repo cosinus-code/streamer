@@ -37,6 +37,16 @@
     "menu-view-tree": {
       "icon": "view-tree"
     },
+    "separator2": {},
+    "menu-view-zoom-in": {
+      "shortcut": "control EQUALS"
+    },
+    "menu-view-zoom-out": {
+      "shortcut": "control MINUS"
+    },
+    "menu-view-zoom-reset": {
+      "shortcut": "control 0"
+    },
     "separator3": {},
     "menu-view-left-view": {},
     "menu-view-hidden": {}
