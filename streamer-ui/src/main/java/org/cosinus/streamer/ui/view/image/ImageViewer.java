@@ -43,7 +43,11 @@ import static java.awt.Color.black;
 import static java.awt.Color.gray;
 import static java.awt.event.KeyEvent.*;
 import static java.awt.event.MouseEvent.BUTTON3;
+import static java.lang.Math.clamp;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static java.util.Optional.ofNullable;
+import static javax.swing.SwingUtilities.invokeLater;
 import static org.cosinus.streamer.ui.action.DeleteStreamerAction.DELETE_STREAMER_ACTION_ID;
 import static org.cosinus.streamer.ui.action.ExecuteStreamerAction.EXECUTE_STREAMER_ACTION_ID;
 import static org.cosinus.streamer.ui.action.ExecuteStreamerWithAction.EXECUTE_STREAMER_WITH_ACTION_ID;
@@ -59,6 +63,15 @@ public class ImageViewer extends Panel implements Viewer<byte[]>, LoadWorkerMode
     public static final String IMAGE_SETTINGS_BALANCED = "image-settings-balanced";
 
     public static final String IMAGE_QUALITY = "image-quality";
+
+    /**
+     * The factor the scale is multiplied (zoom in) or divided (zoom out) by.
+     */
+    public static final double ZOOM_STEP = 1.25;
+
+    public static final double MIN_ZOOM = 0.05;
+
+    public static final double MAX_ZOOM = 16;
 
     @Autowired
     private ActionController actionController;
@@ -87,6 +100,11 @@ public class ImageViewer extends Panel implements Viewer<byte[]>, LoadWorkerMode
     private boolean loaded;
 
     private boolean active = true;
+
+    /**
+     * The scale the image is shown at, or null to fit the image in the viewer (shrunk, never enlarged).
+     */
+    private Double zoom;
 
     @Override
     public void initComponents() {
@@ -143,7 +161,92 @@ public class ImageViewer extends Panel implements Viewer<byte[]>, LoadWorkerMode
         this.binaryStreamer = binaryStreamer;
         originalImage = null;
         loaded = false;
+        zoom = null;
+        setPreferredSize(null);
+        revalidate();
         repaint();
+    }
+
+    /**
+     * Enlarge the image, starting from the scale currently shown.
+     */
+    public void zoomIn() {
+        getShownImage()
+            .ifPresent(image -> setZoom(image, getCurrentScale(image) * ZOOM_STEP));
+    }
+
+    /**
+     * Shrink the image, starting from the scale currently shown.
+     */
+    public void zoomOut() {
+        getShownImage()
+            .ifPresent(image -> setZoom(image, getCurrentScale(image) / ZOOM_STEP));
+    }
+
+    /**
+     * Show the image fitted in the viewer again.
+     */
+    public void zoomReset() {
+        getShownImage()
+            .ifPresent(image -> setZoom(image, null));
+    }
+
+    /**
+     * @return the current zoom, or null if the image is fitted in the viewer
+     */
+    public Double getZoom() {
+        return zoom;
+    }
+
+    private Optional<BufferedImage> getShownImage() {
+        return ofNullable(originalImage)
+            .map(UpdatableImage::getImage);
+    }
+
+    /**
+     * Set the zoom, keeping the point at the center of the visible area at its center.
+     * The preferred size of the viewer is the size of the zoomed image, so it is scrolled when larger than the view.
+     */
+    private void setZoom(BufferedImage image, Double newZoom) {
+        Rectangle visible = getVisibleRect();
+        double centerX = getWidth() > 0 ? (visible.getCenterX() / getWidth()) : 0.5;
+        double centerY = getHeight() > 0 ? (visible.getCenterY() / getHeight()) : 0.5;
+
+        zoom = ofNullable(newZoom)
+            .map(value -> clamp(value, MIN_ZOOM, MAX_ZOOM))
+            .orElse(null);
+        setPreferredSize(ofNullable(zoom)
+            .map(scale -> getScaledSize(image, scale))
+            .orElse(null));
+        revalidate();
+        repaint();
+
+        if (zoom != null) {
+            invokeLater(() -> {
+                Rectangle newVisible = getVisibleRect();
+                int x = (int) (centerX * getWidth() - newVisible.width / 2d);
+                int y = (int) (centerY * getHeight() - newVisible.height / 2d);
+                scrollRectToVisible(new Rectangle(x, y, newVisible.width, newVisible.height));
+            });
+        }
+    }
+
+    /**
+     * @return the scale the image is shown at: the zoom, or the scale fitting the image in the viewer
+     */
+    private double getCurrentScale(BufferedImage image) {
+        return ofNullable(zoom)
+            .orElseGet(() -> getWidth() > 0 && getHeight() > 0 ?
+                min(1, min(
+                    (double) getWidth() / image.getWidth(),
+                    (double) getHeight() / image.getHeight())) :
+                1);
+    }
+
+    private Dimension getScaledSize(BufferedImage image, double scale) {
+        return new Dimension(
+            max(1, (int) Math.round(image.getWidth() * scale)),
+            max(1, (int) Math.round(image.getHeight() * scale)));
     }
 
     public Streamer<byte[]> getParentStreamer() {
@@ -156,8 +259,15 @@ public class ImageViewer extends Panel implements Viewer<byte[]>, LoadWorkerMode
 //            !imageHandler.isImageFitInCanvas(image, this)) {
 //            image = imageHandler.fitImageToCanvas(image, this, imageSettings);
 //        }
-        imageHandler.drawFitImage((Graphics2D) g, image,
-            getWidth(), getHeight(), true, imageSettings, this);
+        if (zoom == null) {
+            imageHandler.drawFitImage((Graphics2D) g, image,
+                getWidth(), getHeight(), true, imageSettings, this);
+        } else {
+            Dimension size = getScaledSize(image, zoom);
+            int x = max(0, (getWidth() - size.width) / 2);
+            int y = max(0, (getHeight() - size.height) / 2);
+            imageHandler.drawImage((Graphics2D) g, image, x, y, size.width, size.height, imageSettings, this);
+        }
     }
 
     private void drawBrokenImage(Graphics g) {

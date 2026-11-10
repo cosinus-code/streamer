@@ -195,6 +195,21 @@ public class ImageStreamerView extends StreamerView<byte[]> {
     }
 
     @Override
+    public void zoomIn() {
+        imageViewer.zoomIn();
+    }
+
+    @Override
+    public void zoomOut() {
+        imageViewer.zoomOut();
+    }
+
+    @Override
+    public void zoomReset() {
+        imageViewer.zoomReset();
+    }
+
+    @Override
     public void translate() {
         imageViewer.translate();
     }
