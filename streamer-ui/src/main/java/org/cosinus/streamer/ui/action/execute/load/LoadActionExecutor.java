@@ -28,6 +28,7 @@ import org.cosinus.streamer.ui.action.execute.save.SaveWorkerExecutor;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
+import org.cosinus.streamer.ui.view.StreamerViewStorage;
 import org.cosinus.streamer.ui.view.image.ImageStreamerView;
 import org.cosinus.streamer.ui.view.ViewItem;
 import org.cosinus.swing.action.execute.ActionExecutor;
@@ -44,6 +45,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -76,13 +78,16 @@ public class LoadActionExecutor extends WorkerExecutor<LoadActionModel<?>, Worke
 
     private final ApplicationShutDown applicationShutDown;
 
+    private final StreamerViewStorage streamerViewStorage;
+
     protected LoadActionExecutor(final StreamerViewHandler streamerViewHandler,
                                  final BinaryExpanderHandler binaryExpanderHandler,
                                  final DialogHandler dialogHandler,
                                  final Translator translator,
                                  final SaveWorkerExecutor saveWorkerExecutor,
                                  final Preferences preferences,
-                                 final ApplicationShutDown applicationShutDown) {
+                                 final ApplicationShutDown applicationShutDown,
+                                 final StreamerViewStorage streamerViewStorage) {
         this.streamerViewHandler = streamerViewHandler;
         this.binaryExpanderHandler = binaryExpanderHandler;
         this.dialogHandler = dialogHandler;
@@ -90,6 +95,7 @@ public class LoadActionExecutor extends WorkerExecutor<LoadActionModel<?>, Worke
         this.saveWorkerExecutor = saveWorkerExecutor;
         this.preferences = preferences;
         this.applicationShutDown = applicationShutDown;
+        this.streamerViewStorage = streamerViewStorage;
     }
 
     @Override
@@ -147,12 +153,23 @@ public class LoadActionExecutor extends WorkerExecutor<LoadActionModel<?>, Worke
             .orElse(actionModel));
     }
 
+    /**
+     * The default view is the one preferred in the panel for the kind of views of the streamer, if still available for it,
+     * otherwise the preferred view of the location for a parent, or the first available view.
+     */
     private String getDefaultViewName(Streamer<?> streamerToLoad, PanelLocation location) {
-        //TODO: to remember the last view used for this streamer type
+        List<String> availableViewNames = streamerViewHandler.getAvailableViewNames(streamerToLoad);
+        return streamerViewStorage.loadPreferredView(streamerToLoad, location)
+            .filter(availableViewNames::contains)
+            .orElseGet(() -> getDefaultViewName(streamerToLoad, location, availableViewNames));
+    }
+
+    private String getDefaultViewName(Streamer<?> streamerToLoad, PanelLocation location,
+                                      List<String> availableViewNames) {
         return streamerToLoad.isParent() ?
             streamerViewHandler.getPreferredViewName(location)
                 .orElse(null) :
-            streamerViewHandler.getAvailableViewNames(streamerToLoad)
+            availableViewNames
                 .stream()
                 .findFirst()
                 .orElse(null);

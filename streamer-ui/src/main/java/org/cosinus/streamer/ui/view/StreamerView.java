@@ -221,8 +221,14 @@ public abstract class StreamerView<T> extends Panel {
             .orElse(viewName);
     }
 
+    /**
+     * The view chosen in the alternative views popup is saved as preferred in this panel for the same kind of views.
+     */
     private ActionListener changeViewAction(String viewName) {
-        return event -> changeViewAction.run(new ChangeViewActionModel(viewName));
+        return event -> {
+            streamerViewStorage.savePreferredView(parentStreamer, getCurrentLocation(), viewName);
+            changeViewAction.run(new ChangeViewActionModel(viewName));
+        };
     }
 
     protected CustomProgressBar createLoadingIndicator() {

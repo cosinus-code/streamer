@@ -32,8 +32,8 @@ public class StreamerViewStorage {
 
     public static final String LAST_STREAMER = "last.streamer.";
 
-//    public static final String LAST_VIEW = "last.view.";
-//
+    public static final String PREFERRED_VIEW = "preferred.view.";
+
     private final ApplicationStorage applicationStorage;
 
     public StreamerViewStorage(ApplicationStorage applicationStorage) {
@@ -49,14 +49,34 @@ public class StreamerViewStorage {
             .map(Streamer::getUrlPath)
             .ifPresent(path -> applicationStorage.saveString(LAST_STREAMER + location, path));
     }
-//
-//    public Optional<String> loadLastLoadedView(PanelLocation location) {
-//        return ofNullable(applicationStorage.getString(LAST_VIEW + location));
-//    }
-//
-//    public <T> void saveLastLoadedView(StreamerView<T, T> streamerView, PanelLocation location) {
-//        ofNullable(streamerView)
-//            .map(StreamerView::getName)
-//            .ifPresent(path -> applicationStorage.saveString(LAST_VIEW + location, path));
-//    }
+
+    /**
+     * @param streamer the streamer to show
+     * @param location the location of the panel to show it in
+     * @return the name of the view preferred in the panel for the kind of views of the streamer
+     * (see {@link Streamer#getViewId()})
+     */
+    public <T> Optional<String> loadPreferredView(Streamer<T> streamer, PanelLocation location) {
+        return ofNullable(streamer)
+            .map(Streamer::getViewId)
+            .map(viewId -> applicationStorage.getString(preferredViewKey(viewId, location)));
+    }
+
+    /**
+     * Save the view as preferred in the panel for the kind of views of the streamer
+     * (see {@link Streamer#getViewId()}).
+     *
+     * @param streamer the streamer shown
+     * @param location the location of the panel showing it
+     * @param viewName the name of the view
+     */
+    public <T> void savePreferredView(Streamer<T> streamer, PanelLocation location, String viewName) {
+        ofNullable(streamer)
+            .map(Streamer::getViewId)
+            .ifPresent(viewId -> applicationStorage.saveString(preferredViewKey(viewId, location), viewName));
+    }
+
+    private String preferredViewKey(String viewId, PanelLocation location) {
+        return PREFERRED_VIEW + location + "." + viewId;
+    }
 }
