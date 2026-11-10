@@ -35,7 +35,17 @@ import static org.cosinus.swing.icon.IconSize.X32;
 
 public class IconCellPanel extends Panel {
 
-    private final int margin = 3;
+    /**
+     * The margin around the cell content and around the name text.
+     */
+    public static final int CELL_MARGIN = 3;
+
+    /**
+     * The margins on both sides of the name text: around the cell content and around the text.
+     */
+    public static final int TEXT_HORIZONTAL_MARGINS = 4 * CELL_MARGIN;
+
+    private final int margin = CELL_MARGIN;
 
     @Autowired
     protected Preferences preferences;
@@ -56,7 +66,7 @@ public class IconCellPanel extends Panel {
         setBorder(emptyBorder(margin));
         setOpaque(false);
 
-        int maxWidth = cellWidth - 4 * margin;
+        int maxWidth = cellWidth - TEXT_HORIZONTAL_MARGINS;
         TextWrapper textWrapper = new TextWrapper(maxWidth, textLabel)
             .wrapOnSeparators(item.toString(), " .-_)(,");
 
@@ -107,6 +117,6 @@ public class IconCellPanel extends Panel {
 
     public Rectangle getTextBound() {
         return new Rectangle(margin, getIconSize() + margin,
-            cellWidth - 4 * margin, wrappedTextHML.height() - 2 * margin);
+            cellWidth - TEXT_HORIZONTAL_MARGINS, wrappedTextHML.height() - 2 * margin);
     }
 }

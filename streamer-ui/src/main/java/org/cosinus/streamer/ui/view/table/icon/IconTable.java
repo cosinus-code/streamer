@@ -46,6 +46,48 @@ public class IconTable<T extends Streamable> extends DataTable<T> {
 
     public static final int PREVIEW_CELL_SIZE = 100;
 
+    /**
+     * The ratio of the cell width to the icon size, so the cells keep their proportions when the icon size changes.
+     */
+    public static final double CELL_WIDTH_TO_ICON_RATIO = 2;
+
+    /**
+     * The ratio of the cell width to the icon size with the Windows look and feel.
+     */
+    public static final double CELL_WIDTH_TO_ICON_RATIO_WINDOWS = 1.25;
+
+    /**
+     * The ratio of the cell height to the icon size, so the cells keep their proportions when the icon size changes;
+     * a row is still enlarged when the name below the icon needs more room.
+     */
+    public static final double CELL_HEIGHT_TO_ICON_RATIO = 2;
+
+    /**
+     * The minimum cell width, so the names below small icons are not wrapped on too many lines.
+     */
+    public static final int MIN_CELL_WIDTH = 64;
+
+    /**
+     * The width added to the preview size for the cell width in preview mode.
+     */
+    public static final int PREVIEW_CELL_WIDTH_PADDING = 52;
+
+    /**
+     * The width added to the preview size for the cell width in preview mode, with the Windows look and feel.
+     */
+    public static final int PREVIEW_CELL_WIDTH_PADDING_WINDOWS = 8;
+
+    /**
+     * The height added to the preview size and the row height for the cell height in preview mode.
+     */
+    public static final int PREVIEW_CELL_HEIGHT_PADDING = 14;
+
+    /**
+     * The height added to the preview size and the row height for the cell height in preview mode,
+     * with the Windows look and feel.
+     */
+    public static final int PREVIEW_CELL_HEIGHT_PADDING_WINDOWS = 21;
+
     @Autowired
     private ErrorHandler errorHandler;
 
@@ -171,17 +213,30 @@ public class IconTable<T extends Streamable> extends DataTable<T> {
         super.changeSelection(newRow, newColumn, toggle, extend);
     }
 
+    /**
+     * @return the cell width: proportional to the icon size, but at least {@value #MIN_CELL_WIDTH},
+     * or the preview size plus a padding in preview mode
+     */
     public int getCellWidth() {
-        return getIconDimension() + (uiHandler.isLookAndFeelWindows() ? 8 : 52);
+        boolean windows = uiHandler.isLookAndFeelWindows();
+        if (preferences.booleanPreference(PREVIEW)) {
+            return PREVIEW_CELL_SIZE +
+                (windows ? PREVIEW_CELL_WIDTH_PADDING_WINDOWS : PREVIEW_CELL_WIDTH_PADDING);
+        }
+        return Math.max(MIN_CELL_WIDTH, (int) Math.round(getIconDimension() *
+            (windows ? CELL_WIDTH_TO_ICON_RATIO_WINDOWS : CELL_WIDTH_TO_ICON_RATIO)));
     }
 
+    /**
+     * @return the cell height: proportional to the icon size,
+     * or the preview size plus the row height and a padding in preview mode
+     */
     public int getCellHeight() {
         if (preferences.booleanPreference(PREVIEW)) {
-            int rowHeight = preferences.intPreference(ROW_HEIGHT);
-            return getIconDimension() + rowHeight + (uiHandler.isLookAndFeelWindows() ? 21 : 14);
+            return PREVIEW_CELL_SIZE + preferences.intPreference(ROW_HEIGHT) +
+                (uiHandler.isLookAndFeelWindows() ? PREVIEW_CELL_HEIGHT_PADDING_WINDOWS : PREVIEW_CELL_HEIGHT_PADDING);
         }
-
-        return getIconDimension();
+        return (int) Math.round(getIconDimension() * CELL_HEIGHT_TO_ICON_RATIO);
     }
 
     public int getIconDimension() {
