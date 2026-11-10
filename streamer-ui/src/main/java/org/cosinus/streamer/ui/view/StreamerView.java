@@ -28,7 +28,6 @@ import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.menu.MenuHandler;
-import org.cosinus.streamer.ui.view.table.ViewItem;
 import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.error.ErrorHandler;
@@ -48,12 +47,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static java.awt.BorderLayout.*;
+import static java.awt.BorderLayout.CENTER;
+import static java.awt.BorderLayout.NORTH;
+import static java.awt.BorderLayout.SOUTH;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
@@ -324,6 +331,7 @@ public abstract class StreamerView<T> extends Panel {
             getContainer().requestFocus();
         }
     }
+
     public void preventCancelAction() {
         cancelActionPrevented = true;
     }
@@ -513,6 +521,13 @@ public abstract class StreamerView<T> extends Panel {
         return selectedItemsCount > 0 ?
             translator.translate(STATUS_SELECTED_ITEMS_COUNT_KEY, selectedItemsCount, getItemsCount()) :
             translator.translate(STATUS_ITEMS_COUNT_KEY, getItemsCount());
+    }
+
+    public ViewItemComparator getSorting() {
+        return null;
+    }
+
+    public void setSorting(ViewItemComparator sorting) {
     }
 
     protected abstract Viewer<T> createViewer();

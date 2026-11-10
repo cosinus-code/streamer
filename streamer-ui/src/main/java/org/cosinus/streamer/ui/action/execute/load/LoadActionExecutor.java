@@ -29,7 +29,7 @@ import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.streamer.ui.view.image.ImageStreamerView;
-import org.cosinus.streamer.ui.view.table.ViewItem;
+import org.cosinus.streamer.ui.view.ViewItem;
 import org.cosinus.swing.action.execute.ActionExecutor;
 import org.cosinus.swing.boot.cleanup.ApplicationShutDown;
 import org.cosinus.swing.dialog.DialogHandler;
@@ -132,6 +132,10 @@ public class LoadActionExecutor extends WorkerExecutor<LoadActionModel<?>, Worke
             .orElseGet(() -> streamerViewHandler.createStreamerView(actionModel.getLocationToLoadTo(), viewName));
         streamerViewHandler.setView(actionModel.getLocationToLoadTo(), streamerViewToLoadTo);
         streamerViewToLoadTo.setParentStreamer(streamerToLoad);
+
+        ofNullable(currentStreamerView)
+            .map(StreamerView::getSorting)
+            .ifPresent(streamerViewToLoadTo::setSorting);
 
         actionModel.setStreamerViewToLoadTo(streamerViewToLoadTo);
 

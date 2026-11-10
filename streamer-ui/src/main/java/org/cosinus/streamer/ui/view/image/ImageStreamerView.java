@@ -25,10 +25,13 @@ import org.cosinus.streamer.ui.action.execute.load.image.LoadImageActionModel;
 import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.Viewer;
+import org.cosinus.streamer.ui.view.ViewItem;
+import org.cosinus.streamer.ui.view.ViewItemComparator;
 import org.cosinus.swing.form.ScrollPane;
 import org.cosinus.swing.image.UpdatableImage;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -36,6 +39,8 @@ import java.util.Optional;
 import static java.awt.BorderLayout.CENTER;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toCollection;
+import static javax.swing.SwingUtilities.invokeLater;
 
 /**
  * Image streamer view
@@ -56,6 +61,8 @@ public class ImageStreamerView extends StreamerView<byte[]> {
 
     private int currentImagePosition;
 
+    protected ViewItemComparator sorting;
+
     public ImageStreamerView(PanelLocation location) {
         super(location);
     }
@@ -73,6 +80,8 @@ public class ImageStreamerView extends StreamerView<byte[]> {
 
         initCancelHandler();
         initFocusHandling();
+
+        sorting = new ViewItemComparator();
     }
 
     @Override
@@ -105,6 +114,10 @@ public class ImageStreamerView extends StreamerView<byte[]> {
         return imageStreamers.size();
     }
 
+    /**
+     * The images of the folder are listed again, in the current sorting order,
+     * so the position and the number of images are up-to-date (e.g. after an image was deleted).
+     */
     @Override
     public void reset(Streamer<byte[]> binaryStreamer) {
         imageViewer.reset(binaryStreamer);
@@ -113,9 +126,15 @@ public class ImageStreamerView extends StreamerView<byte[]> {
             .stream()
             .filter(Objects::nonNull)
             .filter(Streamer::isImage)
+            .map(ViewItem::new)
+            .sorted(sorting)
+            .map(ViewItem::getStreamable)
+            .map(Streamer.class::cast)
             .map(Streamer::binaryStreamer)
-            .toList();
+            .collect(toCollection(ArrayList::new));
         currentImagePosition = imageStreamers.indexOf(binaryStreamer) + 1;
+
+        invokeLater(this::updateStatus);
     }
 
     @Override
@@ -126,67 +145,51 @@ public class ImageStreamerView extends StreamerView<byte[]> {
     }
 
     public void showNextImage() {
-        getNextSibling()
-            .map(nextStreamer -> new LoadImageActionModel(nextStreamer, this))
-            .ifPresent(loadImageExecutor::execute);
+        showImage(getImage(currentImagePosition));
     }
 
     public void showPreviousImage() {
-        getPreviousSibling()
-            .map(nextStreamer -> new LoadImageActionModel(nextStreamer, this))
-            .ifPresent(loadImageExecutor::execute);
+        showImage(getImage(currentImagePosition - 2));
     }
 
     public void showFirstImage() {
-        getFirstSibling()
-            .map(nextStreamer -> new LoadImageActionModel(nextStreamer, this))
-            .ifPresent(loadImageExecutor::execute);
+        showImage(getImage(0));
     }
 
     public void showLastImage() {
-        getLastSibling()
-            .map(nextStreamer -> new LoadImageActionModel(nextStreamer, this))
+        showImage(getImage(imageStreamers.size() - 1));
+    }
+
+    private void showImage(Optional<BinaryStreamer> imageStreamer) {
+        imageStreamer
+            .map(streamer -> new LoadImageActionModel(streamer, this))
             .ifPresent(loadImageExecutor::execute);
     }
 
-    private Optional<BinaryStreamer> getNextSibling() {
-        return getSiblingImageInOrder(imageViewer.getParentStreamer(), true, true);
+    private Optional<BinaryStreamer> getImage(int index) {
+        return index >= 0 && index < imageStreamers.size() ?
+            Optional.of(imageStreamers.get(index)) :
+            Optional.empty();
     }
 
-    private Optional<BinaryStreamer> getPreviousSibling() {
-        return getSiblingImageInOrder(imageViewer.getParentStreamer(), false, true);
-    }
-
-    private Optional<BinaryStreamer> getFirstSibling() {
-        return getSiblingImageInOrder(imageViewer.getParentStreamer(), true, false);
-    }
-
-    private Optional<BinaryStreamer> getLastSibling() {
-        return getSiblingImageInOrder(imageViewer.getParentStreamer(), false, false);
-    }
-
-    private Optional<BinaryStreamer> getSiblingImageInOrder(Streamer<byte[]> binaryStreamer, boolean ascending, boolean relative) {
-        return imageStreamers
-            .stream()
-            .filter(streamer -> !relative || areStreamsOrdered(binaryStreamer, streamer, ascending))
-            .reduce((current, next) -> areStreamsOrdered(current, next, ascending) ? current : next);
-    }
-
-    private boolean areStreamsOrdered(Streamer<byte[]> current, Streamer<byte[]> next, boolean ascending) {
-        return current.getName().compareTo(next.getName()) * (ascending ? 1 : -1) < 0;
-    }
-
+    /**
+     * Delete the current image and show the next one, or the previous one if it was the last image.
+     * If the image cannot be deleted, it is still shown.
+     */
     public void deleteCurrentImage() {
         ofNullable(imageViewer.getParentStreamer())
+            .filter(binaryStreamer -> binaryStreamer.delete(true))
             .ifPresent(binaryStreamer -> {
-                binaryStreamer.delete(true);
+                int deletedIndex = currentImagePosition - 1;
                 imageStreamers.remove(binaryStreamer);
-                getNextSibling()
-                    .or(this::getLastSibling)
+                getImage(deletedIndex)
+                    .or(() -> getImage(imageStreamers.size() - 1))
                     .map(streamer -> new LoadImageActionModel(streamer, this))
                     .ifPresentOrElse(loadImageExecutor::execute, () -> {
                         imageViewer.reset(null);
                         imageViewer.repaint();
+                        currentImagePosition = 0;
+                        updateStatus();
                     });
             });
     }
@@ -194,5 +197,15 @@ public class ImageStreamerView extends StreamerView<byte[]> {
     @Override
     public void translate() {
         imageViewer.translate();
+    }
+
+    @Override
+    public ViewItemComparator getSorting() {
+        return sorting;
+    }
+
+    @Override
+    public void setSorting(ViewItemComparator sorting) {
+        this.sorting = sorting;
     }
 }

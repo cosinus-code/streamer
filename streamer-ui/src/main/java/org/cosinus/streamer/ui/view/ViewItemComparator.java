@@ -14,34 +14,13 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.view.table;
+package org.cosinus.streamer.ui.view;
 
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.Comparator;
 
-public class ViewItemComparator implements Comparator<ViewItem> {
-
-    protected int column;
-
-    private boolean ascending = true;
-
-    public void sort(int column) {
-        sort(column, this.column != column || !ascending);
-    }
-
-    public void sort(int column, boolean ascending) {
-        this.column = column;
-        this.ascending = ascending;
-    }
-
-    public int getSortColumn() {
-        return column;
-    }
-
-    public boolean isSortAscending() {
-        return ascending;
-    }
+public class ViewItemComparator extends ViewSorting implements Comparator<ViewItem> {
 
     @Override
     public int compare(ViewItem item1, ViewItem item2) {

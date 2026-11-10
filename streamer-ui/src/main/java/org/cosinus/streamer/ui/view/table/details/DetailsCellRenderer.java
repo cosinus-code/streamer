@@ -17,7 +17,7 @@
 package org.cosinus.streamer.ui.view.table.details;
 
 import org.cosinus.streamer.ui.view.table.TableCellRenderer;
-import org.cosinus.streamer.ui.view.table.ViewItem;
+import org.cosinus.streamer.ui.view.ViewItem;
 import org.cosinus.swing.format.FormatHandler;
 import org.cosinus.swing.icon.IconSize;
 import org.cosinus.swing.text.HtmlText;

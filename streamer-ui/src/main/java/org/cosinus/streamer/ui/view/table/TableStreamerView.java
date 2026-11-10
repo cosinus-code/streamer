@@ -23,6 +23,8 @@ import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.DefaultStreamerView;
 import org.cosinus.streamer.ui.view.FindPanel;
 import org.cosinus.streamer.ui.view.PanelLocation;
+import org.cosinus.streamer.ui.view.ViewItem;
+import org.cosinus.streamer.ui.view.ViewItemComparator;
 import org.cosinus.streamer.ui.view.Viewer;
 import org.cosinus.swing.form.ScrollPane;
 import org.cosinus.swing.menu.PopupMenu;
@@ -193,6 +195,17 @@ public abstract class TableStreamerView<T extends Streamable>
         table.translate();
         popupContextMenu.translate();
         updateStatus();
+    }
+
+    public ViewItemComparator getSorting() {
+        return getDataTableModel().getSorting();
+
+    }
+
+    public void setSorting(ViewItemComparator sorting) {
+        getDataTableModel().setSortColumn(
+            getDataTableModel().getSortedColumn(),
+            getDataTableModel().isSortAscending());
     }
 
     private class ResizeListener extends ComponentAdapter {

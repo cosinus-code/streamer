@@ -23,7 +23,7 @@
 package org.cosinus.streamer.ui.view.table.icon;
 
 import org.cosinus.streamer.ui.view.table.TableCellRenderer;
-import org.cosinus.streamer.ui.view.table.ViewItem;
+import org.cosinus.streamer.ui.view.ViewItem;
 
 import javax.swing.*;
 import javax.swing.text.MutableAttributeSet;

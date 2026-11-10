@@ -18,7 +18,7 @@ package org.cosinus.streamer.ui.view.table.grid;
 
 import org.cosinus.streamer.api.value.Value;
 import org.cosinus.streamer.ui.view.table.TableCellRenderer;
-import org.cosinus.streamer.ui.view.table.ViewItem;
+import org.cosinus.streamer.ui.view.ViewItem;
 
 import javax.swing.*;
 import javax.swing.border.Border;

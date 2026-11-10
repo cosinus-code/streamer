@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.view.table;
+package org.cosinus.streamer.ui.view;
 
 import lombok.Getter;
 import org.cosinus.streamer.api.Streamable;

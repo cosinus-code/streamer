@@ -16,7 +16,7 @@
 
 package org.cosinus.streamer.ui.view.table.icon;
 
-import org.cosinus.streamer.ui.view.table.ViewItem;
+import org.cosinus.streamer.ui.view.ViewItem;
 import org.cosinus.swing.form.Panel;
 import org.cosinus.swing.icon.IconSize;
 import org.cosinus.swing.preference.Preferences;

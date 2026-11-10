@@ -24,6 +24,8 @@ import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.search.SearchStreamer;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
+import org.cosinus.streamer.ui.view.ViewItem;
+import org.cosinus.streamer.ui.view.ViewItemComparator;
 import org.cosinus.swing.form.TableModel;
 import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.worker.WorkerModel;
@@ -142,6 +144,10 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
             .map(streamableMap::get);
     }
 
+    public ViewItemComparator getSorting() {
+        return comparator;
+    }
+
     public boolean isSortAscending() {
         return comparator.isSortAscending();
     }
@@ -197,7 +203,7 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
 
     @Override
     public void update(List<T> items) {
-        if (!items.isEmpty() && items.get(0) == null) {
+        if (!items.isEmpty() && items.getFirst() == null) {
             //TODO: this is just an workaround
             return;
         }
