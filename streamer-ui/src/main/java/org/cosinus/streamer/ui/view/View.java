@@ -29,7 +29,6 @@ public enum View {
     ICON("view-icon", ICON_VIEW_ICON),
     GRID("view-grid", ICON_VIEW_GRID),
     DETAILS("view-details", ICON_VIEW_DETAILS),
-    LIST("view-list", ICON_VIEW_LIST),
     TREE("view-tree", ICON_VIEW_TREE),
     TEXT_EDITOR("text-editor", ICON_TEXT_EDITOR),
     IMAGE_VIEWER("image-viewer", ICON_IMAGE),
