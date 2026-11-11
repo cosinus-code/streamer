@@ -17,6 +17,7 @@
 package org.cosinus.streamer.api.search;
 
 import lombok.Getter;
+import org.cosinus.streamer.api.DefaultPipelineStrategy;
 import org.cosinus.streamer.api.ParentStreamer;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.StreamerFilter;
@@ -104,7 +105,7 @@ public class SearchStreamer<S extends Streamer<S>> implements ParentStreamer<Fou
 
     private Stream<S> internalStream() {
         return deepSearch ?
-            currentStreamer.flatStream(IN_DEPTH, NO_STRATEGY, ALL_STREAMERS) :
+            currentStreamer.flatStream(IN_DEPTH, new DefaultPipelineStrategy(), ALL_STREAMERS) :
             currentStreamer.stream();
     }
 
