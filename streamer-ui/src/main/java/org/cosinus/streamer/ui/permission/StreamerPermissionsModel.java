@@ -43,6 +43,12 @@ public class StreamerPermissionsModel implements UIModel {
     private static final String TEXT_VIEW = "permissions-text-view";
     private static final String NUMBER_VIEW = "permissions-number-view";
 
+    private static final String SHARED = "shared";
+    private static final String SHARE_NAME = "share-name";
+    private static final String SHARE_COMMENT = "share-comment";
+    private static final String ALLOW_OTHERS_TO_EDIT = "allow-others-to-edit";
+    private static final String GUEST_ACCESS = "guest-access";
+
     private static final String READ_PERMISSION_KEY = "read";
     private static final String WRITE_PERMISSION_KEY = "write";
     private static final String EXECUTE_PERMISSION_KEY = "execute";
@@ -57,7 +63,12 @@ public class StreamerPermissionsModel implements UIModel {
         SET_GROUP_ID,
         STICKY,
         TEXT_VIEW,
-        NUMBER_VIEW);
+        NUMBER_VIEW,
+        SHARED,
+        SHARE_NAME,
+        SHARE_COMMENT,
+        ALLOW_OTHERS_TO_EDIT,
+        GUEST_ACCESS);
 
     @Autowired
     private Translator translator;
@@ -108,9 +119,14 @@ public class StreamerPermissionsModel implements UIModel {
                     permissions.setOthersWrite(values.get(1).selected());
                     permissions.setOthersExecute(values.get(2).selected());
                 }
-                case SET_USER_ID -> permissions.setSetUserId(value instanceof Boolean b && b);
-                case SET_GROUP_ID -> permissions.setSetGroupId(value instanceof Boolean b && b);
-                case STICKY -> permissions.setSticky(value instanceof Boolean b && b);
+                case SET_USER_ID -> permissions.setSetUserId(booleanValue(value));
+                case SET_GROUP_ID -> permissions.setSetGroupId(booleanValue(value));
+                case STICKY -> permissions.setSticky(booleanValue(value));
+                case SHARED -> permissions.setShared(booleanValue(value));
+                case SHARE_NAME -> permissions.setShareName(stringValue(value));
+                case SHARE_COMMENT -> permissions.setShareComment(stringValue(value));
+                case ALLOW_OTHERS_TO_EDIT -> permissions.setAllowOthersToEdit(booleanValue(value));
+                case GUEST_ACCESS -> permissions.setGuestAccess(booleanValue(value));
             }
         }
     }
@@ -140,6 +156,11 @@ public class StreamerPermissionsModel implements UIModel {
             case STICKY -> permissions.isSticky();
             case TEXT_VIEW -> permissions.getTextView();
             case NUMBER_VIEW -> permissions.getNumberView();
+            case SHARED -> permissions.isShared();
+            case SHARE_NAME -> permissions.getShareName();
+            case SHARE_COMMENT -> permissions.getShareComment();
+            case ALLOW_OTHERS_TO_EDIT -> permissions.isAllowOthersToEdit();
+            case GUEST_ACCESS -> permissions.isGuestAccess();
             default -> null;
         };
     }

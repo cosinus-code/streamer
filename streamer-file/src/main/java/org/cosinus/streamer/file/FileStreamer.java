@@ -177,6 +177,9 @@ public abstract class FileStreamer<T> extends BaseFileStreamer<T> {
                     if (!filePermissions.getNumberView().equals(existingPermissions.getNumberView())) {
                         fileHandler.setFilePermissions(file, filePermissions);
                     }
+                    if (!filePermissions.getShareChecksum().equals(existingPermissions.getShareChecksum())) {
+                        fileHandler.setUserShare(file, filePermissions);
+                    }
                     String newOwnerName = !filePermissions.getOwnerName().equals(existingPermissions.getOwnerName()) ?
                         filePermissions.getOwnerName() :
                         null;

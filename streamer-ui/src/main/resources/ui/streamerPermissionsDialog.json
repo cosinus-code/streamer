@@ -1,61 +1,103 @@
 {
+  "layout": "centered",
   "fields": [
     {
-      "id": "owner-name",
-      "type": "label",
-      "label": "owner-name"
-    },
-    {
-      "id": "group-name",
-      "type": "combobox",
-      "label": "group-name",
-      "focus": true
-    },
-    {
-      "id": "owner-permissions",
-      "type": "boolean-list",
-      "label": "owner-permissions",
-      "action": "refresh"
-    },
-    {
-      "id": "group-permissions",
-      "type": "boolean-list",
-      "label": "group-permissions",
-      "action": "refresh"
-    },
-    {
-      "id": "others-permissions",
-      "type": "boolean-list",
-      "label": "others-permissions",
-      "action": "refresh"
-    },
-    {
-      "id": "set-user-id",
-      "type": "boolean",
-      "label": "set-user-id",
-      "action": "refresh"
-    },
-    {
-      "id": "set-group-id",
-      "type": "boolean",
-      "label": "set-group-id",
-      "action": "refresh"
-    },
-    {
-      "id": "sticky",
-      "type": "boolean",
-      "label": "sticky",
-      "action": "refresh"
-    },
-    {
-      "id": "permissions-text-view",
-      "type": "label",
-      "label": "permissions-text-view"
-    },
-    {
-      "id": "permissions-number-view",
-      "type": "label",
-      "label": "permissions-number-view"
+      "id": "tabbed-pane",
+      "type": "tab",
+      "align": "center",
+      "descriptors": {
+        "permissions": {
+          "fields": [
+            {
+              "id": "owner-name",
+              "type": "label",
+              "label": "owner-name"
+            },
+            {
+              "id": "group-name",
+              "type": "combobox",
+              "label": "group-name",
+              "focus": true
+            },
+            {
+              "id": "owner-permissions",
+              "type": "boolean-list",
+              "label": "owner-permissions",
+              "action": "refresh"
+            },
+            {
+              "id": "group-permissions",
+              "type": "boolean-list",
+              "label": "group-permissions",
+              "action": "refresh"
+            },
+            {
+              "id": "others-permissions",
+              "type": "boolean-list",
+              "label": "others-permissions",
+              "action": "refresh"
+            },
+            {
+              "id": "set-user-id",
+              "type": "boolean",
+              "label": "set-user-id",
+              "action": "refresh"
+            },
+            {
+              "id": "set-group-id",
+              "type": "boolean",
+              "label": "set-group-id",
+              "action": "refresh"
+            },
+            {
+              "id": "sticky",
+              "type": "boolean",
+              "label": "sticky",
+              "action": "refresh"
+            },
+            {
+              "id": "permissions-text-view",
+              "type": "label",
+              "label": "permissions-text-view"
+            },
+            {
+              "id": "permissions-number-view",
+              "type": "label",
+              "label": "permissions-number-view"
+            }
+          ]
+        },
+        "share": {
+          "fields": [
+            {
+              "id": "shared",
+              "type": "boolean",
+              "label": "shared",
+              "action": "refresh"
+            },
+            {
+              "id": "share-name",
+              "type": "text",
+              "label": "share-name"
+            },
+            {
+              "id": "share-comment",
+              "type": "text",
+              "label": "share-comment"
+            },
+            {
+              "id": "allow-others-to-edit",
+              "type": "boolean",
+              "label": "allow-others-to-edit"
+            },
+            {
+              "id": "guest-access",
+              "type": "boolean",
+              "label": "guest-access"
+            }
+          ]
+        }
+      }
     }
   ],
   "buttons": [
