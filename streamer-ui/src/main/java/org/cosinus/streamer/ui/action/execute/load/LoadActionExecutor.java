@@ -18,7 +18,6 @@ package org.cosinus.streamer.ui.action.execute.load;
 
 import lombok.extern.slf4j.Slf4j;
 import org.cosinus.stream.StreamSupplier;
-import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.expand.BinaryExpanderHandler;
 import org.cosinus.streamer.ui.action.execute.load.image.LoadImageActionModel;
@@ -30,7 +29,6 @@ import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.streamer.ui.view.StreamerViewStorage;
 import org.cosinus.streamer.ui.view.image.ImageStreamerView;
-import org.cosinus.streamer.ui.view.ViewItem;
 import org.cosinus.swing.action.execute.ActionExecutor;
 import org.cosinus.swing.boot.cleanup.ApplicationShutDown;
 import org.cosinus.swing.dialog.DialogHandler;
@@ -45,9 +43,7 @@ import org.cosinus.swing.worker.WorkerModel;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
@@ -211,14 +207,7 @@ public class LoadActionExecutor extends WorkerExecutor<LoadActionModel<?>, Worke
         return new WorkerListener() {
             @Override
             public void workerFinished(WorkerModel workerModel) {
-                final List<File> filesToLoad = actionModel.getStreamerViewToLoadTo()
-                    .getAllViewItems()
-                    .stream()
-                    .map(ViewItem::getStreamable)
-                    .map(Streamable::getRealPath)
-                    .filter(Objects::nonNull)
-                    .map(Path::toFile)
-                    .toList();
+                final List<File> filesToLoad = actionModel.getStreamerViewToLoadTo().getAllViewFiles();
                 final StreamSupplier<File> streamSupplier = filesToLoad::stream;
 
                 actionModel.getStreamerViewToLoadTo().getIconSize()

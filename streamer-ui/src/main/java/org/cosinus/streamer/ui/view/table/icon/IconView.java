@@ -22,12 +22,14 @@ import org.cosinus.streamer.ui.view.StreamerEditor;
 import org.cosinus.streamer.ui.view.StreamerPanel;
 import org.cosinus.streamer.ui.view.table.TableStreamerView;
 import org.cosinus.swing.icon.IconSize;
+import org.cosinus.swing.image.worker.LoadIconsWorker;
 import org.cosinus.swing.preference.Preference;
 import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.preference.PreferencesProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
+import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Collection;
@@ -163,7 +165,11 @@ public class IconView<T extends Streamable> extends TableStreamerView<T> {
     }
 
     /**
-     * Lay out the icons again with the icon size preference, keeping the current item visible.
+     * Lay out the icons again with the icon size preference, keeping the current item visible,
+     * and load the file icons of the new size.
+     * <p>
+     * The file icons are cached by size and loaded only after the streamer is loaded,
+     * so without loading them here the icons of the new size are not found and shown empty.
      */
     private void updateIconSize() {
         int currentIndex = table.getCurrentIndex();
@@ -172,6 +178,16 @@ public class IconView<T extends Streamable> extends TableStreamerView<T> {
             table.setCurrentIndex(currentIndex);
         }
         table.repaint();
+        loadIcons(getIconTable().getIconSize());
+    }
+
+    /**
+     * Load in background the file icons of a size, refreshing the view when they are loaded.
+     */
+    private void loadIcons(IconSize iconSize) {
+        List<File> files = getAllViewFiles();
+        new LoadIconsWorker(iconSize, loadedFiles -> refresh(), files::stream)
+            .execute();
     }
 
     private IconTable<T> getIconTable() {

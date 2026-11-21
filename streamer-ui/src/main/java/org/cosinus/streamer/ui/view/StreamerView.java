@@ -19,6 +19,7 @@ package org.cosinus.streamer.ui.view;
 import lombok.Getter;
 import lombok.Setter;
 import org.cosinus.streamer.api.ParentStreamer;
+import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.streamer.ui.action.ChangeViewAction;
@@ -55,7 +56,10 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -529,6 +533,24 @@ public abstract class StreamerView<T> extends Panel {
 
     public List<ViewItem> getAllViewItems() {
         return emptyList();
+    }
+
+    /**
+     * Get the files of all view items which have a real path.
+     * <p>
+     * The list is a snapshot: it can be streamed by a background worker
+     * while the view items are reloaded or sorted on the event dispatch thread.
+     *
+     * @return the files of the view items
+     */
+    public List<File> getAllViewFiles() {
+        return getAllViewItems()
+            .stream()
+            .map(ViewItem::getStreamable)
+            .map(Streamable::getRealPath)
+            .filter(Objects::nonNull)
+            .map(Path::toFile)
+            .toList();
     }
 
     public String getCurrentItemIdentifier() {
