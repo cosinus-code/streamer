@@ -22,14 +22,12 @@ import org.cosinus.streamer.ui.view.StreamerEditor;
 import org.cosinus.streamer.ui.view.StreamerPanel;
 import org.cosinus.streamer.ui.view.table.TableStreamerView;
 import org.cosinus.swing.icon.IconSize;
-import org.cosinus.swing.image.worker.LoadIconsWorker;
 import org.cosinus.swing.preference.Preference;
 import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.preference.PreferencesProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
-import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Collection;
@@ -178,17 +176,9 @@ public class IconView<T extends Streamable> extends TableStreamerView<T> {
             table.setCurrentIndex(currentIndex);
         }
         table.repaint();
-        loadIcons(getIconTable().getIconSize());
+        loadIcons();
     }
 
-    /**
-     * Load in background the file icons of a size, refreshing the view when they are loaded.
-     */
-    private void loadIcons(IconSize iconSize) {
-        List<File> files = getAllViewFiles();
-        new LoadIconsWorker(iconSize, loadedFiles -> refresh(), files::stream)
-            .execute();
-    }
 
     private IconTable<T> getIconTable() {
         return (IconTable<T>) table;

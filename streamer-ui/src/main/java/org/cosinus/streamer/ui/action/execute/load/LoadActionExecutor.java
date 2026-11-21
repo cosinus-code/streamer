@@ -32,7 +32,6 @@ import org.cosinus.streamer.ui.view.image.ImageStreamerView;
 import org.cosinus.swing.action.execute.ActionExecutor;
 import org.cosinus.swing.boot.cleanup.ApplicationShutDown;
 import org.cosinus.swing.dialog.DialogHandler;
-import org.cosinus.swing.image.worker.LoadIconsWorker;
 import org.cosinus.swing.image.worker.LoadThumbnailsWorker;
 import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.translate.Translator;
@@ -210,12 +209,7 @@ public class LoadActionExecutor extends WorkerExecutor<LoadActionModel<?>, Worke
                 final List<File> filesToLoad = actionModel.getStreamerViewToLoadTo().getAllViewFiles();
                 final StreamSupplier<File> streamSupplier = filesToLoad::stream;
 
-                actionModel.getStreamerViewToLoadTo().getIconSize()
-                    .ifPresent(iconSize ->
-                        new LoadIconsWorker(iconSize,
-                            files -> actionModel.getStreamerViewToLoadTo().refresh(),
-                            streamSupplier)
-                            .execute());
+                actionModel.getStreamerViewToLoadTo().loadIcons();
 
                 boolean showPreview = preferences.booleanPreference(PREVIEW);
                 if (showPreview && ICON_VIEW_NAME.equals(actionModel.getStreamerViewToLoadTo().getName())) {

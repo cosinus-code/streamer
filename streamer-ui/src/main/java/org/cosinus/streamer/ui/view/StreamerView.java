@@ -29,6 +29,7 @@ import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.menu.MenuHandler;
+import org.cosinus.swing.image.worker.LoadIconsWorker;
 import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.error.ErrorHandler;
@@ -551,6 +552,23 @@ public abstract class StreamerView<T> extends Panel {
             .filter(Objects::nonNull)
             .map(Path::toFile)
             .toList();
+    }
+
+    /**
+     * Load in background the file icons of the view items, at the view icon size,
+     * refreshing the view when they are loaded.
+     * <p>
+     * The file icons are cached by size, so they are loaded after the streamer is loaded,
+     * after the icon size changed and after the icons cache was reset by an icon theme change.
+     * Nothing is loaded for a view without icons.
+     */
+    public void loadIcons() {
+        getIconSize()
+            .ifPresent(iconSize -> {
+                List<File> files = getAllViewFiles();
+                new LoadIconsWorker(iconSize, loadedFiles -> refresh(), files::stream)
+                    .execute();
+            });
     }
 
     public String getCurrentItemIdentifier() {
