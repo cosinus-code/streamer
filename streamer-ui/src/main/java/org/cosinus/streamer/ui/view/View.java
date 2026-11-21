@@ -21,7 +21,14 @@ import lombok.Getter;
 import java.util.Optional;
 
 import static java.util.Arrays.stream;
-import static org.cosinus.swing.image.icon.IconProvider.*;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_BINARY;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_IMAGE;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_MAP;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_TEXT_EDITOR;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_VIEW_DETAILS;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_VIEW_GRID;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_VIEW_ICON;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_VIEW_TREE;
 
 @Getter
 public enum View {

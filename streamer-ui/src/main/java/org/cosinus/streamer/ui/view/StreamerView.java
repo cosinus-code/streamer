@@ -34,6 +34,7 @@ import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.form.FormComponent;
 import org.cosinus.swing.form.Panel;
 import org.cosinus.swing.form.control.Label;
+import org.cosinus.swing.icon.IconSize;
 import org.cosinus.swing.image.icon.IconInitializer;
 import org.cosinus.swing.menu.PopupMenu;
 import org.cosinus.swing.menu.RadioButtonMenuItem;
@@ -552,6 +553,10 @@ public abstract class StreamerView<T> extends Panel {
     }
 
     public void setSorting(ViewItemComparator sorting) {
+    }
+
+    public Optional<IconSize> getIconSize() {
+        return Optional.empty();
     }
 
     protected abstract Viewer<T> createViewer();

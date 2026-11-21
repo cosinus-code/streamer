@@ -54,7 +54,9 @@ import static org.cosinus.streamer.ui.action.ExecuteStreamerWithAction.EXECUTE_S
 import static org.cosinus.streamer.ui.action.GoToParentStreamerAction.GO_TO_PARENT_ACTION;
 import static org.cosinus.streamer.ui.action.MoveToTrashStreamerAction.MOVE_TO_TRASH_STREAMER_ACTION_NAME;
 import static org.cosinus.streamer.ui.menu.MenuHandler.SEPARATOR;
-import static org.cosinus.swing.image.ImageSettings.*;
+import static org.cosinus.swing.image.ImageSettings.QUALITY;
+import static org.cosinus.swing.image.ImageSettings.SPEED;
+import static org.cosinus.swing.image.ImageSettings.SPEED_QUALITY_BALANCE;
 
 public class ImageViewer extends Panel implements Viewer<byte[]>, LoadWorkerModel<UpdatableImage>, ActionListener {
 

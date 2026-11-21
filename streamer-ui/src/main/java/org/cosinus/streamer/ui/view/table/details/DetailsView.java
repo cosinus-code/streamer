@@ -21,8 +21,10 @@ import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerEditor;
 import org.cosinus.streamer.ui.view.table.DataTable;
 import org.cosinus.streamer.ui.view.table.TableStreamerView;
+import org.cosinus.swing.icon.IconSize;
 
 import java.awt.*;
+import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.view.table.details.DetailsCellRenderer.ICON_SIZE;
@@ -66,4 +68,9 @@ public class DetailsView<T extends Streamable> extends TableStreamerView<T> {
         return new Rectangle(rect.x + offsetIcon, rect.y, rect.width - offsetIcon, rect.height);
     }
 
+    @Override
+    public Optional<IconSize> getIconSize() {
+        //TODO: to avoid static icon size
+        return Optional.of(ICON_SIZE);
+    }
 }

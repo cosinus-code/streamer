@@ -29,7 +29,9 @@ import java.awt.*;
 import static org.cosinus.streamer.ui.action.FindAndLoadStreamerAction.findAndLoadStreamer;
 import static org.cosinus.streamer.ui.action.GoToParentStreamerAction.GO_TO_PARENT_ACTION;
 import static org.cosinus.swing.border.Borders.emptyBorder;
-import static org.cosinus.swing.image.icon.IconProvider.*;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_BACK;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_NEXT;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_UP;
 
 @Component
 public class AddressBar extends Panel {

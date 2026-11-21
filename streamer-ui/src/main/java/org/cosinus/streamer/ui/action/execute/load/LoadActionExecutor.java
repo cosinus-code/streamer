@@ -34,7 +34,8 @@ import org.cosinus.streamer.ui.view.ViewItem;
 import org.cosinus.swing.action.execute.ActionExecutor;
 import org.cosinus.swing.boot.cleanup.ApplicationShutDown;
 import org.cosinus.swing.dialog.DialogHandler;
-import org.cosinus.swing.image.LoadThumbnailsWorker;
+import org.cosinus.swing.image.worker.LoadIconsWorker;
+import org.cosinus.swing.image.worker.LoadThumbnailsWorker;
 import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.translate.Translator;
 import org.cosinus.swing.worker.Worker;
@@ -54,7 +55,7 @@ import static org.cosinus.streamer.ui.action.LoadStreamerAction.LOAD_STREAMER_AC
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.PREVIEW;
 import static org.cosinus.streamer.ui.view.binary.BinaryStreamerView.BINARY_VIEWER;
 import static org.cosinus.streamer.ui.view.table.icon.IconTable.PREVIEW_CELL_SIZE;
-import static org.cosinus.streamer.ui.view.table.icon.IconView.TREE_VIEW_NAME;
+import static org.cosinus.streamer.ui.view.table.icon.IconView.ICON_VIEW_NAME;
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 
 /**
@@ -210,24 +211,28 @@ public class LoadActionExecutor extends WorkerExecutor<LoadActionModel<?>, Worke
         return new WorkerListener() {
             @Override
             public void workerFinished(WorkerModel workerModel) {
-                boolean showPreview = preferences.booleanPreference(PREVIEW);
-                final StreamSupplier<File> streamSupplier = () -> actionModel.getStreamerViewToLoadTo()
+                final List<File> filesToLoad = actionModel.getStreamerViewToLoadTo()
                     .getAllViewItems()
                     .stream()
                     .map(ViewItem::getStreamable)
                     .map(Streamable::getRealPath)
                     .filter(Objects::nonNull)
-                    .map(Path::toFile);
-                if (showPreview && TREE_VIEW_NAME.equals(actionModel.getStreamerViewToLoadTo().getName())) {
+                    .map(Path::toFile)
+                    .toList();
+                final StreamSupplier<File> streamSupplier = filesToLoad::stream;
+
+                actionModel.getStreamerViewToLoadTo().getIconSize()
+                    .ifPresent(iconSize ->
+                        new LoadIconsWorker(iconSize,
+                            files -> actionModel.getStreamerViewToLoadTo().refresh(),
+                            streamSupplier)
+                            .execute());
+
+                boolean showPreview = preferences.booleanPreference(PREVIEW);
+                if (showPreview && ICON_VIEW_NAME.equals(actionModel.getStreamerViewToLoadTo().getName())) {
                     new LoadThumbnailsWorker(PREVIEW_CELL_SIZE,
                         files -> actionModel.getStreamerViewToLoadTo().refresh(),
-                        streamSupplier,
-                        true)
-                        .execute();
-                    new LoadThumbnailsWorker(PREVIEW_CELL_SIZE,
-                        files -> actionModel.getStreamerViewToLoadTo().refresh(),
-                        streamSupplier,
-                        false)
+                        streamSupplier)
                         .execute();
                 }
             }

@@ -19,6 +19,7 @@ package org.cosinus.streamer.ui.view.table.grid;
 import org.cosinus.streamer.api.value.Value;
 import org.cosinus.streamer.ui.view.table.TableCellRenderer;
 import org.cosinus.streamer.ui.view.ViewItem;
+import org.cosinus.swing.icon.IconSize;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -31,7 +32,9 @@ import static org.cosinus.swing.icon.IconSize.X16;
 
 public class GridCellRenderer extends TableCellRenderer<GridTable> {
 
-    public static final int CELL_ICON_SIZE = X16.getSize() + 4;
+    public static final IconSize GRID_ICON_SIZE = X16;
+
+    public static final int CELL_ICON_SIZE = GRID_ICON_SIZE.getSize() + 4;
 
     public static final int CELL_HORIZONTAL_MARGIN = 3;
 
@@ -58,8 +61,8 @@ public class GridCellRenderer extends TableCellRenderer<GridTable> {
 
         if (column == 0) {
             Optional<Icon> icon = item.isTopItem() ?
-                getUpIcon(X16) :
-                getIcon(X16, item);
+                getUpIcon(GRID_ICON_SIZE) :
+                getIcon(GRID_ICON_SIZE, item);
             icon.ifPresent(label::setIcon);
         }
 

@@ -39,7 +39,6 @@ import static org.cosinus.streamer.api.file.BaseFileStreamer.DETAIL_INDEX_NAME;
 import static org.cosinus.streamer.api.value.TranslatableName.translatableNames;
 import static org.cosinus.streamer.samba.SambaMainStreamer.SAMBA_NETWORK_TYPE;
 import static org.cosinus.streamer.samba.SambaMainStreamer.SAMBA_PROTOCOL;
-import static org.cosinus.swing.image.icon.IconProvider.ICON_FILE_SERVER;
 
 /**
  * Streamer of a samba server, containing the configured shared folders of that server.

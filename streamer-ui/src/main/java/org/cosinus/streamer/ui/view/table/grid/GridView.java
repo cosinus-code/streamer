@@ -22,12 +22,15 @@ import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerEditor;
 import org.cosinus.streamer.ui.view.table.DataTable;
 import org.cosinus.streamer.ui.view.table.TableStreamerView;
+import org.cosinus.swing.icon.IconSize;
 import org.cosinus.swing.worker.WorkerListener;
 
 import java.awt.*;
+import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.view.table.grid.GridCellRenderer.CELL_ICON_SIZE;
+import static org.cosinus.streamer.ui.view.table.grid.GridCellRenderer.GRID_ICON_SIZE;
 
 public class GridView<T extends Streamable> extends TableStreamerView<T> {
 
@@ -111,4 +114,8 @@ public class GridView<T extends Streamable> extends TableStreamerView<T> {
         return new Rectangle(rect.x + offsetIcon, rect.y, rect.width - offsetIcon, rect.height);
     }
 
+    @Override
+    public Optional<IconSize> getIconSize() {
+        return Optional.of(GRID_ICON_SIZE);
+    }
 }

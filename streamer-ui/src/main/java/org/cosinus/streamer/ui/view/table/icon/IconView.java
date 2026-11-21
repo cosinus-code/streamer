@@ -40,7 +40,7 @@ import static org.cosinus.streamer.ui.preference.StreamerPreferences.ICON_SIZE;
 
 public class IconView<T extends Streamable> extends TableStreamerView<T> {
 
-    public static final String TREE_VIEW_NAME = "icon";
+    public static final String ICON_VIEW_NAME = "icon";
 
     @Autowired
     private Preferences iconPreferences;
@@ -61,7 +61,7 @@ public class IconView<T extends Streamable> extends TableStreamerView<T> {
 
     @Override
     public String getName() {
-        return TREE_VIEW_NAME;
+        return ICON_VIEW_NAME;
     }
 
     @Override
@@ -155,6 +155,11 @@ public class IconView<T extends Streamable> extends TableStreamerView<T> {
             .filter(IconView.class::isInstance)
             .map(IconView.class::cast)
             .forEach(IconView::updateIconSize);
+    }
+
+    @Override
+    public Optional<IconSize> getIconSize() {
+        return Optional.of(getIconTable().getIconSize());
     }
 
     /**

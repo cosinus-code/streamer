@@ -41,6 +41,8 @@ import static org.cosinus.swing.image.icon.IconProvider.ICON_FOLDER;
 
 public class TreeNodeRenderer extends DefaultTreeCellRenderer {
 
+    public static final IconSize TREE_ICON_SIZE = X16;
+
     public static final Border CELL_BORDER = emptyBorder(3, 3, 3, 3);
 
     @Autowired
@@ -77,7 +79,7 @@ public class TreeNodeRenderer extends DefaultTreeCellRenderer {
             }
 
             label.setText(streamer.getName());
-            Optional<Icon> icon = getIcon(X16, streamer);
+            Optional<Icon> icon = getIcon(TREE_ICON_SIZE, streamer);
             icon.ifPresent(label::setIcon);
         }
         return label;

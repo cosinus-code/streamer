@@ -28,7 +28,6 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import static org.cosinus.streamer.ftp.FtpMainStreamer.FTP_NETWORK_TYPE;
-import static org.cosinus.swing.image.icon.IconProvider.ICON_FILE_SERVER;
 
 /**
  * Streamer of an ftp host, streaming directly the remote files, as an ftp host has no folders level.

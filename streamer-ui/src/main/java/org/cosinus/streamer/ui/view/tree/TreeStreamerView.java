@@ -23,11 +23,14 @@ import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.Viewer;
 import org.cosinus.swing.form.ScrollPane;
+import org.cosinus.swing.icon.IconSize;
 import org.cosinus.swing.worker.WorkerModel;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.awt.BorderLayout.CENTER;
+import static org.cosinus.streamer.ui.view.tree.TreeNodeRenderer.TREE_ICON_SIZE;
 
 public class TreeStreamerView extends StreamerView<Streamer> {
 
@@ -100,5 +103,10 @@ public class TreeStreamerView extends StreamerView<Streamer> {
     @Override
     protected boolean haveStatus() {
         return false;
+    }
+
+    @Override
+    public Optional<IconSize> getIconSize() {
+        return Optional.of(TREE_ICON_SIZE);
     }
 }

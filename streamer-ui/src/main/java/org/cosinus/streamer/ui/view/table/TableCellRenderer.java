@@ -118,21 +118,26 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
             .or(() -> item.isFile() ?
                 showPreview ?
                     findIconWithPreview(size, createItemFile(item)) :
-                    iconHandler.findIconByFile(createItemFile(item), size) :
+                    findIconByFile(createItemFile(item), size) :
                 iconHandler.findIconByName(ICON_FOLDER, size, false)
                     .or(() -> uiHandler.getDefaultFileIcon()));
     }
 
     private Optional<Icon> findIconWithPreview(IconSize size, File itemFile) {
         return getPreviewIcon(itemFile)
-            .or(() -> iconHandler.findIconByFile(itemFile, size));
+            .or(() -> findIconByFile(itemFile, size));
+    }
+
+    private Optional<Icon> findIconByFile(final File file, final IconSize size) {
+        return ofNullable(iconHandler.getIconByFileFromCache(file, size))
+            .orElseGet(() -> Optional.of(iconHandler.getTransparentIcon(size)));
     }
 
     private Optional<Icon> getPreviewIcon(File itemFile) {
         try {
-            return iconHandler.getThumbnail(itemFile, PREVIEW_CELL_SIZE);
+            return iconHandler.getThumbnailFromCache(itemFile, PREVIEW_CELL_SIZE);
         } catch (IOException e) {
-            LOG.error("Cannot create preview icon for item: " + itemFile);
+            LOG.error("Cannot create preview icon for item: {}", itemFile);
             return Optional.empty();
         }
     }
