@@ -129,8 +129,8 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
     }
 
     private Optional<Icon> findIconByFile(final File file, final IconSize size) {
-        return ofNullable(iconHandler.getIconByFileFromCache(file, size))
-            .orElseGet(() -> Optional.of(iconHandler.getTransparentIcon(size)));
+        return iconHandler.getIconByFileFromCache(file, size)
+            .or(() -> Optional.of(iconHandler.getTransparentIcon(size)));
     }
 
     private Optional<Icon> getPreviewIcon(File itemFile) {
