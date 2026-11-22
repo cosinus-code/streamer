@@ -33,7 +33,9 @@ public interface Streamable {
     Path getPath();
 
     default Path getRealPath() {
-        return getPath();
+        return ofNullable(getParent().getPath())
+            .map(archivePath -> archivePath.resolve(getPath()))
+            .orElseGet(this::getPath);
     }
 
     default String getProtocol() {

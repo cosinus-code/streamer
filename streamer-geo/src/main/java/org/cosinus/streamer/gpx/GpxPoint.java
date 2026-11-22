@@ -41,7 +41,7 @@ public class GpxPoint implements Streamable {
 
     private final String id;
 
-    private WayPoint point;
+    private final WayPoint point;
 
     protected List<Value> details;
 
@@ -72,6 +72,11 @@ public class GpxPoint implements Streamable {
     @Override
     public Path getPath() {
         return Paths.get(getName());
+    }
+
+    @Override
+    public boolean isFile() {
+        return true;
     }
 
     @Override

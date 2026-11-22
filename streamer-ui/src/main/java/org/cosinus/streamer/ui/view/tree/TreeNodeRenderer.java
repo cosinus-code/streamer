@@ -17,6 +17,7 @@
 package org.cosinus.streamer.ui.view.tree;
 
 import org.cosinus.streamer.api.Streamer;
+import org.cosinus.streamer.ui.view.ViewItem;
 import org.cosinus.swing.file.FileHandler;
 import org.cosinus.swing.icon.IconSize;
 import org.cosinus.swing.image.icon.IconHandler;
@@ -94,11 +95,7 @@ public class TreeNodeRenderer extends DefaultTreeCellRenderer {
                     .or(() -> uiHandler.getDefaultFileIcon()));
     }
 
-    public File createItemFile(final Streamer<?> streamer) {
-        return ofNullable(streamer.getRealPath())
-            .map(Path::toFile)
-            .filter(File::exists)
-            .orElseGet(() -> fileHandler
-                .createVirtualFile(streamer.getRealPath(), streamer.getName(), streamer.isParent()));
+    public File createItemFile(Streamer<?> streamer) {
+        return fileHandler.toFile(streamer.getRealPath(), streamer.getName(), streamer.isParent());
     }
 }

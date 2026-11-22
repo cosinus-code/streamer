@@ -19,7 +19,6 @@ package org.cosinus.streamer.ui.view;
 import lombok.Getter;
 import lombok.Setter;
 import org.cosinus.streamer.api.ParentStreamer;
-import org.cosinus.streamer.api.Streamable;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.streamer.ui.action.ChangeViewAction;
@@ -29,15 +28,16 @@ import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
 import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.menu.MenuHandler;
-import org.cosinus.swing.image.worker.LoadIconsWorker;
 import org.cosinus.swing.action.ActionController;
 import org.cosinus.swing.dialog.DialogHandler;
 import org.cosinus.swing.error.ErrorHandler;
+import org.cosinus.swing.file.FileHandler;
 import org.cosinus.swing.form.FormComponent;
 import org.cosinus.swing.form.Panel;
 import org.cosinus.swing.form.control.Label;
 import org.cosinus.swing.icon.IconSize;
 import org.cosinus.swing.image.icon.IconInitializer;
+import org.cosinus.swing.image.worker.LoadIconsWorker;
 import org.cosinus.swing.menu.PopupMenu;
 import org.cosinus.swing.menu.RadioButtonMenuItem;
 import org.cosinus.swing.preference.Preferences;
@@ -60,7 +60,6 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -125,6 +124,9 @@ public abstract class StreamerView<T> extends Panel {
 
     @Autowired
     protected ApplicationUIHandler uiHandler;
+
+    @Autowired
+    private FileHandler fileHandler;
 
     @Getter
     protected final String id;
@@ -547,11 +549,12 @@ public abstract class StreamerView<T> extends Panel {
     public List<File> getAllViewFiles() {
         return getAllViewItems()
             .stream()
-            .map(ViewItem::getStreamable)
-            .map(Streamable::getRealPath)
-            .filter(Objects::nonNull)
-            .map(Path::toFile)
+            .map(this::toFile)
             .toList();
+    }
+
+    public File toFile(ViewItem item) {
+        return fileHandler.toFile(item.getRealPath(), item.getName(), item.isParent());
     }
 
     /**

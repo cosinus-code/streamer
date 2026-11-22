@@ -53,20 +53,6 @@ public abstract class ArchiveStreamer<T> extends BaseFileStreamer<T> {
         return archiveEntry.getPath();
     }
 
-    /**
-     * The real path of an archive entry is its path inside the archive file
-     * (e.g. /home/user/archive.zip/readme.txt).
-     * <p>
-     * The entry path alone is relative, and for an entry at the archive root it has no parent,
-     * which the icons cache by file does not handle, so those entries would be shown without icon.
-     */
-    @Override
-    public Path getRealPath() {
-        return ofNullable(archivePackStreamer.getPath())
-            .map(archivePath -> archivePath.resolve(getPath()))
-            .orElseGet(this::getPath);
-    }
-
     public ArchiveEntry getArchiveEntry() {
         return archiveEntry.getArchiveEntry();
     }
