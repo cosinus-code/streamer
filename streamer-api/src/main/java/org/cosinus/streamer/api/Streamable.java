@@ -33,8 +33,10 @@ public interface Streamable {
     Path getPath();
 
     default Path getRealPath() {
-        return ofNullable(getParent().getPath())
-            .map(archivePath -> archivePath.resolve(getPath()))
+        return ofNullable(getParent())
+            .map(Streamable::getPath)
+            .flatMap(archivePath -> ofNullable(getPath())
+                .map(archivePath::resolve))
             .orElseGet(this::getPath);
     }
 
