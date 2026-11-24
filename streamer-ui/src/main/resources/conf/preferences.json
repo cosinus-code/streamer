@@ -84,6 +84,10 @@
       "type": "integer",
       "value": 1024
     },
+    "history-size": {
+      "type": "integer",
+      "value": 200
+    },
     "bound": {
       "type": "boolean",
       "value": false

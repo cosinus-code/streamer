@@ -277,6 +277,9 @@ public class BinaryHexaEditor extends SwingComponent implements Viewer<byte[]>, 
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
+                if (e.isAltDown()) {
+                    return;
+                }
                 switch (e.getKeyCode()) {
                     case VK_LEFT -> moveCaret(-1);
                     case VK_RIGHT -> moveCaret(1);

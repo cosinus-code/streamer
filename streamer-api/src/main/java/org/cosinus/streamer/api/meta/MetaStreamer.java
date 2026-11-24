@@ -88,12 +88,20 @@ public class MetaStreamer implements ParentStreamer<MainStreamer> {
             .findFirst();
     }
 
+    /**
+     * Find the meta streamer itself (for its url path, {@link #META_PROTOCOL})
+     * or one of its main streamers by url path.
+     *
+     * @param urlPath the url path
+     * @return the found streamer
+     */
     public Optional<Streamer> findByUrlPath(String urlPath) {
         return Optional.ofNullable(urlPath)
             .filter(path -> path.startsWith(META_PROTOCOL))
             .map(path -> path.substring(META_PROTOCOL.length()))
-            .map(Paths::get)
-            .flatMap(this::find);
+            .flatMap(path -> path.isEmpty() ?
+                Optional.<Streamer>of(this) :
+                find(Paths.get(path)).map(Streamer.class::cast));
     }
 
 }

@@ -96,6 +96,9 @@ public abstract class StreamerView<T> extends Panel {
     protected StreamerViewStorage streamerViewStorage;
 
     @Autowired
+    protected StreamerHistory streamerHistory;
+
+    @Autowired
     protected LoadActionExecutor loadActionExecutor;
 
     @Autowired
@@ -468,6 +471,9 @@ public abstract class StreamerView<T> extends Panel {
 
     protected void saveStreamerViewSnapshot() {
         streamerViewStorage.saveLastLoadedStreamer(this.getParentStreamer(), getCurrentLocation());
+        ofNullable(getParentStreamer())
+            .map(Streamer::getUrlPath)
+            .ifPresent(urlPath -> streamerHistory.add(getCurrentLocation(), urlPath));
     }
 
     public <V> WorkerListener<LoadWorkerModel<V>, V> getLoadWorkerListener() {

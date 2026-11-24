@@ -27,6 +27,8 @@ import org.springframework.stereotype.Component;
 import java.awt.*;
 
 import static org.cosinus.streamer.ui.action.FindAndLoadStreamerAction.findAndLoadStreamer;
+import static org.cosinus.streamer.ui.action.GoBackInHistoryAction.GO_BACK_IN_HISTORY_ACTION;
+import static org.cosinus.streamer.ui.action.GoForwardInHistoryAction.GO_FORWARD_IN_HISTORY_ACTION;
 import static org.cosinus.streamer.ui.action.GoToParentStreamerAction.GO_TO_PARENT_ACTION;
 import static org.cosinus.swing.border.Borders.emptyBorder;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_BACK;
@@ -64,7 +66,10 @@ public class AddressBar extends Panel {
         nextButton = new SimpleButton(ICON_NEXT, ">");
         upButton = new SimpleButton(ICON_UP, "Λ");
 
+        backButton.addAction(() -> actionController.runAction(GO_BACK_IN_HISTORY_ACTION));
+        nextButton.addAction(() -> actionController.runAction(GO_FORWARD_IN_HISTORY_ACTION));
         upButton.addAction(() -> actionController.runAction(GO_TO_PARENT_ACTION));
+
         addressField.addActionListener(event -> findAndLoadStreamer(addressField::getText));
 
         SpringGridLayout layout = new SpringGridLayout(this, 1, 4, 1, 3, 1, 3);

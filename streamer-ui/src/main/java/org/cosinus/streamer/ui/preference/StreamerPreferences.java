@@ -46,4 +46,5 @@ public interface StreamerPreferences {
     String KEEP_DIVIDER = "keep-divider";
     String LEFT_VIEW = "left-view";
     String RIGHT_VIEW = "right-view";
+    String HISTORY_SIZE = "history-size";
 }

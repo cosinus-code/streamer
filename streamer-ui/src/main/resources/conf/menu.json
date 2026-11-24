@@ -46,6 +46,12 @@
     "menu-go-parent": {
       "shortcut": "control UP"
     },
+    "menu-go-back": {
+      "shortcut": "alt LEFT"
+    },
+    "menu-go-forward": {
+      "shortcut": "alt RIGHT"
+    },
     "menu-go-to-linked-streamer": {
       "shortcut": "control L"
     }

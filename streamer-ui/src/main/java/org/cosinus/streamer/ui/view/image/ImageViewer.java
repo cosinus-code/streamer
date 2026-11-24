@@ -136,6 +136,10 @@ public class ImageViewer extends Panel implements Viewer<byte[]>, LoadWorkerMode
     protected void processComponentKeyEvent(KeyEvent keyEvent) {
         super.processComponentKeyEvent(keyEvent);
         if (keyEvent.getID() == KEY_PRESSED) {
+            if (keyEvent.isAltDown() &&
+                (keyEvent.getKeyCode() == VK_RIGHT || keyEvent.getKeyCode() == VK_LEFT)) {
+                return;
+            }
             if (keyEvent.getKeyCode() == VK_RIGHT) {
                 streamerView.showNextImage();
             } else if (keyEvent.getKeyCode() == VK_LEFT) {

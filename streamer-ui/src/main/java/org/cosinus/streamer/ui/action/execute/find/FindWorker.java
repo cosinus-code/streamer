@@ -53,6 +53,7 @@ public class FindWorker extends Worker<FindWorkerModel, Streamer<?>, ProgressMod
             .map(binaryExpanderHandler::expandStreamer)
             .orElse(null);
 
+        progressModel.finishProgress();
         publish(streamer);
     }
 
