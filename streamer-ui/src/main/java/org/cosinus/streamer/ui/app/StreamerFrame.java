@@ -73,9 +73,14 @@ public class StreamerFrame extends SwingApplicationFrame {
         getContentPane().removeAll();
         getContentPane().add(split, CENTER);
 
-        if (preferences.booleanPreference(ADDRESS_BAR)) {
-            getContentPane().add(addressBar, NORTH);
-        }
+        getContentPane().add(addressBar, NORTH);
+        setVisibleAddressBar(preferences.booleanPreference(ADDRESS_BAR));
+    }
+
+    public void setVisibleAddressBar(boolean visible) {
+        addressBar.setVisible(visible);
+        getContentPane().revalidate();
+        getContentPane().repaint();
     }
 
     private void addStreamerPanel(PanelLocation location) {

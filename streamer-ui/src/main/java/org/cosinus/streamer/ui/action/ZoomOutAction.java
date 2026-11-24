@@ -22,6 +22,7 @@ import org.cosinus.swing.action.SwingAction;
 import org.springframework.stereotype.Component;
 
 import static java.util.Optional.ofNullable;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_ZOOM_OUT;
 
 /**
  * Zoom out the current view.
@@ -44,6 +45,11 @@ public class ZoomOutAction implements SwingAction {
     public void run() {
         ofNullable(streamerViewHandler.getCurrentView())
             .ifPresent(StreamerView::zoomOut);
+    }
+
+    @Override
+    public String getIconName() {
+        return ICON_ZOOM_OUT;
     }
 
     @Override

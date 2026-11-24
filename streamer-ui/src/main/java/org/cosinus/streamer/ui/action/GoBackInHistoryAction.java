@@ -27,6 +27,7 @@ import java.util.Optional;
 
 import static java.awt.event.InputEvent.ALT_DOWN_MASK;
 import static java.awt.event.KeyEvent.VK_LEFT;
+import static org.cosinus.swing.image.icon.IconProvider.ICON_BACK;
 
 /**
  * Go back in the history of the streamers shown in the current panel.
@@ -47,6 +48,11 @@ public class GoBackInHistoryAction extends GoInHistoryAction {
     @Override
     protected Optional<String> moveInHistory(PanelLocation location) {
         return streamerHistory.back(location);
+    }
+
+    @Override
+    public String getIconName() {
+        return ICON_BACK;
     }
 
     @Override

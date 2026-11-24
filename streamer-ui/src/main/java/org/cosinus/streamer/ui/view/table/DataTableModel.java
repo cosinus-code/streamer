@@ -57,8 +57,6 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
 
     protected final Map<String, T> streamableMap;
 
-    private final boolean showHidden;
-
     protected Streamer<T> parentStreamer;
 
     protected String contentIdentifier;
@@ -75,7 +73,6 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
         this.comparator = new ViewItemComparator();
         this.viewItems = new ArrayList<>();
         this.streamableMap = new HashMap<>();
-        this.showHidden = preferences.booleanPreference(SHOW_HIDDEN);
     }
 
     public Streamer<T> getParentStreamer() {
@@ -287,6 +284,7 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
     }
 
     private ViewItem toViewItem(Streamable streamer) {
+        boolean showHidden = preferences.booleanPreference(SHOW_HIDDEN);
         return ofNullable(streamer)
             .filter(streamable -> showHidden || !streamable.isHidden())
             .map(ViewItem::new)

@@ -60,7 +60,7 @@ import static org.cosinus.streamer.ui.action.GoToLinkedStreamerAction.GO_TO_LINK
 import static org.cosinus.streamer.ui.action.MoveToTrashStreamerAction.MOVE_TO_TRASH_STREAMER_ACTION_NAME;
 import static org.cosinus.streamer.ui.action.RenameStreamerAction.RENAME_STREAMER_ACTION_ID;
 import static org.cosinus.streamer.ui.action.ShowPermissionsAction.SHOW_STREAMER_PERMISSIONS_ACTION_ID;
-import static org.cosinus.streamer.ui.action.ShowStreamerPropertiesAction.SHOW_STREAMER_PROPERTIES_ACTION_ID;
+import static org.cosinus.streamer.ui.action.ShowPropertiesAction.SHOW_STREAMER_PROPERTIES_ACTION_ID;
 import static org.cosinus.streamer.ui.menu.MenuHandler.SEPARATOR;
 import static org.cosinus.swing.action.ActionController.COPY_ACTION_ID;
 import static org.cosinus.swing.action.ActionController.CUT_ACTION_ID;

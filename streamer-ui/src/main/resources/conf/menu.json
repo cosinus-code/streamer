@@ -39,8 +39,15 @@
       "shortcut": "control 0"
     },
     "separator3": {},
-    "menu-view-left-view": {},
-    "menu-view-hidden": {}
+    "menu-view-left-view": {
+      "shortcut": "F9"
+    },
+    "menu-view-address-bar": {
+      "shortcut": "control shift L"
+    },
+    "menu-view-hidden": {
+      "shortcut": "control H"
+    }
   },
   "menu-go": {
     "menu-go-parent": {

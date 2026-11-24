@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.action.preference;
+package org.cosinus.streamer.ui.action;
 
 import org.cosinus.swing.action.SwingAction;
 import org.cosinus.swing.dialog.DialogHandler;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.action.preference;
+package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.ui.app.StreamerFrame;
 import org.cosinus.swing.action.ChangePreferenceAction;
@@ -22,16 +22,21 @@ import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.preference.PreferencesProvider;
 import org.springframework.stereotype.Component;
 
+import javax.swing.*;
+import java.util.Optional;
+
+import static java.awt.event.KeyEvent.VK_F9;
+
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_LEFT_VIEW;
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 
 @Component
-public class ChangeShowLeftViewPreferenceAction extends ChangePreferenceAction {
+public class ShowLeftViewAction extends ChangePreferenceAction {
 
     private static final String MENU_SHOW_LEFT_VIEW = "menu-view-left-view";
 
-    public ChangeShowLeftViewPreferenceAction(Preferences preferences,
-                                              PreferencesProvider preferencesProvider) {
+    public ShowLeftViewAction(Preferences preferences,
+                              PreferencesProvider preferencesProvider) {
         super(preferences, preferencesProvider);
     }
 
@@ -59,6 +64,16 @@ public class ChangeShowLeftViewPreferenceAction extends ChangePreferenceAction {
     @Override
     public String getId() {
         return MENU_SHOW_LEFT_VIEW;
+    }
+
+    @Override
+    public Optional<KeyStroke> getKeyStroke() {
+        return Optional.of(KeyStroke.getKeyStroke(VK_F9, 0));
+    }
+
+    @Override
+    public Optional<Boolean> getSelectedState() {
+        return Optional.of(preferences.booleanPreference(SHOW_LEFT_VIEW));
     }
 
 }

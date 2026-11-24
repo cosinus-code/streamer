@@ -14,28 +14,38 @@
  * limitations under the License.
  */
 
-package org.cosinus.streamer.ui.action.preference;
+package org.cosinus.streamer.ui.action;
 
 import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.swing.action.ChangePreferenceAction;
 import org.cosinus.swing.preference.Preferences;
 import org.cosinus.swing.preference.PreferencesProvider;
+import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.springframework.stereotype.Component;
+
+import javax.swing.*;
+import java.util.Optional;
+
+import static java.awt.event.KeyEvent.VK_H;
 
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_HIDDEN;
 
 @Component
-public class ChangeShowHiddenPreferenceAction extends ChangePreferenceAction {
+public class ShowHiddenAction extends ChangePreferenceAction {
 
     private static final String MENU_SHOW_HIDDEN = "menu-view-hidden";
 
     protected final StreamerViewHandler streamerViewHandler;
 
-    public ChangeShowHiddenPreferenceAction(Preferences preferences,
-                                            PreferencesProvider preferencesProvider,
-                                            StreamerViewHandler streamerViewHandler) {
+    private final ApplicationUIHandler uiHandler;
+
+    public ShowHiddenAction(Preferences preferences,
+                            PreferencesProvider preferencesProvider,
+                            StreamerViewHandler streamerViewHandler,
+                            ApplicationUIHandler uiHandler) {
         super(preferences, preferencesProvider);
         this.streamerViewHandler = streamerViewHandler;
+        this.uiHandler = uiHandler;
     }
 
     @Override
@@ -61,6 +71,16 @@ public class ChangeShowHiddenPreferenceAction extends ChangePreferenceAction {
     @Override
     public String getId() {
         return MENU_SHOW_HIDDEN;
+    }
+
+    @Override
+    public Optional<Boolean> getSelectedState() {
+        return Optional.of(preferences.booleanPreference(SHOW_HIDDEN));
+    }
+
+    @Override
+    public Optional<KeyStroke> getKeyStroke() {
+        return Optional.of(uiHandler.getControlDownKeyStroke(VK_H));
     }
 
 }

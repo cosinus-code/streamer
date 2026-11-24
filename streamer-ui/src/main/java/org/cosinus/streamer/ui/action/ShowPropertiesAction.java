@@ -39,7 +39,7 @@ import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_PROPERTIES;
 
 @Component
-public class ShowStreamerPropertiesAction implements SwingAction {
+public class ShowPropertiesAction implements SwingAction {
 
     public static final String SHOW_STREAMER_PROPERTIES_ACTION_ID = "show-streamer-properties";
 
@@ -53,10 +53,10 @@ public class ShowStreamerPropertiesAction implements SwingAction {
 
     private final ComputeStreamerSizeExecutor computeStreamerSizeExecutor;
 
-    public ShowStreamerPropertiesAction(final StreamerViewHandler streamerViewHandler,
-                                        final DialogHandler dialogHandler,
-                                        final ApplicationUIHandler uiHandler,
-                                        final ComputeStreamerSizeExecutor computeStreamerSizeExecutor) {
+    public ShowPropertiesAction(final StreamerViewHandler streamerViewHandler,
+                                final DialogHandler dialogHandler,
+                                final ApplicationUIHandler uiHandler,
+                                final ComputeStreamerSizeExecutor computeStreamerSizeExecutor) {
         this.streamerViewHandler = streamerViewHandler;
         this.dialogHandler = dialogHandler;
         this.uiHandler = uiHandler;
