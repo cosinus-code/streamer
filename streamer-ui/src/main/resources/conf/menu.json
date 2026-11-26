@@ -9,6 +9,9 @@
     "find-action": {
       "shortcut": "control F"
     },
+    "menu-edit-compare-content": {
+      "shortcut": "control shift C"
+    },
     "separator-1": {},
     "cut": {
         "shortcut": "control X"

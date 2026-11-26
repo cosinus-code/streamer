@@ -58,6 +58,11 @@ public class MenuHandler {
 
     public PopupMenu createPopupMenu(JComponent component, String... actionIds) {
         PopupMenu popupMenu = new PopupMenu();
+        addMenuItems(popupMenu, component, actionIds);
+        return popupMenu;
+    }
+
+    public void addMenuItems(PopupMenu popupMenu, JComponent component, String... actionIds) {
         stream(actionIds)
             .forEach(actionId -> {
                 if (SEPARATOR.equals(actionId)) {
@@ -66,7 +71,6 @@ public class MenuHandler {
                     popupMenu.add(createMenuItem(component, actionId));
                 }
             });
-        return popupMenu;
     }
 
     public MenuItem createMenuItem(JComponent component, String actionId) {

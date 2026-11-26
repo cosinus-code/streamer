@@ -16,6 +16,7 @@
 package org.cosinus.streamer.ui.view.text;
 
 import lombok.Getter;
+import org.cosinus.stream.swing.ExtendedContainer;
 import org.cosinus.streamer.api.worker.SaveWorkerModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
 import org.cosinus.streamer.ui.view.FindPanel;
@@ -23,11 +24,13 @@ import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.Viewer;
 import org.cosinus.swing.form.ScrollPane;
+import org.cosinus.swing.menu.PopupMenu;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.event.InputEvent.SHIFT_DOWN_MASK;
@@ -35,11 +38,16 @@ import static java.awt.event.KeyEvent.CHAR_UNDEFINED;
 import static java.awt.event.KeyEvent.VK_TAB;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.ofNullable;
+import static org.cosinus.streamer.ui.action.CompareWithClipboardAction.COMPARE_WITH_CLIPBOARD_ACTION;
+import static org.cosinus.streamer.ui.menu.MenuHandler.SEPARATOR;
+import static org.cosinus.swing.action.ActionController.COPY_ACTION_ID;
+import static org.cosinus.swing.action.ActionController.CUT_ACTION_ID;
+import static org.cosinus.swing.action.ActionController.PASTE_ACTION_ID;
 
 /**
  * Text streamer view
  */
-public class TextStreamerView extends StreamerView<String> {
+public class TextStreamerView extends StreamerView<String> implements ExtendedContainer {
 
     public static final String TEXT_EDITOR = "text-editor";
 
@@ -51,6 +59,8 @@ public class TextStreamerView extends StreamerView<String> {
 
     @Getter
     private TextStreamerEditor textEditor;
+
+    private PopupMenu popupContextMenu;
 
     public TextStreamerView(PanelLocation location) {
         super(location);
@@ -73,6 +83,14 @@ public class TextStreamerView extends StreamerView<String> {
 
         textEditor.initComponent();
 
+        popupContextMenu = menuHandler.createPopupMenu(textEditor,
+            CUT_ACTION_ID,
+            COPY_ACTION_ID,
+            PASTE_ACTION_ID,
+            SEPARATOR,
+            COMPARE_WITH_CLIPBOARD_ACTION);
+        menuHandler.addContextMenu(textEditor, popupContextMenu);
+
         initCancelHandler();
         initFocusHandling();
         initKeyActionsHandler();
@@ -81,6 +99,18 @@ public class TextStreamerView extends StreamerView<String> {
     @Override
     public String getName() {
         return TEXT_EDITOR;
+    }
+
+    @Override
+    public Stream<Component> streamAdditionalContainers() {
+        return Stream.of(alternativeViewsPopup, popupContextMenu);
+    }
+
+    @Override
+    public void translate() {
+        super.translate();
+        ofNullable(popupContextMenu)
+            .ifPresent(PopupMenu::translate);
     }
 
     @Override

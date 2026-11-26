@@ -52,6 +52,7 @@ import static java.util.stream.IntStream.concat;
 import static java.util.stream.IntStream.range;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.isLeftMouseButton;
+import static org.cosinus.streamer.ui.action.CompareWithClipboardAction.COMPARE_WITH_CLIPBOARD_ACTION;
 import static org.cosinus.streamer.ui.action.CreateStreamerAction.CREATE_STREAMER_ACTION_ID;
 import static org.cosinus.streamer.ui.action.DeleteStreamerAction.DELETE_STREAMER_ACTION_ID;
 import static org.cosinus.streamer.ui.action.ExecuteStreamerAction.EXECUTE_STREAMER_ACTION_ID;
@@ -126,6 +127,8 @@ public abstract class DataTable<T extends Streamable>
             CUT_ACTION_ID,
             COPY_ACTION_ID,
             PASTE_ACTION_ID,
+            SEPARATOR,
+            COMPARE_WITH_CLIPBOARD_ACTION,
             SEPARATOR,
             CREATE_STREAMER_ACTION_ID,
             RENAME_STREAMER_ACTION_ID,
