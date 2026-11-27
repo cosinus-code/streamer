@@ -427,7 +427,28 @@ public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerMode
         if (loadingNode != null) {
             loadingNode.setLoading(false);
             loadingNode.setLoaded(true);
+            if (streamerView.isActive()) {
+                selectLoadedNode(loadingNode, loadWorkerModel.getContentIdentifier());
+            }
         }
+    }
+
+    /**
+     * Select the child of the loaded node having the content identifier as name,
+     * like the current item of a previous view, or the loaded node itself.
+     *
+     * @param loadedNode        the loaded node
+     * @param contentIdentifier the name of the node to select
+     */
+    protected void selectLoadedNode(StreamerTreeNode loadedNode, String contentIdentifier) {
+        StreamerTreeNode nodeToSelect = ofNullable(contentIdentifier)
+            .flatMap(name -> loadedNode.childStream()
+                .filter(child -> name.equals(child.getStreamer().getName()))
+                .findFirst())
+            .orElse(loadedNode);
+        TreePath path = new TreePath(nodeToSelect.getPath());
+        setSelectionPath(path);
+        scrollPathToVisible(path);
     }
 
     @Override
