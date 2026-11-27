@@ -114,7 +114,7 @@ public abstract class DataTableModel<T extends Streamable> extends TableModel im
             .orElse(null);
     }
 
-    private ViewItem getCurrentViewItem() {
+    public ViewItem getCurrentViewItem() {
         return getViewItemAt(getRowForIndex(currentIndex), getColumnForIndex(currentIndex));
     }
 

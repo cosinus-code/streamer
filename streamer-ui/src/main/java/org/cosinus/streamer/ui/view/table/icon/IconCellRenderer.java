@@ -40,11 +40,11 @@ import static org.cosinus.swing.border.Borders.emptyBorder;
 /**
  * @author costaxus
  */
-public class IconCellRenderer extends TableCellRenderer<IconTable> {
+public class IconCellRenderer extends TableCellRenderer<IconTable<?>> {
 
-    private final IconTable table;
+    private final IconTable<?> table;
 
-    public IconCellRenderer(final IconTable table) {
+    public IconCellRenderer(final IconTable<?> table) {
         this.table = table;
     }
 
@@ -59,7 +59,7 @@ public class IconCellRenderer extends TableCellRenderer<IconTable> {
 
     @Override
     public Component getCellComponent(JLabel label,
-                                      IconTable table,
+                                      IconTable<?> table,
                                       ViewItem item,
                                       boolean isSelected,
                                       int row,

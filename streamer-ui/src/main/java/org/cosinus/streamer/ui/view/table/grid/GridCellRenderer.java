@@ -30,7 +30,7 @@ import static java.util.Optional.ofNullable;
 import static org.cosinus.swing.border.Borders.emptyBorder;
 import static org.cosinus.swing.icon.IconSize.X16;
 
-public class GridCellRenderer extends TableCellRenderer<GridTable> {
+public class GridCellRenderer extends TableCellRenderer<GridTable<?>> {
 
     public static final IconSize GRID_ICON_SIZE = X16;
 
@@ -42,7 +42,7 @@ public class GridCellRenderer extends TableCellRenderer<GridTable> {
 
     @Override
     public Component getCellComponent(JLabel label,
-                                      GridTable table,
+                                      GridTable<?> table,
                                       ViewItem item,
                                       boolean isSelected,
                                       int row,

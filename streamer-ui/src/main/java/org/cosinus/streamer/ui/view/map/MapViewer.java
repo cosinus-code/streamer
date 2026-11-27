@@ -18,7 +18,6 @@
 package org.cosinus.streamer.ui.view.map;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.gpx.GpxPoint;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
@@ -41,6 +40,8 @@ import static org.cosinus.swing.image.ImageSettings.QUALITY;
 
 public class MapViewer extends Panel implements Viewer<GpxPoint>, DragAndDropAware, DragAndDropListener {
 
+    public static final Color INACTIVE_BACKGROUND_COLOR = new Color(240, 240, 240);
+
     public static final Color BACKGROUND_COLOR = new Color(175, 229, 176);
 
     public static final Color FOREGROUND_COLOR = new Color(252, 76, 2);
@@ -57,7 +58,6 @@ public class MapViewer extends Panel implements Viewer<GpxPoint>, DragAndDropAwa
     @Getter
     private final MapModel mapModel;
 
-    @Setter
     private boolean active = true;
 
     public MapViewer() {
@@ -136,8 +136,18 @@ public class MapViewer extends Panel implements Viewer<GpxPoint>, DragAndDropAwa
     }
 
     @Override
+    public void setActive(boolean active) {
+        this.active = active;
+        repaint();
+    }
+
+    /**
+     * @return the map background, or the inactive one (the map background tinted with grey)
+     * when the view is not the current one
+     */
+    @Override
     public Color getBackground() {
-        return BACKGROUND_COLOR;
+        return active ? BACKGROUND_COLOR : INACTIVE_BACKGROUND_COLOR;
     }
 
     @Override

@@ -36,7 +36,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,9 +56,15 @@ import static java.lang.Math.min;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.IntStream.range;
 import static javax.swing.KeyStroke.getKeyStroke;
+import static org.cosinus.streamer.ui.view.StreamerView.INACTIVE_COLOR_GRAY_FACTOR;
 import static org.cosinus.swing.action.ActionController.NO_ACTION_ID;
+import static org.cosinus.swing.color.Colors.grayedColor;
 import static org.cosinus.swing.color.Colors.inverseColor;
-import static org.cosinus.swing.color.SystemColor.*;
+import static org.cosinus.swing.color.SystemColor.EDITOR_PANE_CARET_FOREGROUND;
+import static org.cosinus.swing.color.SystemColor.TABLE_BACKGROUND;
+import static org.cosinus.swing.color.SystemColor.TABLE_SELECTION_INACTIVE_BACKGROUND;
+import static org.cosinus.swing.color.SystemColor.TABLE_SELECTION_INACTIVE_FOREGROUND;
+import static org.cosinus.swing.color.SystemColor.TEXT_PANE_SELECTION_BACKGROUND;
 import static org.cosinus.swing.image.ImageSettings.QUALITY;
 import static org.cosinus.swing.math.MoreMath.fitInRange;
 
@@ -137,6 +148,11 @@ public class BinaryHexaEditor extends SwingComponent implements Viewer<byte[]>, 
 
     private long lastUpdateTime = 0;
 
+    /**
+     * False when the view is not the current one: the caret is then shown with the inactive selection colors
+     */
+    private boolean active = true;
+
     public BinaryHexaEditor() {
         this.editedBytes = new HashMap<>();
     }
@@ -185,6 +201,8 @@ public class BinaryHexaEditor extends SwingComponent implements Viewer<byte[]>, 
 
     @Override
     public void setActive(boolean active) {
+        this.active = active;
+        repaint();
     }
 
     @Override
@@ -231,7 +249,12 @@ public class BinaryHexaEditor extends SwingComponent implements Viewer<byte[]>, 
             int textX = getWidth() - (bytesPerLine - column) * charWidth - padding;
             g2d.setColor(getForeground());
             boolean drawCaret = !hideCaret && byteIndex == caretPosition;
-            if (drawCaret) {
+            if (drawCaret && !active) {
+                g2d.setColor(getCaretInactiveBackground());
+                g2d.fillRect(x - 2, y, caretWidth, lineHeight);
+                g2d.fillRect(textX, y, charWidth, lineHeight);
+                g2d.setColor(getCaretInactiveForeground());
+            } else if (drawCaret) {
                 if (hexaMode) {
                     g2d.setColor(getCaretBackground());
                     g2d.fillRect(x - 2, y, caretWidth, lineHeight);
@@ -510,6 +533,15 @@ public class BinaryHexaEditor extends SwingComponent implements Viewer<byte[]>, 
 
     public Color getCaretBackground() {
         return uiHandler.getColor(TEXT_PANE_SELECTION_BACKGROUND);
+    }
+
+    public Color getCaretInactiveBackground() {
+        return uiHandler.getColor(TABLE_SELECTION_INACTIVE_BACKGROUND,
+            grayedColor(getHexaViewBackground(), INACTIVE_COLOR_GRAY_FACTOR));
+    }
+
+    public Color getCaretInactiveForeground() {
+        return uiHandler.getColor(TABLE_SELECTION_INACTIVE_FOREGROUND, getForeground());
     }
 
     public Color getCaretForeground() {

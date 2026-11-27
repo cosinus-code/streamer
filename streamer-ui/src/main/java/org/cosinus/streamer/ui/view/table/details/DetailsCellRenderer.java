@@ -34,7 +34,7 @@ import static org.cosinus.swing.border.Borders.emptyBorder;
 import static org.cosinus.swing.icon.IconSize.X16;
 import static org.cosinus.swing.icon.IconSize.X32;
 
-public class DetailsCellRenderer extends TableCellRenderer<DetailsTable> {
+public class DetailsCellRenderer extends TableCellRenderer<DetailsTable<?>> {
 
     public static final IconSize ICON_SIZE = X32;
 
@@ -49,7 +49,7 @@ public class DetailsCellRenderer extends TableCellRenderer<DetailsTable> {
 
     @Override
     public Component getCellComponent(JLabel label,
-                                      DetailsTable table,
+                                      DetailsTable<?> table,
                                       ViewItem item,
                                       boolean isSelected,
                                       int row,

@@ -31,18 +31,21 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Optional;
 
 import static java.awt.Color.gray;
 import static java.awt.Font.ITALIC;
 import static java.util.Optional.ofNullable;
+import static org.cosinus.streamer.ui.view.StreamerView.INACTIVE_COLOR_GRAY_FACTOR;
 import static org.cosinus.streamer.ui.view.table.icon.IconTable.PREVIEW_CELL_SIZE;
+import static org.cosinus.swing.color.Colors.grayedColor;
+import static org.cosinus.swing.color.SystemColor.TABLE_SELECTION_INACTIVE_FOREGROUND;
+import static org.cosinus.swing.color.SystemColor.TREE_SELECTION_INACTIVE_BACKGROUND;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_FOLDER;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_UP;
 
-public abstract class TableCellRenderer<T extends DataTable> extends DefaultTableCellRenderer {
+public abstract class TableCellRenderer<T extends DataTable<?>> extends DefaultTableCellRenderer {
 
     private static final Logger LOG = LogManager.getLogger(TableCellRenderer.class);
 
@@ -70,12 +73,24 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
                                                    int row,
                                                    int column) {
 
+        T dataTable = (T) table;
+        boolean inactive = !isSelected && dataTable.isInactiveCurrent(row, column);
+        boolean selected = isSelected || inactive;
+
         Component component = super.getTableCellRendererComponent(table,
             ofNullable(value).orElse(""),
-            isSelected,
+            selected,
             hasFocus,
             row,
             column);
+        if (inactive) {
+            component.setBackground(uiHandler.getColor(
+                TREE_SELECTION_INACTIVE_BACKGROUND,
+                grayedColor(table.getBackground(), INACTIVE_COLOR_GRAY_FACTOR)));
+            component.setForeground(uiHandler.getColor(
+                TABLE_SELECTION_INACTIVE_FOREGROUND,
+                table.getForeground()));
+        }
 
         if (component instanceof JLabel label && value instanceof ViewItem item) {
             if (item.isLink()) {
@@ -85,12 +100,7 @@ public abstract class TableCellRenderer<T extends DataTable> extends DefaultTabl
                 label.setForeground(gray);
             }
 
-            return getCellComponent(label,
-                (T) table,
-                item,
-                isSelected,
-                row,
-                column);
+            return getCellComponent(label, dataTable, item, selected, row, column);
         }
 
         return component;

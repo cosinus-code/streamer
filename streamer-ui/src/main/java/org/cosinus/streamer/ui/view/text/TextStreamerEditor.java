@@ -22,17 +22,30 @@ import org.cosinus.streamer.ui.view.StreamerView;
 import org.cosinus.streamer.ui.view.Viewer;
 import org.cosinus.swing.form.TextEditor;
 
+import javax.swing.text.DefaultCaret;
+import java.awt.*;
+import java.awt.event.FocusEvent;
 import java.util.List;
 
 import static java.lang.String.join;
 import static java.lang.System.lineSeparator;
+import static org.cosinus.streamer.ui.view.StreamerView.INACTIVE_COLOR_GRAY_FACTOR;
 import static org.cosinus.swing.border.Borders.emptyBorder;
+import static org.cosinus.swing.color.Colors.grayedColor;
+import static org.cosinus.swing.color.SystemColor.TEXT_COMPONENT_SELECTION_BACKGROUND_INACTIVE;
 
 public class TextStreamerEditor extends TextEditor implements LoadWorkerModel<String>, Viewer<String> {
 
     private TextStreamerView view;
 
     private final SaveTextWorkerModel saveWorkerModel;
+
+    /**
+     * The selection colors of the active editor, saved while the view is not the current one
+     */
+    private Color activeSelectionColor;
+
+    private Color activeSelectedTextColor;
 
     public TextStreamerEditor() {
         saveWorkerModel = new SaveTextWorkerModel(this);
@@ -41,6 +54,9 @@ public class TextStreamerEditor extends TextEditor implements LoadWorkerModel<St
     public void initComponent() {
         super.initComponent();
         setBorder(emptyBorder(0, 3, 0, 3));
+        int caretBlinkRate = getCaret().getBlinkRate();
+        setCaret(new SelectionKeepingCaret());
+        getCaret().setBlinkRate(caretBlinkRate);
     }
 
     @Override
@@ -50,6 +66,20 @@ public class TextStreamerEditor extends TextEditor implements LoadWorkerModel<St
 
     @Override
     public void setActive(boolean active) {
+        if (!active && activeSelectionColor == null) {
+            activeSelectionColor = getSelectionColor();
+            activeSelectedTextColor = getSelectedTextColor();
+            setSelectionColor(uiHandler.getColor(
+                TEXT_COMPONENT_SELECTION_BACKGROUND_INACTIVE,
+                grayedColor(getBackground(), INACTIVE_COLOR_GRAY_FACTOR)));
+            setSelectedTextColor(getForeground());
+        } else if (active && activeSelectionColor != null) {
+            setSelectionColor(activeSelectionColor);
+            setSelectedTextColor(activeSelectedTextColor);
+            activeSelectionColor = null;
+            activeSelectedTextColor = null;
+        }
+        getCaret().setSelectionVisible(true);
     }
 
     @Override
@@ -100,5 +130,18 @@ public class TextStreamerEditor extends TextEditor implements LoadWorkerModel<St
         requestFocus();
         setDirty(false);
         setLoading(false);
+    }
+
+    /**
+     * Caret keeping the selection visible when the editor loses the focus,
+     * so that the selection of an inactive view is still shown, with the inactive selection colors.
+     */
+    private static class SelectionKeepingCaret extends DefaultCaret {
+
+        @Override
+        public void focusLost(FocusEvent event) {
+            super.focusLost(event);
+            setSelectionVisible(true);
+        }
     }
 }

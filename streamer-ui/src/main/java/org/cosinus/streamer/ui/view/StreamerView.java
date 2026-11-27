@@ -58,7 +58,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -81,6 +80,8 @@ import static org.cosinus.swing.border.Borders.emptyBorder;
 import static org.cosinus.swing.file.FileHandler.PROTOCOL_MARK;
 
 public abstract class StreamerView<T> extends Panel {
+
+    public static final float INACTIVE_COLOR_GRAY_FACTOR = 0.6f;
 
     public static final String STATUS_ITEMS_COUNT_KEY = "status-items-count";
 

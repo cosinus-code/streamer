@@ -422,7 +422,33 @@ public abstract class DataTable<T extends Streamable>
             setCurrentIndex(max(getCurrentIndex(), 0), true);
         } else {
             getSelectionModel().clearSelection();
+            repaint();
         }
+    }
+
+    /**
+     * Check if a cell shows the current item of the table when it became inactive.
+     * <p>
+     * The selection itself is cleared in an inactive table, so that the actions on the inactive view
+     * (like a drop) don't use it, but the current item is still shown with the inactive selection colors.
+     * The item is compared by identity, so it is not found anymore after the items are reloaded.
+     * <p>
+     * When the whole rows are selected, the item of the row is checked, from the first column,
+     * because the top item has a value only in the first column.
+     *
+     * @param row    the cell row
+     * @param column the cell column
+     * @return true if the cell shows the current item when the table became inactive
+     */
+    public boolean isInactiveCurrent(int row, int column) {
+        if (hasFocus()) {
+            return false;
+        }
+        return ofNullable(getTableModel().getCurrentViewItem())
+            .filter(inactiveItem -> inactiveItem == (getCellSelectionEnabled() ?
+                getValueAt(row, column) :
+                getModel().getValueAt(row, 0)))
+            .isPresent();
     }
 
     @Override

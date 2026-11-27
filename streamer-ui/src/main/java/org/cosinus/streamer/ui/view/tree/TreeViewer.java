@@ -27,12 +27,20 @@ import org.cosinus.streamer.ui.view.Viewer;
 import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.form.Tree;
 import org.cosinus.swing.preference.Preferences;
+import org.cosinus.swing.ui.ApplicationUIHandler;
 import org.cosinus.swing.worker.WorkerModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.swing.*;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeWillExpandListener;
+import javax.swing.plaf.basic.BasicTreeUI;
+import javax.swing.plaf.synth.Region;
+import javax.swing.plaf.synth.SynthConstants;
+import javax.swing.plaf.synth.SynthContext;
+import javax.swing.plaf.synth.SynthIcon;
+import javax.swing.plaf.synth.SynthLookAndFeel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
@@ -54,6 +62,9 @@ import static javax.swing.SwingUtilities.isLeftMouseButton;
 import static javax.swing.tree.TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION;
 import static org.cosinus.stream.Streams.stream;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_HIDDEN;
+import static org.cosinus.streamer.ui.view.StreamerView.INACTIVE_COLOR_GRAY_FACTOR;
+import static org.cosinus.swing.color.Colors.grayedColor;
+import static org.cosinus.swing.color.SystemColor.TREE_SELECTION_INACTIVE_BACKGROUND;
 
 public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerModel<Streamer> {
 
@@ -65,6 +76,9 @@ public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerMode
 
     @Autowired
     private StreamerHandler streamerHandler;
+
+    @Autowired
+    private ApplicationUIHandler uiHandler;
 
     @Getter
     @Setter
@@ -78,12 +92,18 @@ public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerMode
 
     private StreamerTreeNode loadingNode;
 
+    /**
+     * The renderer pane used to paint the current node of an inactive tree over its filled row
+     */
+    private final CellRendererPane inactiveCurrentRendererPane = new CellRendererPane();
+
     public TreeViewer() {
         super();
     }
 
     @Override
     public void initComponents() {
+        add(inactiveCurrentRendererPane);
         setRootVisible(false);
         setCellRenderer(new TreeNodeRenderer());
         getSelectionModel().setSelectionMode(DISCONTIGUOUS_TREE_SELECTION);
@@ -204,6 +224,93 @@ public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerMode
             requestFocusInWindow();
         } else {
             getSelectionModel().clearSelection();
+            repaint();
+        }
+    }
+
+    /**
+     * Check if a node is the current node of the tree when it became inactive.
+     * <p>
+     * The selection itself is cleared in an inactive tree, so that the actions on the inactive view
+     * (like a drop) don't use it, but the current node is still shown with the inactive selection colors.
+     *
+     * @param node the node
+     * @return true if the node is the current node when the tree became inactive
+     */
+    public boolean isInactiveCurrent(Object node) {
+        return node != null && !hasFocus() && node == currentNode;
+    }
+
+    @Override
+    protected void paintComponent(Graphics graphics) {
+        super.paintComponent(graphics);
+
+        if (!hasFocus()) {
+            paintInactiveCurrentNode(graphics);
+        }
+    }
+
+    protected void paintInactiveCurrentNode(Graphics graphics) {
+        TreePath inactiveCurrentPath = ofNullable(currentNode)
+            .map(StreamerTreeNode::getPath)
+            .map(TreePath::new)
+            .orElse(null);
+        Rectangle bounds = ofNullable(inactiveCurrentPath)
+            .map(this::getPathBounds)
+            .orElse(null);
+        if (bounds == null) {
+            return;
+        }
+
+        Graphics2D graphics2D = (Graphics2D) graphics.create();
+        try {
+            graphics2D.setColor(uiHandler.getColor(
+                TREE_SELECTION_INACTIVE_BACKGROUND,
+                grayedColor(getBackground(), INACTIVE_COLOR_GRAY_FACTOR)));
+            graphics2D.fillRect(0, bounds.y, getWidth(), bounds.height);
+
+            int row = getRowForPath(inactiveCurrentPath);
+            boolean expanded = isExpanded(inactiveCurrentPath);
+            boolean leaf = getModel().isLeaf(currentNode);
+            if (!leaf) {
+                paintExpandIcon(graphics2D, bounds, expanded);
+            }
+            Component rendererComponent = getCellRenderer()
+                .getTreeCellRendererComponent(this, currentNode, false, expanded, leaf, row, false);
+            inactiveCurrentRendererPane.paintComponent(graphics2D, rendererComponent, this,
+                bounds.x, bounds.y, bounds.width, bounds.height, true);
+        } finally {
+            graphics2D.dispose();
+        }
+    }
+
+    /**
+     * Paint the expand icon of a row the same way the look and feel does, centered before the node.
+     */
+    private void paintExpandIcon(Graphics graphics, Rectangle bounds, boolean expanded) {
+        if (getUI() instanceof BasicTreeUI treeUI) {
+            Icon icon = expanded ? treeUI.getExpandedIcon() : treeUI.getCollapsedIcon();
+            if (icon != null) {
+                boolean leftToRight = getComponentOrientation().isLeftToRight();
+                int middleX = leftToRight ?
+                    bounds.x - treeUI.getRightChildIndent() + 1 :
+                    bounds.x + bounds.width + treeUI.getRightChildIndent() - 1;
+                int middleY = bounds.y + bounds.height / 2;
+                if (icon instanceof SynthIcon synthIcon) {
+                    // the synth icons (like the GTK ones) need a context to be painted
+                    SynthContext context = new SynthContext(this, Region.TREE,
+                        SynthLookAndFeel.getStyle(this, Region.TREE), SynthConstants.ENABLED);
+                    int width = synthIcon.getIconWidth(context);
+                    int height = synthIcon.getIconHeight(context);
+                    synthIcon.paintIcon(context, graphics,
+                        middleX - (leftToRight ? (int) Math.ceil(width / 2.0) : width / 2),
+                        middleY - height / 2, width, height);
+                } else {
+                    icon.paintIcon(this, graphics,
+                        middleX - icon.getIconWidth() / 2,
+                        middleY - icon.getIconHeight() / 2);
+                }
+            }
         }
     }
 

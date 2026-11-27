@@ -17,7 +17,6 @@
 package org.cosinus.streamer.ui.view.tree;
 
 import org.cosinus.streamer.api.Streamer;
-import org.cosinus.streamer.ui.view.ViewItem;
 import org.cosinus.swing.file.FileHandler;
 import org.cosinus.swing.icon.IconSize;
 import org.cosinus.swing.image.icon.IconHandler;
@@ -29,13 +28,16 @@ import javax.swing.border.Border;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import java.awt.*;
 import java.io.File;
-import java.nio.file.Path;
 import java.util.Optional;
 
 import static java.awt.Color.gray;
 import static java.awt.Font.ITALIC;
 import static java.util.Optional.ofNullable;
+import static org.cosinus.streamer.ui.view.StreamerView.INACTIVE_COLOR_GRAY_FACTOR;
 import static org.cosinus.swing.border.Borders.emptyBorder;
+import static org.cosinus.swing.color.Colors.grayedColor;
+import static org.cosinus.swing.color.SystemColor.TREE_SELECTION_INACTIVE_BACKGROUND;
+import static org.cosinus.swing.color.SystemColor.TREE_SELECTION_INACTIVE_FOREGROUND;
 import static org.cosinus.swing.context.ApplicationContextInjector.injectContext;
 import static org.cosinus.swing.icon.IconSize.X16;
 import static org.cosinus.swing.image.icon.IconProvider.ICON_FOLDER;
@@ -55,6 +57,11 @@ public class TreeNodeRenderer extends DefaultTreeCellRenderer {
     @Autowired
     private FileHandler fileHandler;
 
+    /**
+     * The background of the node being rendered if it is the current node of an inactive tree, otherwise null
+     */
+    private Color inactiveCurrentBackground;
+
     public TreeNodeRenderer() {
         injectContext(this);
     }
@@ -67,8 +74,20 @@ public class TreeNodeRenderer extends DefaultTreeCellRenderer {
                                                   boolean leaf,
                                                   int row,
                                                   boolean hasFocus) {
+        TreeViewer treeViewer = (TreeViewer) tree;
+        boolean inactive = !selected && treeViewer.isInactiveCurrent(value);
+
+        inactiveCurrentBackground = inactive ?
+            uiHandler.getColor(
+                TREE_SELECTION_INACTIVE_BACKGROUND,
+                grayedColor(tree.getBackground(), INACTIVE_COLOR_GRAY_FACTOR)) :
+            null;
+
         JLabel label = (JLabel) super
             .getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, false);
+        if (inactive) {
+            label.setForeground(uiHandler.getColor(TREE_SELECTION_INACTIVE_FOREGROUND, tree.getForeground()));
+        }
 
         label.setBorder(CELL_BORDER);
         if (value instanceof StreamerTreeNode node) {
@@ -84,6 +103,17 @@ public class TreeNodeRenderer extends DefaultTreeCellRenderer {
             icon.ifPresent(label::setIcon);
         }
         return label;
+    }
+
+    /**
+     * @return the inactive selection background for the current node of an inactive tree,
+     * so that the text background is filled like the rest of the row
+     */
+    @Override
+    public Color getBackgroundNonSelectionColor() {
+        return inactiveCurrentBackground != null ?
+            inactiveCurrentBackground :
+            super.getBackgroundNonSelectionColor();
     }
 
     protected Optional<Icon> getIcon(final IconSize size, final Streamer<?> streamer) {
