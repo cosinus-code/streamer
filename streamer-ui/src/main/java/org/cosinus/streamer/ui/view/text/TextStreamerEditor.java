@@ -29,6 +29,7 @@ import java.util.List;
 
 import static java.lang.String.join;
 import static java.lang.System.lineSeparator;
+import static java.util.Optional.ofNullable;
 import static org.cosinus.streamer.ui.view.StreamerView.INACTIVE_COLOR_GRAY_FACTOR;
 import static org.cosinus.swing.border.Borders.emptyBorder;
 import static org.cosinus.swing.color.Colors.grayedColor;
@@ -107,7 +108,10 @@ public class TextStreamerEditor extends TextEditor implements LoadWorkerModel<St
 
     @Override
     public long getProgressDone() {
-        return getText().getBytes().length;
+        return ofNullable(getText())
+            .map(String::getBytes)
+            .map(bytes -> bytes.length)
+            .orElse(0);
     }
 
     public Streamer<String> getParentStreamer() {
@@ -127,7 +131,9 @@ public class TextStreamerEditor extends TextEditor implements LoadWorkerModel<St
     @Override
     public void finishLoading(LoadWorkerModel<?> loadWorkerModel) {
         setCaretPosition(0);
-        requestFocus();
+        if (view.isActive()) {
+            requestFocus();
+        }
         setDirty(false);
         setLoading(false);
     }

@@ -33,7 +33,7 @@ import org.cosinus.swing.window.Dialog;
 import java.util.List;
 
 import static java.util.function.Predicate.not;
-import static org.cosinus.streamer.ui.preference.StreamerPreferences.BOUND;
+import static org.cosinus.streamer.ui.preference.StreamerPreferences.BIND_TREE;
 import static org.cosinus.swing.boot.SwingApplicationFrame.applicationFrame;
 
 /**
@@ -79,7 +79,7 @@ public abstract class AbstractCopyAction<M extends CopyActionModel> implements S
 
     @Override
     public void run(M copyActionModel) {
-        if (preferences.booleanPreference(BOUND)) {
+        if (preferences.booleanPreference(BIND_TREE)) {
             return;
         }
 

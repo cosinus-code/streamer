@@ -52,6 +52,10 @@ public class LoadActionModel<T> implements ActionModel {
     @Setter
     protected long limit = -1;
 
+    @Getter
+    @Setter
+    protected boolean requestFocus = true;
+
     public LoadActionModel(final PanelLocation locationToLoadTo,
                            final Streamer<?> initialStreamerToLoad) {
         this(locationToLoadTo, initialStreamerToLoad, null, null, true);

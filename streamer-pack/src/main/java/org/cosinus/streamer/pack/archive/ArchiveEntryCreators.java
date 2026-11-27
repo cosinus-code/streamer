@@ -101,7 +101,7 @@ public final class ArchiveEntryCreators {
                         .setFile(path.toFile())
                         .get();
                 } catch (IOException e) {
-                    throw new StreamerException("Cannot create zip from file: " + file.getPath(), e);
+                    throw new StreamerException("Cannot open zip file: " + e.getLocalizedMessage(), e);
                 }
             })
             .map(ZipEntryInputStream::new)

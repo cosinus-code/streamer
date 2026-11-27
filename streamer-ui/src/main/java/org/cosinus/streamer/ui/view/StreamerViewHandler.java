@@ -36,7 +36,6 @@ import static java.util.stream.Collectors.toMap;
 import static org.cosinus.streamer.api.ParentStreamer.FOLDER_VIEW_ID;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.*;
 import static org.cosinus.streamer.ui.view.PanelLocation.LEFT;
-import static org.cosinus.streamer.ui.view.PanelLocation.RIGHT;
 
 /**
  * Handler for data views

@@ -21,8 +21,12 @@ import lombok.Getter;
 import lombok.Setter;
 import org.cosinus.streamer.api.Streamer;
 import org.cosinus.streamer.api.meta.StreamerHandler;
+import org.cosinus.streamer.ui.action.execute.load.LoadActionExecutor;
+import org.cosinus.streamer.ui.action.execute.load.LoadActionModel;
 import org.cosinus.streamer.ui.action.execute.load.LoadWorkerModel;
+import org.cosinus.streamer.ui.view.PanelLocation;
 import org.cosinus.streamer.ui.view.StreamerView;
+import org.cosinus.streamer.ui.view.StreamerViewHandler;
 import org.cosinus.streamer.ui.view.Viewer;
 import org.cosinus.swing.error.ErrorHandler;
 import org.cosinus.swing.form.Tree;
@@ -63,7 +67,10 @@ import static java.util.stream.IntStream.rangeClosed;
 import static javax.swing.SwingUtilities.isLeftMouseButton;
 import static javax.swing.tree.TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION;
 import static org.cosinus.stream.Streams.stream;
+import static org.cosinus.streamer.ui.preference.StreamerPreferences.BIND_TREE;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_HIDDEN;
+import static org.cosinus.streamer.ui.view.PanelLocation.LEFT;
+import static org.cosinus.streamer.ui.view.PanelLocation.RIGHT;
 import static org.cosinus.streamer.ui.view.StreamerView.INACTIVE_COLOR_GRAY_FACTOR;
 import static org.cosinus.swing.color.Colors.grayedColor;
 import static org.cosinus.swing.color.SystemColor.TREE_SELECTION_BACKGROUND;
@@ -79,6 +86,12 @@ public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerMode
 
     @Autowired
     private StreamerHandler streamerHandler;
+
+    @Autowired
+    private LoadActionExecutor loadActionExecutor;
+
+    @Autowired
+    private StreamerViewHandler streamerViewHandler;
 
     @Autowired
     private ApplicationUIHandler uiHandler;
@@ -100,6 +113,12 @@ public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerMode
      */
     private final CellRendererPane inactiveCurrentRendererPane = new CellRendererPane();
 
+    /**
+     * The file node which became current while the tree was not active yet,
+     * to open in the opposite view when the tree becomes active
+     */
+    private StreamerTreeNode nodeToOpenWhenActive;
+
     public TreeViewer() {
         super();
     }
@@ -120,7 +139,7 @@ public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerMode
             ofNullable(getLastSelectedPathComponent())
                 .filter(node -> StreamerTreeNode.class.isAssignableFrom(node.getClass()))
                 .map(StreamerTreeNode.class::cast)
-                .ifPresent(this::setCurrentNode);
+                .ifPresent(this::changeCurrentNode);
         });
 
         addTreeWillExpandListener(new TreeWillExpandListener() {
@@ -202,6 +221,45 @@ public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerMode
         }
     }
 
+    /**
+     * Change the current node, and open it in the opposite view if it is a file
+     * and the tree is bound with the opposite view.
+     * <p>
+     * The file is opened only when the current node changes,
+     * not when the same node is selected again (like when the view becomes active again).
+     *
+     * @param node the new current node
+     */
+    protected void changeCurrentNode(StreamerTreeNode node) {
+        boolean changed = node != currentNode;
+        setCurrentNode(node);
+        if (changed &&
+            preferences.booleanPreference(BIND_TREE) &&
+            !node.getStreamer().isParent()) {
+
+            if (streamerView.isActive()) {
+                openInOppositeView(node.getStreamer());
+            } else {
+                // clicking a file of the inactive tree selects it before the tree gains the focus:
+                // the file is opened when the tree becomes active
+                nodeToOpenWhenActive = node;
+            }
+        }
+    }
+
+    /**
+     * Open a file in the opposite view, when the tree is bound with the opposite view,
+     * keeping the focus on the tree.
+     *
+     * @param streamer the file to open
+     */
+    protected void openInOppositeView(Streamer<?> streamer) {
+        PanelLocation oppositeLocation = streamerView.getCurrentLocation() == LEFT ? RIGHT : LEFT;
+        LoadActionModel<?> loadActionModel = new LoadActionModel<>(oppositeLocation, streamer, null, true);
+        loadActionModel.setRequestFocus(false);
+        loadActionExecutor.execute(loadActionModel);
+    }
+
     public void collapseChildren(TreePath parent) {
         TreeNode node = (TreeNode) parent.getLastPathComponent();
         stream(node.children())
@@ -215,6 +273,8 @@ public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerMode
 
     @Override
     public void setActive(boolean active) {
+        StreamerTreeNode nodeToOpen = nodeToOpenWhenActive;
+        nodeToOpenWhenActive = null;
         if (active) {
             ofNullable(currentNode)
                 .or(() -> ofNullable(loadingNode))
@@ -225,10 +285,36 @@ public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerMode
                     scrollPathToVisible(currentPath);
                 });
             requestFocusInWindow();
+            if (nodeToOpen != null && nodeToOpen == currentNode) {
+                openInOppositeView(nodeToOpen.getStreamer());
+            }
         } else {
             getSelectionModel().clearSelection();
+            if (preferences.booleanPreference(BIND_TREE)) {
+                syncCurrentNodeWithOppositeView();
+            }
             repaint();
         }
+    }
+
+    /**
+     * Make the node of the streamer shown in the opposite view the current node,
+     * when the tree is bound with the opposite view and the opposite view becomes active.
+     * <p>
+     * The node is only searched in the already loaded nodes, and it is not selected,
+     * so that nothing is loaded and the focus stays in the opposite view.
+     * The node is not opened again in the opposite view, because the tree is not active.
+     */
+    protected void syncCurrentNodeWithOppositeView() {
+        PanelLocation oppositeLocation = streamerView.getCurrentLocation() == LEFT ? RIGHT : LEFT;
+        streamerViewHandler.getView(oppositeLocation)
+            .map(StreamerView::getParentStreamer)
+            .flatMap(this::findNode)
+            .filter(node -> node != currentNode)
+            .ifPresent(node -> {
+                setCurrentNode(node);
+                scrollPathToVisible(new TreePath(node.getPath()));
+            });
     }
 
     /**
@@ -481,8 +567,9 @@ public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerMode
         return node.childStream()
             .sorted(reverseOrder())
             .filter(child -> child.getStreamer().isAncestorFor(streamer))
-            .findFirst()
-            .flatMap(childNode -> findNode(childNode, streamer));
+            .map(childNode -> findNode(childNode, streamer))
+            .flatMap(Optional::stream)
+            .findFirst();
     }
 
     protected Optional<StreamerTreeNode> findParentNode(Streamer streamer) {

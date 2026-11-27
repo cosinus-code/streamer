@@ -31,14 +31,26 @@ public class StreamerViewLoadListener<V> implements WorkerListener<LoadWorkerMod
 
     protected final StreamerView<?> streamerView;
 
+    /**
+     * True to move the focus to the view when loading, false to keep the focus where it is
+     */
+    protected final boolean requestFocus;
+
     public StreamerViewLoadListener(final StreamerView<?> streamerView) {
+        this(streamerView, true);
+    }
+
+    public StreamerViewLoadListener(final StreamerView<?> streamerView, boolean requestFocus) {
         injectContext(this);
         this.streamerView = streamerView;
+        this.requestFocus = requestFocus;
     }
 
     @Override
     public void workerStarted(LoadWorkerModel<V> loadWorkerModel) {
-        streamerView.requestFocus();
+        if (requestFocus) {
+            streamerView.requestFocus();
+        }
         if (streamerView.getContainer() instanceof Viewer<?> viewer) {
             viewer.startLoading(loadWorkerModel);
         }
@@ -56,7 +68,9 @@ public class StreamerViewLoadListener<V> implements WorkerListener<LoadWorkerMod
     public void workerFinished(LoadWorkerModel<V> loadWorkerModel) {
         streamerView.updateStreamerViewIdentifiers();
         streamerView.saveStreamerViewSnapshot();
-        streamerViewHandler.ensureFocusOnCurrentView(streamerView.getCurrentLocation());
+        if (requestFocus) {
+            streamerViewHandler.ensureFocusOnCurrentView(streamerView.getCurrentLocation());
+        }
         if (streamerView.getContainer() instanceof FormComponent container) {
             container.refresh();
         }

@@ -30,7 +30,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static java.util.Optional.ofNullable;
 import static java.util.stream.IntStream.range;
 import static org.apache.commons.lang3.ObjectUtils.compare;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_HIDDEN;

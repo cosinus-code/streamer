@@ -452,6 +452,7 @@ public class BinaryHexaEditor extends SwingComponent implements Viewer<byte[]>, 
             LoadActionModel<?> loadActionModel = new LoadActionModel<>(view);
             loadActionModel.setOffset(offset);
             loadActionModel.setLimit(offset + pageSize);
+            loadActionModel.setRequestFocus(false);
             loadActionExecutor.execute(loadActionModel);
         }
     }

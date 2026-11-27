@@ -22,7 +22,7 @@ public interface StreamerPreferences {
     String ADDRESS_BAR = "address-bar";
     String ADDRESS_TOP = "address-top";
     String TOP_VISIBLE = "top-visible";
-    String BOUND = "bound";
+    String BIND_TREE = "bind-tree";
     String PREVIEW = "preview";
     String SHOW_HIDDEN = "show-hidden";
     String VERIFY_COPY = "verify-copy";

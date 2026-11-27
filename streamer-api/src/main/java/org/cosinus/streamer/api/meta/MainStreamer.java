@@ -79,8 +79,16 @@ public abstract class MainStreamer<S extends Streamer<?>> implements ParentStrea
             .map(Paths::get);
     }
 
+    /**
+     * A main streamer is the ancestor of the streamers having its protocol,
+     * and also of the streamers having an url path starting with its protocol,
+     * like the expanded streamers (a gpx streamer has its own protocol, but the url path of its file).
+     */
     @Override
     public boolean isAncestorFor(Streamer<?> streamer) {
-        return getProtocol().equals(streamer.getProtocol());
+        return getProtocol().equals(streamer.getProtocol()) ||
+            ofNullable(streamer.getUrlPath())
+                .map(urlPath -> urlPath.startsWith(getProtocol()))
+                .orElse(false);
     }
 }

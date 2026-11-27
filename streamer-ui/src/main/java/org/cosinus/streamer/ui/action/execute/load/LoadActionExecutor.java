@@ -144,8 +144,12 @@ public class LoadActionExecutor extends WorkerExecutor<LoadActionModel<?>, Worke
         super.execute(Optional.of(streamerViewToLoadTo)
             .filter(ImageStreamerView.class::isInstance)
             .map(ImageStreamerView.class::cast)
-            .<LoadActionModel>map(imageStreamerView ->
-                new LoadImageActionModel(streamerToLoad.binaryStreamer(), imageStreamerView))
+            .<LoadActionModel>map(imageStreamerView -> {
+                LoadImageActionModel loadImageActionModel =
+                    new LoadImageActionModel(streamerToLoad.binaryStreamer(), imageStreamerView);
+                loadImageActionModel.setRequestFocus(actionModel.isRequestFocus());
+                return loadImageActionModel;
+            })
             .orElse(actionModel));
     }
 
@@ -186,7 +190,8 @@ public class LoadActionExecutor extends WorkerExecutor<LoadActionModel<?>, Worke
                 new LoadPipelineWorker<>(loadActionModel);
 
         return worker
-            .registerListener(loadActionModel.getStreamerViewToLoadTo().getLoadWorkerListener())
+            .registerListener(loadActionModel.getStreamerViewToLoadTo()
+                .getLoadWorkerListener(loadActionModel.isRequestFocus()))
             .registerListener(createWorkerFinishListener(loadActionModel))
             .registerListener(loadActionModel.getStreamerViewToLoadTo().getLoadingIndicator());
     }

@@ -478,7 +478,15 @@ public abstract class StreamerView<T> extends Panel {
     }
 
     public <V> WorkerListener<LoadWorkerModel<V>, V> getLoadWorkerListener() {
-        return new StreamerViewLoadListener<>(this);
+        return getLoadWorkerListener(true);
+    }
+
+    /**
+     * @param requestFocus true to move the focus to this view when loading, false to keep the focus where it is
+     * @return the listener of a load in this view
+     */
+    public <V> WorkerListener<LoadWorkerModel<V>, V> getLoadWorkerListener(boolean requestFocus) {
+        return new StreamerViewLoadListener<>(this, requestFocus);
     }
 
     public <V> SaveWorkerModel<V> getSaveWorkerModel() {
