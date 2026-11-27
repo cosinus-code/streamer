@@ -26,6 +26,8 @@ import org.cosinus.swing.form.ScrollPane;
 import org.cosinus.swing.icon.IconSize;
 import org.cosinus.swing.worker.WorkerModel;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,8 +51,18 @@ public class TreeStreamerView extends StreamerView<Streamer> {
         treeViewer = (TreeViewer) viewer;
         treeViewer.initComponents();
 
+        // like for the table view, the scroll pane is disabled and not focusable,
+        // so that the look and feel (like Aqua) doesn't paint its focus ring when the tree gains the focus
         ScrollPane scroll = new ScrollPane();
+        scroll.setEnabled(false);
         scroll.setViewportView(treeViewer);
+        scroll.setFocusable(false);
+        scroll.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                treeViewer.requestFocus();
+            }
+        });
         streamerViewMainPanel.add(scroll, CENTER);
 
         initKeyActionsHandler();

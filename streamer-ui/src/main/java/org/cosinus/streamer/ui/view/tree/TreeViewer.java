@@ -41,7 +41,9 @@ import javax.swing.plaf.synth.SynthConstants;
 import javax.swing.plaf.synth.SynthContext;
 import javax.swing.plaf.synth.SynthIcon;
 import javax.swing.plaf.synth.SynthLookAndFeel;
+import javax.swing.plaf.synth.SynthUI;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -64,6 +66,7 @@ import static org.cosinus.stream.Streams.stream;
 import static org.cosinus.streamer.ui.preference.StreamerPreferences.SHOW_HIDDEN;
 import static org.cosinus.streamer.ui.view.StreamerView.INACTIVE_COLOR_GRAY_FACTOR;
 import static org.cosinus.swing.color.Colors.grayedColor;
+import static org.cosinus.swing.color.SystemColor.TREE_SELECTION_BACKGROUND;
 import static org.cosinus.swing.color.SystemColor.TREE_SELECTION_INACTIVE_BACKGROUND;
 
 public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerModel<Streamer> {
@@ -243,11 +246,61 @@ public class TreeViewer extends Tree implements Viewer<Streamer>, LoadWorkerMode
 
     @Override
     protected void paintComponent(Graphics graphics) {
-        super.paintComponent(graphics);
+        if (paintsWholeSelectedRows()) {
+            super.paintComponent(graphics);
+        } else {
+            paintWithWholeSelectedRows(graphics);
+        }
 
         if (!hasFocus()) {
             paintInactiveCurrentNode(graphics);
         }
+    }
+
+    /**
+     * @return true if the look and feel paints the whole rows of the selected nodes, like the synth ones (GTK, Nimbus)
+     */
+    protected boolean paintsWholeSelectedRows() {
+        return getUI() instanceof SynthUI;
+    }
+
+    /**
+     * Paint the tree, filling first the whole rows of the selected nodes with the selection color,
+     * for the look and feels (like Metal or Aqua) where the renderer fills only the node text.
+     */
+    protected void paintWithWholeSelectedRows(Graphics graphics) {
+        int[] selectionRows = getSelectionRows();
+        if (ui == null || selectionRows == null || selectionRows.length == 0) {
+            super.paintComponent(graphics);
+            return;
+        }
+
+        Graphics2D graphics2D = (Graphics2D) graphics.create();
+        try {
+            if (isOpaque()) {
+                graphics2D.setColor(getBackground());
+                graphics2D.fillRect(0, 0, getWidth(), getHeight());
+            }
+            graphics2D.setColor(getSelectionBackground());
+            for (int row : selectionRows) {
+                ofNullable(getRowBounds(row))
+                    .ifPresent(bounds -> graphics2D.fillRect(0, bounds.y, getWidth(), bounds.height));
+            }
+
+            ui.paint(graphics2D, this);
+        } finally {
+            graphics2D.dispose();
+        }
+    }
+
+    /**
+     * @return the selection color of the renderer, or the look and feel one
+     */
+    private Color getSelectionBackground() {
+        return getCellRenderer() instanceof DefaultTreeCellRenderer renderer &&
+            renderer.getBackgroundSelectionColor() != null ?
+            renderer.getBackgroundSelectionColor() :
+            uiHandler.getColor(TREE_SELECTION_BACKGROUND, getForeground());
     }
 
     protected void paintInactiveCurrentNode(Graphics graphics) {
